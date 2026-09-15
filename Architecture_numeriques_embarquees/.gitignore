@@ -1,0 +1,35 @@
+# -------------------------------------------------------------------------
+# STM32CubeIDE / Eclipse Workspace & Métadonnées locales (À IGNORER ABSOLUMENT)
+# -------------------------------------------------------------------------
+.metadata/
+.recommenders/
+*.log
+
+# -------------------------------------------------------------------------
+# Fichiers de compilation générés (Build artifacts)
+# -------------------------------------------------------------------------
+Debug/
+Release/
+**/Debug/
+**/Release/
+
+# Fichiers binaires et intermédiaires
+*.o
+*.d
+*.su
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+
+# -------------------------------------------------------------------------
+# Fichiers de configuration utilisateur et historique Eclipse
+# -------------------------------------------------------------------------
+.history/
+*.launch
+.loadpath
+
+# Préférences locales du projet (optionnel mais recommandé pour éviter les conflits d'équipe)
+# Décommentez si vous travaillez à plusieurs sur des OS différents :
+# .settings/org.eclipse.core.resources.prefs

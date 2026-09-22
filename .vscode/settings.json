@@ -1,0 +1,11 @@
+{
+    "sshfs.configs": [
+        {
+            "name": "turtle_bot_3",
+            "username": "ubuntu",
+            "password": "turtlebot",
+            "host": "192.168.221.249",
+            "root": "/home/ubuntu"
+        }
+    ]
+}

@@ -1,32 +1,49 @@
-# --- Rhapsody : Fichiers utilisateur & temporaires ---
-# Espace de travail de l'utilisateur (vues ouvertes, positions des fenêtres)
-*.rpwx
-*.rpw
+# ==========================================
+# IBM Engineering Systems Design Rhapsody
+# ==========================================
 
-# Fichiers de sauvegarde automatique et journaux d'erreurs
+# --- Espaces de travail & Vues locales ---
+*.rpw
+*.rpwx
+
+# --- Fichiers temporaires, sauvegardes & caches ---
 *.save
 *.ehl
-*.log
-
-# Fichiers de verrouillage / état temporaire
-*.lock
 *.bak
+*.lock
+tmp*
+filesTable.dat
 
-# --- Code généré & Binaires de compilation ---
-# Dossiers contenant le code C/C++ généré par le moteur Rhapsody
-# (Souvent créés dans le projet sous forme DefaultComponent, ExeSysEclairage, etc.)
+# --- Journaux & Logs ---
+*.log
+atg.log
+rtc.log
+Roundtrip.log
+SilentMode_*.log
+
+# --- Modules complémentaires (ATG, etc.) ---
+*_ATG/
+
+# --- Code généré & Artefacts de compilation ---
+# Dossier personnalisé de votre projet
+CodesGeneres/
+
+# Noms de composants / configs par défaut dans Rhapsody
 **/DefaultComponent/
 **/DefaultConfig/
+**/ModeAnimation/
 **/Animate/
 **/Debug/
 **/Release/
 
-# Artefacts de compilation C++ classiques
+# Fichiers de build & métadonnées du générateur de code
+*.cg_info
+*.mak
 *.obj
 *.o
 *.exe
+*.ilk
+*.pdb
 *.dll
 *.lib
 *.a
-*.pdb
-*.ilk

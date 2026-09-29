@@ -7,5 +7,6 @@
             "host": "192.168.221.249",
             "root": "/home/ubuntu"
         }
-    ]
+    ],
+    "cmake.sourceDirectory": "C:/Users/benoi/Documents/GitHub/E4SE_TD_TP/robotique_et_navigation/TABDK"
 }

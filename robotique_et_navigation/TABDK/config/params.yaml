@@ -1,0 +1,5 @@
+  frequence    : 5
+  linear_speed : 0.10
+  move_fwd_per : 10
+  move_bwd_per : 5
+  move_stp_per : 3

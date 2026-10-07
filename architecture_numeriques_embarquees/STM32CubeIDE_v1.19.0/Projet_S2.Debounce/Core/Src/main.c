@@ -21,7 +21,6 @@
 #include "tim.h"
 #include "gpio.h"
 #include "stdbool.h"
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -92,8 +91,10 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM3_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim3);
+  HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -153,6 +154,7 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if (GPIO_Pin == BTN_Pin && !falling_edge_detected){
 		falling_edge_detected = true;
@@ -170,6 +172,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			falling_edge_detected = false;
 		}
 
+	}
+	if (htim->Instance == TIM2)
+	{
+		HAL_GPIO_TogglePin(BLUE_GPIO_Port, BLUE_Pin);
 	}
 
 

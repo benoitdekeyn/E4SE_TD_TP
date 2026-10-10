@@ -111,10 +111,10 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">_MonPkg</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::17:45:47</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:34:14</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.10.2026::19:52:50</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::20:8:42</_modifiedTime>
 			<_lastID type="a">15</_lastID>
-			<weakCGTime type="a">10.10.2026::17:45:47</weakCGTime>
+			<weakCGTime type="a">10.10.2026::19:52:50</weakCGTime>
 			<strongCGTime type="a">9.28.2018::8:52:41</strongCGTime>
 			<_defaultComposite type="s">GUID ce1ec9e6-dcba-46da-9bb8-b1ebb5c0fcc5</_defaultComposite>
 			<_eventsBaseID type="a">13401</_eventsBaseID>
@@ -783,7 +783,7 @@
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
-			<m_csModelObjPath type="a">IHM_Objets.Main[0].objetSysVehicule.speed</m_csModelObjPath>
+			<m_csModelObjPath type="a">IHM_Objets.Main[0].objetSysVehicule.vitesse</m_csModelObjPath>
 			<m_csName type="a">vitesse</m_csName>
 			<m_PartsArray type="c">
 				<IRPYRawContainer type="e">
@@ -1622,7 +1622,7 @@
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
-			<m_csModelObjPath type="a">IHM_Objets.Main[0].objetSysVehicule.speed</m_csModelObjPath>
+			<m_csModelObjPath type="a">IHM_Objets.Main[0].objetSysVehicule.vitesse</m_csModelObjPath>
 			<m_csName type="a">gauge_0</m_csName>
 			<m_PartsArray type="c">
 				<IRPYRawContainer type="e">
@@ -4483,7 +4483,7 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">_SysVehicule</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::18:42:19</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:52:50</_modifiedTimeWeak>
 			<_theMainDiagram type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IDiagram</_hm2Class>
@@ -4491,10 +4491,10 @@
 					<_hid type="a">GUID 1d39c820-40df-4404-926c-8610a8ce4194</_hid>
 				</IHandle>
 			</_theMainDiagram>
-			<_modifiedTime type="a">10.10.2026::18:42:19</_modifiedTime>
-			<_lastID type="a">119</_lastID>
-			<weakCGTime type="a">10.10.2026::18:42:19</weakCGTime>
-			<strongCGTime type="a">10.10.2026::13:49:51</strongCGTime>
+			<_modifiedTime type="a">10.10.2026::19:52:50</_modifiedTime>
+			<_lastID type="a">129</_lastID>
+			<weakCGTime type="a">10.10.2026::19:52:50</weakCGTime>
+			<strongCGTime type="a">10.10.2026::19:17:0</strongCGTime>
 			<_itsStateChart type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IStateChart</_hm2Class>
@@ -4521,14 +4521,9 @@
 				<value>GUID 6807e4bf-3427-477a-b06b-5e7a521c683a</value>
 				<value>GUID e2b15eef-ea7b-443d-b132-1206c9efa081</value>
 				<value>GUID b3cca597-3a2e-40ff-9798-aa318c0a3c7b</value>
-				<value>GUID 90ec5884-39ec-4dcd-b902-f06c37b1e435</value>
-				<value>GUID 781bc663-6a62-4c1a-a9a6-3af446187bf8</value>
-				<value>GUID 819cbccc-d0bb-4a3c-98aa-4e1faca8fe6f</value>
 				<value>GUID 5969c9a9-72ce-4f0c-bd94-87105d7262fd</value>
 				<value>GUID 199dff7b-01aa-481f-a72c-ed65270a339d</value>
 				<value>GUID 87f666cf-b21e-4c89-816c-adcd80b53bb5</value>
-				<value>GUID 132e7593-63c4-49ad-a6bc-0cd17e30fca3</value>
-				<value>GUID 43b5c1f6-7642-4377-9c82-153e9d272db1</value>
 				<value>GUID 85836f5c-41d0-4d55-a98f-d4d9b674980a</value>
 				<value>GUID 544d7531-85fd-49ad-b8cb-19f737ace65c</value>
 				<value>GUID 6501c257-dbd6-49ac-b20e-156f9607aa8f</value>
@@ -4537,14 +4532,21 @@
 				<value>GUID 419738e6-49e4-449c-961e-9b77576937c5</value>
 				<value>GUID e3d16a8c-2993-48b6-ac08-c7d9bbc8e7d4</value>
 				<value>GUID dccd7333-ef97-4397-9064-67a2cdd4ebe6</value>
-				<value>GUID 9cef1ad0-d546-4d24-8b84-3db9aa5ec315</value>
-				<value>GUID 5ebf9e8f-8365-4c40-821f-8511c168b633</value>
 				<value>GUID 0561a9e3-8f22-4bfd-813c-967eb40473bc</value>
 				<value>GUID 20760478-ccdc-4e8c-ba6d-c9437cd0831a</value>
 				<value>GUID cfc861b7-0313-456d-9bc9-89764dbc6b54</value>
 				<value>GUID 85d9a275-bcdd-4647-838f-6d6707d8097b</value>
 				<value>GUID 12c94577-c85c-4f26-9c27-e3cfe6b47155</value>
 				<value>GUID b85e9100-99d1-48a3-86a2-a52ce5676c50</value>
+				<value>GUID b49bbdae-7bb7-4cb0-9e34-c2992dd51102</value>
+				<value>GUID daa45227-63ec-428d-b7b7-0bda83e18899</value>
+				<value>GUID 1cf82922-6da4-463a-a661-be932b5d33f7</value>
+				<value>GUID 48101179-e834-4178-ac7b-ad52cd49c2b6</value>
+				<value>GUID 77015e58-e56c-44a6-944a-51db8e88304c</value>
+				<value>GUID 32c8538b-7e68-4f46-bf9e-7da5685acde3</value>
+				<value>GUID 566c5828-4c16-41d8-ae25-f517f7c3254b</value>
+				<value>GUID f4171c1e-7367-4706-b322-51a547966b42</value>
+				<value>GUID 4e937f04-5713-420b-9a37-a56aaff91f93</value>
 				<value>GUID 39378ad3-98aa-4017-a765-b8166b39a351</value>
 				<value>GUID 30e4f95f-58fa-44fc-a9f5-e47a953b2d60</value>
 				<value>GUID 4144beb1-cce6-4d0c-9a76-d5898dc24f44</value>
@@ -4554,8 +4556,8 @@
 			<_id type="a">GUID bec57d30-92a1-4e54-9440-3015433a0e2f</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">accelerer</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::18:39:9</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:39:9</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::19:15:4</_modifiedTime>
 			<_lastID type="a">2</_lastID>
 			<_virtual type="a">0</_virtual>
 			<_returnType type="r">
@@ -4573,22 +4575,39 @@
 			<_static type="a">0</_static>
 			<_constant type="a">0</_constant>
 			<_itsBody type="p"><IBody type="e">
-				<_bodyData type="a">if (ignition) {%0D
-    double VITESSE_MONTEE = SENSIBILITE_ACCEL / 1000.0;%0D
+				<_bodyData type="a">// --- PARAMETRES EXTERNES ---%0D
+const double MAX_THROTTLE = PARAM_SIMU_max_throttle;%0D
+const double PUISSANCE    = PARAM_SIMU_puissance_moteur;%0D
+const double CST_RALENTI  = PARAM_SIMU_throttle_repos;  // Valeur de repos du throttle%0D
+%0D
+// --- CONSTANTES INTERNES ---%0D
+const double CST_COUP_DE_GAZ_AMORCE = 0.5;       // Simule une micro-pression pour lancer le ralenti%0D
+const double CST_FACTEUR_NERVOSITE = 1000.0;     // Diviseur pour convertir la puissance en vitesse de mont%E9e%0D
+const double ZERO = 0.0;%0D
+%0D
+// --- LOGIQUE ---%0D
+if (IS_IN(moteur_on)) {%0D
+    // Plus la puissance est forte, plus la mont%E9e est rapide (nerveuse)%0D
+    const double vitesse_montee = PUISSANCE / CST_FACTEUR_NERVOSITE;%0D
     %0D
-    // Si la p%E9dale est %E0 0 mais qu'on est sous le ralenti, on simule une petite pression%0D
-    // pour permettre %E0 VITESSE_MONTEE de faire grimper le r%E9gime.%0D
-    double pedaleEffective = accelPedal;%0D
-    if (accelPedal == 0.0 &amp;&amp; throttle &lt; RALENTI_MOTEUR) {%0D
-        pedaleEffective = 0.5; // Coup de gaz virtuel pour amorcer le ralenti%0D
+    double pedale_effective = accelPedal;%0D
+    %0D
+    // R%E9tablissement automatique du ralenti%0D
+    if (accelPedal == ZERO &amp;&amp; throttle &lt; CST_RALENTI) {%0D
+        pedale_effective = CST_COUP_DE_GAZ_AMORCE;%0D
     }%0D
     %0D
-    double targetThrottle = RALENTI_MOTEUR + pedaleEffective;%0D
-    if (targetThrottle &gt; MAX_THROTTLE) targetThrottle = MAX_THROTTLE;%0D
+    double targetThrottle = CST_RALENTI + pedale_effective;%0D
+    %0D
+    if (targetThrottle &gt; MAX_THROTTLE) {%0D
+        targetThrottle = MAX_THROTTLE;%0D
+    }%0D
 %0D
     if (throttle &lt; targetThrottle) {%0D
-        throttle += VITESSE_MONTEE; // Inertie de mont%E9e unifi%E9e%0D
-        if (throttle &gt; targetThrottle) throttle = targetThrottle;%0D
+        throttle += vitesse_montee;%0D
+        if (throttle &gt; targetThrottle) {%0D
+            throttle = targetThrottle;%0D
+        }%0D
     }%0D
 }</_bodyData>
 			</IBody>
@@ -4618,7 +4637,7 @@
 			<_id type="a">GUID d101b326-8ab7-4945-98b7-4f5557dd8691</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">arreter</_name>
-			<_modifiedTimeWeak type="a">9.12.2018::13:33:36</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
@@ -4649,7 +4668,7 @@ ignition=false;</_bodyData>
 			<_id type="a">GUID 358732cf-8d39-4f78-a7cb-7fed1778399f</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">ex_demarrer</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::15:1:16</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::15:1:16</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
@@ -4686,8 +4705,8 @@ niveau_batterie = new_niveau_batterie;</_bodyData>
 			<_id type="a">GUID b750e185-5fe5-4be4-bfc9-d01fcced9d75</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">calcul_vitesse_distance</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::18:38:9</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:38:9</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.10.2026::19:18:37</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::19:18:37</_modifiedTime>
 			<_lastID type="a">6</_lastID>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
@@ -4709,53 +4728,76 @@ niveau_batterie = new_niveau_batterie;</_bodyData>
 			<_static type="a">0</_static>
 			<_constant type="a">0</_constant>
 			<_itsBody type="p"><IBody type="e">
-				<_bodyData type="a">if (ignition) {%0D
-    double targetThrottle = RALENTI_MOTEUR + accelPedal;%0D
-    if (targetThrottle &gt; MAX_THROTTLE) targetThrottle = MAX_THROTTLE;%0D
+				<_bodyData type="a">// --- PARAMETRES EXTERNES ---%0D
+const double MAX_THROTTLE         = PARAM_SIMU_max_throttle;%0D
+const double MAX_SPEED            = (double)PARAM_SIMU_max_speed;%0D
+const double MASSE                = (double)PARAM_SIMU_masse;%0D
+const double AIR_DRAG             = PARAM_SIMU_frottement_air;%0D
+const double PUISSANCE            = PARAM_SIMU_puissance_moteur;%0D
+const double FORCE_FREINS         = PARAM_SIMU_puissance_frein;%0D
+const double DELTA_T_MS           = (double)PARAM_SIMU_deltaTms;%0D
+const double CST_RALENTI          = PARAM_SIMU_throttle_repos;     // Valeur de repos du throttle%0D
+const double CST_SEUIL_FREIN_FORT = PARAM_SIMU_seuil_frein_calage; // valeur de frein pour que le moteur commence %E0 s'%E9touffe%0D
 %0D
-    // Stabilisation et frein moteur (quand on rel%E2che la p%E9dale)%0D
+// --- CONSTANTES INTERNES (%E0 passer en PARAM_SIMU si souhait%E9) ---%0D
+const double CST_COEFF_ROULEMENT       = 0.015;  // Frottement des pneus%0D
+const double CST_MULTIPLICATEUR_FREINS = 50.0;   // Mise %E0 l'%E9chelle m%E9canique du frein%0D
+const double CST_FREIN_MOTEUR          = 0.04;   // D%E9c%E9l%E9ration r%E9gime%0D
+%0D
+// Constantes physiques et math%E9matiques pures%0D
+const double CST_GRAVITE = 9.81;%0D
+const double CST_PI_SUR_180 = 3.14159 / 180.0;%0D
+const double CST_CONVERSION_KMH_MS = 3.6;%0D
+const double CST_CONVERSION_MS_S = 1000.0;%0D
+const double ZERO = 0.0;%0D
+%0D
+// --- LOGIQUE ---%0D
+const double dt = DELTA_T_MS / CST_CONVERSION_MS_S;%0D
+%0D
+// 1. R%E9gulation du moteur%0D
+if (IS_IN(moteur_on)) {%0D
+    double targetThrottle = CST_RALENTI + accelPedal;%0D
+    if (targetThrottle &gt; MAX_THROTTLE) {%0D
+        targetThrottle = MAX_THROTTLE;%0D
+    }%0D
+%0D
     if (throttle &gt; targetThrottle) {%0D
-        throttle -= FREIN_MOTEUR;%0D
-        if (throttle &lt; targetThrottle) throttle = targetThrottle;%0D
-    } %0D
-    // Remont%E9e autonome vers le ralenti apr%E8s un %E9touffement au frein%0D
-    else if (throttle &lt; RALENTI_MOTEUR &amp;&amp; brakePedal &lt;= 3.0 &amp;&amp; accelPedal == 0.0) {%0D
-        throttle += (SENSIBILITE_ACCEL / 1000.0); %0D
-        if (throttle &gt; RALENTI_MOTEUR) throttle = RALENTI_MOTEUR;%0D
+        throttle -= CST_FREIN_MOTEUR;%0D
+        if (throttle &lt; targetThrottle) {%0D
+            throttle = targetThrottle;%0D
+        }%0D
+    } else if (throttle &lt; CST_RALENTI &amp;&amp; brakePedal &lt;= CST_SEUIL_FREIN_FORT &amp;&amp; accelPedal == ZERO) {%0D
+        // Le moteur remonte seul au ralenti apr%E8s un quasi-calage%0D
+        const double vitesse_montee = PUISSANCE / CST_CONVERSION_MS_S;%0D
+        throttle += vitesse_montee; %0D
+        if (throttle &gt; CST_RALENTI) {%0D
+            throttle = CST_RALENTI;%0D
+        }%0D
     }%0D
 %0D
     if (throttle &gt; MAX_THROTTLE) throttle = MAX_THROTTLE;%0D
-    if (throttle &lt; 0.0) throttle = 0.0;%0D
+    if (throttle &lt; ZERO) throttle = ZERO;%0D
 } else {%0D
-    throttle = 0.0;%0D
+    throttle = ZERO;%0D
 }%0D
 %0D
-// --- Mod%E8le physique r%E9aliste (Newtonien) ---%0D
-// dt repr%E9sente le temps %E9coul%E9 depuis la derni%E8re boucle (ex: 0.05s pour un tm(50))%0D
-double dt = 0.05; %0D
+// 2. Mod%E8le Physique Newtonien%0D
+const double forceMoteur = throttle * PUISSANCE;%0D
+const double forceFrein = brakePedal * (FORCE_FREINS * CST_MULTIPLICATEUR_FREINS);%0D
+const double forceAir = AIR_DRAG * fspeed * fspeed;%0D
+const double forceRoulement = CST_COEFF_ROULEMENT * MASSE * CST_GRAVITE * cos(alpha * CST_PI_SUR_180);%0D
+const double forceGravite = MASSE * CST_GRAVITE * sin(alpha * CST_PI_SUR_180);%0D
 %0D
-// 1. Calcul des forces (en Newtons)%0D
-double forceMoteur = throttle * PUISSANCE_MOTEUR;%0D
-double forceFrein = brakePedal * (SENSIBILITE_FREIN * 50.0); // Multiplicateur pour freins%0D
-double forceAir = COEFF_FROTTEMENT_AIR * fspeed * fspeed;  // Tra%EEn%E9e quadratique%0D
-double forceRoulement = COEFF_ROULEMENT * MASSE_VEHICULE * 9.81 * cos(alpha * 3.14159 / 180.0);%0D
-double forceGravite = MASSE_VEHICULE * 9.81 * sin(alpha * 3.14159 / 180.0);%0D
+const double forceTotale = forceMoteur - forceFrein - forceAir - forceRoulement - forceGravite;%0D
+const double acceleration = forceTotale / MASSE;%0D
 %0D
-// 2. Somme des forces et acc%E9l%E9ration%0D
-double forceTotale = forceMoteur - forceFrein - forceAir - forceRoulement - forceGravite;%0D
-double acceleration = forceTotale / MASSE_VEHICULE;%0D
-%0D
-// 3. Int%E9gration de la vitesse et bridage%0D
 fspeed += acceleration * dt;%0D
 %0D
+// 3. Bridage et int%E9gration spatiale%0D
 if (fspeed &gt; MAX_SPEED) fspeed = MAX_SPEED;%0D
-if (fspeed &lt; 0.0) {%0D
-    fspeed = 0.0; %0D
-    // Si la voiture recule %E0 cause de la gravit%E9, on la bloque %E0 0 dans ce mod%E8le simple%0D
-}%0D
+if (fspeed &lt; ZERO) fspeed = ZERO;%0D
 %0D
-// 4. Int%E9gration de la distance (conversion km/h -&gt; m/s)%0D
-fdist += (fspeed / 3.6) * dt;%0D
+fdist += (fspeed / CST_CONVERSION_KMH_MS) * dt;%0D
 %0D
 speed = (int)fspeed;%0D
 distance = (int)fdist;</_bodyData>
@@ -4766,8 +4808,8 @@ distance = (int)fdist;</_bodyData>
 			<_id type="a">GUID bd8fbf86-8498-47fb-aa99-e2a54231f8b8</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">freiner</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::18:38:48</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:38:48</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.10.2026::19:52:50</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::19:52:50</_modifiedTime>
 			<_lastID type="a">2</_lastID>
 			<_virtual type="a">0</_virtual>
 			<_returnType type="r">
@@ -4785,10 +4827,15 @@ distance = (int)fdist;</_bodyData>
 			<_static type="a">0</_static>
 			<_constant type="a">0</_constant>
 			<_itsBody type="p"><IBody type="e">
-				<_bodyData type="a">if (ignition) {%0D
-    // Le calage m%E9canique : on %E9touffe le moteur uniquement si on pile %E0 l'arr%EAt%0D
-    if (brakePedal &gt; 3.0 &amp;&amp; fspeed &lt; 8.0) {%0D
-        throttle -= (brakePedal / 10.0) * 0.1;%0D
+				<_bodyData type="a">// --- CONSTANTES ---%0D
+const double CST_SEUIL_FREIN_FORT = PARAM_SIMU_seuil_frein_calage;%0D
+const double CST_SEUIL_VITESSE_BASSE = 8.0;  %0D
+const double CST_FACTEUR_ETOUFFEMENT = 0.01; %0D
+%0D
+// --- LOGIQUE ---%0D
+if (ignition == true) {%0D
+    if (brakePedal &gt; CST_SEUIL_FREIN_FORT &amp;&amp; float_speed &lt; CST_SEUIL_VITESSE_BASSE) {%0D
+        throttle -= brakePedal * CST_FACTEUR_ETOUFFEMENT;%0D
     }%0D
 }</_bodyData>
 			</IBody>
@@ -4818,8 +4865,8 @@ distance = (int)fdist;</_bodyData>
 			<_id type="a">GUID 84108726-cfe5-4f75-b2cc-ef409ca1ace3</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">init</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::18:40:4</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:40:4</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:59:6</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
 				<IRPYRawContainer type="e">
@@ -4840,9 +4887,7 @@ distance = (int)fdist;</_bodyData>
 			<_static type="a">0</_static>
 			<_constant type="a">0</_constant>
 			<_itsBody type="p"><IBody type="e">
-				<_bodyData type="a">fdist=distance;%0D
-fspeed=0.0; %0D
-throttle=0.0;   %0D
+				<_bodyData type="a">throttle=0.0;   %0D
 speed=0;%0D
 brakePedal=0;   %0D
 accelPedal=0;</_bodyData>
@@ -4853,7 +4898,7 @@ accelPedal=0;</_bodyData>
 			<_id type="a">GUID 5e76483f-0284-4e22-a063-96103a89a0fb</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">calcul_carburant</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::14:51:59</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::14:51:59</_modifiedTime>
 			<_lastID type="a">2</_lastID>
 			<_virtual type="a">0</_virtual>
@@ -4908,7 +4953,7 @@ reservoir_carburant = new_reservoir_carburant;</_bodyData>
 			<_id type="a">GUID f6b4cf02-50d8-4541-8a84-0da2f4249f9c</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">ex_remplir_carburant</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::15:0:19</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::15:0:19</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
@@ -4946,7 +4991,7 @@ reservoir_carburant = new_reservoir_carburant;</_bodyData>
 			<_id type="a">GUID 5750fe0f-6599-4b31-8f81-3651bd6d19e7</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">ex_depanner_batterie</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::15:1:6</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::15:1:6</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
@@ -4976,7 +5021,7 @@ reservoir_carburant = new_reservoir_carburant;</_bodyData>
 			<_id type="a">GUID 983b6e68-a4f5-4d33-aa91-e883b2717b04</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">calcul_batterie</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::14:52:6</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::14:52:6</_modifiedTime>
 			<_lastID type="a">1</_lastID>
 			<_virtual type="a">0</_virtual>
@@ -5044,7 +5089,7 @@ niveau_batterie = new_niveau_batterie;</_bodyData>
 			<_id type="a">GUID dfb4427c-1b11-4d74-b3a6-219e1b4ea976</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">calcul_regulateur_vitesse</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::14:53:16</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::14:53:16</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
@@ -5076,7 +5121,7 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID b1891de6-f236-40fe-a7fa-cd0d5e87100f</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">ex_vitesseConsigne_plus</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::15:0:30</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::15:0:30</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
@@ -5102,7 +5147,7 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID 0b123356-9f3a-4c8e-a8ac-42df7bb4b305</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">ex_vitesseConsigne_moins</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::15:0:55</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::15:0:55</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
@@ -5127,7 +5172,7 @@ throttle = steady + error;</_bodyData>
 		<IReception type="e">
 			<_id type="a">GUID da2fee39-9d02-4525-a78f-67ab624b2edf</_id>
 			<_myState type="a">8192</_myState>
-			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
@@ -5144,7 +5189,7 @@ throttle = steady + error;</_bodyData>
 		<IReception type="e">
 			<_id type="a">GUID 8b133f85-b379-4486-995c-ed24aa37e462</_id>
 			<_myState type="a">8192</_myState>
-			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
@@ -5161,7 +5206,7 @@ throttle = steady + error;</_bodyData>
 		<IReception type="e">
 			<_id type="a">GUID 6807e4bf-3427-477a-b06b-5e7a521c683a</_id>
 			<_myState type="a">8192</_myState>
-			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
@@ -5178,7 +5223,7 @@ throttle = steady + error;</_bodyData>
 		<IReception type="e">
 			<_id type="a">GUID e2b15eef-ea7b-443d-b132-1206c9efa081</_id>
 			<_myState type="a">8192</_myState>
-			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
@@ -5195,7 +5240,7 @@ throttle = steady + error;</_bodyData>
 		<IReception type="e">
 			<_id type="a">GUID b3cca597-3a2e-40ff-9798-aa318c0a3c7b</_id>
 			<_myState type="a">8192</_myState>
-			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
@@ -5210,97 +5255,10 @@ throttle = steady + error;</_bodyData>
 			</_event>
 		</IReception>
 		<IAttribute type="e">
-			<_id type="a">GUID 90ec5884-39ec-4dcd-b902-f06c37b1e435</_id>
-			<_myState type="a">8192</_myState>
-			<_name type="a">fspeed</_name>
-			<_modifiedTimeWeak type="a">9.28.2018::8:48:2</_modifiedTimeWeak>
-			<_modifiedTime type="a">9.28.2018::8:48:2</_modifiedTime>
-			<_typeOf type="r">
-				<IHandle type="e">
-					<_hm2Class type="a">IType</_hm2Class>
-					<_hsubsystem type="a">PredefinedTypesCpp</_hsubsystem>
-					<_hname type="a">double</_hname>
-					<_hid type="a">GUID 02ef7294-6849-47b9-9fb2-cfb87b56d2ad</_hid>
-				</IHandle>
-			</_typeOf>
-			<_isOrdered type="a">0</_isOrdered>
-			<_protection type="a">iPublic</_protection>
-			<_static type="a">0</_static>
-			<_isReferenceAttr type="a">0</_isReferenceAttr>
-			<_isConstant type="a">0</_isConstant>
-			<AggregatesList type="e">
-				<value>GUID faef6eae-d8d0-412d-a315-a7de5c14246c</value>
-			</AggregatesList>
-		</IAttribute>
-		<ILiteralSpecification type="e">
-			<_id type="a">GUID faef6eae-d8d0-412d-a315-a7de5c14246c</_id>
-			<_modifiedTimeWeak type="a">9.28.2018::8:48:2</_modifiedTimeWeak>
-			<_modifiedTime type="a">9.28.2018::8:48:2</_modifiedTime>
-			<_value type="a">0.0</_value>
-		</ILiteralSpecification>
-		<IAttribute type="e">
-			<_id type="a">GUID 781bc663-6a62-4c1a-a9a6-3af446187bf8</_id>
-			<_myState type="a">8192</_myState>
-			<_name type="a">fdist</_name>
-			<_modifiedTimeWeak type="a">9.28.2018::8:47:56</_modifiedTimeWeak>
-			<_modifiedTime type="a">9.28.2018::8:47:56</_modifiedTime>
-			<_typeOf type="r">
-				<IHandle type="e">
-					<_hm2Class type="a">IType</_hm2Class>
-					<_hsubsystem type="a">PredefinedTypesCpp</_hsubsystem>
-					<_hname type="a">double</_hname>
-					<_hid type="a">GUID 02ef7294-6849-47b9-9fb2-cfb87b56d2ad</_hid>
-				</IHandle>
-			</_typeOf>
-			<_isOrdered type="a">0</_isOrdered>
-			<_protection type="a">iPublic</_protection>
-			<_static type="a">0</_static>
-			<_isReferenceAttr type="a">0</_isReferenceAttr>
-			<_isConstant type="a">0</_isConstant>
-			<AggregatesList type="e">
-				<value>GUID 32057d5a-3d0e-471e-b22c-d8628d3f766e</value>
-			</AggregatesList>
-		</IAttribute>
-		<ILiteralSpecification type="e">
-			<_id type="a">GUID 32057d5a-3d0e-471e-b22c-d8628d3f766e</_id>
-			<_modifiedTimeWeak type="a">9.28.2018::8:47:56</_modifiedTimeWeak>
-			<_modifiedTime type="a">9.28.2018::8:47:56</_modifiedTime>
-			<_value type="a">0.0</_value>
-		</ILiteralSpecification>
-		<IAttribute type="e">
-			<_id type="a">GUID 819cbccc-d0bb-4a3c-98aa-4e1faca8fe6f</_id>
-			<_myState type="a">8192</_myState>
-			<_name type="a">airResistance</_name>
-			<_modifiedTimeWeak type="a">9.28.2018::8:46:56</_modifiedTimeWeak>
-			<_modifiedTime type="a">9.28.2018::8:46:56</_modifiedTime>
-			<_typeOf type="r">
-				<IHandle type="e">
-					<_hm2Class type="a">IType</_hm2Class>
-					<_hsubsystem type="a">PredefinedTypesCpp</_hsubsystem>
-					<_hname type="a">double</_hname>
-					<_hid type="a">GUID 02ef7294-6849-47b9-9fb2-cfb87b56d2ad</_hid>
-				</IHandle>
-			</_typeOf>
-			<_isOrdered type="a">0</_isOrdered>
-			<_protection type="a">iPublic</_protection>
-			<_static type="a">0</_static>
-			<_isReferenceAttr type="a">0</_isReferenceAttr>
-			<_isConstant type="a">0</_isConstant>
-			<AggregatesList type="e">
-				<value>GUID d38efc29-f6b4-428b-969c-7e1fca928a27</value>
-			</AggregatesList>
-		</IAttribute>
-		<ILiteralSpecification type="e">
-			<_id type="a">GUID d38efc29-f6b4-428b-969c-7e1fca928a27</_id>
-			<_modifiedTimeWeak type="a">9.28.2018::8:46:56</_modifiedTimeWeak>
-			<_modifiedTime type="a">9.28.2018::8:46:56</_modifiedTime>
-			<_value type="a">0.0</_value>
-		</ILiteralSpecification>
-		<IAttribute type="e">
 			<_id type="a">GUID 5969c9a9-72ce-4f0c-bd94-87105d7262fd</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">speed</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::15:20:29</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::15:20:29</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
@@ -5329,7 +5287,7 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID 199dff7b-01aa-481f-a72c-ed65270a339d</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">brakePedal</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::17:16:31</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::17:16:31</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
@@ -5358,7 +5316,7 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID 87f666cf-b21e-4c89-816c-adcd80b53bb5</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">ignition</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::15:11:31</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::15:11:31</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
@@ -5384,68 +5342,10 @@ throttle = steady + error;</_bodyData>
 			<_value type="a">false</_value>
 		</ILiteralSpecification>
 		<IAttribute type="e">
-			<_id type="a">GUID 132e7593-63c4-49ad-a6bc-0cd17e30fca3</_id>
-			<_myState type="a">8192</_myState>
-			<_name type="a">SIMU_max_speed</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::18:42:19</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:42:19</_modifiedTime>
-			<_typeOf type="r">
-				<IHandle type="e">
-					<_hm2Class type="a">IType</_hm2Class>
-					<_hsubsystem type="a">PredefinedTypesCpp</_hsubsystem>
-					<_hname type="a">int</_hname>
-					<_hid type="a">GUID 6024c6ab-fe9e-402e-954f-27aca6d3b5e4</_hid>
-				</IHandle>
-			</_typeOf>
-			<_isOrdered type="a">0</_isOrdered>
-			<_protection type="a">iPublic</_protection>
-			<_static type="a">0</_static>
-			<_isReferenceAttr type="a">0</_isReferenceAttr>
-			<_isConstant type="a">0</_isConstant>
-			<AggregatesList type="e">
-				<value>GUID fd0c1f4c-7d53-48ad-82e5-7170ee1dc281</value>
-			</AggregatesList>
-		</IAttribute>
-		<ILiteralSpecification type="e">
-			<_id type="a">GUID fd0c1f4c-7d53-48ad-82e5-7170ee1dc281</_id>
-			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
-			<_value type="a">120</_value>
-		</ILiteralSpecification>
-		<IAttribute type="e">
-			<_id type="a">GUID 43b5c1f6-7642-4377-9c82-153e9d272db1</_id>
-			<_myState type="a">8192</_myState>
-			<_name type="a">SIMU_max_brake</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::18:42:8</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:42:8</_modifiedTime>
-			<_typeOf type="r">
-				<IHandle type="e">
-					<_hm2Class type="a">IType</_hm2Class>
-					<_hsubsystem type="a">PredefinedTypesCpp</_hsubsystem>
-					<_hname type="a">int</_hname>
-					<_hid type="a">GUID 6024c6ab-fe9e-402e-954f-27aca6d3b5e4</_hid>
-				</IHandle>
-			</_typeOf>
-			<_isOrdered type="a">0</_isOrdered>
-			<_protection type="a">iPublic</_protection>
-			<_static type="a">0</_static>
-			<_isReferenceAttr type="a">0</_isReferenceAttr>
-			<_isConstant type="a">0</_isConstant>
-			<AggregatesList type="e">
-				<value>GUID 8bdeb0fd-5b96-4b44-9d5c-78bf02c1917f</value>
-			</AggregatesList>
-		</IAttribute>
-		<ILiteralSpecification type="e">
-			<_id type="a">GUID 8bdeb0fd-5b96-4b44-9d5c-78bf02c1917f</_id>
-			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
-			<_value type="a">10</_value>
-		</ILiteralSpecification>
-		<IAttribute type="e">
 			<_id type="a">GUID 85836f5c-41d0-4d55-a98f-d4d9b674980a</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">distance</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::15:50:31</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::15:50:31</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
@@ -5474,7 +5374,7 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID 544d7531-85fd-49ad-b8cb-19f737ace65c</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">throttle</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::15:17:12</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::15:17:12</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
@@ -5503,7 +5403,7 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID 6501c257-dbd6-49ac-b20e-156f9607aa8f</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">alpha</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::15:49:58</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::15:49:58</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
@@ -5532,7 +5432,7 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID 4f9a044c-7cf0-42c4-96cb-9cffa852cddb</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">accelPedal</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::17:16:33</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::17:16:33</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
@@ -5561,7 +5461,7 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID d2fc6926-4ef9-4796-9564-3dab617d757a</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">error</_name>
-			<_modifiedTimeWeak type="a">9.12.2018::13:33:36</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
@@ -5590,7 +5490,7 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID 419738e6-49e4-449c-961e-9b77576937c5</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">steady</_name>
-			<_modifiedTimeWeak type="a">9.12.2018::13:33:36</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
@@ -5619,7 +5519,7 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID e3d16a8c-2993-48b6-ac08-c7d9bbc8e7d4</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">_simu</_name>
-			<_modifiedTimeWeak type="a">9.28.2018::6:50:13</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">9.28.2018::6:50:13</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
@@ -5648,7 +5548,7 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID dccd7333-ef97-4397-9064-67a2cdd4ebe6</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">vitesseConsigne</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::15:25:34</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::15:25:34</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
@@ -5674,68 +5574,10 @@ throttle = steady + error;</_bodyData>
 			<_value type="a">0</_value>
 		</ILiteralSpecification>
 		<IAttribute type="e">
-			<_id type="a">GUID 9cef1ad0-d546-4d24-8b84-3db9aa5ec315</_id>
-			<_myState type="a">8192</_myState>
-			<_name type="a">SENSIBILITE_ACCEL</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::18:23:59</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:23:59</_modifiedTime>
-			<_typeOf type="r">
-				<IHandle type="e">
-					<_hm2Class type="a">IType</_hm2Class>
-					<_hsubsystem type="a">PredefinedTypesCpp</_hsubsystem>
-					<_hname type="a">int</_hname>
-					<_hid type="a">GUID 6024c6ab-fe9e-402e-954f-27aca6d3b5e4</_hid>
-				</IHandle>
-			</_typeOf>
-			<_isOrdered type="a">0</_isOrdered>
-			<_protection type="a">iPublic</_protection>
-			<_static type="a">0</_static>
-			<_isReferenceAttr type="a">0</_isReferenceAttr>
-			<_isConstant type="a">0</_isConstant>
-			<AggregatesList type="e">
-				<value>GUID 29d63474-93d6-4a13-8879-fb07bcab721f</value>
-			</AggregatesList>
-		</IAttribute>
-		<ILiteralSpecification type="e">
-			<_id type="a">GUID 29d63474-93d6-4a13-8879-fb07bcab721f</_id>
-			<_modifiedTimeWeak type="a">10.10.2026::18:23:59</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:23:59</_modifiedTime>
-			<_value type="a">100</_value>
-		</ILiteralSpecification>
-		<IAttribute type="e">
-			<_id type="a">GUID 5ebf9e8f-8365-4c40-821f-8511c168b633</_id>
-			<_myState type="a">8192</_myState>
-			<_name type="a">SENSIBILITE_FREIN</_name>
-			<_modifiedTimeWeak type="a">9.29.2026::14:21:32</_modifiedTimeWeak>
-			<_modifiedTime type="a">9.29.2026::14:21:32</_modifiedTime>
-			<_typeOf type="r">
-				<IHandle type="e">
-					<_hm2Class type="a">IType</_hm2Class>
-					<_hsubsystem type="a">PredefinedTypesCpp</_hsubsystem>
-					<_hname type="a">int</_hname>
-					<_hid type="a">GUID 6024c6ab-fe9e-402e-954f-27aca6d3b5e4</_hid>
-				</IHandle>
-			</_typeOf>
-			<_isOrdered type="a">0</_isOrdered>
-			<_protection type="a">iPublic</_protection>
-			<_static type="a">0</_static>
-			<_isReferenceAttr type="a">0</_isReferenceAttr>
-			<_isConstant type="a">0</_isConstant>
-			<AggregatesList type="e">
-				<value>GUID 7132676f-1c92-4eb6-ab5d-f96aaf48cb03</value>
-			</AggregatesList>
-		</IAttribute>
-		<ILiteralSpecification type="e">
-			<_id type="a">GUID 7132676f-1c92-4eb6-ab5d-f96aaf48cb03</_id>
-			<_modifiedTimeWeak type="a">9.29.2026::14:21:32</_modifiedTimeWeak>
-			<_modifiedTime type="a">9.29.2026::14:21:32</_modifiedTime>
-			<_value type="a">50</_value>
-		</ILiteralSpecification>
-		<IAttribute type="e">
 			<_id type="a">GUID 0561a9e3-8f22-4bfd-813c-967eb40473bc</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">reservoir_carburant</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::15:56:56</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::15:56:56</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
@@ -5764,7 +5606,7 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID 20760478-ccdc-4e8c-ba6d-c9437cd0831a</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">niveau_batterie</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::15:59:30</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::15:59:30</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
@@ -5793,7 +5635,7 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID cfc861b7-0313-456d-9bc9-89764dbc6b54</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">cmd_contact</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::15:13:28</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::15:13:28</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
@@ -5822,7 +5664,7 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID 85d9a275-bcdd-4647-838f-6d6707d8097b</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">cmd_regulateur</_name>
-			<_modifiedTimeWeak type="a">10.6.2026::13:18:29</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.6.2026::13:18:29</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
@@ -5851,7 +5693,7 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID 12c94577-c85c-4f26-9c27-e3cfe6b47155</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">cmd_limiteur</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::15:34:4</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::15:34:4</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
@@ -5879,9 +5721,9 @@ throttle = steady + error;</_bodyData>
 		<IAttribute type="e">
 			<_id type="a">GUID b85e9100-99d1-48a3-86a2-a52ce5676c50</_id>
 			<_myState type="a">8192</_myState>
-			<_name type="a">SIMU_max_throttle</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::18:41:36</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:41:36</_modifiedTime>
+			<_name type="a">PARAM_SIMU_max_throttle</_name>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:46:12</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IType</_hm2Class>
@@ -5905,12 +5747,273 @@ throttle = steady + error;</_bodyData>
 			<_modifiedTime type="a">10.10.2026::18:41:36</_modifiedTime>
 			<_value type="a">10.0</_value>
 		</ILiteralSpecification>
+		<IAttribute type="e">
+			<_id type="a">GUID b49bbdae-7bb7-4cb0-9e34-c2992dd51102</_id>
+			<_myState type="a">8192</_myState>
+			<_name type="a">PARAM_SIMU_max_brake</_name>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:46:18</_modifiedTime>
+			<_typeOf type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IType</_hm2Class>
+					<_hsubsystem type="a">PredefinedTypesCpp</_hsubsystem>
+					<_hname type="a">int</_hname>
+					<_hid type="a">GUID 6024c6ab-fe9e-402e-954f-27aca6d3b5e4</_hid>
+				</IHandle>
+			</_typeOf>
+			<_isOrdered type="a">0</_isOrdered>
+			<_protection type="a">iPublic</_protection>
+			<_static type="a">0</_static>
+			<_isReferenceAttr type="a">0</_isReferenceAttr>
+			<_isConstant type="a">0</_isConstant>
+			<AggregatesList type="e">
+				<value>GUID 43636b9f-9210-47a2-9ce6-2c678b5455b9</value>
+			</AggregatesList>
+		</IAttribute>
+		<ILiteralSpecification type="e">
+			<_id type="a">GUID 43636b9f-9210-47a2-9ce6-2c678b5455b9</_id>
+			<_modifiedTimeWeak type="a">10.10.2026::18:43:51</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:43:51</_modifiedTime>
+			<_value type="a">10</_value>
+		</ILiteralSpecification>
+		<IAttribute type="e">
+			<_id type="a">GUID daa45227-63ec-428d-b7b7-0bda83e18899</_id>
+			<_myState type="a">8192</_myState>
+			<_name type="a">PARAM_SIMU_max_speed</_name>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:46:24</_modifiedTime>
+			<_typeOf type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IType</_hm2Class>
+					<_hsubsystem type="a">PredefinedTypesCpp</_hsubsystem>
+					<_hname type="a">int</_hname>
+					<_hid type="a">GUID 6024c6ab-fe9e-402e-954f-27aca6d3b5e4</_hid>
+				</IHandle>
+			</_typeOf>
+			<_isOrdered type="a">0</_isOrdered>
+			<_protection type="a">iPublic</_protection>
+			<_static type="a">0</_static>
+			<_isReferenceAttr type="a">0</_isReferenceAttr>
+			<_isConstant type="a">0</_isConstant>
+			<AggregatesList type="e">
+				<value>GUID 83820bfa-67b2-4840-8ea8-bb7d81afbe0b</value>
+			</AggregatesList>
+		</IAttribute>
+		<ILiteralSpecification type="e">
+			<_id type="a">GUID 83820bfa-67b2-4840-8ea8-bb7d81afbe0b</_id>
+			<_modifiedTimeWeak type="a">10.10.2026::18:44:49</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:44:49</_modifiedTime>
+			<_value type="a">120</_value>
+		</ILiteralSpecification>
+		<IAttribute type="e">
+			<_id type="a">GUID 1cf82922-6da4-463a-a661-be932b5d33f7</_id>
+			<_myState type="a">8192</_myState>
+			<_name type="a">PARAM_SIMU_masse</_name>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:47:1</_modifiedTime>
+			<_typeOf type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IType</_hm2Class>
+					<_hsubsystem type="a">PredefinedTypesCpp</_hsubsystem>
+					<_hname type="a">int</_hname>
+					<_hid type="a">GUID 6024c6ab-fe9e-402e-954f-27aca6d3b5e4</_hid>
+				</IHandle>
+			</_typeOf>
+			<_isOrdered type="a">0</_isOrdered>
+			<_protection type="a">iPublic</_protection>
+			<_static type="a">0</_static>
+			<_isReferenceAttr type="a">0</_isReferenceAttr>
+			<_isConstant type="a">0</_isConstant>
+			<AggregatesList type="e">
+				<value>GUID e38a340e-c908-47e0-a810-1eabdd04dd04</value>
+			</AggregatesList>
+		</IAttribute>
+		<ILiteralSpecification type="e">
+			<_id type="a">GUID e38a340e-c908-47e0-a810-1eabdd04dd04</_id>
+			<_modifiedTimeWeak type="a">10.10.2026::18:47:1</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:47:1</_modifiedTime>
+			<_value type="a">1200</_value>
+		</ILiteralSpecification>
+		<IAttribute type="e">
+			<_id type="a">GUID 48101179-e834-4178-ac7b-ad52cd49c2b6</_id>
+			<_myState type="a">8192</_myState>
+			<_name type="a">PARAM_SIMU_frottement_air</_name>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:48:28</_modifiedTime>
+			<_typeOf type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IType</_hm2Class>
+					<_hsubsystem type="a">PredefinedTypesCpp</_hsubsystem>
+					<_hname type="a">double</_hname>
+					<_hid type="a">GUID 02ef7294-6849-47b9-9fb2-cfb87b56d2ad</_hid>
+				</IHandle>
+			</_typeOf>
+			<_isOrdered type="a">0</_isOrdered>
+			<_protection type="a">iPublic</_protection>
+			<_static type="a">0</_static>
+			<_isReferenceAttr type="a">0</_isReferenceAttr>
+			<_isConstant type="a">0</_isConstant>
+			<AggregatesList type="e">
+				<value>GUID 4d0bcf1d-d1a2-4e5f-be00-268ee8794cfe</value>
+			</AggregatesList>
+		</IAttribute>
+		<ILiteralSpecification type="e">
+			<_id type="a">GUID 4d0bcf1d-d1a2-4e5f-be00-268ee8794cfe</_id>
+			<_modifiedTimeWeak type="a">10.10.2026::18:48:28</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:48:28</_modifiedTime>
+			<_value type="a">0.4</_value>
+		</ILiteralSpecification>
+		<IAttribute type="e">
+			<_id type="a">GUID 77015e58-e56c-44a6-944a-51db8e88304c</_id>
+			<_myState type="a">8192</_myState>
+			<_name type="a">PARAM_SIMU_puissance_moteur</_name>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:49:57</_modifiedTime>
+			<_typeOf type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IType</_hm2Class>
+					<_hsubsystem type="a">PredefinedTypesCpp</_hsubsystem>
+					<_hname type="a">double</_hname>
+					<_hid type="a">GUID 02ef7294-6849-47b9-9fb2-cfb87b56d2ad</_hid>
+				</IHandle>
+			</_typeOf>
+			<_isOrdered type="a">0</_isOrdered>
+			<_protection type="a">iPublic</_protection>
+			<_static type="a">0</_static>
+			<_isReferenceAttr type="a">0</_isReferenceAttr>
+			<_isConstant type="a">0</_isConstant>
+			<AggregatesList type="e">
+				<value>GUID f56d5eae-b4e6-4579-b0d5-519a1aef7df7</value>
+			</AggregatesList>
+		</IAttribute>
+		<ILiteralSpecification type="e">
+			<_id type="a">GUID f56d5eae-b4e6-4579-b0d5-519a1aef7df7</_id>
+			<_modifiedTimeWeak type="a">10.10.2026::18:49:57</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:49:57</_modifiedTime>
+			<_value type="a">60.0</_value>
+		</ILiteralSpecification>
+		<IAttribute type="e">
+			<_id type="a">GUID 32c8538b-7e68-4f46-bf9e-7da5685acde3</_id>
+			<_myState type="a">8192</_myState>
+			<_name type="a">PARAM_SIMU_puissance_frein</_name>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:51:30</_modifiedTime>
+			<_typeOf type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IType</_hm2Class>
+					<_hsubsystem type="a">PredefinedTypesCpp</_hsubsystem>
+					<_hname type="a">double</_hname>
+					<_hid type="a">GUID 02ef7294-6849-47b9-9fb2-cfb87b56d2ad</_hid>
+				</IHandle>
+			</_typeOf>
+			<_isOrdered type="a">0</_isOrdered>
+			<_protection type="a">iPublic</_protection>
+			<_static type="a">0</_static>
+			<_isReferenceAttr type="a">0</_isReferenceAttr>
+			<_isConstant type="a">0</_isConstant>
+			<AggregatesList type="e">
+				<value>GUID 472f4b16-2c52-41b0-aba3-c647a069948c</value>
+			</AggregatesList>
+		</IAttribute>
+		<ILiteralSpecification type="e">
+			<_id type="a">GUID 472f4b16-2c52-41b0-aba3-c647a069948c</_id>
+			<_modifiedTimeWeak type="a">10.10.2026::18:51:30</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:51:30</_modifiedTime>
+			<_value type="a">80.0</_value>
+		</ILiteralSpecification>
+		<IAttribute type="e">
+			<_id type="a">GUID 566c5828-4c16-41d8-ae25-f517f7c3254b</_id>
+			<_myState type="a">8192</_myState>
+			<_name type="a">PARAM_SIMU_deltaTms</_name>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:52:14</_modifiedTime>
+			<_typeOf type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IType</_hm2Class>
+					<_hsubsystem type="a">PredefinedTypesCpp</_hsubsystem>
+					<_hname type="a">int</_hname>
+					<_hid type="a">GUID 6024c6ab-fe9e-402e-954f-27aca6d3b5e4</_hid>
+				</IHandle>
+			</_typeOf>
+			<_isOrdered type="a">0</_isOrdered>
+			<_protection type="a">iPublic</_protection>
+			<_static type="a">0</_static>
+			<_isReferenceAttr type="a">0</_isReferenceAttr>
+			<_isConstant type="a">0</_isConstant>
+			<AggregatesList type="e">
+				<value>GUID d16b953d-0913-4f5d-acc1-df992f535e81</value>
+			</AggregatesList>
+		</IAttribute>
+		<ILiteralSpecification type="e">
+			<_id type="a">GUID d16b953d-0913-4f5d-acc1-df992f535e81</_id>
+			<_modifiedTimeWeak type="a">10.10.2026::18:52:7</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:52:7</_modifiedTime>
+			<_value type="a">50</_value>
+		</ILiteralSpecification>
+		<IAttribute type="e">
+			<_id type="a">GUID f4171c1e-7367-4706-b322-51a547966b42</_id>
+			<_myState type="a">8192</_myState>
+			<_name type="a">PARAM_SIMU_throttle_repos</_name>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::19:1:24</_modifiedTime>
+			<_typeOf type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IType</_hm2Class>
+					<_hsubsystem type="a">PredefinedTypesCpp</_hsubsystem>
+					<_hname type="a">double</_hname>
+					<_hid type="a">GUID 02ef7294-6849-47b9-9fb2-cfb87b56d2ad</_hid>
+				</IHandle>
+			</_typeOf>
+			<_isOrdered type="a">0</_isOrdered>
+			<_protection type="a">iPublic</_protection>
+			<_static type="a">0</_static>
+			<_isReferenceAttr type="a">0</_isReferenceAttr>
+			<_isConstant type="a">0</_isConstant>
+			<AggregatesList type="e">
+				<value>GUID dc0a7d79-604c-42bb-82fc-bb173a8d8c45</value>
+			</AggregatesList>
+		</IAttribute>
+		<ILiteralSpecification type="e">
+			<_id type="a">GUID dc0a7d79-604c-42bb-82fc-bb173a8d8c45</_id>
+			<_modifiedTimeWeak type="a">10.10.2026::19:1:24</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::19:1:24</_modifiedTime>
+			<_value type="a">0.0</_value>
+		</ILiteralSpecification>
+		<IAttribute type="e">
+			<_id type="a">GUID 4e937f04-5713-420b-9a37-a56aaff91f93</_id>
+			<_myState type="a">8192</_myState>
+			<_name type="a">PARAM_SIMU_seuil_frein_calage</_name>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::19:2:52</_modifiedTime>
+			<_typeOf type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IType</_hm2Class>
+					<_hsubsystem type="a">PredefinedTypesCpp</_hsubsystem>
+					<_hname type="a">double</_hname>
+					<_hid type="a">GUID 02ef7294-6849-47b9-9fb2-cfb87b56d2ad</_hid>
+				</IHandle>
+			</_typeOf>
+			<_isOrdered type="a">0</_isOrdered>
+			<_protection type="a">iPublic</_protection>
+			<_static type="a">0</_static>
+			<_isReferenceAttr type="a">0</_isReferenceAttr>
+			<_isConstant type="a">0</_isConstant>
+			<AggregatesList type="e">
+				<value>GUID c9ccd9df-a33f-4be0-93c2-1f99e1d96a1d</value>
+			</AggregatesList>
+		</IAttribute>
+		<ILiteralSpecification type="e">
+			<_id type="a">GUID c9ccd9df-a33f-4be0-93c2-1f99e1d96a1d</_id>
+			<_modifiedTimeWeak type="a">10.10.2026::19:2:33</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::19:2:33</_modifiedTime>
+			<_value type="a">3.0</_value>
+		</ILiteralSpecification>
 		<IFile type="e">
 			<_id type="a">GUID 39378ad3-98aa-4017-a765-b8166b39a351</_id>
 			<_myState type="a">139264</_myState>
 			<_name type="a">_SysVehicule</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::18:41:44</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:41:44</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:10</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::19:17:10</_modifiedTime>
 			<m_type type="a">implFile</m_type>
 			<AggregatesList type="e">
 				<value>GUID 130bb9cb-9d86-49ae-a06a-0384013d51ae</value>
@@ -5999,8 +6102,8 @@ throttle = steady + error;</_bodyData>
 		<IFileFragment type="e">
 			<_id type="a">GUID 4c810d64-4d39-4111-b3a4-8b37d53e0cc5</_id>
 			<_name type="a">_SysVehicule</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::18:41:44</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:41:44</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:10</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::19:17:10</_modifiedTime>
 			<m_type type="a">implFragment</m_type>
 			<m_startRow type="a">64</m_startRow>
 			<m_startCol_Short type="a">22</m_startCol_Short>
@@ -9007,8 +9110,8 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID 30e4f95f-58fa-44fc-a9f5-e47a953b2d60</_id>
 			<_myState type="a">139264</_myState>
 			<_name type="a">_SysVehicule</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::18:42:19</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:42:19</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:10</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::19:17:10</_modifiedTime>
 			<m_type type="a">specFile</m_type>
 			<AggregatesList type="e">
 				<value>GUID 7efa7ec0-ea30-4e22-9926-7f92441be1f8</value>
@@ -9343,8 +9446,8 @@ throttle = steady + error;</_bodyData>
 		<IFileFragment type="e">
 			<_id type="a">GUID 365c1958-db44-4f10-a7bf-e3410554a449</_id>
 			<_name type="a">_SysVehicule</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::18:42:19</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:42:19</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:10</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::19:17:10</_modifiedTime>
 			<m_type type="a">specFragment</m_type>
 			<m_startRow type="a">51</m_startRow>
 			<m_startCol_Short type="a">1</m_startCol_Short>
@@ -9369,13 +9472,8 @@ throttle = steady + error;</_bodyData>
 				<value>GUID aee5b8a5-d327-4e6a-a18f-a2685f7f64c0</value>
 				<value>GUID f1f3d108-98e6-4a36-81e9-a10457e6c6a7</value>
 				<value>GUID 34eb0ff2-80e4-472b-9f3d-f69248413467</value>
-				<value>GUID fc53d134-9f16-4648-b0ea-251f53e24e6f</value>
-				<value>GUID 402edea7-40c3-4d5c-a5cd-54b26b73ab27</value>
-				<value>GUID 84889687-a120-415e-8e3f-c307642bcb56</value>
 				<value>GUID 0099bfeb-3c1e-4cfe-873b-2c23eb6cb6bc</value>
 				<value>GUID e039b2c3-efb0-4ecc-a15f-f26a2ca76f3d</value>
-				<value>GUID 62ad9ea7-808f-43f4-bac2-c8757a007034</value>
-				<value>GUID 1cba64df-0801-48a3-9af8-7084916a96af</value>
 				<value>GUID 1d535096-109f-44e2-9cd5-019bc2daea18</value>
 				<value>GUID a855b53f-118a-47ae-bc19-3f4ac65ba90a</value>
 				<value>GUID 973eb0ff-b2e7-4ec6-be63-484d395fc11e</value>
@@ -9647,57 +9745,6 @@ throttle = steady + error;</_bodyData>
 			</m_subject>
 		</IFileFragment>
 		<IFileFragment type="e">
-			<_id type="a">GUID fc53d134-9f16-4648-b0ea-251f53e24e6f</_id>
-			<_name type="a">SIMU_max_brake</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::18:42:8</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:42:8</_modifiedTime>
-			<m_type type="a">specFragment</m_type>
-			<m_startRow type="a">94</m_startRow>
-			<m_startCol_Short type="a">9</m_startCol_Short>
-			<m_endRow type="a">94</m_endRow>
-			<m_endCol_Short type="a">18</m_endCol_Short>
-			<m_subject type="r">
-				<INObjectHandle type="e">
-					<_hm2Class type="a">IAttribute</_hm2Class>
-					<_hid type="a">GUID 43b5c1f6-7642-4377-9c82-153e9d272db1</_hid>
-				</INObjectHandle>
-			</m_subject>
-		</IFileFragment>
-		<IFileFragment type="e">
-			<_id type="a">GUID 402edea7-40c3-4d5c-a5cd-54b26b73ab27</_id>
-			<_name type="a">SIMU_max_speed</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::18:42:19</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:42:19</_modifiedTime>
-			<m_type type="a">specFragment</m_type>
-			<m_startRow type="a">96</m_startRow>
-			<m_startCol_Short type="a">9</m_startCol_Short>
-			<m_endRow type="a">96</m_endRow>
-			<m_endCol_Short type="a">18</m_endCol_Short>
-			<m_subject type="r">
-				<INObjectHandle type="e">
-					<_hm2Class type="a">IAttribute</_hm2Class>
-					<_hid type="a">GUID 132e7593-63c4-49ad-a6bc-0cd17e30fca3</_hid>
-				</INObjectHandle>
-			</m_subject>
-		</IFileFragment>
-		<IFileFragment type="e">
-			<_id type="a">GUID 84889687-a120-415e-8e3f-c307642bcb56</_id>
-			<_name type="a">airResistance</_name>
-			<_modifiedTimeWeak type="a">9.28.2018::8:46:56</_modifiedTimeWeak>
-			<_modifiedTime type="a">9.27.2019::8:31:42</_modifiedTime>
-			<m_type type="a">specFragment</m_type>
-			<m_startRow type="a">100</m_startRow>
-			<m_startCol_Short type="a">12</m_startCol_Short>
-			<m_endRow type="a">100</m_endRow>
-			<m_endCol_Short type="a">25</m_endCol_Short>
-			<m_subject type="r">
-				<INObjectHandle type="e">
-					<_hm2Class type="a">IAttribute</_hm2Class>
-					<_hid type="a">GUID 819cbccc-d0bb-4a3c-98aa-4e1faca8fe6f</_hid>
-				</INObjectHandle>
-			</m_subject>
-		</IFileFragment>
-		<IFileFragment type="e">
 			<_id type="a">GUID 0099bfeb-3c1e-4cfe-873b-2c23eb6cb6bc</_id>
 			<_name type="a">brakePedal</_name>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
@@ -9728,40 +9775,6 @@ throttle = steady + error;</_bodyData>
 				<INObjectHandle type="e">
 					<_hm2Class type="a">IAttribute</_hm2Class>
 					<_hid type="a">GUID 85836f5c-41d0-4d55-a98f-d4d9b674980a</_hid>
-				</INObjectHandle>
-			</m_subject>
-		</IFileFragment>
-		<IFileFragment type="e">
-			<_id type="a">GUID 62ad9ea7-808f-43f4-bac2-c8757a007034</_id>
-			<_name type="a">fdist</_name>
-			<_modifiedTimeWeak type="a">9.28.2018::8:47:56</_modifiedTimeWeak>
-			<_modifiedTime type="a">9.27.2019::8:31:42</_modifiedTime>
-			<m_type type="a">specFragment</m_type>
-			<m_startRow type="a">106</m_startRow>
-			<m_startCol_Short type="a">12</m_startCol_Short>
-			<m_endRow type="a">106</m_endRow>
-			<m_endCol_Short type="a">17</m_endCol_Short>
-			<m_subject type="r">
-				<INObjectHandle type="e">
-					<_hm2Class type="a">IAttribute</_hm2Class>
-					<_hid type="a">GUID 781bc663-6a62-4c1a-a9a6-3af446187bf8</_hid>
-				</INObjectHandle>
-			</m_subject>
-		</IFileFragment>
-		<IFileFragment type="e">
-			<_id type="a">GUID 1cba64df-0801-48a3-9af8-7084916a96af</_id>
-			<_name type="a">fspeed</_name>
-			<_modifiedTimeWeak type="a">9.28.2018::8:48:2</_modifiedTimeWeak>
-			<_modifiedTime type="a">9.27.2019::8:31:42</_modifiedTime>
-			<m_type type="a">specFragment</m_type>
-			<m_startRow type="a">108</m_startRow>
-			<m_startCol_Short type="a">12</m_startCol_Short>
-			<m_endRow type="a">108</m_endRow>
-			<m_endCol_Short type="a">18</m_endCol_Short>
-			<m_subject type="r">
-				<INObjectHandle type="e">
-					<_hm2Class type="a">IAttribute</_hm2Class>
-					<_hid type="a">GUID 90ec5884-39ec-4dcd-b902-f06c37b1e435</_hid>
 				</INObjectHandle>
 			</m_subject>
 		</IFileFragment>
@@ -10549,11 +10562,11 @@ throttle = steady + error;</_bodyData>
 			<_id type="a">GUID 4144beb1-cce6-4d0c-9a76-d5898dc24f44</_id>
 			<_myState type="a">10240</_myState>
 			<_name type="a">statechart_110</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::17:50:59</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.10.2026::19:17:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.10.2026::17:50:59</_modifiedTime>
 			<_lastID type="a">28</_lastID>
-			<weakCGTime type="a">10.10.2026::17:50:59</weakCGTime>
-			<strongCGTime type="a">10.10.2026::13:49:51</strongCGTime>
+			<weakCGTime type="a">10.10.2026::19:17:0</weakCGTime>
+			<strongCGTime type="a">10.10.2026::19:17:0</strongCGTime>
 			<_itsStateChart type="r">
 				<IHandle type="e">
 				</IHandle>

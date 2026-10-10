@@ -427,8 +427,8 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">HelloWorld2</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::18:41:43</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:41:43</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.10.2026::18:58:49</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::19:18:41</_modifiedTime>
 			<_lastID type="a">4</_lastID>
 			<_UserColors type="w">
 				<IRPYRawContainer type="e">
@@ -966,8 +966,8 @@
 			</_properties>
 			<_name type="a">ClassDiagram</_name>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::18:41:44</_modifiedTime>
-			<_lastModifiedTime type="a">10.10.2026::18:41:44</_lastModifiedTime>
+			<_modifiedTime type="a">10.10.2026::19:17:10</_modifiedTime>
+			<_lastModifiedTime type="a">10.10.2026::19:17:10</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -1223,7 +1223,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2152</m_drawBehavior>
-			<m_transform type="a">0.402166 0 0 0.822638 202.894 -221.476 </m_transform>
+			<m_transform type="a">0.402166 0 0 0.975936 216.894 -262.879 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -1337,35 +1337,8 @@
 							<_hm2Class type="a">IAttribute</_hm2Class>
 							<_hsubsystem type="a">_MonPkg</_hsubsystem>
 							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">airResistance</_hname>
-							<_hid type="a">GUID 819cbccc-d0bb-4a3c-98aa-4e1faca8fe6f</_hid>
-						</IHandle>
-					
-					
-						<IHandle type="e">
-							<_hm2Class type="a">IAttribute</_hm2Class>
-							<_hsubsystem type="a">_MonPkg</_hsubsystem>
-							<_hclass type="a">_SysVehicule</_hclass>
 							<_hname type="a">vitesseConsigne</_hname>
 							<_hid type="a">GUID dccd7333-ef97-4397-9064-67a2cdd4ebe6</_hid>
-						</IHandle>
-					
-					
-						<IHandle type="e">
-							<_hm2Class type="a">IAttribute</_hm2Class>
-							<_hsubsystem type="a">_MonPkg</_hsubsystem>
-							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">SIMU_max_brake</_hname>
-							<_hid type="a">GUID 43b5c1f6-7642-4377-9c82-153e9d272db1</_hid>
-						</IHandle>
-					
-					
-						<IHandle type="e">
-							<_hm2Class type="a">IAttribute</_hm2Class>
-							<_hsubsystem type="a">_MonPkg</_hsubsystem>
-							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">SIMU_max_speed</_hname>
-							<_hid type="a">GUID 132e7593-63c4-49ad-a6bc-0cd17e30fca3</_hid>
 						</IHandle>
 					
 					
@@ -1391,44 +1364,8 @@
 							<_hm2Class type="a">IAttribute</_hm2Class>
 							<_hsubsystem type="a">_MonPkg</_hsubsystem>
 							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">fdist</_hname>
-							<_hid type="a">GUID 781bc663-6a62-4c1a-a9a6-3af446187bf8</_hid>
-						</IHandle>
-					
-					
-						<IHandle type="e">
-							<_hm2Class type="a">IAttribute</_hm2Class>
-							<_hsubsystem type="a">_MonPkg</_hsubsystem>
-							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">fspeed</_hname>
-							<_hid type="a">GUID 90ec5884-39ec-4dcd-b902-f06c37b1e435</_hid>
-						</IHandle>
-					
-					
-						<IHandle type="e">
-							<_hm2Class type="a">IAttribute</_hm2Class>
-							<_hsubsystem type="a">_MonPkg</_hsubsystem>
-							<_hclass type="a">_SysVehicule</_hclass>
 							<_hname type="a">steady</_hname>
 							<_hid type="a">GUID 419738e6-49e4-449c-961e-9b77576937c5</_hid>
-						</IHandle>
-					
-					
-						<IHandle type="e">
-							<_hm2Class type="a">IAttribute</_hm2Class>
-							<_hsubsystem type="a">_MonPkg</_hsubsystem>
-							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">SENSIBILITE_ACCEL</_hname>
-							<_hid type="a">GUID 9cef1ad0-d546-4d24-8b84-3db9aa5ec315</_hid>
-						</IHandle>
-					
-					
-						<IHandle type="e">
-							<_hm2Class type="a">IAttribute</_hm2Class>
-							<_hsubsystem type="a">_MonPkg</_hsubsystem>
-							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">SENSIBILITE_FREIN</_hname>
-							<_hid type="a">GUID 5ebf9e8f-8365-4c40-821f-8511c168b633</_hid>
 						</IHandle>
 					
 					
@@ -1481,13 +1418,96 @@
 							<_hm2Class type="a">IAttribute</_hm2Class>
 							<_hsubsystem type="a">_MonPkg</_hsubsystem>
 							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">SIMU_max_throttle</_hname>
+							<_hname type="a">PARAM_SIMU_max_throttle</_hname>
 							<_hid type="a">GUID b85e9100-99d1-48a3-86a2-a52ce5676c50</_hid>
+						</IHandle>
+					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">PARAM_SIMU_max_brake</_hname>
+							<_hid type="a">GUID b49bbdae-7bb7-4cb0-9e34-c2992dd51102</_hid>
+						</IHandle>
+					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">PARAM_SIMU_max_speed</_hname>
+							<_hid type="a">GUID daa45227-63ec-428d-b7b7-0bda83e18899</_hid>
+						</IHandle>
+					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">PARAM_SIMU_masse</_hname>
+							<_hid type="a">GUID 1cf82922-6da4-463a-a661-be932b5d33f7</_hid>
+						</IHandle>
+					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">PARAM_SIMU_frottement_air</_hname>
+							<_hid type="a">GUID 48101179-e834-4178-ac7b-ad52cd49c2b6</_hid>
+						</IHandle>
+					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">PARAM_SIMU_puissance_moteur</_hname>
+							<_hid type="a">GUID 77015e58-e56c-44a6-944a-51db8e88304c</_hid>
+						</IHandle>
+					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">PARAM_SIMU_puissance_frein</_hname>
+							<_hid type="a">GUID 32c8538b-7e68-4f46-bf9e-7da5685acde3</_hid>
+						</IHandle>
+					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">PARAM_SIMU_deltaTms</_hname>
+							<_hid type="a">GUID 566c5828-4c16-41d8-ae25-f517f7c3254b</_hid>
+						</IHandle>
+					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">PARAM_SIMU_throttle_repos</_hname>
+							<_hid type="a">GUID f4171c1e-7367-4706-b322-51a547966b42</_hid>
+						</IHandle>
+					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">PARAM_SIMU_seuil_frein_calage</_hname>
+							<_hid type="a">GUID 4e937f04-5713-420b-9a37-a56aaff91f93</_hid>
 						</IHandle>
 					
 				</IRPYRawContainer>
 			</Items>
-			<_itemValueOfFontPropertiesMapCount type="a">24</_itemValueOfFontPropertiesMapCount>
+			<_itemValueOfFontPropertiesMapCount type="a">26</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>

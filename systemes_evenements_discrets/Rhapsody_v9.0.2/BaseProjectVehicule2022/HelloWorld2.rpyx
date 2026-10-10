@@ -427,8 +427,8 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">HelloWorld2</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::15:4:6</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::15:4:6</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.10.2026::18:41:43</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.10.2026::18:41:43</_modifiedTime>
 			<_lastID type="a">4</_lastID>
 			<_UserColors type="w">
 				<IRPYRawContainer type="e">
@@ -966,8 +966,8 @@
 			</_properties>
 			<_name type="a">ClassDiagram</_name>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::15:4:6</_modifiedTime>
-			<_lastModifiedTime type="a">10.10.2026::15:4:6</_lastModifiedTime>
+			<_modifiedTime type="a">10.10.2026::18:41:44</_modifiedTime>
+			<_lastModifiedTime type="a">10.10.2026::18:41:44</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -1119,6 +1119,34 @@
 			<_properties type="p"><IPropertyContainer type="e">
 				<Subjects type="c">
 					<IRPYRawContainer type="e">
+						<IPropertySubject type="e">
+							<_Name type="a">Format</_Name>
+							<Metaclasses type="c">
+								<IRPYRawContainer type="e">
+									<IPropertyMetaclass type="e">
+										<_Name type="a">Class</_Name>
+										<Properties type="c">
+											<IRPYRawContainer type="e">
+												<IProperty type="e">
+													<_Name type="a">Font.Weight</_Name>
+													<_Value type="a">400</_Value>
+													<_Type type="a">Int</_Type>
+												</IProperty>
+												
+												<IProperty type="e">
+													<_Name type="a">Font.Weight@Child.NameCompartment@Name</_Name>
+													<_Value type="a">400</_Value>
+													<_Type type="a">Int</_Type>
+												</IProperty>
+												
+											</IRPYRawContainer>
+										</Properties>
+									</IPropertyMetaclass>
+									
+								</IRPYRawContainer>
+							</Metaclasses>
+						</IPropertySubject>
+						
 						<IPropertySubject type="e">
 							<_Name type="a">General</_Name>
 							<Metaclasses type="c">
@@ -1327,16 +1355,7 @@
 							<_hm2Class type="a">IAttribute</_hm2Class>
 							<_hsubsystem type="a">_MonPkg</_hsubsystem>
 							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">MAX_THROTTLE</_hname>
-							<_hid type="a">GUID d1d411dc-7220-48e7-8809-5b14c967e4bf</_hid>
-						</IHandle>
-					
-					
-						<IHandle type="e">
-							<_hm2Class type="a">IAttribute</_hm2Class>
-							<_hsubsystem type="a">_MonPkg</_hsubsystem>
-							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">MAX_BRAKE</_hname>
+							<_hname type="a">SIMU_max_brake</_hname>
 							<_hid type="a">GUID 43b5c1f6-7642-4377-9c82-153e9d272db1</_hid>
 						</IHandle>
 					
@@ -1345,7 +1364,7 @@
 							<_hm2Class type="a">IAttribute</_hm2Class>
 							<_hsubsystem type="a">_MonPkg</_hsubsystem>
 							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">MAX_SPEED</_hname>
+							<_hname type="a">SIMU_max_speed</_hname>
 							<_hid type="a">GUID 132e7593-63c4-49ad-a6bc-0cd17e30fca3</_hid>
 						</IHandle>
 					
@@ -1448,9 +1467,28 @@
 							<_hid type="a">GUID 85d9a275-bcdd-4647-838f-6d6707d8097b</_hid>
 						</IHandle>
 					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">cmd_limiteur</_hname>
+							<_hid type="a">GUID 12c94577-c85c-4f26-9c27-e3cfe6b47155</_hid>
+						</IHandle>
+					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">SIMU_max_throttle</_hname>
+							<_hid type="a">GUID b85e9100-99d1-48a3-86a2-a52ce5676c50</_hid>
+						</IHandle>
+					
 				</IRPYRawContainer>
 			</Items>
-			<_itemValueOfFontPropertiesMapCount type="a">23</_itemValueOfFontPropertiesMapCount>
+			<_itemValueOfFontPropertiesMapCount type="a">24</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>

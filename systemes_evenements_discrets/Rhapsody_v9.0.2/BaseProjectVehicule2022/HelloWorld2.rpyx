@@ -427,8 +427,8 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">HelloWorld2</_name>
-			<_modifiedTimeWeak type="a">10.11.2026::13:5:24</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.11.2026::13:5:24</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.11.2026::15:15:39</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.11.2026::15:15:39</_modifiedTime>
 			<_lastID type="a">4</_lastID>
 			<_UserColors type="w">
 				<IRPYRawContainer type="e">
@@ -966,8 +966,8 @@
 			</_properties>
 			<_name type="a">ClassDiagram</_name>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.11.2026::13:5:27</_modifiedTime>
-			<_lastModifiedTime type="a">10.11.2026::13:5:27</_lastModifiedTime>
+			<_modifiedTime type="a">10.11.2026::15:16:49</_modifiedTime>
+			<_lastModifiedTime type="a">10.11.2026::15:16:49</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -1223,7 +1223,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2152</m_drawBehavior>
-			<m_transform type="a">0.402166 0 0 0.975936 216.894 -256.879 </m_transform>
+			<m_transform type="a">0.402166 0 0 0.975936 221.894 -252.879 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -1472,7 +1472,7 @@
 							<_hm2Class type="a">IAttribute</_hm2Class>
 							<_hsubsystem type="a">_MonPkg</_hsubsystem>
 							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">PARAM_SIMU_deltaTms</_hname>
+							<_hname type="a">PARAM_SIMU_freq_rafraichissement</_hname>
 							<_hid type="a">GUID 566c5828-4c16-41d8-ae25-f517f7c3254b</_hid>
 						</IHandle>
 					
@@ -1517,7 +1517,7 @@
 							<_hm2Class type="a">IAttribute</_hm2Class>
 							<_hsubsystem type="a">_MonPkg</_hsubsystem>
 							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">s</_hname>
+							<_hname type="a">PARAM_SIMU_freq_regulateur</_hname>
 							<_hid type="a">GUID 42ed9b7b-6b7f-4d79-9c46-f945fe65c496</_hid>
 						</IHandle>
 					
@@ -1530,9 +1530,29 @@
 							<_hid type="a">GUID 499979cf-bdef-41c1-ba3d-69fac4701d94</_hid>
 						</IHandle>
 					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">SEUIL_batterie</_hname>
+							<_hid type="a">GUID 50f567f1-0535-4310-9e85-4fbafcfa0685</_hid>
+						</IHandle>
+					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">SEUIL_carburant</_hname>
+							<_hid type="a">GUID 913d664a-3aac-42bd-a681-40ecc0f68edb</_hid>
+						</IHandle>
+					
 				</IRPYRawContainer>
 			</Items>
-			<_itemValueOfFontPropertiesMapCount type="a">29</_itemValueOfFontPropertiesMapCount>
+			<_itemValueOfFontPropertiesMapCount type="a">31</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>

@@ -4,7 +4,6 @@
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <string>
-#include <unordered_map>
 
 #define FREQUENCY 5
 #define MAX_LINEAR_SPEED 0.15
@@ -42,6 +41,20 @@ enum RobotMode {
   MANUAL
 };
 
+enum Direction {
+  NONE,
+  UP,
+  DOWN,
+  LEFT,
+  RIGHT
+};
+
+struct KeyboardInputs {
+  bool change_mode;
+  Direction direction;
+  bool stop;
+};
+
 #define DEFAULT_STATE FORWARD
 #define DEFAULT_MODE AUTO
 
@@ -65,12 +78,8 @@ double linear_speed = LINEAR_SPEED;
 double angular_speed = ANGULAR_SPEED;
 double frequence = FREQUENCY;
 
-// Dictionnaire qui contient les ordres issus du clavier
-unordered_map<string, variant<bool, string>> keyboard_inputs = {
-        {"change_mode", false},
-        {"direction", "none"},
-        {"stop", false}
-      };
+// structure qui contient les ordres issus du clavier
+KeyboardInputs keyboard_inputs = {false, NONE, false};
 
 // L'impl des fonctions
 int ms_to_ticks(int ms) {
@@ -81,22 +90,22 @@ void keyboardCallback(const String::ConstPtr &msg){
   ROS_INFO("Keyboard input : %d", msg->data);
   switch (msg->data) {
     case KEY_M:
-      keyboard_inputs["change_mode"] = true;
+      keyboard_inputs.change_mode = true;
       break;
     case KEY_UP:
-      keyboard_inputs["direction"] = "forward";
+      keyboard_inputs.direction = UP;
       break;
     case KEY_DOWN:
-      keyboard_inputs["direction"] = "backward";
+      keyboard_inputs.direction = DOWN;
       break;
     case KEY_LEFT:
-      keyboard_inputs["direction"] = "left";
+      keyboard_inputs.direction = LEFT;
       break;
     case KEY_RIGHT:
-      keyboard_inputs["direction"] = "right";
+      keyboard_inputs.direction = RIGHT;
       break;
     case KEY_SPACE:
-      keyboard_inputs["stop"] = true;
+      keyboard_inputs.stop = true;
       break;
     default:
       break;
@@ -124,14 +133,12 @@ void backward(double v) {
 void update_Mode() {
   switch(current_mode) {
     case AUTO:
-      if (keyboard_inputs["change_mode"]) {
-        keyboard_inputs["change_mode"] = false;
+      if (keyboard_inputs.change_mode) {
         current_mode = MANUAL;
       }
       break;
     case MANUAL:
-      if (keyboard_inputs["change_mode"]) {
-        keyboard_inputs["change_mode"] = false;
+      if (keyboard_inputs.change_mode) {
         current_mode = AUTO;
       }
       break;
@@ -139,6 +146,7 @@ void update_Mode() {
       current_mode = DEFAULT_MODE;
       break;
   }
+  keyboard_inputs.change_mode = false;
 }
 
 void update_FSM_auto() {
@@ -168,24 +176,23 @@ void update_FSM_auto() {
 }
 
 void update_FSM_manual() {
-  if (keyboard_inputs["stop"]) {
-    keyboard_inputs["stop"] = false;
+  if (keyboard_inputs.stop) {
     current_state = STOP;
     return;
   }
 
-  string direction = get<string>(keyboard_inputs["direction"]);
-  keyboard_inputs["direction"] = "none";
-  switch (direction) {
-    case "forward":
+  switch (keyboard_inputs.direction) {
+    case UP:
       current_state = FORWARD;
       break;
-    case "backward":
+    case DOWN:
       current_state = BACKWARD;
       break;
     default:
       break;
   }
+  keyboard_inputs.stop = false;
+  keyboard_inputs.direction = NONE;
 }
 
 void update_FSM() {

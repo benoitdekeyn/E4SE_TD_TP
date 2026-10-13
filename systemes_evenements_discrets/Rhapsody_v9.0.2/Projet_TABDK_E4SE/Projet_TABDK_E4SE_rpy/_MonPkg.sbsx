@@ -111,10 +111,10 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">_MonPkg</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:59:7</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:53:35</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::19:58:12</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:12:18</_modifiedTime>
 			<_lastID type="a">15</_lastID>
-			<weakCGTime type="a">10.13.2026::17:59:7</weakCGTime>
+			<weakCGTime type="a">10.13.2026::19:58:12</weakCGTime>
 			<strongCGTime type="a">9.28.2018::8:52:41</strongCGTime>
 			<_defaultComposite type="s">GUID ce1ec9e6-dcba-46da-9bb8-b1ebb5c0fcc5</_defaultComposite>
 			<_eventsBaseID type="a">13401</_eventsBaseID>
@@ -4487,7 +4487,7 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">_SysVehicule</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::18:0:10</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.13.2026::20:21:16</_modifiedTimeWeak>
 			<_theMainDiagram type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IDiagram</_hm2Class>
@@ -4495,9 +4495,9 @@
 					<_hid type="a">GUID 1d39c820-40df-4404-926c-8610a8ce4194</_hid>
 				</IHandle>
 			</_theMainDiagram>
-			<_modifiedTime type="a">10.13.2026::17:53:35</_modifiedTime>
+			<_modifiedTime type="a">10.13.2026::20:3:54</_modifiedTime>
 			<_lastID type="a">143</_lastID>
-			<weakCGTime type="a">10.13.2026::18:0:10</weakCGTime>
+			<weakCGTime type="a">10.13.2026::20:21:16</weakCGTime>
 			<strongCGTime type="a">10.10.2026::19:17:0</strongCGTime>
 			<_itsStateChart type="r">
 				<IHandle type="e">
@@ -5902,8 +5902,8 @@ if (throttle &lt; throttle_repos)          throttle = throttle_repos;</_bodyData
 			<_id type="a">GUID 48101179-e834-4178-ac7b-ad52cd49c2b6</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">PARAM_SIMU_frottement_air</_name>
-			<_modifiedTimeWeak type="a">10.11.2026::12:31:14</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.11.2026::12:31:14</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:3:3</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:3:3</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IType</_hm2Class>
@@ -5918,21 +5918,21 @@ if (throttle &lt; throttle_repos)          throttle = throttle_repos;</_bodyData
 			<_isReferenceAttr type="a">0</_isReferenceAttr>
 			<_isConstant type="a">0</_isConstant>
 			<AggregatesList type="e">
-				<value>GUID 1e485082-083d-4fbd-8df7-7fda4a7087ce</value>
+				<value>GUID 0d5ebb6f-9a51-4c54-9dc5-31b010488485</value>
 			</AggregatesList>
 		</IAttribute>
 		<ILiteralSpecification type="e">
-			<_id type="a">GUID 1e485082-083d-4fbd-8df7-7fda4a7087ce</_id>
-			<_modifiedTimeWeak type="a">10.11.2026::12:31:14</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.11.2026::12:31:14</_modifiedTime>
-			<_value type="a">15</_value>
+			<_id type="a">GUID 0d5ebb6f-9a51-4c54-9dc5-31b010488485</_id>
+			<_modifiedTimeWeak type="a">10.13.2026::20:3:3</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:3:3</_modifiedTime>
+			<_value type="a">10</_value>
 		</ILiteralSpecification>
 		<IAttribute type="e">
 			<_id type="a">GUID 77015e58-e56c-44a6-944a-51db8e88304c</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">PARAM_SIMU_puissance_moteur</_name>
-			<_modifiedTimeWeak type="a">10.11.2026::12:5:20</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::10:45:12</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:1:49</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:1:49</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IType</_hm2Class>
@@ -5947,21 +5947,21 @@ if (throttle &lt; throttle_repos)          throttle = throttle_repos;</_bodyData
 			<_isReferenceAttr type="a">0</_isReferenceAttr>
 			<_isConstant type="a">0</_isConstant>
 			<AggregatesList type="e">
-				<value>GUID 375a43be-c452-428b-a3e8-64e39274f3ab</value>
+				<value>GUID 9692e475-b14c-4824-b33d-29263a344656</value>
 			</AggregatesList>
 		</IAttribute>
 		<ILiteralSpecification type="e">
-			<_id type="a">GUID 375a43be-c452-428b-a3e8-64e39274f3ab</_id>
-			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::10:45:12</_modifiedTime>
-			<_value type="a">1500</_value>
+			<_id type="a">GUID 9692e475-b14c-4824-b33d-29263a344656</_id>
+			<_modifiedTimeWeak type="a">10.13.2026::20:1:49</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:1:49</_modifiedTime>
+			<_value type="a">1700</_value>
 		</ILiteralSpecification>
 		<IAttribute type="e">
 			<_id type="a">GUID 32c8538b-7e68-4f46-bf9e-7da5685acde3</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">PARAM_SIMU_puissance_frein</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::21:46:23</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::21:46:23</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:3:54</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:3:54</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IType</_hm2Class>
@@ -5976,14 +5976,14 @@ if (throttle &lt; throttle_repos)          throttle = throttle_repos;</_bodyData
 			<_isReferenceAttr type="a">0</_isReferenceAttr>
 			<_isConstant type="a">0</_isConstant>
 			<AggregatesList type="e">
-				<value>GUID 3f6209ae-54ec-40b4-8357-684cf2f09937</value>
+				<value>GUID 2f158bf8-969d-4acc-aa71-3f86737a1edf</value>
 			</AggregatesList>
 		</IAttribute>
 		<ILiteralSpecification type="e">
-			<_id type="a">GUID 3f6209ae-54ec-40b4-8357-684cf2f09937</_id>
-			<_modifiedTimeWeak type="a">10.10.2026::21:46:23</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::21:46:23</_modifiedTime>
-			<_value type="a">80</_value>
+			<_id type="a">GUID 2f158bf8-969d-4acc-aa71-3f86737a1edf</_id>
+			<_modifiedTimeWeak type="a">10.13.2026::20:3:54</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:3:54</_modifiedTime>
+			<_value type="a">100</_value>
 		</ILiteralSpecification>
 		<IAttribute type="e">
 			<_id type="a">GUID 566c5828-4c16-41d8-ae25-f517f7c3254b</_id>
@@ -6366,8 +6366,8 @@ if (throttle &lt; throttle_repos)          throttle = throttle_repos;</_bodyData
 			<_id type="a">GUID 39378ad3-98aa-4017-a765-b8166b39a351</_id>
 			<_myState type="a">139264</_myState>
 			<_name type="a">_SysVehicule</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:11:57</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:11:57</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:3:54</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:3:54</_modifiedTime>
 			<m_type type="a">implFile</m_type>
 			<AggregatesList type="e">
 				<value>GUID 130bb9cb-9d86-49ae-a06a-0384013d51ae</value>
@@ -6456,8 +6456,8 @@ if (throttle &lt; throttle_repos)          throttle = throttle_repos;</_bodyData
 		<IFileFragment type="e">
 			<_id type="a">GUID 4c810d64-4d39-4111-b3a4-8b37d53e0cc5</_id>
 			<_name type="a">_SysVehicule</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:11:57</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:11:57</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:3:54</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:3:54</_modifiedTime>
 			<m_type type="a">implFragment</m_type>
 			<m_startRow type="a">64</m_startRow>
 			<m_startCol_Short type="a">22</m_startCol_Short>
@@ -9464,8 +9464,8 @@ if (throttle &lt; throttle_repos)          throttle = throttle_repos;</_bodyData
 			<_id type="a">GUID 30e4f95f-58fa-44fc-a9f5-e47a953b2d60</_id>
 			<_myState type="a">139264</_myState>
 			<_name type="a">_SysVehicule</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:11:57</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:11:57</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:3:54</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:3:54</_modifiedTime>
 			<m_type type="a">specFile</m_type>
 			<AggregatesList type="e">
 				<value>GUID 7efa7ec0-ea30-4e22-9926-7f92441be1f8</value>
@@ -9800,8 +9800,8 @@ if (throttle &lt; throttle_repos)          throttle = throttle_repos;</_bodyData
 		<IFileFragment type="e">
 			<_id type="a">GUID 365c1958-db44-4f10-a7bf-e3410554a449</_id>
 			<_name type="a">_SysVehicule</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:11:57</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:11:57</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:3:54</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:3:54</_modifiedTime>
 			<m_type type="a">specFragment</m_type>
 			<m_startRow type="a">51</m_startRow>
 			<m_startCol_Short type="a">1</m_startCol_Short>
@@ -10916,10 +10916,10 @@ if (throttle &lt; throttle_repos)          throttle = throttle_repos;</_bodyData
 			<_id type="a">GUID 4144beb1-cce6-4d0c-9a76-d5898dc24f44</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">statechart</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::18:0:10</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::18:0:10</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:21:16</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:17:50</_modifiedTime>
 			<_lastID type="a">82</_lastID>
-			<weakCGTime type="a">10.13.2026::18:0:10</weakCGTime>
+			<weakCGTime type="a">10.13.2026::20:21:16</weakCGTime>
 			<strongCGTime type="a">10.11.2026::16:10:9</strongCGTime>
 			<_itsStateChart type="r">
 				<IHandle type="e">
@@ -10927,7 +10927,7 @@ if (throttle &lt; throttle_repos)          throttle = throttle_repos;</_bodyData
 			</_itsStateChart>
 			<_classModifier type="a">Unspecified</_classModifier>
 			<_defNumber type="a">78</_defNumber>
-			<_version type="a">10.13.2026::20:0:10</_version>
+			<_version type="a">10.13.2026::22:21:44</_version>
 			<_baseVersion type="a">1.2.1990::0:0:0</_baseVersion>
 			<_diagram type="s">GUID 3f57bb6d-c1d7-486b-81b5-20de9ab1601e</_diagram>
 			<AggregatesList type="e">
@@ -11140,8 +11140,8 @@ IS_IN(fonctionelle)%0D
 			<_id type="a">GUID 6b4b1979-6e5b-4cef-a897-abb8988e8a8f</_id>
 			<_myState type="a">2048</_myState>
 			<_name type="a">transition_10</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:28:30</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:28:30</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:14:12</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:14:12</_modifiedTime>
 			<_itsTarget type="s">GUID 5103f36a-611a-4ee1-b7c5-195f74be34fb</_itsTarget>
 			<_staticReaction type="a">0</_staticReaction>
 			<_itsSource type="s">GUID 24d9a9f5-d902-45b0-b1a1-e9eef910c6f2</_itsSource>
@@ -11151,12 +11151,12 @@ IS_IN(fonctionelle)%0D
 		</ITransition>
 		<ILabel type="e">
 			<_id type="a">GUID 5cf02af7-f9e7-4bfd-a7f8-fa78addeb036</_id>
-			<_modifiedTimeWeak type="a">10.13.2026::17:28:30</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:28:30</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:14:12</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:14:12</_modifiedTime>
+			<_itsAction>NULL</_itsAction>
 			<AggregatesList type="e">
 				<value>GUID fbef3a93-4eea-4a70-a81d-638dde370eb8</value>
 				<value>GUID 7a00e4f0-3d71-4130-8f09-2f52905f6de8</value>
-				<value>GUID d13f97e2-3e95-45e8-a522-42afdadf7025</value>
 			</AggregatesList>
 		</ILabel>
 		<IInterfaceItemTrigger type="e">
@@ -11173,19 +11173,12 @@ IS_IN(fonctionelle)%0D
 		</IInterfaceItemTrigger>
 		<IGuard type="e">
 			<_id type="a">GUID 7a00e4f0-3d71-4130-8f09-2f52905f6de8</_id>
-			<_modifiedTimeWeak type="a">10.13.2026::17:28:30</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:28:30</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:14:12</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:14:12</_modifiedTime>
 			<_body type="a">%0D
 !IS_IN(fonctionelle) ||%0D
-cmd_contact==false%0D
-</_body>
+cmd_contact==false</_body>
 		</IGuard>
-		<IAction type="e">
-			<_id type="a">GUID d13f97e2-3e95-45e8-a522-42afdadf7025</_id>
-			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
-			<_body type="a">arreter()</_body>
-		</IAction>
 		<IDefaultDrvdTrans type="e">
 			<_id type="a">GUID f18eafaa-ed95-44f7-9680-fe1accf71f60</_id>
 			<_myState type="a">2048</_myState>
@@ -11213,8 +11206,8 @@ cmd_contact==false%0D
 			<_id type="a">GUID d8eb28bb-f20f-4e94-b81f-98eb7bc6fa2e</_id>
 			<_myState type="a">2048</_myState>
 			<_name type="a">defaulttransition_15</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:28:58</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:28:58</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:14:42</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:14:42</_modifiedTime>
 			<_errorStatus type="a">ErrorItem</_errorStatus>
 			<_itsTarget type="s">GUID 5103f36a-611a-4ee1-b7c5-195f74be34fb</_itsTarget>
 			<_staticReaction type="a">0</_staticReaction>
@@ -11569,8 +11562,8 @@ IS_IN(mode_manuel) %0D
 			<_id type="a">GUID 329784e8-3c2f-4048-b0c8-7c078cf4bcc9</_id>
 			<_myState type="a">2048</_myState>
 			<_name type="a">defaulttransition_36</_name>
-			<_modifiedTimeWeak type="a">10.11.2026::15:25:53</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.11.2026::13:16:15</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:21:16</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:21:16</_modifiedTime>
 			<_errorStatus type="a">ErrorItem</_errorStatus>
 			<_itsTarget type="s">GUID c9d7f5cc-6acd-42aa-a5bf-88d9a65cdcac</_itsTarget>
 			<_staticReaction type="a">0</_staticReaction>
@@ -11592,8 +11585,8 @@ IS_IN(mode_manuel) %0D
 			<_id type="a">GUID bf5e54cd-4086-40bb-b0aa-68e8ca24158a</_id>
 			<_myState type="a">2048</_myState>
 			<_name type="a">transition_37</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:25:42</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:25:42</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:16:46</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:16:46</_modifiedTime>
 			<_itsTarget type="s">GUID 039473e1-0a4f-4491-9980-9881059d16d6</_itsTarget>
 			<_staticReaction type="a">0</_staticReaction>
 			<_itsSource type="s">GUID 6ee84b66-0e2b-43dc-a589-8bbf56d7cb77</_itsSource>
@@ -11603,12 +11596,12 @@ IS_IN(mode_manuel) %0D
 		</ITransition>
 		<ILabel type="e">
 			<_id type="a">GUID 3cd7a13b-a11e-472c-b3be-4cce91b3f7f7</_id>
-			<_modifiedTimeWeak type="a">10.13.2026::17:25:42</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:25:42</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:16:46</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:16:46</_modifiedTime>
+			<_itsAction>NULL</_itsAction>
 			<AggregatesList type="e">
 				<value>GUID 6ed7d598-821c-47c7-b1e4-7ae1e14d0655</value>
 				<value>GUID 96a8ceeb-7f33-4877-b3ca-3818da80065a</value>
-				<value>GUID 78faa362-3342-467d-b6df-8df81088dc29</value>
 			</AggregatesList>
 		</ILabel>
 		<IInterfaceItemTrigger type="e">
@@ -11625,27 +11618,20 @@ IS_IN(mode_manuel) %0D
 		</IInterfaceItemTrigger>
 		<IGuard type="e">
 			<_id type="a">GUID 96a8ceeb-7f33-4877-b3ca-3818da80065a</_id>
-			<_modifiedTimeWeak type="a">10.13.2026::17:25:42</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:25:42</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:16:46</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:16:46</_modifiedTime>
 			<_body type="a">%0D
 cmd_regulateur == true%0D
 &amp;&amp; speed &gt;= 30%0D
 &amp;&amp; IS_IN(moteur_on)%0D
-&amp;&amp; brakePedal &lt; 0.5%0D
-</_body>
+&amp;&amp; brakePedal &lt; 0.5</_body>
 		</IGuard>
-		<IAction type="e">
-			<_id type="a">GUID 78faa362-3342-467d-b6df-8df81088dc29</_id>
-			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
-			<_body type="a">vitesseConsigne = speed</_body>
-		</IAction>
 		<ITransition type="e">
 			<_id type="a">GUID f92326bd-287a-462c-a1a4-e5f14616cfa9</_id>
 			<_myState type="a">2048</_myState>
 			<_name type="a">transition_38</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:25:51</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:25:51</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:18:11</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:17:50</_modifiedTime>
 			<_itsTarget type="s">GUID 6ee84b66-0e2b-43dc-a589-8bbf56d7cb77</_itsTarget>
 			<_staticReaction type="a">0</_staticReaction>
 			<_itsSource type="s">GUID 039473e1-0a4f-4491-9980-9881059d16d6</_itsSource>
@@ -11655,17 +11641,17 @@ cmd_regulateur == true%0D
 		</ITransition>
 		<ILabel type="e">
 			<_id type="a">GUID 85f92e57-44b3-4fe7-a17b-8c40fd381571</_id>
-			<_modifiedTimeWeak type="a">10.13.2026::17:25:51</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:25:51</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:18:11</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:17:50</_modifiedTime>
+			<_itsAction>NULL</_itsAction>
 			<AggregatesList type="e">
 				<value>GUID 733c462d-7b29-40a9-9cff-c56b81ff8080</value>
 				<value>GUID 1a55dca1-a19e-4d7e-bbdb-47817fcda7dc</value>
-				<value>GUID 9d54977f-1799-4baf-86eb-823cd65ae49e</value>
 			</AggregatesList>
 		</ILabel>
 		<IInterfaceItemTrigger type="e">
 			<_id type="a">GUID 733c462d-7b29-40a9-9cff-c56b81ff8080</_id>
-			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.13.2026::20:18:9</_modifiedTimeWeak>
 			<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
 			<_body type="a">EVAL</_body>
 			<_itsInterfaceItem type="r">
@@ -11677,23 +11663,15 @@ cmd_regulateur == true%0D
 		</IInterfaceItemTrigger>
 		<IGuard type="e">
 			<_id type="a">GUID 1a55dca1-a19e-4d7e-bbdb-47817fcda7dc</_id>
-			<_modifiedTimeWeak type="a">10.13.2026::17:25:51</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:25:51</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:18:11</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:17:50</_modifiedTime>
 			<_body type="a">%0D
 cmd_regulateur == false%0D
 || speed &lt; 30%0D
 || IS_IN(moteur_off)%0D
 || brakePedal &gt;= 0.5%0D
-|| cmd_limiteur == true%0D
-</_body>
+|| cmd_limiteur == true</_body>
 		</IGuard>
-		<IAction type="e">
-			<_id type="a">GUID 9d54977f-1799-4baf-86eb-823cd65ae49e</_id>
-			<_modifiedTimeWeak type="a">10.13.2026::15:17:32</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::15:17:32</_modifiedTime>
-			<_body type="a">cmd_regulateur = false;%0D
-steady=throttle</_body>
-		</IAction>
 		<ITransition type="e">
 			<_id type="a">GUID c6258b66-50a5-4da3-a509-efb26cbae9de</_id>
 			<_myState type="a">2048</_myState>
@@ -12151,8 +12129,8 @@ cmd_limiteur == true%0D
 			<_id type="a">GUID 6af1ee35-431c-4dd9-8701-c0cf59bb871d</_id>
 			<_myState type="a">2048</_myState>
 			<_name type="a">defaulttransition_36</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:15:9</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:15:9</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:6:8</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:6:8</_modifiedTime>
 			<_errorStatus type="a">ErrorItem</_errorStatus>
 			<_itsTarget type="s">GUID d7226a3d-6352-419d-b69b-ffade62d7d27</_itsTarget>
 			<_staticReaction type="a">0</_staticReaction>
@@ -12622,24 +12600,16 @@ cmd_limiteur == true%0D
 		<IState type="e">
 			<_id type="a">GUID fda7a964-76fc-41c8-9175-cd9f75d24635</_id>
 			<_name type="a">contact_off</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:37:42</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:37:42</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:14:35</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:14:35</_modifiedTime>
 			<_parent type="s">GUID 9e03d6ec-bd64-4fe5-91f6-bc60c900c318</_parent>
 			<_defaultTrans type="s"></_defaultTrans>
-			<_entryAction type="p"><IAction type="e">
-				<_id type="a">GUID a92a854c-ecc7-433e-8c21-dc791b9ebfaa</_id>
-				<_myState type="a">4096</_myState>
-				<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-				<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
-				<_body type="a">arreter();</_body>
-			</IAction>
-			</_entryAction>
 		</IState>
 		<IState type="e">
 			<_id type="a">GUID 5ee4a529-9d1e-4997-bf5a-9aa0f3cb7fbc</_id>
 			<_name type="a">contact_on</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:57:3</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:57:3</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:14:42</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:14:42</_modifiedTime>
 			<_parent type="s">GUID 9e03d6ec-bd64-4fe5-91f6-bc60c900c318</_parent>
 			<_defaultTrans type="s">GUID d8eb28bb-f20f-4e94-b81f-98eb7bc6fa2e</_defaultTrans>
 			<_entryAction type="p"><IAction type="e">
@@ -12654,18 +12624,34 @@ cmd_limiteur == true%0D
 		<IState type="e">
 			<_id type="a">GUID 5103f36a-611a-4ee1-b7c5-195f74be34fb</_id>
 			<_name type="a">moteur_off</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::16:21:28</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::16:21:28</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:14:22</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:14:22</_modifiedTime>
 			<_parent type="s">GUID 5ee4a529-9d1e-4997-bf5a-9aa0f3cb7fbc</_parent>
 			<_defaultTrans type="s"></_defaultTrans>
+			<_entryAction type="p"><IAction type="e">
+				<_id type="a">GUID e8c7c985-19d1-49f9-a1d2-b7dd19820109</_id>
+				<_myState type="a">4096</_myState>
+				<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+				<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
+				<_body type="a">arreter()</_body>
+			</IAction>
+			</_entryAction>
 		</IState>
 		<IState type="e">
 			<_id type="a">GUID 24d9a9f5-d902-45b0-b1a1-e9eef910c6f2</_id>
 			<_name type="a">moteur_on</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::16:21:28</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::16:21:28</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::19:58:28</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::19:58:28</_modifiedTime>
 			<_parent type="s">GUID 5ee4a529-9d1e-4997-bf5a-9aa0f3cb7fbc</_parent>
 			<_defaultTrans type="s"></_defaultTrans>
+			<_entryAction type="p"><IAction type="e">
+				<_id type="a">GUID e87f991a-c083-4836-b32d-fd93163a3ae8</_id>
+				<_myState type="a">4096</_myState>
+				<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+				<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
+				<_body type="a">calcul_carburant();</_body>
+			</IAction>
+			</_entryAction>
 		</IState>
 		<IState type="e">
 			<_id type="a">GUID eca7c2e8-ee33-49d0-9573-d3d88d978492</_id>
@@ -12702,16 +12688,16 @@ cmd_limiteur == true%0D
 		<IState type="e">
 			<_id type="a">GUID 109b92c4-9371-45ab-b23e-19317270f3ac</_id>
 			<_name type="a">simulation_du_vehicule</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:22:29</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:22:29</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::19:58:12</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::19:58:12</_modifiedTime>
 			<_parent type="s">GUID c876dff7-5edf-45de-829d-b928f6926f27</_parent>
 			<_defaultTrans type="s"></_defaultTrans>
 			<_entryAction type="p"><IAction type="e">
 				<_id type="a">GUID 5bdccf63-8fab-40f3-abe0-0817487d5988</_id>
 				<_myState type="a">4096</_myState>
-				<_modifiedTimeWeak type="a">10.11.2026::13:49:53</_modifiedTimeWeak>
-				<_modifiedTime type="a">10.11.2026::13:49:53</_modifiedTime>
-				<_body type="a">calcul_vitesse_distance();%0D calcul_carburant();</_body>
+				<_modifiedTimeWeak type="a">10.13.2026::19:58:12</_modifiedTimeWeak>
+				<_modifiedTime type="a">10.13.2026::19:58:12</_modifiedTime>
+				<_body type="a">calcul_vitesse_distance();</_body>
 			</IAction>
 			</_entryAction>
 		</IState>
@@ -12766,10 +12752,19 @@ cmd_limiteur == true%0D
 		<IState type="e">
 			<_id type="a">GUID 039473e1-0a4f-4491-9980-9881059d16d6</_id>
 			<_name type="a">mode_regulateur</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:25:27</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:25:27</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:21:16</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:21:16</_modifiedTime>
 			<_parent type="s">GUID d1e6c5eb-734f-4147-af36-2f5a79489371</_parent>
 			<_defaultTrans type="s">GUID 329784e8-3c2f-4048-b0c8-7c078cf4bcc9</_defaultTrans>
+			<_entryAction type="p"><IAction type="e">
+				<_id type="a">GUID de458d8c-da3b-4015-a4c4-5e594a26fb01</_id>
+				<_myState type="a">4096</_myState>
+				<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+				<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
+				<_body type="a">vitesseConsigne = speed;%0D
+steady = throttle;</_body>
+			</IAction>
+			</_entryAction>
 		</IState>
 		<IState type="e">
 			<_id type="a">GUID c9d7f5cc-6acd-42aa-a5bf-88d9a65cdcac</_id>
@@ -12862,8 +12857,8 @@ cmd_limiteur == true%0D
 		<IState type="e">
 			<_id type="a">GUID cf989ff8-7238-4c93-9521-3ae65bbf8a4f</_id>
 			<_name type="a">limiteur_on</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:36:11</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:36:11</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::20:6:8</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:6:8</_modifiedTime>
 			<_parent type="s">GUID dc819cc5-9fe3-4e7e-b19b-6f1d0d2e6f74</_parent>
 			<_defaultTrans type="s">GUID 6af1ee35-431c-4dd9-8701-c0cf59bb871d</_defaultTrans>
 		</IState>
@@ -13260,9 +13255,9 @@ cmd_limiteur == true%0D
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">statechartdiagram_0</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:59:7</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:56:56</_modifiedTime>
-			<_lastModifiedTime type="a">10.13.2026::18:0:10</_lastModifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::19:58:12</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::20:21:1</_modifiedTime>
+			<_lastModifiedTime type="a">10.13.2026::20:21:44</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -13712,7 +13707,7 @@ cmd_limiteur == true%0D
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.198786 0 0 0.0563638 355.239 641.834 </m_transform>
+			<m_transform type="a">0.198786 0 0 0.0375759 355.239 641.716 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -13733,8 +13728,7 @@ cmd_limiteur == true%0D
 			<m_polygon type="a">4 0 0  0 1060  1096 1060  1096 0  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
-			<frameset type="a">&lt;frameset rows=100%25&gt;
-&lt;frame name=ReactionsListCompartment&gt;</frameset>
+			<frameset type="a">&lt;frameset rows=&gt;</frameset>
 			<nAndLineCount type="a">0</nAndLineCount>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
@@ -13753,8 +13747,6 @@ cmd_limiteur == true%0D
 			<m_displayOption type="a">All</m_displayOption>
 			<m_bShowInherited type="a">0</m_bShowInherited>
 			<m_bOrdered type="a">0</m_bOrdered>
-			<_itemValueOfFontPropertiesMapCount type="a">1</_itemValueOfFontPropertiesMapCount>
-			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 		</CGICompartment>
 		<CGIState type="e">
 			<_id type="a">GUID 04b70584-534f-4849-a190-2a1554ae748f</_id>
@@ -13835,7 +13827,7 @@ cmd_limiteur == true%0D
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.227762 0 0 0.231388 355.239 765.559 </m_transform>
+			<m_transform type="a">0.227762 0 0 0.253143 355.239 742.536 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -13937,7 +13929,7 @@ cmd_contact==false]</m_str>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
 			<m_SourcePort type="a">52 0 </m_SourcePort>
-			<m_TargetPort type="a">59 1060 </m_TargetPort>
+			<m_TargetPort type="a">59 1063 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -14024,7 +14016,7 @@ cmd_contact==false]</m_str>
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.748775 0 0 0.200855 27.232 239.904 </m_transform>
+			<m_transform type="a">0.748775 0 0 0.222656 27.232 239.778 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -14045,7 +14037,8 @@ cmd_contact==false]</m_str>
 			<m_polygon type="a">4 0 0  0 1060  1096 1060  1096 0  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
-			<frameset type="a">&lt;frameset rows=&gt;</frameset>
+			<frameset type="a">&lt;frameset rows=100%25&gt;
+&lt;frame name=ReactionsListCompartment&gt;</frameset>
 			<nAndLineCount type="a">0</nAndLineCount>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
@@ -14064,6 +14057,8 @@ cmd_contact==false]</m_str>
 			<m_displayOption type="a">All</m_displayOption>
 			<m_bShowInherited type="a">0</m_bShowInherited>
 			<m_bOrdered type="a">0</m_bOrdered>
+			<_itemValueOfFontPropertiesMapCount type="a">1</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 		</CGICompartment>
 		<CGIState type="e">
 			<_id type="a">GUID 5653f5fa-9c6f-4426-8ef6-7c225e05836e</_id>
@@ -14081,6 +14076,28 @@ cmd_contact==false]</m_str>
 												<IProperty type="e">
 													<_Name type="a">FitBoxToItsTextuals</_Name>
 													<_Value type="a">False</_Value>
+													<_Type type="a">Bool</_Type>
+												</IProperty>
+												
+											</IRPYRawContainer>
+										</Properties>
+									</IPropertyMetaclass>
+									
+								</IRPYRawContainer>
+							</Metaclasses>
+						</IPropertySubject>
+						
+						<IPropertySubject type="e">
+							<_Name type="a">StatechartDiagram</_Name>
+							<Metaclasses type="c">
+								<IRPYRawContainer type="e">
+									<IPropertyMetaclass type="e">
+										<_Name type="a">State</_Name>
+										<Properties type="c">
+											<IRPYRawContainer type="e">
+												<IProperty type="e">
+													<_Name type="a">ShowReactions</_Name>
+													<_Value type="a">True</_Value>
 													<_Type type="a">Bool</_Type>
 												</IProperty>
 												
@@ -14122,7 +14139,7 @@ cmd_contact==false]</m_str>
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.872555 0 0 0.188034 26.9962 819.757 </m_transform>
+			<m_transform type="a">0.872556 0 0 0.222656 26.9963 782.244 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -14143,6 +14160,8 @@ cmd_contact==false]</m_str>
 			<m_polygon type="a">4 0 0  0 1060  1096 1060  1096 0  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
+			<frameset type="a">&lt;frameset rows=100%25&gt;
+&lt;frame name=ReactionsListCompartment&gt;</frameset>
 			<nAndLineCount type="a">0</nAndLineCount>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
@@ -14151,7 +14170,19 @@ cmd_contact==false]</m_str>
 			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
 			<m_pDefaultComponentRelation type="s"></m_pDefaultComponentRelation>
 			<m_moveAndLineTimeStamp type="a">1.2.1990::0:0:0</m_moveAndLineTimeStamp>
+			<AggregatesList type="e">
+				<value>GUID 3f0bb957-e2c0-489b-959c-8382d38d5fe5</value>
+			</AggregatesList>
 		</CGIState>
+		<CGICompartment type="e">
+			<_id type="a">GUID 3f0bb957-e2c0-489b-959c-8382d38d5fe5</_id>
+			<m_name type="a">Reactions</m_name>
+			<m_displayOption type="a">All</m_displayOption>
+			<m_bShowInherited type="a">0</m_bShowInherited>
+			<m_bOrdered type="a">0</m_bOrdered>
+			<_itemValueOfFontPropertiesMapCount type="a">1</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+		</CGICompartment>
 		<CGITrans type="e">
 			<_id type="a">GUID 562cf41b-96f8-4cd6-82f6-0e0cdebcd052</_id>
 			<m_type type="a">28</m_type>
@@ -14201,9 +14232,9 @@ IS_IN(fonctionelle)%0D
 					<m_position type="a">4 -21 -32  314 -32  314 -16  -21 -16  </m_position>
 					<m_nIdent type="a">0</m_nIdent>
 					<m_bImplicitSetRectPoints type="a">1</m_bImplicitSetRectPoints>
-					<m_transform type="a">0.361194 0 0 3.0625 833.585 1095 </m_transform>
+					<m_transform type="a">0.361194 0 0 3.0625 833.585 1094 </m_transform>
 					<m_nHorizontalSpacing type="a">-12</m_nHorizontalSpacing>
-					<m_nVerticalSpacing type="a">-39</m_nVerticalSpacing>
+					<m_nVerticalSpacing type="a">-33</m_nVerticalSpacing>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
@@ -14256,8 +14287,7 @@ IS_IN(fonctionelle)%0D
 				<CGIText type="e">
 					<m_str type="a">EVAL[%0D
 !IS_IN(fonctionelle) ||%0D
-cmd_contact==false%0D
-]/arreter()</m_str>
+cmd_contact==false]</m_str>
 					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
 					<m_color type="p">
 						<IColor type="e">
@@ -14269,18 +14299,18 @@ cmd_contact==false%0D
 					<m_position type="a">4 -61 -11  223 -11  223 5  -61 5  </m_position>
 					<m_nIdent type="a">0</m_nIdent>
 					<m_bImplicitSetRectPoints type="a">1</m_bImplicitSetRectPoints>
-					<m_transform type="a">0.514084 0 0 4.4375 991.359 1055.81 </m_transform>
-					<m_nHorizontalSpacing type="a">-149</m_nHorizontalSpacing>
-					<m_nVerticalSpacing type="a">-9</m_nVerticalSpacing>
+					<m_transform type="a">0.514084 0 0 4.4375 989.359 1045.81 </m_transform>
+					<m_nHorizontalSpacing type="a">-151</m_nHorizontalSpacing>
+					<m_nVerticalSpacing type="a">-12</m_nVerticalSpacing>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 1094 983  </m_arrow>
+			<m_arrow type="a">1 1094 966  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
 			<m_SourcePort type="a">1036 0 </m_SourcePort>
-			<m_TargetPort type="a">1094 789 </m_TargetPort>
+			<m_TargetPort type="a">1094 651 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -14401,8 +14431,8 @@ cmd_contact==false%0D
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">1</m_line_style>
-			<m_SourcePort type="a">1025 204 </m_SourcePort>
-			<m_TargetPort type="a">1094 203 </m_TargetPort>
+			<m_SourcePort type="a">1025 277 </m_SourcePort>
+			<m_TargetPort type="a">1094 205 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -15920,7 +15950,7 @@ IS_IN(mode_manuel) %0D
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.0721025 0 0 0.253142 679.464 264.497 </m_transform>
+			<m_transform type="a">0.123316 0 0 0.0840512 679.464 250.631 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -16043,7 +16073,7 @@ IS_IN(mode_manuel) %0D
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.160378 0 0 0.253143 880.348 264.496 </m_transform>
+			<m_transform type="a">0.181267 0 0 0.282808 864.1 250.911 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -16064,7 +16094,8 @@ IS_IN(mode_manuel) %0D
 			<m_polygon type="a">4 0 0  0 1060  1096 1060  1096 0  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
-			<frameset type="a">&lt;frameset rows=&gt;</frameset>
+			<frameset type="a">&lt;frameset rows=100%25&gt;
+&lt;frame name=ReactionsListCompartment&gt;</frameset>
 			<nAndLineCount type="a">0</nAndLineCount>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
@@ -16083,6 +16114,8 @@ IS_IN(mode_manuel) %0D
 			<m_displayOption type="a">All</m_displayOption>
 			<m_bShowInherited type="a">0</m_bShowInherited>
 			<m_bOrdered type="a">0</m_bOrdered>
+			<_itemValueOfFontPropertiesMapCount type="a">1</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 		</CGICompartment>
 		<CGITrans type="e">
 			<_id type="a">GUID 66d91c37-284b-4814-941e-2fa53ac8bf90</_id>
@@ -16136,8 +16169,8 @@ IS_IN(mode_manuel) %0D
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">1</m_line_style>
-			<m_SourcePort type="a">793 275 </m_SourcePort>
-			<m_TargetPort type="a">1096 41 </m_TargetPort>
+			<m_SourcePort type="a">840 291 </m_SourcePort>
+			<m_TargetPort type="a">1096 389 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -16202,7 +16235,7 @@ IS_IN(mode_manuel) %0D
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.302521 0 0 0.230469 354.586 132.5 </m_transform>
+			<m_transform type="a">0.267658 0 0 0.206294 387.061 214.817 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -16285,7 +16318,7 @@ IS_IN(mode_manuel) %0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1526 482  1526 544  </m_arrow>
+			<m_arrow type="a">2 1522 495  1522 557  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -16351,7 +16384,7 @@ IS_IN(mode_manuel) %0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1527 483  1527 650  </m_arrow>
+			<m_arrow type="a">2 1523 496  1523 663  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -16413,7 +16446,7 @@ IS_IN(mode_manuel) %0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1747 559  1747 485  </m_arrow>
+			<m_arrow type="a">2 1743 572  1743 498  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -16475,7 +16508,7 @@ IS_IN(mode_manuel) %0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1748 633  1748 463  </m_arrow>
+			<m_arrow type="a">2 1744 646  1744 476  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -16540,7 +16573,7 @@ IS_IN(mode_manuel) %0D
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">1</m_line_style>
-			<m_SourcePort type="a">189 186 </m_SourcePort>
+			<m_SourcePort type="a">240 263 </m_SourcePort>
 			<m_TargetPort type="a">0 234 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
@@ -16588,8 +16621,7 @@ IS_IN(mode_manuel) %0D
 cmd_regulateur == true%0D
 &amp;&amp; speed &gt;= 30%0D
 &amp;&amp; IS_IN(moteur_on)%0D
-&amp;&amp; brakePedal &lt; 0.5%0D
-]/vitesseConsigne = speed</m_str>
+&amp;&amp; brakePedal &lt; 0.5]</m_str>
 					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
 					<m_color type="p">
 						<IColor type="e">
@@ -16598,20 +16630,21 @@ cmd_regulateur == true%0D
 							<m_bgFlag type="a">0</m_bgFlag>
 						</IColor>
 					</m_color>
-					<m_position type="a">4 -3 -19  171 -19  171 77  -3 77  </m_position>
+					<m_position type="a">4 9 -11  172 -11  172 69  9 69  </m_position>
 					<m_nIdent type="a">0</m_nIdent>
 					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
-					<m_transform type="a">1 0 0 1 1356 760 </m_transform>
-					<m_nHorizontalSpacing type="a">-83</m_nHorizontalSpacing>
-					<m_nVerticalSpacing type="a">19</m_nVerticalSpacing>
+					<m_transform type="a">1 0 0 1 1341 517 </m_transform>
+					<m_nHorizontalSpacing type="a">-91</m_nHorizontalSpacing>
+					<m_nVerticalSpacing type="a">5</m_nVerticalSpacing>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
+			<m_arrow type="a">1 1400 503  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
-			<m_SourcePort type="a">1096 99 </m_SourcePort>
-			<m_TargetPort type="a">0 99 </m_TargetPort>
+			<m_SourcePort type="a">922 1063 </m_SourcePort>
+			<m_TargetPort type="a">0 367 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -16659,9 +16692,7 @@ cmd_regulateur == false%0D
 || speed &lt; 30%0D
 || IS_IN(moteur_off)%0D
 || brakePedal &gt;= 0.5%0D
-|| cmd_limiteur == true%0D
-]/cmd_regulateur = false;%0D
-steady=throttle</m_str>
+|| cmd_limiteur == true]</m_str>
 					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
 					<m_color type="p">
 						<IColor type="e">
@@ -16670,20 +16701,21 @@ steady=throttle</m_str>
 							<m_bgFlag type="a">0</m_bgFlag>
 						</IColor>
 					</m_color>
-					<m_position type="a">4 -8 -11  163 -11  163 85  -8 85  </m_position>
+					<m_position type="a">4 -8 -11  158 -11  158 85  -8 85  </m_position>
 					<m_nIdent type="a">0</m_nIdent>
 					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
-					<m_transform type="a">1 0 0 1 506 1120 </m_transform>
-					<m_nHorizontalSpacing type="a">-68</m_nHorizontalSpacing>
-					<m_nVerticalSpacing type="a">16</m_nVerticalSpacing>
+					<m_transform type="a">1 0 0 1 1277 588 </m_transform>
+					<m_nHorizontalSpacing type="a">-20</m_nHorizontalSpacing>
+					<m_nVerticalSpacing type="a">-85</m_nVerticalSpacing>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
+			<m_arrow type="a">1 1268 677  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
-			<m_SourcePort type="a">0 551 </m_SourcePort>
-			<m_TargetPort type="a">1096 551 </m_TargetPort>
+			<m_SourcePort type="a">0 1012 </m_SourcePort>
+			<m_TargetPort type="a">132 1063 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -16770,7 +16802,7 @@ steady=throttle</m_str>
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.794118 0 0 0.222656 133.542 463.75 </m_transform>
+			<m_transform type="a">0.702603 0 0 0.199301 191.491 511.321 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -16893,7 +16925,7 @@ steady=throttle</m_str>
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.794117 0 0 0.230469 142.743 794.999 </m_transform>
+			<m_transform type="a">0.702602 0 0 0.206294 199.632 807.823 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -17015,7 +17047,7 @@ steady=throttle</m_str>
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">3.26829 0 0 0.810811 13.659 219.811 </m_transform>
+			<m_transform type="a">3.26829 0 0 0.810811 13.659 208.811 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_points type="a">4 374 184  538 184  538 221  374 221  </m_points>
 		</CGIFreeShape>
@@ -17079,7 +17111,7 @@ steady=throttle</m_str>
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">1.27407 0 0 1.36364 938.222 113.636 </m_transform>
+			<m_transform type="a">1.27407 0 0 1.36364 938.222 102.636 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_points type="a">4 375 188  510 188  510 210  375 210  </m_points>
 			<m_text type="a">Mode de pilotage</m_text>
@@ -18186,7 +18218,7 @@ cmd_contact==true]</m_str>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
-			<m_SourcePort type="a">1055 1060 </m_SourcePort>
+			<m_SourcePort type="a">1055 1063 </m_SourcePort>
 			<m_TargetPort type="a">921 0 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
@@ -18522,8 +18554,8 @@ cmd_limiteur     == false ||%0D
 					<m_position type="a">4 -69 -24  240 -24  240 24  -69 24  </m_position>
 					<m_nIdent type="a">0</m_nIdent>
 					<m_bImplicitSetRectPoints type="a">1</m_bImplicitSetRectPoints>
-					<m_transform type="a">0.601942 0 0 2.08333 848.53 882 </m_transform>
-					<m_nVerticalSpacing type="a">-47</m_nVerticalSpacing>
+					<m_transform type="a">0.601942 0 0 2.08333 849.53 345 </m_transform>
+					<m_nVerticalSpacing type="a">-49</m_nVerticalSpacing>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
@@ -18658,7 +18690,7 @@ cmd_limiteur == true%0D
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">1</m_line_style>
-			<m_SourcePort type="a">25 110 </m_SourcePort>
+			<m_SourcePort type="a">46 119 </m_SourcePort>
 			<m_TargetPort type="a">609 0 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
@@ -18724,7 +18756,7 @@ cmd_limiteur == true%0D
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.179551 0 0 0.812085 40.9986 167.145 </m_transform>
+			<m_transform type="a">0.179551 0 0 0.820344 40.9986 161.67 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -18833,7 +18865,7 @@ cmd_limiteur == true%0D
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.19202 0 0 0.147651 664.16 871.458 </m_transform>
+			<m_transform type="a">0.19202 0 0 0.149153 664.16 873.146 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -18953,7 +18985,7 @@ cmd_limiteur == true%0D
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.179551 0 0 0.147652 874.612 679.377 </m_transform>
+			<m_transform type="a">0.179551 0 0 0.149154 874.612 679.112 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -19143,7 +19175,7 @@ cmd_limiteur == true%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 1077 560  </m_arrow>
+			<m_arrow type="a">1 1077 565  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -19305,7 +19337,7 @@ cmd_limiteur == true%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 1135 494  </m_arrow>
+			<m_arrow type="a">1 1135 499  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -19371,7 +19403,7 @@ cmd_limiteur == true%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 1077 518  </m_arrow>
+			<m_arrow type="a">1 1077 523  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -19437,7 +19469,7 @@ cmd_limiteur == true%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 1135 455  </m_arrow>
+			<m_arrow type="a">1 1135 460  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -20490,7 +20522,7 @@ cmd_limiteur == true%0D
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.270216 0 0 0.294673 336.037 236.192 </m_transform>
+			<m_transform type="a">0.270216 0 0 0.291706 336.037 243.525 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -20879,7 +20911,7 @@ cmd_limiteur == true%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 827 1161  1128 1161  </m_arrow>
+			<m_arrow type="a">2 827 1164  1128 1164  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -20919,7 +20951,7 @@ cmd_limiteur == true%0D
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">0</m_drawBehavior>
-			<m_transform type="a">3.24263 0 0 4.16753 1001.98 851.448 </m_transform>
+			<m_transform type="a">3.24263 0 0 3.80938 1001.98 869.224 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_position type="a">4 0 0  0 25  25 25  25 0  </m_position>
 			<m_pInheritsFrom type="r">

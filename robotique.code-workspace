@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "./robotique_et_navigation"
+		},
+		{
+			"name": "SSH FS - turtle_bot_3",
+			"uri": "ssh://turtle_bot_3/home/ubuntu/catkin_ws/src/"
+		}
+	],
+	"settings": {
+		"sshfs.configs": [
+			{
+				"name": "turtle_bot_3",
+				"username": "ubuntu",
+				"password": "turtlebot",
+				"host": "192.168.222.135",
+				"root": "/home/ubuntu",
+			}
+		],
+		"stm32cube-ide-clangd.path": "cube"
+	}
+}

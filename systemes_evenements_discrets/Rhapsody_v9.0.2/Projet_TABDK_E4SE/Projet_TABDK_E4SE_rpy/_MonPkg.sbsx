@@ -111,10 +111,10 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">_MonPkg</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:53:35</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.13.2026::17:59:7</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.13.2026::17:53:35</_modifiedTime>
 			<_lastID type="a">15</_lastID>
-			<weakCGTime type="a">10.13.2026::17:53:35</weakCGTime>
+			<weakCGTime type="a">10.13.2026::17:59:7</weakCGTime>
 			<strongCGTime type="a">9.28.2018::8:52:41</strongCGTime>
 			<_defaultComposite type="s">GUID ce1ec9e6-dcba-46da-9bb8-b1ebb5c0fcc5</_defaultComposite>
 			<_eventsBaseID type="a">13401</_eventsBaseID>
@@ -4487,7 +4487,7 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">_SysVehicule</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:57:3</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.13.2026::18:0:10</_modifiedTimeWeak>
 			<_theMainDiagram type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IDiagram</_hm2Class>
@@ -4497,7 +4497,7 @@
 			</_theMainDiagram>
 			<_modifiedTime type="a">10.13.2026::17:53:35</_modifiedTime>
 			<_lastID type="a">143</_lastID>
-			<weakCGTime type="a">10.13.2026::17:57:3</weakCGTime>
+			<weakCGTime type="a">10.13.2026::18:0:10</weakCGTime>
 			<strongCGTime type="a">10.10.2026::19:17:0</strongCGTime>
 			<_itsStateChart type="r">
 				<IHandle type="e">
@@ -10916,10 +10916,10 @@ if (throttle &lt; throttle_repos)          throttle = throttle_repos;</_bodyData
 			<_id type="a">GUID 4144beb1-cce6-4d0c-9a76-d5898dc24f44</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">statechart</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:57:3</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:56:56</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::18:0:10</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::18:0:10</_modifiedTime>
 			<_lastID type="a">82</_lastID>
-			<weakCGTime type="a">10.13.2026::17:57:3</weakCGTime>
+			<weakCGTime type="a">10.13.2026::18:0:10</weakCGTime>
 			<strongCGTime type="a">10.11.2026::16:10:9</strongCGTime>
 			<_itsStateChart type="r">
 				<IHandle type="e">
@@ -10927,7 +10927,7 @@ if (throttle &lt; throttle_repos)          throttle = throttle_repos;</_bodyData
 			</_itsStateChart>
 			<_classModifier type="a">Unspecified</_classModifier>
 			<_defNumber type="a">78</_defNumber>
-			<_version type="a">10.13.2026::19:57:23</_version>
+			<_version type="a">10.13.2026::20:0:10</_version>
 			<_baseVersion type="a">1.2.1990::0:0:0</_baseVersion>
 			<_diagram type="s">GUID 3f57bb6d-c1d7-486b-81b5-20de9ab1601e</_diagram>
 			<AggregatesList type="e">
@@ -11282,8 +11282,8 @@ cmd_contact==false%0D
 			<_id type="a">GUID d3f1126a-4223-48eb-bccd-18e0a81e3c3e</_id>
 			<_myState type="a">2048</_myState>
 			<_name type="a">transition_25</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:40:35</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:40:35</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::17:59:31</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::17:59:31</_modifiedTime>
 			<_itsTarget type="s">GUID 109b92c4-9371-45ab-b23e-19317270f3ac</_itsTarget>
 			<_staticReaction type="a">0</_staticReaction>
 			<_itsSource type="s">GUID 109b92c4-9371-45ab-b23e-19317270f3ac</_itsSource>
@@ -11293,21 +11293,26 @@ cmd_contact==false%0D
 		</ITransition>
 		<ILabel type="e">
 			<_id type="a">GUID 6a310fb7-d28b-487d-a62c-29afface8c16</_id>
-			<_modifiedTimeWeak type="a">10.13.2026::17:40:35</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:40:35</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::17:59:31</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::17:59:31</_modifiedTime>
 			<_itsGuard>NULL</_itsGuard>
 			<_itsAction>NULL</_itsAction>
 			<AggregatesList type="e">
-				<value>GUID 28f6fbf7-d874-4a19-8ec6-26004f035769</value>
+				<value>GUID ea6ecdee-b335-42ae-bb12-fbb972251a2b</value>
 			</AggregatesList>
 		</ILabel>
-		<ITimeout type="e">
-			<_id type="a">GUID 28f6fbf7-d874-4a19-8ec6-26004f035769</_id>
+		<IInterfaceItemTrigger type="e">
+			<_id type="a">GUID ea6ecdee-b335-42ae-bb12-fbb972251a2b</_id>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
 			<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
-			<_body type="a">tm(1000/PARAM_SIMU_freq_rafraichissement)</_body>
-			<_time type="a">1000/PARAM_SIMU_freq_rafraichissement</_time>
-		</ITimeout>
+			<_body type="a">EVAL</_body>
+			<_itsInterfaceItem type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IEvent</_hm2Class>
+					<_hid type="a">GUID 5e7ca910-c385-4868-9aa8-14d0e58491c1</_hid>
+				</IHandle>
+			</_itsInterfaceItem>
+		</IInterfaceItemTrigger>
 		<ITransition type="e">
 			<_id type="a">GUID 0e1c06c4-e38b-4b80-be49-b4e839ccc161</_id>
 			<_myState type="a">2048</_myState>
@@ -12045,8 +12050,8 @@ speed == 0 &amp;&amp; IS_IN(contact_off)</_body>
 			<_id type="a">GUID 05bc0ff4-2913-4343-993d-ca49e3fae8bf</_id>
 			<_myState type="a">2048</_myState>
 			<_name type="a">transition_64</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:11:57</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:11:57</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::18:0:10</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::18:0:10</_modifiedTime>
 			<_itsTarget type="s">GUID 831d93c3-1c45-4d38-9228-6395070f6e0f</_itsTarget>
 			<_staticReaction type="a">0</_staticReaction>
 			<_itsSource type="s">GUID cf989ff8-7238-4c93-9521-3ae65bbf8a4f</_itsSource>
@@ -12056,8 +12061,8 @@ speed == 0 &amp;&amp; IS_IN(contact_off)</_body>
 		</ITransition>
 		<ILabel type="e">
 			<_id type="a">GUID 6eb36438-ae1d-4d05-badc-194befa1fc19</_id>
-			<_modifiedTimeWeak type="a">10.13.2026::17:11:57</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:11:57</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::18:0:10</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::18:0:10</_modifiedTime>
 			<AggregatesList type="e">
 				<value>GUID c8913c11-e542-44b2-85db-573429332731</value>
 				<value>GUID 7255c9bc-b217-4558-a75c-b90ec43f5171</value>
@@ -12078,13 +12083,13 @@ speed == 0 &amp;&amp; IS_IN(contact_off)</_body>
 		</IInterfaceItemTrigger>
 		<IGuard type="e">
 			<_id type="a">GUID 7255c9bc-b217-4558-a75c-b90ec43f5171</_id>
-			<_modifiedTimeWeak type="a">10.13.2026::17:11:57</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:11:57</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.13.2026::18:0:10</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::18:0:10</_modifiedTime>
 			<_body type="a">%0D
 cmd_limiteur     == false ||%0D
  cmd_regulateur == true ||%0D
  ((vitesseConsigne-speed)%0D
-   &lt; 10 &amp;&amp; accelPedal &gt; 5)%0D
+   &lt; 10 &amp;&amp; accelPedal &gt; 7)%0D
 </_body>
 		</IGuard>
 		<IAction type="e">
@@ -13255,9 +13260,9 @@ cmd_limiteur == true%0D
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">statechartdiagram_0</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::17:53:35</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">10.13.2026::17:59:7</_modifiedTimeWeak>
 			<_modifiedTime type="a">10.13.2026::17:56:56</_modifiedTime>
-			<_lastModifiedTime type="a">10.13.2026::17:57:23</_lastModifiedTime>
+			<_lastModifiedTime type="a">10.13.2026::18:0:10</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -13609,6 +13614,9 @@ cmd_limiteur == true%0D
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
 			<nAndLineCount type="a">11</nAndLineCount>
+			<andLinePoly type="a">2 891 189  651 189  </andLinePoly>
+			<andLinePoly type="a">2 891 0  891 189  </andLinePoly>
+			<andLinePoly type="a">2 1096 189  891 189  </andLinePoly>
 			<andLinePoly type="a">2 314 565  314 0  </andLinePoly>
 			<andLinePoly type="a">2 0 565  314 565  </andLinePoly>
 			<andLinePoly type="a">2 651 565  651 189  </andLinePoly>
@@ -13616,9 +13624,6 @@ cmd_limiteur == true%0D
 			<andLinePoly type="a">2 651 565  1096 565  </andLinePoly>
 			<andLinePoly type="a">2 314 1060  314 565  </andLinePoly>
 			<andLinePoly type="a">2 651 1060  651 565  </andLinePoly>
-			<andLinePoly type="a">2 895 189  1096 189  </andLinePoly>
-			<andLinePoly type="a">2 895 0  895 189  </andLinePoly>
-			<andLinePoly type="a">2 651 189  895 189  </andLinePoly>
 			<andLinePoly type="a">2 651 189  651 0  </andLinePoly>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
@@ -13626,7 +13631,7 @@ cmd_limiteur == true%0D
 			</m_pInheritsFrom>
 			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
 			<m_pDefaultComponentRelation type="s"></m_pDefaultComponentRelation>
-			<m_moveAndLineTimeStamp type="a">10.13.2026::19:36:11</m_moveAndLineTimeStamp>
+			<m_moveAndLineTimeStamp type="a">10.13.2026::19:59:7</m_moveAndLineTimeStamp>
 		</CGIState>
 		<CGIState type="e">
 			<_id type="a">GUID 1e9a9114-c83f-48eb-b4dd-e81840f94cdf</_id>
@@ -15358,7 +15363,7 @@ cmd_contact==false%0D
 			<m_direction type="a">' '</m_direction>
 			<m_rpn type="p">
 				<CGIText type="e">
-					<m_str type="a">tm(1000/PARAM_SIMU_freq_rafraichissement)</m_str>
+					<m_str type="a">EVAL</m_str>
 					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
 					<m_color type="p">
 						<IColor type="e">
@@ -15370,9 +15375,9 @@ cmd_contact==false%0D
 					<m_position type="a">4 -122 -11  172 -11  172 5  -122 5  </m_position>
 					<m_nIdent type="a">0</m_nIdent>
 					<m_bImplicitSetRectPoints type="a">1</m_bImplicitSetRectPoints>
-					<m_transform type="a">0.948981 0 0 1.125 1654.78 238.375 </m_transform>
-					<m_nHorizontalSpacing type="a">-132</m_nHorizontalSpacing>
-					<m_nVerticalSpacing type="a">-10</m_nVerticalSpacing>
+					<m_transform type="a">0.241497 0 0 1.125 1675.46 242.375 </m_transform>
+					<m_nHorizontalSpacing type="a">-25</m_nHorizontalSpacing>
+					<m_nVerticalSpacing type="a">-6</m_nVerticalSpacing>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
@@ -18504,7 +18509,7 @@ speed == 0 &amp;&amp; IS_IN(contact_off)]</m_str>
 cmd_limiteur     == false ||%0D
  cmd_regulateur == true ||%0D
  ((vitesseConsigne-speed)%0D
-   &lt; 10 &amp;&amp; accelPedal &gt; 5)%0D
+   &lt; 10 &amp;&amp; accelPedal &gt; 7)%0D
 ]/cmd_limiteur = false;</m_str>
 					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
 					<m_color type="p">
@@ -19840,7 +19845,7 @@ cmd_limiteur == true%0D
 					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_AdditionalLabel>
-			<m_polygon type="a">4 895 0  895 189  651 189  651 0  </m_polygon>
+			<m_polygon type="a">4 891 0  891 189  651 189  651 0  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
 			<nAndLineCount type="a">0</nAndLineCount>
@@ -20416,7 +20421,7 @@ cmd_limiteur == true%0D
 					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_AdditionalLabel>
-			<m_polygon type="a">4 895 0  895 189  1096 189  1096 0  </m_polygon>
+			<m_polygon type="a">4 891 0  891 189  1096 189  1096 0  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
 			<nAndLineCount type="a">0</nAndLineCount>

@@ -1,4 +1,5 @@
 <launch>
     <rosparam command="load" file="$(find TABDK)/config/params.yaml" />
+    <node name = "key_input_node" pkg = "TABDK" type = "key_input_node" output = "screen" />
     <node name = "controleur" pkg = "TABDK" type = "controleur" output = "screen" />
 </launch>

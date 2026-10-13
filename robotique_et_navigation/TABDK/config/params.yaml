@@ -1,5 +1,5 @@
   frequence    : 5
-  linear_speed : 0.10
+  linear_speed : 0.02
   move_fwd_tm : 3000
   move_bwd_tm : 4000
   move_stp_tm : 2000

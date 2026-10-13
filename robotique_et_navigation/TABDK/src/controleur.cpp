@@ -3,6 +3,7 @@
 #include <geometry_msgs/Twist.h>
 #include <ros/ros.h>
 #include <std_msgs/String.h>
+#include "std_msgs/Int8.h"
 #include <string>
 
 #define FREQUENCY 5
@@ -38,10 +39,11 @@ enum RobotState {
 
 enum RobotMode {
   AUTO,
-  MANUAL
+  MANUAL,
+  PAUSE,
 };
 
-enum Direction {
+enum Arrow {
   NONE,
   UP,
   DOWN,
@@ -51,23 +53,23 @@ enum Direction {
 
 struct KeyboardInputs {
   bool change_mode;
-  Direction direction;
-  bool stop;
+  Arrow direction;
+  bool play_pause;
 };
 
 #define DEFAULT_STATE FORWARD
 #define DEFAULT_MODE AUTO
 
 RobotState current_state = DEFAULT_STATE;
+RobotState previous_state = DEFAULT_STATE;
 RobotMode current_mode = DEFAULT_MODE;
+RobotMode previous_mode = DEFAULT_MODE;
 int ticks_counter = 0;
 
 //autres variables globales
-Publisher pub_msg;
 Publisher pub_vel;
 Subscriber sub_keyboard;
 
-String msg;
 Twist vel;
 int move_counter = 0;
 int move_fwd_tm = MOVE_FWD_TM;
@@ -86,26 +88,31 @@ int ms_to_ticks(int ms) {
   return frequence * (ms / 1000);
 }
 
-void keyboardCallback(const String::ConstPtr &msg){
-  ROS_INFO("Keyboard input : %d", msg->data);
-  switch (msg->data) {
+void keyboardCallback(const Int8::ConstPtr &msg){
+  int key = msg->data;
+  //ROS_INFO("Keyboard input : %d", key);
+  switch (key) {
     case KEY_M:
       keyboard_inputs.change_mode = true;
       break;
     case KEY_UP:
+      ROS_INFO("UP key received");
       keyboard_inputs.direction = UP;
       break;
     case KEY_DOWN:
+      ROS_INFO("DOWN key received");
       keyboard_inputs.direction = DOWN;
       break;
     case KEY_LEFT:
+      ROS_INFO("LEFT key received");
       keyboard_inputs.direction = LEFT;
       break;
     case KEY_RIGHT:
+      ROS_INFO("RIGHT key received");
       keyboard_inputs.direction = RIGHT;
       break;
     case KEY_SPACE:
-      keyboard_inputs.stop = true;
+      keyboard_inputs.play_pause = 1;
       break;
     default:
       break;
@@ -113,99 +120,18 @@ void keyboardCallback(const String::ConstPtr &msg){
 }
 
 void stop() {
-  ROS_INFO("Stop");
   vel.linear.x = 0;
   pub_vel.publish(vel);
 }
 
 void forward(double v) {
-  ROS_INFO("Forward : %2f", v);
   vel.linear.x = v;
   pub_vel.publish(vel);
 }
 
 void backward(double v) {
-  ROS_INFO("Backward : -%2f", v);
   vel.linear.x = -v;
   pub_vel.publish(vel);
-}
-
-void update_Mode() {
-  switch(current_mode) {
-    case AUTO:
-      if (keyboard_inputs.change_mode) {
-        current_mode = MANUAL;
-      }
-      break;
-    case MANUAL:
-      if (keyboard_inputs.change_mode) {
-        current_mode = AUTO;
-      }
-      break;
-    default:
-      current_mode = DEFAULT_MODE;
-      break;
-  }
-  keyboard_inputs.change_mode = false;
-}
-
-void update_FSM_auto() {
-  switch(current_state) {
-    case FORWARD:
-      if (ms_to_ticks(move_fwd_tm) == ticks_counter) {
-        ticks_counter = 0;
-        current_state = STOP;
-      }
-      break;
-    case STOP:
-      if (ms_to_ticks(move_stp_tm) == ticks_counter) {
-        ticks_counter = 0;
-        current_state = BACKWARD;
-      }
-      break;
-    case BACKWARD:
-      if (ms_to_ticks(move_bwd_tm) == ticks_counter) {
-        ticks_counter = 0;
-        current_state = FORWARD;
-      }
-      break;
-    default:
-      current_state = DEFAULT_STATE;
-      break;
-  }
-}
-
-void update_FSM_manual() {
-  if (keyboard_inputs.stop) {
-    current_state = STOP;
-    return;
-  }
-
-  switch (keyboard_inputs.direction) {
-    case UP:
-      current_state = FORWARD;
-      break;
-    case DOWN:
-      current_state = BACKWARD;
-      break;
-    default:
-      break;
-  }
-  keyboard_inputs.stop = false;
-  keyboard_inputs.direction = NONE;
-}
-
-void update_FSM() {
-  switch(current_mode) {
-    case AUTO:
-      update_FSM_auto();
-      break;
-    case MANUAL:
-      update_FSM_manual();
-      break;
-    default:
-      break;
-  }
 }
 
 void apply_state() {
@@ -225,9 +151,115 @@ void apply_state() {
   }
 }
 
-void send_msg(String msg) {
-  ROS_INFO("Publisher : %s", msg.data.c_str());
-  pub_msg.publish(msg);
+void update_Mode() {
+  switch(current_mode) {
+    case AUTO:
+      if (keyboard_inputs.change_mode) {
+        previous_mode = current_mode;
+        current_mode = MANUAL;
+        ROS_INFO("Switching to MANUAL mode");
+        // reset
+        current_state = STOP;
+        keyboard_inputs.direction = NONE;
+      } else if (keyboard_inputs.play_pause) {
+        previous_mode = current_mode;
+        current_mode = PAUSE;
+        ROS_INFO("Switching to PAUSE mode");
+      }
+      break;
+
+    case MANUAL:
+      if (keyboard_inputs.change_mode) {
+        previous_mode = current_mode;
+        current_mode = AUTO;
+        ROS_INFO("Switching to AUTO mode");
+        // reset
+        current_state = DEFAULT_STATE;
+        ticks_counter = 0;
+      } else if (keyboard_inputs.play_pause) {
+        previous_mode = current_mode;
+        current_mode = PAUSE;
+        ROS_INFO("Switching to PAUSE mode");
+      }
+      break;
+
+    case PAUSE:
+      if (keyboard_inputs.play_pause) {
+        current_mode = previous_mode;
+        ROS_INFO("Switching to %s mode", (current_mode == AUTO) ? "AUTO" : "MANUAL");
+      }
+      break;
+
+    default:
+      current_mode = DEFAULT_MODE;
+      break;
+  }
+
+  keyboard_inputs.change_mode = false;
+  keyboard_inputs.play_pause = false;
+}
+
+void update_FSM_auto() {
+  switch(current_state) {
+    case FORWARD:
+      if (ms_to_ticks(move_fwd_tm) == ticks_counter) {
+        ROS_INFO("Switching to STOP state");
+        ticks_counter = 0;
+        current_state = STOP;
+      }
+      break;
+    case STOP:
+      if (ms_to_ticks(move_stp_tm) == ticks_counter) {
+        ROS_INFO("Switching to BACKWARD state");
+        ticks_counter = 0;
+        current_state = BACKWARD;
+      }
+      break;
+    case BACKWARD:
+      if (ms_to_ticks(move_bwd_tm) == ticks_counter) {
+        ROS_INFO("Switching to FORWARD state");
+        ticks_counter = 0;
+        current_state = FORWARD;
+      }
+      break;
+    default:
+      current_state = DEFAULT_STATE;
+      break;
+  }
+  ticks_counter++;
+}
+
+void update_FSM_manual() { 
+  switch (keyboard_inputs.direction) {
+    case UP:
+      current_state = FORWARD;
+      break;
+    case DOWN:
+      current_state = BACKWARD;
+      break;
+    default:
+      break;
+  }
+  keyboard_inputs.direction = NONE;
+}
+
+
+void update_FSM() {
+  switch(current_mode) {
+    case AUTO:
+      update_FSM_auto();
+      apply_state();
+      break;
+    case MANUAL:
+      update_FSM_manual();
+      apply_state();
+      break;
+    case PAUSE:
+      stop();
+      break;
+    default:
+      break;
+  }
 }
 
 int main(int argc, char **argv) {
@@ -242,9 +274,6 @@ int main(int argc, char **argv) {
   nh.getParam("move_bwd_tm", move_bwd_tm);
   nh.getParam("move_stp_tm", move_stp_tm);
 
-  msg.data = "un petit log";
-  pub_msg = nh.advertise<String>("/log", 1000);
-
   pub_vel = nh.advertise<Twist>("/cmd_vel", 1000);
 
   sub_keyboard = nh.subscribe("/keyboard_input", 1000, keyboardCallback);
@@ -252,13 +281,9 @@ int main(int argc, char **argv) {
   Rate loop_rate(frequence);
 
   while (ok()) {
-
-    // send_msg(msg);
     
     update_Mode();
     update_FSM();
-    apply_state();
-    ticks_counter++;
 
     spinOnce();
     loop_rate.sleep();

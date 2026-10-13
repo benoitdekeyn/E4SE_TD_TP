@@ -145,7 +145,9 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/TABDK_node.cpp)
 add_executable(controleur src/controleur.cpp)
+add_executable(key_input_node src/key_input_node.cpp)
 add_dependencies(controleur ${catkin_EXPORTED_TARGETS})
+add_dependencies(key_input_node ${catkin_EXPORTED_TARGETS})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -162,6 +164,7 @@ add_dependencies(controleur ${catkin_EXPORTED_TARGETS})
 #   ${catkin_LIBRARIES}
 # )
 target_link_libraries(controleur ${catkin_LIBRARIES})
+target_link_libraries(key_input_node ${catkin_LIBRARIES})
 
 #############
 ## Install ##

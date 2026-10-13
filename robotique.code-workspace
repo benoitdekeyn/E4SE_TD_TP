@@ -5,7 +5,7 @@
 		},
 		{
 			"name": "SSH FS - turtle_bot_3",
-			"uri": "ssh://turtle_bot_3/home/ubuntu/catkin_ws/src/"
+			"uri": "ssh://turtle_bot_3/home/ubuntu"
 		}
 	],
 	"settings": {

@@ -426,9 +426,9 @@
 				</Subjects>
 			</IPropertyContainer>
 			</_properties>
-			<_name type="a">HelloWorld2</_name>
-			<_modifiedTimeWeak type="a">10.11.2026::15:15:39</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.11.2026::15:15:39</_modifiedTime>
+			<_name type="a">Projet_TABDK_E4SE</_name>
+			<_modifiedTimeWeak type="a">10.13.2026::12:13:36</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.13.2026::12:13:36</_modifiedTime>
 			<_lastID type="a">4</_lastID>
 			<_UserColors type="w">
 				<IRPYRawContainer type="e">
@@ -966,8 +966,8 @@
 			</_properties>
 			<_name type="a">ClassDiagram</_name>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.11.2026::15:16:49</_modifiedTime>
-			<_lastModifiedTime type="a">10.11.2026::15:16:49</_lastModifiedTime>
+			<_modifiedTime type="a">10.13.2026::12:13:40</_modifiedTime>
+			<_lastModifiedTime type="a">10.13.2026::12:13:40</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -1223,7 +1223,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2152</m_drawBehavior>
-			<m_transform type="a">0.402166 0 0 0.975936 221.894 -252.879 </m_transform>
+			<m_transform type="a">0.402166 0 0 1.09715 221.894 -292.732 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -1526,7 +1526,7 @@
 							<_hm2Class type="a">IAttribute</_hm2Class>
 							<_hsubsystem type="a">_MonPkg</_hsubsystem>
 							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">throttle_repos</_hname>
+							<_hname type="a">PARAM_SIMU_Ki_regulateur</_hname>
 							<_hid type="a">GUID 499979cf-bdef-41c1-ba3d-69fac4701d94</_hid>
 						</IHandle>
 					
@@ -1548,9 +1548,39 @@
 							<_hid type="a">GUID 913d664a-3aac-42bd-a681-40ecc0f68edb</_hid>
 						</IHandle>
 					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">Ki_regulateur</_hname>
+							<_hid type="a">GUID 4849f7e3-a2c7-415d-94ff-26ea803e2f1d</_hid>
+						</IHandle>
+					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">Kp_regulateur</_hname>
+							<_hid type="a">GUID 9e81e5e0-3438-4fc6-b126-fbc147bf1a31</_hid>
+						</IHandle>
+					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">throttle_repos</_hname>
+							<_hid type="a">GUID 3e3f108c-1130-421d-95d5-932d06469b6c</_hid>
+						</IHandle>
+					
 				</IRPYRawContainer>
 			</Items>
-			<_itemValueOfFontPropertiesMapCount type="a">31</_itemValueOfFontPropertiesMapCount>
+			<_itemValueOfFontPropertiesMapCount type="a">34</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
@@ -1589,7 +1619,8 @@
 			<m_displayOption type="a">All</m_displayOption>
 			<m_bShowInherited type="a">0</m_bShowInherited>
 			<m_bOrdered type="a">0</m_bOrdered>
-			<_itemValueOfFontPropertiesMapCount type="a">19</_itemValueOfFontPropertiesMapCount>
+			<_itemValueOfFontPropertiesMapCount type="a">20</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>

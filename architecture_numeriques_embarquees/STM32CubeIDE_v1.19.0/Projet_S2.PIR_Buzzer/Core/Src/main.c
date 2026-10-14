@@ -54,7 +54,7 @@
 volatile bool mode = HOME;
 volatile bool buzzer = false;
 volatile bool alarm = OFF;
-volatile bool intrusion_detectee = false;
+volatile bool presence_detectee = false;
 volatile bool falling_edge_detected = false;
 volatile int blink_counter = 0;
 
@@ -121,9 +121,9 @@ int main(void)
 		alarm = OFF;
 	}
 	if ( mode == AWAY) {
-		if (intrusion_detectee) {
+		if (presence_detectee) {
 			alarm = ON;
-			intrusion_detectee = false;
+			presence_detectee = false;
 		}
 	}
 
@@ -207,27 +207,35 @@ void update_LED_alarme() {
 	}
 }
 
+// INterruption des GPIO
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	if (GPIO_Pin == BTN_Pin && !falling_edge_detected){
-		falling_edge_detected = true;
-		__HAL_TIM_SET_COUNTER(&htim5, 0);
+	// Bouton avec Debounce
+	if (GPIO_Pin == BTN_Pin)
+	{
+		if (!falling_edge_detected) {
+			falling_edge_detected = true;
+			__HAL_TIM_SET_COUNTER(&htim5, 0);
+		}
 	}
-	if (GPIO_Pin == PIR_Pin){
+	// PIR mouvement détecté
+	if (GPIO_Pin == PIR_Pin)
+	{
 		if (mode == AWAY){
-			intrusion_detectee = true;
+			presence_detectee = true;
 		}
 	}
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	// TIM 5/ Bouton debounce 50ms
+	// TIM 5 -> PER = 50ms pour le debounce et compter des periodes de clignotement du buzzer et de la LED d'alarme
 	if (htim->Instance == TIM5)
 	{
 		debounce_filter();
 		update_LED_alarme();
 
 	}
+	// TIM 2 -> PER = 4s pour l'échantillonnage des capteurs
 	if (htim->Instance == TIM2)
 	{
 		HAL_GPIO_TogglePin(BLUE_GPIO_Port, BLUE_Pin);

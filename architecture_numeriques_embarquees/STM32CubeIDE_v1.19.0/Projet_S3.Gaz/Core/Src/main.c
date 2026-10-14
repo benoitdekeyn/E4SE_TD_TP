@@ -24,7 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stdbool.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,6 +34,13 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define HOME true
+#define AWAY false
+
+#define FREQ_TIM5 20
+#define FREQ_BLINK_ALARM_GAZ 4
+#define FREQ_BLINK_ALARM_INTRUSION 2
+#define SEUIL_GAZ 3000
 
 /* USER CODE END PD */
 
@@ -45,6 +52,16 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+volatile bool mode = HOME;
+volatile bool buzzer = false;
+volatile bool falling_edge_detected = false;
+volatile bool presence_detectee = false;
+volatile bool alarme_gaz = false;
+volatile bool alarme_intrusion = false;
+volatile bool bouton_appuye = false;
+volatile int blink_counter_alarm_gaz = 0;
+volatile int blink_counter_alarm_intrusion = 0;
+volatile int gaz_value = 0;
 
 /* USER CODE END PV */
 
@@ -93,7 +110,10 @@ int main(void)
   MX_TIM5_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_TIM_Base_Start_IT(&htim5);
+  HAL_TIM_Base_Start_IT(&htim2);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+  HAL_ADC_Start(&hadc1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -103,7 +123,35 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+	// Machine à état avec HOME et AWAY
+	if (mode == HOME) {
+		if(bouton_appuye) {
+			bouton_appuye = false;
+			mode = AWAY;
+		}
+	}
+	if ( mode == AWAY) {
+		if(bouton_appuye) {
+			bouton_appuye = false;
+			mode = HOME;
+			alarme_intrusion = false;
+			buzzer = false;
+			HAL_GPIO_WritePin(YELLOW_GPIO_Port, YELLOW_Pin, 0);
+		}
+		if (presence_detectee) {
+			alarme_intrusion = true;
+			presence_detectee = false;
+		}
+	}
+
+	if (buzzer) {
+		HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+	} else {
+		HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
+	}
   }
+
   /* USER CODE END 3 */
 }
 
@@ -154,6 +202,79 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+void debounce_filter() {
+	if (falling_edge_detected && !HAL_GPIO_ReadPin(BTN_GPIO_Port, BTN_Pin)) {
+		bouton_appuye = true;
+		falling_edge_detected = false;
+	}
+}
+
+void update_cycle_alarme_intrusion() {
+	if (alarme_intrusion == true) {
+		blink_counter_alarm_intrusion ++;
+		if (blink_counter_alarm_intrusion == FREQ_TIM5/(2*FREQ_BLINK_ALARM_INTRUSION)) {
+			HAL_GPIO_TogglePin(YELLOW_GPIO_Port, YELLOW_Pin);
+			buzzer = !buzzer;
+			blink_counter_alarm_intrusion = 0;
+		}
+	}
+}
+
+void update_cycle_alarme_gaz() {
+	if (alarme_gaz == true) {
+		blink_counter_alarm_gaz ++;
+		if (blink_counter_alarm_gaz == FREQ_TIM5/(2*FREQ_BLINK_ALARM_GAZ)) {
+			HAL_GPIO_TogglePin(RGB_ROUGE_GPIO_Port, RGB_ROUGE_Pin);
+			buzzer = !buzzer;
+			blink_counter_alarm_gaz = 0;
+		}
+	}
+}
+
+void update_mesure_gaz() {
+	gaz_value = HAL_ADC_GetValue(&hadc1);
+	if (gaz_value >= SEUIL_GAZ) {
+		alarme_gaz = true;
+	} else {
+		alarme_gaz = false;
+	}
+}
+// INterruption des GPIO
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	// Bouton avec Debounce
+	if (GPIO_Pin == BTN_Pin)
+	{
+		if (!falling_edge_detected) {
+			falling_edge_detected = true;
+			__HAL_TIM_SET_COUNTER(&htim5, 0);
+		}
+	}
+	// PIR mouvement détecté
+	if (GPIO_Pin == PIR_Pin)
+	{
+		if (mode == AWAY){
+			presence_detectee = true;
+		}
+	}
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	// TIM 5 -> PER = 50ms pour le debounce et compter des periodes de clignotement du buzzer et de la LED d'alarme
+	if (htim->Instance == TIM5)
+	{
+		debounce_filter();
+		update_cycle_alarme_gaz();
+		update_cycle_alarme_intrusion();
+
+	}
+	// TIM 2 -> PER = 4s pour l'échantillonnage des capteurs
+	if (htim->Instance == TIM2)
+	{
+		HAL_GPIO_TogglePin(BLUE_GPIO_Port, BLUE_Pin);
+		update_mesure_gaz();
+	}
+}
 /* USER CODE END 4 */
 
 /**

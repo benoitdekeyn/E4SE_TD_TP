@@ -57,6 +57,10 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define RGB_ROUGE_Pin GPIO_PIN_6
+#define RGB_ROUGE_GPIO_Port GPIOA
+#define RGB_VERTE_Pin GPIO_PIN_7
+#define RGB_VERTE_GPIO_Port GPIOA
 #define BLUE_Pin GPIO_PIN_10
 #define BLUE_GPIO_Port GPIOB
 #define BTN_Pin GPIO_PIN_8
@@ -67,6 +71,8 @@ void Error_Handler(void);
 #define PIR_EXTI_IRQn EXTI3_IRQn
 #define YELLOW_Pin GPIO_PIN_4
 #define YELLOW_GPIO_Port GPIOB
+#define RGB_BLEUE_Pin GPIO_PIN_6
+#define RGB_BLEUE_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

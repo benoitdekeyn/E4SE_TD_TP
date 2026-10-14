@@ -50,14 +50,24 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, BLUE_Pin|YELLOW_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, RGB_ROUGE_Pin|RGB_VERTE_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : BLUE_Pin YELLOW_Pin */
-  GPIO_InitStruct.Pin = BLUE_Pin|YELLOW_Pin;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, BLUE_Pin|YELLOW_Pin|RGB_BLEUE_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : RGB_ROUGE_Pin RGB_VERTE_Pin */
+  GPIO_InitStruct.Pin = RGB_ROUGE_Pin|RGB_VERTE_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : BLUE_Pin */
+  GPIO_InitStruct.Pin = BLUE_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  HAL_GPIO_Init(BLUE_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : BTN_Pin */
   GPIO_InitStruct.Pin = BTN_Pin;
@@ -70,6 +80,13 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(PIR_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : YELLOW_Pin RGB_BLEUE_Pin */
+  GPIO_InitStruct.Pin = YELLOW_Pin|RGB_BLEUE_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI3_IRQn, 0, 0);

@@ -35,8 +35,6 @@
 
 /* USER CODE END PTD */
 
-// I want to d  
-
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define HOME true
@@ -46,8 +44,8 @@
 // JAUNE     | D5  | PB_4  | OUTPUT PULLDOWN
 // BLEUE     | D6  | PB_10 | OUTPUT PULLDOWN
 // BOUTON    | D7  | PB_3  | INPUT  PULLDOWN
-// PIR       | D8  | PA_9  | INPUT  PULLDOWN
-// SERVO     | D9  | PC_7  | TIMER 1 - CHANNEL 2
+// SERVO     | D8  | PA_9  | TIMER 1 - CHANNEL 2
+// PIR       | D9  | PC_7  | INPUT  PULLDOWN
 // RGB_BLEU  | D10 | PB_6  | OUTPUT PULLDOWN
 // RGB_VERT  | D11 | PA_7  | OUTPUT PULLDOWN
 // RGB_ROUGE | D12 | PA_6  | OUTPUT PULLDOWN
@@ -140,7 +138,7 @@ int main(void)
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(TIMER_DEBOUNCE);
-  HAL_TIM_OC_Start_IT(TIMER_CAPTEURS, ADC_CHANNEL);
+  HAL_TIM_Base_Start_IT(TIMER_CAPTEURS);
   HAL_TIM_PWM_Start(TIMER_BUZZER, BUZZER_CHANNEL);
   HAL_TIM_PWM_Start(TIMER_SERVO, SERVO_CHANNEL);
   HAL_ADC_Start(ADC_GAZ);
@@ -179,8 +177,7 @@ int main(void)
         buzzer = false;
         HAL_GPIO_WritePin(YELLOW_GPIO_Port, YELLOW_Pin, 0);
         printf("Je rentre à la maison\r\n");
-      }
-      if (presence_detectee) {
+      } else if (presence_detectee) {
         alarme_intrusion = true;
         presence_detectee = false;
         printf("Intrusion detectee !\r\n");
@@ -307,24 +304,20 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	}
 }
 
-void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
-{
-	if (htim == TIMER_CAPTEURS)
-	{
-		HAL_GPIO_TogglePin(BLUE_GPIO_Port, BLUE_Pin);
-		update_mesure_gaz();
-		printf("                                      VALEURS CAPTEURS: gaz = %d\r\n", gaz_value);
-	}
-}
-
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	if (htim == TIMER_DEBOUNCE)
+  if (htim == TIMER_DEBOUNCE)
   {
     debounce_filter();
     update_cycle_alarme_gaz();
     update_cycle_alarme_intrusion();
-
+    
+  }
+  if (htim == TIMER_CAPTEURS)
+  {
+    HAL_GPIO_TogglePin(BLUE_GPIO_Port, BLUE_Pin);
+    update_mesure_gaz();
+    printf("                                      VALEURS CAPTEURS: gaz = %d\r\n", gaz_value);
   }
 }
 /* USER CODE END 4 */

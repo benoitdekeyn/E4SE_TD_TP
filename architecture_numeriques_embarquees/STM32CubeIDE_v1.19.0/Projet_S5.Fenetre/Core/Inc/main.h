@@ -69,6 +69,9 @@ void Error_Handler(void);
 #define BTN_Pin GPIO_PIN_8
 #define BTN_GPIO_Port GPIOA
 #define BTN_EXTI_IRQn EXTI9_5_IRQn
+#define BTN_FEN_Pin GPIO_PIN_10
+#define BTN_FEN_GPIO_Port GPIOA
+#define BTN_FEN_EXTI_IRQn EXTI15_10_IRQn
 #define YELLOW_Pin GPIO_PIN_4
 #define YELLOW_GPIO_Port GPIOB
 #define RGB_BLEUE_Pin GPIO_PIN_6

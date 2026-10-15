@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "dma.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -26,7 +27,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdbool.h"
-#include <string.h>
 #include <stdio.h>
 /* USER CODE END Includes */
 
@@ -37,9 +37,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define HOME true
-#define AWAY false
-
+// BTN_FEN   | D2  | PA_10 | INPUT PULLUP
 // BUZZER    | D4  | PB_5  | TIMER 3 - CHANNEL 2
 // JAUNE     | D5  | PB_4  | OUTPUT PULLDOWN
 // BLEUE     | D6  | PB_10 | OUTPUT PULLDOWN
@@ -55,18 +53,30 @@
 #define TIMER_CAPTEURS (&htim2)
 #define TIMER_BUZZER (&htim3)
 #define TIMER_DEBOUNCE (&htim5)
-#define ADC_GAZ (&hadc1)
 #define SERVO_CHANNEL TIM_CHANNEL_2
 #define BUZZER_CHANNEL TIM_CHANNEL_2
 
+#define ADC_CAPTEURS (&hadc1)
+#define NBR_CAPTEURS_ADC 2
+
 #define TIMER_DEBOUNCE_FREQ 20
-#define TIMER_SERVO_FREQ 50
+#define TIMER_SERVO_FREQ 2500000
 #define TIMER_CAPTEURS_FREQ 0.5
 #define TIMER_BUZZER_FREQ 440
 
 #define FREQ_BLINK_ALARM_GAZ 4
 #define FREQ_BLINK_ALARM_INTRUSION 2
-#define SEUIL_GAZ 3000
+#define SEUIL_GAZ 1700
+#define SEUIL_PLUIE 3000
+
+#define FREQ_PWM_SERVO 50
+#define SERVO_0_DEG_MS 0.5
+#define SERVO_180_DEG_MS 2.5
+
+#define HOME true
+#define AWAY false
+#define OUVERTE true
+#define FERMEE false
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -79,15 +89,20 @@
 /* USER CODE BEGIN PV */
 volatile bool mode = HOME;
 volatile bool buzzer = false;
-volatile bool falling_edge_detected = false;
+volatile bool falling_edge_home_detected = false;
+volatile bool falling_edge_fen_detected = false;
 volatile bool presence_detectee = false;
 volatile bool alarme_gaz = false;
 volatile bool alarme_intrusion = false;
-volatile bool bouton_appuye = false;
+volatile bool bouton_home_appuye = false;
+volatile bool bouton_fen_appuye = false;
+volatile bool fenetre = false;
+volatile bool mesure_capteurs_prete = false;
 volatile int blink_counter_alarm_gaz = 0;
 volatile int blink_counter_alarm_intrusion = 0;
-volatile int gaz_value = 0;
-
+volatile int gaz_valeur = 0;
+volatile int pluie_valeur = 0;
+volatile uint16_t adc_valeurs[2];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -98,7 +113,50 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void angle_servo(int angle){
+	int angle_to_tics = (((SERVO_0_DEG_MS/1000.0) + (angle / 180.0) * (SERVO_180_DEG_MS - SERVO_0_DEG_MS)/1000.0)) * TIMER_SERVO_FREQ;
+	__HAL_TIM_SET_COMPARE(TIMER_SERVO, SERVO_CHANNEL ,angle_to_tics);
+}
 
+void commande_fenetre(){
+	if (fenetre == OUVERTE){
+		angle_servo(120);
+		printf("120 degres !\r\n");
+	}
+	if (fenetre == FERMEE){
+		angle_servo(0);
+		printf("0 degres !\r\n");
+
+	}
+}
+
+void commande_buzzer() {
+	if (buzzer) {
+	  HAL_TIM_PWM_Start(TIMER_BUZZER, BUZZER_CHANNEL);
+	} else {
+	  HAL_TIM_PWM_Stop(TIMER_BUZZER, BUZZER_CHANNEL);
+	}
+}
+
+void evaluer_gaz() {
+	if (gaz_valeur >= SEUIL_GAZ) {
+    printf("Gaz detecte !\r\n");
+		alarme_gaz = true;
+	} else {
+		alarme_gaz = false;
+	}
+    printf("                                      VALEURS CAPTEURS: gaz = %d\r\n", gaz_valeur);
+}
+
+void evaluer_pluie() {
+	if (pluie_valeur >= SEUIL_PLUIE) {
+		printf("Pluie detecte !\r\n");
+		fenetre = OUVERTE;
+	} else {
+		fenetre = FERMEE;
+	}
+	printf("                                      VALEURS CAPTEURS: pluie = %d\r\n", pluie_valeur);
+}
 /* USER CODE END 0 */
 
 /**
@@ -130,6 +188,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_TIM5_Init();
@@ -141,14 +200,14 @@ int main(void)
   HAL_TIM_Base_Start_IT(TIMER_CAPTEURS);
   HAL_TIM_PWM_Start(TIMER_BUZZER, BUZZER_CHANNEL);
   HAL_TIM_PWM_Start(TIMER_SERVO, SERVO_CHANNEL);
-  HAL_ADC_Start(ADC_GAZ);
+  HAL_ADC_Start_DMA(ADC_CAPTEURS, (uint32_t*)adc_valeurs, NBR_CAPTEURS_ADC);
 
   printf("\r\n--- Demarrage Systeme STM32 ---\r\n\n");
   printf("Seuil gaz configure: %d\r\n", SEUIL_GAZ);
   printf("Frequence clignotement alarme gaz: %d Hz\r\n", FREQ_BLINK_ALARM_GAZ);
   printf("Frequence clignotement alarme intrusion: %d Hz\r\n", FREQ_BLINK_ALARM_INTRUSION);
   printf("Periode echantillonnage capteurs: %d s\r\n", (int)(1/TIMER_CAPTEURS_FREQ));
-  printf("Periode debounce bouton: %d s\r\n", (int)(1/TIMER_DEBOUNCE_FREQ));
+  printf("Periode debounce bouton: %d ms\r\n", (int)(1000/TIMER_DEBOUNCE_FREQ));
   printf("\r\n");
 
   /* USER CODE END 2 */
@@ -160,18 +219,24 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	// Mesures capteurs
+	if (mesure_capteurs_prete){
+		mesure_capteurs_prete = false;
+		evaluer_pluie();
+		evaluer_gaz();
+	}
 
     // Machine à état avec HOME et AWAY
     if (mode == HOME) {
-      if(bouton_appuye) {
-        bouton_appuye = false;
+      if(bouton_home_appuye) {
+        bouton_home_appuye = false;
         mode = AWAY;
         printf("Je sors de la maison\r\n");
       }
     }
     if ( mode == AWAY) {
-      if(bouton_appuye) {
-        bouton_appuye = false;
+      if(bouton_home_appuye) {
+        bouton_home_appuye = false;
         mode = HOME;
         alarme_intrusion = false;
         buzzer = false;
@@ -182,13 +247,15 @@ int main(void)
         presence_detectee = false;
         printf("Intrusion detectee !\r\n");
       }
-    }
+	}
+	if(bouton_fen_appuye) {
+		bouton_fen_appuye = false;
+		fenetre=!fenetre;
+		commande_fenetre();
 
-    if (buzzer) {
-      HAL_TIM_PWM_Start(TIMER_BUZZER, BUZZER_CHANNEL);
-    } else {
-      HAL_TIM_PWM_Stop(TIMER_BUZZER, BUZZER_CHANNEL);
-    }
+	}
+
+    commande_buzzer();
   }
 
   /* USER CODE END 3 */
@@ -247,11 +314,21 @@ int __io_putchar(int ch) {
     return ch;
 }
 
+// affecter angel servo
+
+
+
 void debounce_filter() {
-	if (falling_edge_detected && !HAL_GPIO_ReadPin(BTN_GPIO_Port, BTN_Pin)) {
-		bouton_appuye = true;
-		falling_edge_detected = false;
+	if (falling_edge_home_detected && !HAL_GPIO_ReadPin(BTN_GPIO_Port, BTN_Pin)) {
+		bouton_home_appuye = true;
+		falling_edge_home_detected = false;
 	}
+
+	if (falling_edge_fen_detected && !HAL_GPIO_ReadPin(BTN_FEN_GPIO_Port, BTN_FEN_Pin)) {
+		bouton_fen_appuye = true;
+		falling_edge_fen_detected = false;
+	}
+
 }
 
 void update_cycle_alarme_intrusion() {
@@ -276,22 +353,13 @@ void update_cycle_alarme_gaz() {
 	}
 }
 
-void update_mesure_gaz() {
-	gaz_value = HAL_ADC_GetValue(ADC_GAZ);
-	if (gaz_value >= SEUIL_GAZ) {
-    printf("Gaz detecte !\r\n");
-		alarme_gaz = true;
-	} else {
-		alarme_gaz = false;
-	}
-}
 // INterruption des GPIO
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	// Bouton avec Debounce
 	if (GPIO_Pin == BTN_Pin)
 	{
-		if (!falling_edge_detected) {
-			falling_edge_detected = true;
+		if (!falling_edge_home_detected) {
+			falling_edge_home_detected = true;
 			__HAL_TIM_SET_COUNTER(&htim5, 0);
 		}
 	}
@@ -300,6 +368,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	{
 		if (mode == AWAY){
 			presence_detectee = true;
+		}
+	}
+	if (GPIO_Pin == BTN_FEN_Pin){
+		if (!falling_edge_fen_detected) {
+			falling_edge_fen_detected = true;
+			__HAL_TIM_SET_COUNTER(&htim5, 0);
 		}
 	}
 }
@@ -316,9 +390,17 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if (htim == TIMER_CAPTEURS)
   {
     HAL_GPIO_TogglePin(BLUE_GPIO_Port, BLUE_Pin);
-    update_mesure_gaz();
-    printf("                                      VALEURS CAPTEURS: gaz = %d\r\n", gaz_value);
   }
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+    if (hadc == ADC_CAPTEURS)
+    {
+        gaz_valeur   = adc_valeurs[0];
+        pluie_valeur = adc_valeurs[1];
+        mesure_capteurs_prete = true;
+    }
 }
 /* USER CODE END 4 */
 

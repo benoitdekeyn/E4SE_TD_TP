@@ -2,6 +2,7 @@
 #define TMP102_H
 
 #include "main.h"
+#include <stdio.h>
 #include "stdbool.h"
 
 #define TMP102_NBR_CONFIG_REG_BYTES 2
@@ -17,7 +18,7 @@
 #define TMP102_REG_TEMP             0x00
 #define TMP102_REG_CONFIG           0x01
 
-// VALEURS DES REGLAGES (Pour la structure config)
+// VALEURS DES REGLAGES
 #define TMP102_MODE_CONTINUOUS      0x00
 #define TMP102_MODE_SHUTDOWN        0x01
 
@@ -46,6 +47,12 @@
 #define TMP102_AL_DEFAULT           0x01  
 #define TMP102_PADD_DEFAULT         0x00  
 
+// INTERPRETATION REGISTRE TEMPERATURE
+#define TMP102_TEMP_RESOLUTION      0.0625f
+#define TMP102_NORM_BIT_LEN         12
+#define TMP102_EXT_BIT_LEN          13
+
+
 typedef struct {
     uint8_t Mode;
     uint8_t ConversionRate;
@@ -61,7 +68,8 @@ typedef struct {
     TMP102_config_t     config;
 } TMP102_t;
 
-bool TMP102_Init(TMP102_t *htmp);
-bool TMP102_ReadTemperature(TMP102_t *htmp, float *Temperature);
+bool TMP102_init(TMP102_t *htmp);
+bool TMP102_read_temperature(TMP102_t *htmp, float *Temperature);
+char* TMP102_temperature_to_string(float temperature, uint8_t precision);
 
 #endif

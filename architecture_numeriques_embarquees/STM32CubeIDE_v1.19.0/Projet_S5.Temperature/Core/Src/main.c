@@ -129,7 +129,7 @@ volatile bool   alarme_gaz                  = false;
 
 volatile int    gaz_valeur                  = 0;
 volatile int    pluie_valeur                = 0;
-volatile float  temperature_celsius         = 0.0;
+volatile float  temperature         = 0.0;
 
 volatile uint16_t adc_valeurs[NBR_CAPTEURS_ADC];
 TMP102_t thermometre;
@@ -144,7 +144,8 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-void initialiser_thermometre(void) {
+void initialiser_thermometre(void) 
+{
     thermometre.busI2C                = BUS_I2C;
     thermometre.address               = TMP102_I2C_ADDR_GND;
 
@@ -155,7 +156,7 @@ void initialiser_thermometre(void) {
     thermometre.config.AlertPolarity  = TMP102_POL_ACTIVE_LOW;
     thermometre.config.FaultQueue     = TMP102_FAULT_1;
 
-    if (TMP102_Init(&thermometre)) {
+    if (TMP102_init(&thermometre)) {
         printf("Capteur TMP102 OK \r\n");
     } else {
         printf("Erreur d'initialisation du capteur TMP102 !\r\n");
@@ -251,16 +252,12 @@ void evaluer_pluie()
 
 void evaluer_temperature() 
 {
-    float temp_locale = 0.0f;
+    float temperature_locale;
 
-    if (TMP102_ReadTemperature(&thermometre, &temp_locale)) 
+    if (TMP102_read_temperature(&thermometre, &temperature_locale)) 
     {
-        temperature_celsius = temp_locale;
-        int ent = (int)temp_locale;
-        int dec = (int)((temp_locale - ent) * 100);
-        if (dec < 0) dec = -dec;
-
-        printf("                                      TEMP  = %d.%02d C\r\n", ent, dec);
+        temperature = temperature_locale;
+        printf("                                      TEMP  = %s°C\r\n", TMP102_temperature_to_string(temperature, 2));
     } 
     else 
     {

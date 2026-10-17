@@ -4,10 +4,10 @@ typedef struct {
     uint8_t byte_idx;
     uint8_t position;
     uint8_t length;
-    uint8_t value;
+    uint8_t temp_absue;
 } TMP102_Field_t;
 
-bool TMP102_Init(TMP102_t *tmp102) {
+bool TMP102_init(TMP102_t *tmp102) {
     uint8_t config_reg_bytes[TMP102_NBR_CONFIG_REG_BYTES] = {0, 0};
 
     // Assignation des champs du registre de configuration
@@ -34,7 +34,7 @@ bool TMP102_Init(TMP102_t *tmp102) {
     {
         uint8_t mask = (1 << fields[i].length) - 1; 
         config_reg_bytes[    fields[i].byte_idx]
-        |=              (    fields[i].value & mask) 
+        |=              (    fields[i].temp_absue & mask) 
         <<                   fields[i].position;
     }
 
@@ -48,15 +48,15 @@ bool TMP102_Init(TMP102_t *tmp102) {
             == HAL_OK);
 }
 
-bool TMP102_ReadTemperature(TMP102_t *tmp102, float *Temperature) {
-    uint8_t buffer[TMP102_NBR_CONFIG_REG_BYTES] = {0};
-    int16_t raw_temp;
+bool TMP102_read_temperature(TMP102_t *tmp102, float *Temperature) {
+    uint8_t buffer_temp_reg[TMP102_NBR_CONFIG_REG_BYTES] = {0};
+    int16_t raw_temp_absue;
 
     bool i2c_ok = (HAL_I2C_Mem_Read(tmp102->busI2C, 
                                      tmp102->address, 
                                      TMP102_REG_TEMP, 
                                      I2C_MEMADD_SIZE_8BIT, 
-                                     buffer, 
+                                     buffer_temp_reg, 
                                      TMP102_NBR_CONFIG_REG_BYTES, 
                                      TMP102_I2C_TIMEOUT)
                     == HAL_OK);
@@ -66,14 +66,54 @@ bool TMP102_ReadTemperature(TMP102_t *tmp102, float *Temperature) {
         return false;
     }
 
-    if (tmp102->config.ExtendedMode == TMP102_EXTENDED_ON) {
-        raw_temp = (buffer[0] << 5) | (buffer[1] >> 3);
-        if (raw_temp & 0x1000) raw_temp |= 0xE000; 
-    } else {
-        raw_temp = (buffer[0] << 4) | (buffer[1] >> 4);
-        if (raw_temp & 0x0800) raw_temp |= 0xF000;
+    // Sur combien de bits est codée la température
+    uint8_t temp_length = (tmp102->config.ExtendedMode == TMP102_EXTENDED_ON) 
+                        ? TMP102_EXT_BIT_LEN 
+                        : TMP102_NORM_BIT_LEN;
+
+    // Concaténation des 2 bytes reçus en type entier
+    raw_temp_absue = (int16_t)((buffer_temp_reg[0] << 8) | buffer_temp_reg[1]);
+
+    // Décalage à droite avec extension du signe
+    raw_temp_absue >>= (16 - temp_length);
+
+    // conversion de la temp_abseur du capteur en degres celsius
+    *Temperature = (float)raw_temp_absue * TMP102_TEMP_RESOLUTION;
+
+    return true;
+}
+
+char* TMP102_temperature_to_string(float temperature, uint8_t precision) 
+{
+    static char buffer[16];
+    static const int multi_table[] = {1, 10, 100, 1000, 10000};
+
+    // Precision maximale = 4
+    if (precision > 4) {
+        precision = 4;
     }
 
-    *Temperature = (float)raw_temp * 0.0625f;
-    return true;
+    // Gestion du signe
+    bool negatif = (temperature < 0.0f);
+    float temp_abs = negatif ? -temperature : temperature;
+
+    int multiplicateur = multi_table[precision];
+    
+    // Décomposition en partie entière et décimale arrondie
+    int partie_entiere = (int)temp_abs;
+    int partie_decimale = (int)((temp_abs - (float)partie_entiere) * (float)multiplicateur + 0.5f);
+
+    // Propagation de la retenue si l'arrondi déborde
+    if (partie_decimale >= multiplicateur) {
+        partie_entiere++;
+        partie_decimale = 0;
+    }
+
+    snprintf(buffer, sizeof(buffer), "%s%d,%0*d", 
+             negatif ? "-" : "", 
+             partie_entiere, 
+             precision, 
+             partie_decimale);
+
+    return buffer;
 }

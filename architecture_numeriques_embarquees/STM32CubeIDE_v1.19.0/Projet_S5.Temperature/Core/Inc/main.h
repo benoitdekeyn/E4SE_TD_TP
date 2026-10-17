@@ -57,21 +57,33 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define SERIAL_TX_Pin GPIO_PIN_2
+#define SERIAL_TX_GPIO_Port GPIOA
+#define SERIAL_RX_Pin GPIO_PIN_3
+#define SERIAL_RX_GPIO_Port GPIOA
+#define GAZ_Pin GPIO_PIN_4
+#define GAZ_GPIO_Port GPIOA
+#define BTN_Pin GPIO_PIN_6
+#define BTN_GPIO_Port GPIOA
+#define BTN_EXTI_IRQn EXTI9_5_IRQn
 #define RGB_ROUGE_Pin GPIO_PIN_7
 #define RGB_ROUGE_GPIO_Port GPIOA
+#define PLUIE_Pin GPIO_PIN_0
+#define PLUIE_GPIO_Port GPIOB
 #define BLUE_Pin GPIO_PIN_10
 #define BLUE_GPIO_Port GPIOB
 #define PIR_Pin GPIO_PIN_7
 #define PIR_GPIO_Port GPIOC
 #define PIR_EXTI_IRQn EXTI9_5_IRQn
+#define SERVO_Pin GPIO_PIN_9
+#define SERVO_GPIO_Port GPIOA
 #define BTN_FEN_Pin GPIO_PIN_10
 #define BTN_FEN_GPIO_Port GPIOA
 #define BTN_FEN_EXTI_IRQn EXTI15_10_IRQn
 #define YELLOW_Pin GPIO_PIN_3
 #define YELLOW_GPIO_Port GPIOB
-#define BTN_Pin GPIO_PIN_6
-#define BTN_GPIO_Port GPIOB
-#define BTN_EXTI_IRQn EXTI9_5_IRQn
+#define BUZZER_Pin GPIO_PIN_5
+#define BUZZER_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

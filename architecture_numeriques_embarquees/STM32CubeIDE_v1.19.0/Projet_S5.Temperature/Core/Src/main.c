@@ -38,18 +38,19 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-//  BTN_FEN   | D2  | PA_10 | INPUT PULLUP
-//* JAUNE     | D3  | PB_3  | OUTPUT PULLDOWN
-//  BUZZER    | D4  | PB_5  | TIMER 3 - CHANNEL 2
-//* I2C_SDA   | D5  | PB_4  | I2C3 - SDA (LCD & TMP102)
-//  BLEUE     | D6  | PB_10 | OUTPUT PULLDOWN
-//* I2C_SCL   | D7  | PA_8  | I2C3 - SCL (LCD & TMP102)
-//  SERVO     | D8  | PA_9  | TIMER 1 - CHANNEL 2
-//  PIR       | D9  | PC_7  | INPUT PULLDOWN
-//  RGB_ROUGE | D11 | PA_7  | OUTPUT PULLDOWN
-//* BTN_HOME  | D10 | PB_6  | INPUT PULLDOWN
-//  GAZ       | A2  | PA_4  | ADC 1 - CHANNEL 4
-//  PLUIE     | A3  | PB_0  | ADC 1 - CHANNEL 8
+//  BTN_FEN   | D2  | PA_10 | EXTI 10 - Rising Edge | PULLUP   | 3V3
+//  LED_JAUNE | D3  | PB_3  | GPIO OUTPUT           | NO       | 3V3
+//  BUZZER    | D4  | PB_5  | TIMER 3 - CHANNEL 2   | NO       | 3V3
+//  I2C_SDA   | D5  | PB_4  | I2C3 - SDA            | NO       | LCD+TEMP -> 5V
+//  LED_BLEUE | D6  | PB_10 | GPIO OUTPUT           | NO       | 3V3
+//  I2C_SCL   | D7  | PA_8  | I2C3 - SCL            | NO       | LCD+TEMP -> 5V
+//  SERVO     | D8  | PA_9  | TIMER 1 - CHANNEL 2   | NO       | 5V
+//  PIR_MVMT  | D9  | PC_7  | EXTI 7 - Rising Edge  | PULLDOWN | 3V3
+//  RGB_STRIP | D10 | PB_6  | TIMER 4 - CHANNEL 1   | NO       | 5V
+//  RGB_ROUGE | D11 | PA_7  | GPIO OUTPUT           | NO       | 3V3
+//  BTN_HOME  | D12 | PA_6  | EXTI 6 - Rising Edge  | PULLDOWN | 3V3
+//  GAZ       | A2  | PA_4  | ADC 1 - CHANNEL 4     | NO       | 5V
+//  PLUIE     | A3  | PB_0  | ADC 1 - CHANNEL 8     | NO       | 5V
 
 #define TIMER_SERVO (&htim1)
 #define TIMER_CAPTEURS (&htim2)
@@ -71,7 +72,7 @@
 #define FREQ_BLINK_ALARME_GAZ 10
 #define FREQ_BLINK_ALARME_INTRUSION 2
 
-#define SEUIL_GAZ 1700
+#define SEUIL_GAZ 2200
 #define SEUIL_PLUIE 3000
 
 #define FREQ_PWM_SERVO 50
@@ -219,50 +220,71 @@ void debounce_filter() {
 }
 
 void update_cycle_alarme() {
-	if (!alarme_gaz && !alarme_intrusion) {
-		buzzer = false;
-		led_alarme_intrusion = false;
-		led_alarme_gaz = false;
-	}
-	if (alarme_gaz && !alarme_intrusion) {
-		frequence_buzzer(FREQ_BUZZER_ALARME_GAZ);
-		led_alarme_intrusion = false;
-		blink_counter_alarm ++;
-		if (blink_counter_alarm == TIMER_DEBOUNCE_FREQ/(2*FREQ_BLINK_ALARME_GAZ)) {
-			led_alarme_gaz = !led_alarme_gaz;
-			buzzer = !buzzer;
-			blink_counter_alarm = 0;
-		}
-	}
-	if (!alarme_gaz && alarme_intrusion) {
-		frequence_buzzer(FREQ_BUZZER_ALARME_INTRUSION);
-		led_alarme_gaz = false;
-		blink_counter_alarm ++;
-		if (blink_counter_alarm == TIMER_DEBOUNCE_FREQ/(2*FREQ_BLINK_ALARME_INTRUSION)) {
-			led_alarme_intrusion = !led_alarme_intrusion;
-			buzzer = !buzzer;
-			blink_counter_alarm = 0;
-		}
-	}
-	if (alarme_gaz && alarme_intrusion) {
-		blink_counter_alarm ++;
-		if (blink_counter_alarm < TIMER_DEBOUNCE_FREQ/(2*FREQ_BLINK_ALARME_INTRUSION)) {
-			led_alarme_intrusion = !led_alarme_intrusion;
-			frequence_buzzer(FREQ_BUZZER_ALARME_GAZ);
-			led_alarme_intrusion = false;
-			if (blink_counter_alarm % TIMER_DEBOUNCE_FREQ/(2*FREQ_BLINK_ALARME_GAZ)) {
-				led_alarme_gaz = !led_alarme_gaz;
-				buzzer = !buzzer;
-			}
-		} else {
-			frequence_buzzer(FREQ_BUZZER_ALARME_INTRUSION);
-			led_alarme_gaz = false;
-			buzzer = true;
-			if (blink_counter_alarm < TIMER_DEBOUNCE_FREQ/(FREQ_BLINK_ALARME_INTRUSION)) {
-				blink_counter_alarm = 0;
-			}
-		}
-	}
+    // Aucune alarme
+    if (!alarme_gaz && !alarme_intrusion) {
+        buzzer = false;
+        led_alarme_intrusion = false;
+        led_alarme_gaz = false;
+        blink_counter_alarm = 0;
+        return;
+    }
+
+    blink_counter_alarm++;
+
+    // Alarme GAZ
+    if (alarme_gaz && !alarme_intrusion) {
+        frequence_buzzer(FREQ_BUZZER_ALARME_GAZ);
+        led_alarme_intrusion = false;
+
+        if (blink_counter_alarm >= TIMER_DEBOUNCE_FREQ / (2 * FREQ_BLINK_ALARME_GAZ)) {
+            led_alarme_gaz = !led_alarme_gaz;
+            buzzer = led_alarme_gaz; // Synchro stricte LED et Buzzer
+            blink_counter_alarm = 0;
+        }
+    }
+
+    // Alarme INTRUSION
+    else if (!alarme_gaz && alarme_intrusion) {
+        frequence_buzzer(FREQ_BUZZER_ALARME_INTRUSION);
+        led_alarme_gaz = false;
+
+        if (blink_counter_alarm >= TIMER_DEBOUNCE_FREQ / (2 * FREQ_BLINK_ALARME_INTRUSION)) {
+            led_alarme_intrusion = !led_alarme_intrusion;
+            buzzer = led_alarme_intrusion; // Synchro stricte LED et Buzzer
+            blink_counter_alarm = 0;
+        }
+    }
+
+    // Alarme GAZ + INTRUSION
+    else if (alarme_gaz && alarme_intrusion) {
+        int half_period_intrusion = TIMER_DEBOUNCE_FREQ / (2 * FREQ_BLINK_ALARME_INTRUSION);
+        int full_period_intrusion = TIMER_DEBOUNCE_FREQ / FREQ_BLINK_ALARME_INTRUSION;
+        int half_period_gaz = TIMER_DEBOUNCE_FREQ / (2 * FREQ_BLINK_ALARME_GAZ);
+
+        // alarme intrusion en continu, alarme gaz eteinte
+        if (blink_counter_alarm <= half_period_intrusion) {
+            frequence_buzzer(FREQ_BUZZER_ALARME_INTRUSION);
+            led_alarme_gaz = false;
+
+            led_alarme_intrusion = true;
+            buzzer = true;
+        // alarme gaz clignote, alarme intrusion eteinte
+        } else {
+            frequence_buzzer(FREQ_BUZZER_ALARME_GAZ);
+            led_alarme_intrusion = false;
+
+            if ((blink_counter_alarm - half_period_intrusion) % half_period_gaz == 0) {
+                led_alarme_gaz = !led_alarme_gaz;
+                buzzer = led_alarme_gaz;
+            }
+        }
+
+        // fin periode alarme intrusion
+        if (blink_counter_alarm >= full_period_intrusion) {
+            blink_counter_alarm = 0;
+            led_alarme_gaz = false;
+        }
+    }
 }
 /* USER CODE END 0 */
 
@@ -309,7 +331,6 @@ int main(void)
   HAL_TIM_PWM_Start(TIMER_BUZZER, BUZZER_CHANNEL);
   HAL_TIM_PWM_Start(TIMER_SERVO, SERVO_CHANNEL);
   HAL_ADC_Start_DMA(ADC_CAPTEURS, (uint32_t*)adc_valeurs, NBR_CAPTEURS_ADC);
-  HAL_
 
   printf("\r\n--- Demarrage Systeme STM32 ---\r\n\n");
   printf("Seuil gaz configure: %d\r\n", SEUIL_GAZ);

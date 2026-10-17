@@ -62,22 +62,23 @@
 #define ADC_CAPTEURS (&hadc1)
 #define NBR_CAPTEURS_ADC 2
 
-#define TIMER_DEBOUNCE_FREQ 20
-#define TIMER_SERVO_FREQ    2500000
-#define TIMER_CAPTEURS_FREQ 0.5
-#define TIMER_BUZZER_FREQ   25000000
+#define FREQ_CYCLE_CAPTEURS 0.5
+#define FREQ_CYCLE_DEBOUNCE 20
 
-#define FREQ_BUZZER_ALARME_GAZ 440
-#define FREQ_BUZZER_ALARME_INTRUSION 384
+#define FREQ_TIMER_SERVO 2500000
+#define FREQ_CYCLE_SERVO 50
+#define SERVO_0_DEG_MS 0.5
+#define SERVO_180_DEG_MS 2.5
+
+#define FREQ_TIMER_BUZZER 25000000
+#define FREQ_CYCLE_ALARME FREQ_CYCLE_DEBOUNCE
 #define FREQ_BLINK_ALARME_GAZ 10
 #define FREQ_BLINK_ALARME_INTRUSION 2
+#define FREQ_BUZZER_ALARME_GAZ 440
+#define FREQ_BUZZER_ALARME_INTRUSION 384
 
 #define SEUIL_GAZ 2200
 #define SEUIL_PLUIE 3000
-
-#define FREQ_PWM_SERVO 50
-#define SERVO_0_DEG_MS 0.5
-#define SERVO_180_DEG_MS 2.5
 
 #define TMP102_ADDR         (0x48 << 1)
 #define TMP102_REG_TEMP     0x00
@@ -142,7 +143,7 @@ HAL_StatusTypeDef TMP102_Init(I2C_HandleTypeDef *hi2c) {
 }
 
 void angle_servo(int angle){
-	int angle_to_tics = (((SERVO_0_DEG_MS/1000.0) + (angle / 180.0) * (SERVO_180_DEG_MS - SERVO_0_DEG_MS)/1000.0)) * TIMER_SERVO_FREQ;
+	int angle_to_tics = (((SERVO_0_DEG_MS/1000.0) + (angle / 180.0) * (SERVO_180_DEG_MS - SERVO_0_DEG_MS)/1000.0)) * FREQ_TIMER_SERVO;
 	__HAL_TIM_SET_COMPARE(TIMER_SERVO, SERVO_CHANNEL ,angle_to_tics);
 }
 
@@ -177,7 +178,7 @@ void commande_buzzer() {
 }
 
 void frequence_buzzer(int frequence) {
-	int periode_tics = (double)TIMER_BUZZER_FREQ/frequence;
+	int periode_tics = (double)FREQ_TIMER_BUZZER/frequence;
 	int pulse_tics = periode_tics/2;
 	__HAL_TIM_SET_AUTORELOAD(TIMER_BUZZER, periode_tics);
 	__HAL_TIM_SET_COMPARE(TIMER_BUZZER, BUZZER_CHANNEL, pulse_tics);
@@ -236,7 +237,7 @@ void update_cycle_alarme() {
         frequence_buzzer(FREQ_BUZZER_ALARME_GAZ);
         led_alarme_intrusion = false;
 
-        if (blink_counter_alarm >= TIMER_DEBOUNCE_FREQ / (2 * FREQ_BLINK_ALARME_GAZ)) {
+        if (blink_counter_alarm >= FREQ_CYCLE_ALARME / (2 * FREQ_BLINK_ALARME_GAZ)) {
             led_alarme_gaz = !led_alarme_gaz;
             buzzer = led_alarme_gaz; // Synchro stricte LED et Buzzer
             blink_counter_alarm = 0;
@@ -248,7 +249,7 @@ void update_cycle_alarme() {
         frequence_buzzer(FREQ_BUZZER_ALARME_INTRUSION);
         led_alarme_gaz = false;
 
-        if (blink_counter_alarm >= TIMER_DEBOUNCE_FREQ / (2 * FREQ_BLINK_ALARME_INTRUSION)) {
+        if (blink_counter_alarm >= FREQ_CYCLE_ALARME / (2 * FREQ_BLINK_ALARME_INTRUSION)) {
             led_alarme_intrusion = !led_alarme_intrusion;
             buzzer = led_alarme_intrusion; // Synchro stricte LED et Buzzer
             blink_counter_alarm = 0;
@@ -257,9 +258,9 @@ void update_cycle_alarme() {
 
     // Alarme GAZ + INTRUSION
     else if (alarme_gaz && alarme_intrusion) {
-        int half_period_intrusion = TIMER_DEBOUNCE_FREQ / (2 * FREQ_BLINK_ALARME_INTRUSION);
-        int full_period_intrusion = TIMER_DEBOUNCE_FREQ / FREQ_BLINK_ALARME_INTRUSION;
-        int half_period_gaz = TIMER_DEBOUNCE_FREQ / (2 * FREQ_BLINK_ALARME_GAZ);
+        int half_period_intrusion = FREQ_CYCLE_ALARME / (2 * FREQ_BLINK_ALARME_INTRUSION);
+        int full_period_intrusion = FREQ_CYCLE_ALARME / FREQ_BLINK_ALARME_INTRUSION;
+        int half_period_gaz = FREQ_CYCLE_ALARME / (2 * FREQ_BLINK_ALARME_GAZ);
 
         // alarme intrusion en continu, alarme gaz eteinte
         if (blink_counter_alarm <= half_period_intrusion) {
@@ -336,8 +337,8 @@ int main(void)
   printf("Seuil gaz configure: %d\r\n", SEUIL_GAZ);
   printf("Frequence clignotement alarme gaz: %d Hz\r\n", FREQ_BLINK_ALARME_GAZ);
   printf("Frequence clignotement alarme intrusion: %d Hz\r\n", FREQ_BLINK_ALARME_INTRUSION);
-  printf("Periode echantillonnage capteurs: %d s\r\n", (int)(1/TIMER_CAPTEURS_FREQ));
-  printf("Periode debounce bouton: %d ms\r\n", (int)(1000/TIMER_DEBOUNCE_FREQ));
+  printf("Periode echantillonnage capteurs: %d s\r\n", (int)(1/FREQ_CYCLE_CAPTEURS));
+  printf("Periode debounce bouton: %d ms\r\n", (int)(1000/FREQ_CYCLE_DEBOUNCE));
   printf("\r\n");
 
   /* USER CODE END 2 */

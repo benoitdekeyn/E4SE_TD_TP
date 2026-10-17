@@ -27,8 +27,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "stdbool.h"
 #include <stdio.h>
+#include "stdbool.h"
+#include "tmp102.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,39 +59,40 @@ typedef struct {
 //  GAZ       | A2  | PA_4  | ADC 1 - CHANNEL 4     | NO       | 5V
 //  PLUIE     | A3  | PB_0  | ADC 1 - CHANNEL 8     | NO       | 5V
 
-#define TIMER_CAPTEURS (&htim2)
-#define TIMER_DEBOUNCE (&htim5)
-#define TIMER_SERVO (&htim1)
-#define CANAL_SERVO TIM_CHANNEL_2
-#define TIMER_BUZZER (&htim3)
-#define CANAL_BUZZER TIM_CHANNEL_2
+#define ADC_CAPTEURS    (&hadc1)
+#define BUS_I2C         (&hi2c3)
+#define TIMER_CAPTEURS  (&htim2)
+#define TIMER_DEBOUNCE  (&htim5)
+#define TIMER_SERVO     (&htim1)
+#define CANAL_SERVO     TIM_CHANNEL_2
+#define TIMER_BUZZER    (&htim3)
+#define CANAL_BUZZER    TIM_CHANNEL_2
 
-#define SEUIL_GAZ 2200
-#define SEUIL_PLUIE 3000
-#define ADC_CAPTEURS (&hadc1)
-#define NBR_CAPTEURS_ADC 2
-#define GAZ_ADC_RANK 0
-#define PLUIE_ADC_RANK 1
+#define SEUIL_GAZ         2200
+#define SEUIL_PLUIE       3000
+#define NBR_CAPTEURS_ADC  2
+#define GAZ_ADC_RANK      0
+#define PLUIE_ADC_RANK    1
 
 #define FREQ_CYCLE_CAPTEURS 0.5
 #define FREQ_CYCLE_DEBOUNCE 20
 
-#define FREQ_TIMER_SERVO 2500000
-#define FREQ_CYCLE_SERVO 50
-#define SERVO_0_DEG_MS 0.5
-#define SERVO_180_DEG_MS 2.5
+#define FREQ_TIMER_SERVO  2500000
+#define FREQ_CYCLE_SERVO  50
+#define SERVO_0_DEG_MS    0.5
+#define SERVO_180_DEG_MS  2.5
 
-#define FREQ_TIMER_BUZZER 25000000
-#define FREQ_CYCLE_ALARME FREQ_CYCLE_DEBOUNCE
-#define FREQ_BLINK_ALARME_GAZ 10
-#define FREQ_BLINK_ALARME_INTRUSION 2
-#define FREQ_BUZZER_ALARME_GAZ 440
-#define FREQ_BUZZER_ALARME_INTRUSION 384
+#define FREQ_TIMER_BUZZER             25000000
+#define FREQ_CYCLE_ALARME             FREQ_CYCLE_DEBOUNCE
+#define FREQ_BLINK_ALARME_GAZ         10
+#define FREQ_BLINK_ALARME_INTRUSION   2
+#define FREQ_BUZZER_ALARME_GAZ        440
+#define FREQ_BUZZER_ALARME_INTRUSION  384
 
-#define HOME true
-#define AWAY false
+#define HOME    true
+#define AWAY    false
 #define OUVERTE true
-#define FERMEE false
+#define FERMEE  false
 
 
 /* USER CODE END PD */
@@ -130,6 +132,7 @@ volatile int    pluie_valeur                = 0;
 volatile float  temperature_celsius         = 0.0;
 
 volatile uint16_t adc_valeurs[NBR_CAPTEURS_ADC];
+TMP102_t thermometre;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -140,6 +143,24 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+void initialiser_thermometre(void) {
+    thermometre.busI2C                = BUS_I2C;
+    thermometre.address               = TMP102_I2C_ADDR_GND;
+
+    thermometre.config.Mode           = TMP102_MODE_CONTINUOUS;
+    thermometre.config.ConversionRate = TMP102_RATE_1HZ;
+    thermometre.config.ExtendedMode   = TMP102_EXTENDED_OFF;
+    thermometre.config.ThermostatMode = TMP102_TM_COMPARATOR;
+    thermometre.config.AlertPolarity  = TMP102_POL_ACTIVE_LOW;
+    thermometre.config.FaultQueue     = TMP102_FAULT_1;
+
+    if (TMP102_Init(&thermometre)) {
+        printf("Capteur TMP102 OK \r\n");
+    } else {
+        printf("Erreur d'initialisation du capteur TMP102 !\r\n");
+    }
+}
 
 void angle_servo(int angle)
 {
@@ -213,7 +234,7 @@ void evaluer_gaz()
 	} else {
 		alarme_gaz = false;
 	}
-    printf("                                      GAZ   = %d\r\n", gaz_valeur);
+  printf("                                      GAZ   = %d\r\n", gaz_valeur);
 }
 
 void evaluer_pluie() 
@@ -228,6 +249,24 @@ void evaluer_pluie()
 	printf("                                      PLUIE = %d\r\n", pluie_valeur);
 }
 
+void evaluer_temperature() 
+{
+    float temp_locale = 0.0f;
+
+    if (TMP102_ReadTemperature(&thermometre, &temp_locale)) 
+    {
+        temperature_celsius = temp_locale;
+        int ent = (int)temp_locale;
+        int dec = (int)((temp_locale - ent) * 100);
+        if (dec < 0) dec = -dec;
+
+        printf("                                      TEMP  = %d.%02d C\r\n", ent, dec);
+    } 
+    else 
+    {
+        printf("                                      TEMP  = ERREUR LECTURE\r\n");
+    }
+}
 void debounce_filter() 
 {
 	if (debouncing_bouton_home && !HAL_GPIO_ReadPin(BTN_HOME_GPIO_Port, BTN_HOME_Pin)) {
@@ -355,6 +394,8 @@ int main(void)
   HAL_TIM_PWM_Start(TIMER_SERVO, CANAL_SERVO);
   HAL_ADC_Start_DMA(ADC_CAPTEURS, (uint32_t*)adc_valeurs, NBR_CAPTEURS_ADC);
 
+  initialiser_thermometre();
+
   printf("\r\n--- Demarrage Systeme STM32 ---\r\n\n");
   printf("Seuil gaz configure: %d\r\n", SEUIL_GAZ);
   printf("Frequence clignotement alarme gaz: %d Hz\r\n", FREQ_BLINK_ALARME_GAZ);
@@ -432,6 +473,7 @@ int main(void)
     if (timer_capteurs_flag) {
       timer_capteurs_flag = false;
       led_capteurs.state = !led_capteurs.state;
+      evaluer_temperature();
     }
     if (fin_mesure_ADC_flag){
       fin_mesure_ADC_flag = false;

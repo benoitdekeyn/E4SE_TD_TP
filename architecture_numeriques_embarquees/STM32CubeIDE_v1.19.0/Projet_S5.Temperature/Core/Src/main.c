@@ -103,9 +103,9 @@ typedef struct {
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-const    LED_t  led_capteurs                = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pin, false};
-const    LED_t  led_alarme_gaz              = {RGB_ROUGE_GPIO_Port, RGB_ROUGE_Pin, false};
-const    LED_t  led_alarme_intrusion        = {LED_JAUNE_GPIO_Port, LED_JAUNE_Pin, false};
+volatile LED_t  led_capteurs                = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pin, false};
+volatile LED_t  led_alarme_gaz              = {RGB_ROUGE_GPIO_Port, RGB_ROUGE_Pin, false};
+volatile LED_t  led_alarme_intrusion        = {LED_JAUNE_GPIO_Port, LED_JAUNE_Pin, false};
 volatile bool   buzzer                      = false;
 volatile bool   fenetre                     = false;
 
@@ -431,7 +431,7 @@ int main(void)
     }
     if (timer_capteurs_flag) {
       timer_capteurs_flag = false;
-      led_capteurs = !led_capteurs;
+      led_capteurs.state = !led_capteurs.state;
     }
     if (fin_mesure_ADC_flag){
       fin_mesure_ADC_flag = false;

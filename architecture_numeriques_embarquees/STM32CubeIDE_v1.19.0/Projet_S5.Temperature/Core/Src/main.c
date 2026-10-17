@@ -33,7 +33,11 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+typedef struct {
+    GPIO_TypeDef *port;
+    uint16_t pin;
+    bool state;
+} LED_t;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -62,11 +66,14 @@
 #define SERVO_CHANNEL TIM_CHANNEL_2
 #define BUZZER_CHANNEL TIM_CHANNEL_2
 
+#define SEUIL_GAZ 2200
+#define SEUIL_PLUIE 3000
 #define ADC_CAPTEURS (&hadc1)
 #define NBR_CAPTEURS_ADC 2
+#define GAZ_ADC_RANK 0
+#define PLUIE_ADC_RANK 1
 
 #define FREQ_CYCLE_CAPTEURS 0.5
-#define LED_CAPTEURS {LED_BLEUE_GPIO_Port, LED_BLEUE_Pin}
 #define FREQ_CYCLE_DEBOUNCE 20
 
 #define FREQ_TIMER_SERVO 2500000
@@ -80,15 +87,6 @@
 #define FREQ_BLINK_ALARME_INTRUSION 2
 #define FREQ_BUZZER_ALARME_GAZ 440
 #define FREQ_BUZZER_ALARME_INTRUSION 384
-#define LED_ALARME_GAZ {RGB_ROUGE_GPIO_Port, RGB_ROUGE_Pin}
-#define LED_ALARME_INTRUSION {LED_JAUNE_GPIO_Port, LED_JAUNE_Pin}
-
-#define SEUIL_GAZ 2200
-#define SEUIL_PLUIE 3000
-
-#define TMP102_ADDR         (0x48 << 1)
-#define TMP102_REG_TEMP     0x00
-#define TMP102_REG_CONFIG   0x01
 
 #define HOME true
 #define AWAY false
@@ -106,6 +104,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+LED_t LED_capteurs          = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pin, false};
+LED_t LED_alarme_gaz        = {RGB_ROUGE_GPIO_Port, RGB_ROUGE_Pin, false};
+LED_t LED_alarme_intrusion  = {LED_JAUNE_GPIO_Port, LED_JAUNE_Pin, false};
 volatile bool mode = HOME;
 volatile bool buzzer = false;
 volatile bool falling_edge_home_detected = false;
@@ -114,11 +115,9 @@ volatile bool presence_detectee = false;
 volatile bool alarme_gaz = false;
 volatile bool alarme_intrusion = false;
 volatile bool bouton_home_appuye = false;
-volatile bool bouton_fen_appuye = false;
+volatile bool bouton_fenetre_appuye = false;
 volatile bool fenetre = false;
 volatile bool mesures_ADC_pretes = false;
-volatile bool led_alarme_intrusion = false;
-volatile bool led_alarme_gaz = false;
 volatile bool timer_debounce_flag = false;
 volatile bool pluie_detectee = false;
 volatile bool timer_capteurs_flag = false;
@@ -140,18 +139,6 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-// mode Shutdown
-HAL_StatusTypeDef TMP102_Init(I2C_HandleTypeDef *hi2c) {
-    // Registre Config (2 octets) :
-    // Byte 1 : OS=0, R1=1, R0=1, F1=0, F0=0, POL=0, TM=0, SD=1 -> 0x61[cite: 53, 55]
-    // Byte 2 : CR1=1, CR0=0, AL=1, EM=0, 0,0,0,0 -> 0xA0[cite: 55]
-    uint8_t config[2] = {0x61, 0xA0};
-
-    // Ecriture dans le registre de configuration (0x01)
-    return HAL_I2C_Mem_Write(hi2c, TMP102_ADDR, TMP102_REG_CONFIG,
-                             I2C_MEMADD_SIZE_8BIT, config, 2, 100);
-}
-
 void angle_servo(int angle){
 	int angle_to_tics = (((SERVO_0_DEG_MS/1000.0) + (angle / 180.0) * (SERVO_180_DEG_MS - SERVO_0_DEG_MS)/1000.0)) * FREQ_TIMER_SERVO;
 	__HAL_TIM_SET_COMPARE(TIMER_SERVO, SERVO_CHANNEL ,angle_to_tics);
@@ -167,20 +154,20 @@ void commande_fenetre(){
 }
 
 void commande_led(){
-	if (led_alarme_gaz) {
-		HAL_GPIO_WritePin(LED_ALARME_GAZ[Port], LED_ALARME_GAZ[Pin], 1);
+	if (LED_alarme_gaz.state) {
+		HAL_GPIO_WritePin(LED_alarme_gaz.port, LED_alarme_gaz.pin, 1);
 	} else {
-		HAL_GPIO_WritePin(LED_ALARME_GAZ[Port], LED_ALARME_GAZ[Pin], 0);
+		HAL_GPIO_WritePin(LED_alarme_gaz.port, LED_alarme_gaz.pin, 0);
 	}
-	if (led_alarme_intrusion) {
-		HAL_GPIO_WritePin(LED_ALARME_INTRUSION[Port], LED_ALARME_INTRUSION[Pin], 1);
+	if (LED_alarme_intrusion.state) {
+		HAL_GPIO_WritePin(LED_alarme_intrusion.port, LED_alarme_intrusion.pin, 1);
   } else {
-    HAL_GPIO_WritePin(LED_ALARME_INTRUSION[Port], LED_ALARME_INTRUSION[Pin], 0);
+    HAL_GPIO_WritePin(LED_alarme_intrusion.port, LED_alarme_intrusion.pin, 0);
 	}
-  if (led_capteurs) {
-    HAL_GPIO_WritePin(LED_CAPTEURS[Port], LED_CAPTEURS[Pin], 1);
+  if (LED_capteurs.state) {
+    HAL_GPIO_WritePin(LED_capteurs.port, LED_capteurs.pin, 1);
   } else {
-    HAL_GPIO_WritePin(LED_CAPTEURS[Port], LED_CAPTEURS[Pin], 0);
+    HAL_GPIO_WritePin(LED_capteurs.port, LED_capteurs.pin, 0);
   }
 }
 
@@ -200,6 +187,7 @@ void frequence_buzzer(int frequence) {
 }
 
 void evaluer_gaz() {
+  gaz_valeur   = adc_valeurs[GAZ_ADC_RANK];
 	if (gaz_valeur >= SEUIL_GAZ) {
     printf("Gaz detecte !\r\n");
 		alarme_gaz = true;
@@ -210,6 +198,7 @@ void evaluer_gaz() {
 }
 
 void evaluer_pluie() {
+  pluie_valeur = adc_valeurs[PLUIE_ADC_RANK];
 	if (pluie_valeur >= SEUIL_PLUIE) {
 		printf("Pluie detecte !\r\n");
 		pluie_detectee = true;
@@ -229,7 +218,7 @@ void debounce_filter() {
 	}
 
 	if (falling_edge_fen_detected && !HAL_GPIO_ReadPin(BTN_FENTR_GPIO_Port, BTN_FENTR_Pin)) {
-		bouton_fen_appuye = true;
+		bouton_fenetre_appuye = true;
 		falling_edge_fen_detected = false;
 	}
 
@@ -239,8 +228,8 @@ void update_cycle_alarme() {
     // Aucune alarme
     if (!alarme_gaz && !alarme_intrusion) {
         buzzer = false;
-        led_alarme_intrusion = false;
-        led_alarme_gaz = false;
+        LED_alarme_intrusion.state = false;
+        LED_alarme_gaz.state = false;
         blink_counter_alarm = 0;
         return;
     }
@@ -250,11 +239,11 @@ void update_cycle_alarme() {
     // Alarme GAZ
     if (alarme_gaz && !alarme_intrusion) {
         frequence_buzzer(FREQ_BUZZER_ALARME_GAZ);
-        led_alarme_intrusion = false;
+        LED_alarme_intrusion.state = false;
 
         if (blink_counter_alarm >= FREQ_CYCLE_ALARME / (2 * FREQ_BLINK_ALARME_GAZ)) {
-            led_alarme_gaz = !led_alarme_gaz;
-            buzzer = led_alarme_gaz; // Synchro stricte LED et Buzzer
+            LED_alarme_gaz.state = !LED_alarme_gaz.state;
+            buzzer = LED_alarme_gaz.state; // Synchro stricte LED et Buzzer
             blink_counter_alarm = 0;
         }
     }
@@ -262,11 +251,11 @@ void update_cycle_alarme() {
     // Alarme INTRUSION
     else if (!alarme_gaz && alarme_intrusion) {
         frequence_buzzer(FREQ_BUZZER_ALARME_INTRUSION);
-        led_alarme_gaz = false;
+        LED_alarme_gaz.state = false;
 
         if (blink_counter_alarm >= FREQ_CYCLE_ALARME / (2 * FREQ_BLINK_ALARME_INTRUSION)) {
-            led_alarme_intrusion = !led_alarme_intrusion;
-            buzzer = led_alarme_intrusion; // Synchro stricte LED et Buzzer
+            LED_alarme_intrusion.state = !LED_alarme_intrusion.state;
+            buzzer = LED_alarme_intrusion.state; // Synchro stricte LED et Buzzer
             blink_counter_alarm = 0;
         }
     }
@@ -280,25 +269,25 @@ void update_cycle_alarme() {
         // alarme intrusion en continu, alarme gaz eteinte
         if (blink_counter_alarm <= half_period_intrusion) {
             frequence_buzzer(FREQ_BUZZER_ALARME_INTRUSION);
-            led_alarme_gaz = false;
+            LED_alarme_gaz.state = false;
 
-            led_alarme_intrusion = true;
+            LED_alarme_intrusion.state = true;
             buzzer = true;
         // alarme gaz clignote, alarme intrusion eteinte
         } else {
             frequence_buzzer(FREQ_BUZZER_ALARME_GAZ);
-            led_alarme_intrusion = false;
+            LED_alarme_intrusion.state = false;
 
             if ((blink_counter_alarm - half_period_intrusion) % half_period_gaz == 0) {
-                led_alarme_gaz = !led_alarme_gaz;
-                buzzer = led_alarme_gaz;
+                LED_alarme_gaz.state = !LED_alarme_gaz.state;
+                buzzer = LED_alarme_gaz.state;
             }
         }
 
         // fin periode alarme intrusion
         if (blink_counter_alarm >= full_period_intrusion) {
             blink_counter_alarm = 0;
-            led_alarme_gaz = false;
+            LED_alarme_gaz.state = false;
         }
     }
 }
@@ -377,9 +366,9 @@ int main(void)
       }
       else if (pluie_detectee){
     	  fenetre = false;
-    	  bouton_fen_appuye = false;
-      } else if(bouton_fen_appuye) {
-	  		bouton_fen_appuye = false;
+    	  bouton_fenetre_appuye = false;
+      } else if(bouton_fenetre_appuye) {
+	  		bouton_fenetre_appuye = false;
 	  		if (fenetre == OUVERTE) {
 	  			fenetre = FERMEE;
 	  			printf("Je ferme la fenetre\r\n");
@@ -391,7 +380,7 @@ int main(void)
 	  	}
     }
     if ( mode == AWAY) {
-    	bouton_fen_appuye = false;
+    	bouton_fenetre_appuye = false;
       if(bouton_home_appuye) {
         bouton_home_appuye = false;
         mode = HOME;
@@ -491,7 +480,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 		}
 	}
 	// PIR mouvement détecté
-	if (GPIO_Pin == PIR_Pin)
+	if (GPIO_Pin == PIR_MVMT_Pin)
 	{
 		if (mode == AWAY){
 			presence_detectee = true;
@@ -521,8 +510,6 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
     if (hadc == ADC_CAPTEURS)
     {
-        gaz_valeur   = adc_valeurs[0];
-        pluie_valeur = adc_valeurs[1];
         mesures_ADC_pretes = true;
     }
 }

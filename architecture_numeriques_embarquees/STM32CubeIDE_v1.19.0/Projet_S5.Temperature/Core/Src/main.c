@@ -69,7 +69,9 @@ typedef struct {
 #define CANAL_BUZZER    TIM_CHANNEL_2
 
 #define SEUIL_GAZ         2200
-#define SEUIL_PLUIE       3000
+#define SEUIL_PLUIE       4000
+#define SEUIL_CHALEUR     25
+#define SEUIL_FROID       15
 #define NBR_CAPTEURS_ADC  2
 #define GAZ_ADC_RANK      0
 #define PLUIE_ADC_RANK    1
@@ -89,11 +91,14 @@ typedef struct {
 #define FREQ_BUZZER_ALARME_GAZ        440
 #define FREQ_BUZZER_ALARME_INTRUSION  384
 
-#define HOME    true
-#define AWAY    false
-#define OUVERTE true
-#define FERMEE  false
-
+// Maison
+#define HOME                true
+#define AWAY                false
+// Fenetre
+#define OUVERTE             true
+#define FERMEE              false
+#define ANGLE_SERVO_OUVERT  120 // ATTENTION maximum 120° sinon ça casse
+#define ANGLE_SERVO_FERME   0   // Montage effectué avec 0° fenetre fermee
 
 /* USER CODE END PD */
 
@@ -127,10 +132,6 @@ volatile bool   pluie_detectee              = false;
 volatile bool   alarme_intrusion            = false;
 volatile bool   alarme_gaz                  = false;
 
-volatile int    gaz_valeur                  = 0;
-volatile int    pluie_valeur                = 0;
-volatile float  temperature         = 0.0;
-
 volatile uint16_t adc_valeurs[NBR_CAPTEURS_ADC];
 TMP102_t thermometre;
 /* USER CODE END PV */
@@ -146,20 +147,17 @@ void SystemClock_Config(void);
 
 void initialiser_thermometre(void) 
 {
+    TMP102_init_default(&thermometre);
+
     thermometre.busI2C                = BUS_I2C;
     thermometre.address               = TMP102_I2C_ADDR_GND;
-
-    thermometre.config.Mode           = TMP102_MODE_CONTINUOUS;
-    thermometre.config.ConversionRate = TMP102_RATE_1HZ;
+    thermometre.config.Mode           = TMP102_MODE_SHUTDOWN;
     thermometre.config.ExtendedMode   = TMP102_EXTENDED_OFF;
-    thermometre.config.ThermostatMode = TMP102_TM_COMPARATOR;
-    thermometre.config.AlertPolarity  = TMP102_POL_ACTIVE_LOW;
-    thermometre.config.FaultQueue     = TMP102_FAULT_1;
 
-    if (TMP102_init(&thermometre)) {
-        printf("Capteur TMP102 OK \r\n");
+    if (TMP102_apply_config(&thermometre)) {
+        printf("Capteur TMP102 configuré\r\n");
     } else {
-        printf("Erreur d'initialisation du capteur TMP102 !\r\n");
+        printf("Erreur d'initialisation du capteur TMP102\r\n");
     }
 }
 
@@ -183,10 +181,10 @@ void angle_servo(int angle)
 void commande_fenetre()
 {
 	if (fenetre == OUVERTE){
-		angle_servo(120);
+		angle_servo(ANGLE_SERVO_OUVERT);
 	}
 	if (fenetre == FERMEE){
-		angle_servo(0);
+		angle_servo(ANGLE_SERVO_FERME);
 	}
 }
 
@@ -228,7 +226,7 @@ void frequence_buzzer(int frequence)
 
 void evaluer_gaz() 
 {
-  gaz_valeur = adc_valeurs[GAZ_ADC_RANK];
+  int gaz_valeur = adc_valeurs[GAZ_ADC_RANK];
 	if (gaz_valeur >= SEUIL_GAZ) {
     printf("Gaz detecte !\r\n");
 		alarme_gaz = true;
@@ -240,7 +238,7 @@ void evaluer_gaz()
 
 void evaluer_pluie() 
 {
-  pluie_valeur = adc_valeurs[PLUIE_ADC_RANK];
+  int pluie_valeur = adc_valeurs[PLUIE_ADC_RANK];
 	if (pluie_valeur >= SEUIL_PLUIE) {
 		printf("Pluie detecte !\r\n");
 		pluie_detectee = true;
@@ -252,16 +250,22 @@ void evaluer_pluie()
 
 void evaluer_temperature() 
 {
-    float temperature_locale;
+    float temperature;
 
-    if (TMP102_read_temperature(&thermometre, &temperature_locale)) 
+    if (TMP102_get_temperature(&thermometre, &temperature)) 
     {
-        temperature = temperature_locale;
         printf("                                      TEMP  = %s°C\r\n", TMP102_temperature_to_string(temperature, 2));
     } 
     else 
     {
         printf("                                      TEMP  = ERREUR LECTURE\r\n");
+    }
+
+    if (temperature >= SEUIL_CHALEUR) {
+      printf("Il fait chaud !\r\n");
+    }
+    if (temperature <= SEUIL_FROID) {
+      printf("Il fait froid !\r\n");
     }
 }
 void debounce_filter() 
@@ -426,21 +430,24 @@ int main(void)
         fenetre = false;
     	  bouton_fenetre_appuye = false;
       } 
-      else if (bouton_fenetre_appuye) 
+      else 
       {
-        bouton_fenetre_appuye = false;
-	  		if      (fenetre == OUVERTE) 
+        if (bouton_fenetre_appuye) 
         {
-          fenetre = FERMEE;
-	  			printf("Je ferme la fenetre\r\n");
-	  		} 
-        else if (fenetre == FERMEE) 
-        {
-          fenetre = OUVERTE;
-          printf("J'ouvre la fenetre\r\n");
+          bouton_fenetre_appuye = false;
+          if      (fenetre == OUVERTE) 
+          {
+            fenetre = FERMEE;
+            printf("Je ferme la fenetre\r\n");
+          } 
+          else if (fenetre == FERMEE) 
+          {
+            fenetre = OUVERTE;
+            printf("J'ouvre la fenetre\r\n");
+          }
         }
-	  	}
-      alarme_intrusion = false;
+        alarme_intrusion = false;
+      }
     }
 
     if ( mode == AWAY) 
@@ -460,7 +467,6 @@ int main(void)
       }
     }
 
-
     // en continu
     if (timer_debounce_flag) {
     	timer_debounce_flag = false;
@@ -470,12 +476,19 @@ int main(void)
     if (timer_capteurs_flag) {
       timer_capteurs_flag = false;
       led_capteurs.state = !led_capteurs.state;
-      evaluer_temperature();
+      // Lancement des mesures ADC automatique (TGO event TIMER)
+      if (!TMP102_start_measure(&thermometre)) {
+        printf("Erreur lors du demarrage de la mesure TMP102 en mode One-Shot\r\n");
+      }
     }
     if (fin_mesure_ADC_flag){
       fin_mesure_ADC_flag = false;
       evaluer_pluie();
       evaluer_gaz();
+    }
+    if (TMP102_is_measure_ready(&thermometre)) {
+      evaluer_temperature();
+      printf("\r\n"); // saut à la ligne apres la derniere mesure
     }
     commande_buzzer();
     commande_led();

@@ -3,9 +3,10 @@
 
 #include "main.h"
 #include <stdio.h>
-#include "stdbool.h"
+#include <stdbool.h>
 
 #define TMP102_NBR_CONFIG_REG_BYTES 2
+#define TMP102_NBR_REG_TEMP_BYTES   2
 #define TMP102_I2C_TIMEOUT          100
 
 // ADRESSES I2C
@@ -17,6 +18,8 @@
 // REGISTRES INTERNES
 #define TMP102_REG_TEMP             0x00
 #define TMP102_REG_CONFIG           0x01
+#define TMP102_REG_TLOW             0x02
+#define TMP102_REG_THIGH            0x03
 
 // VALEURS DES REGLAGES
 #define TMP102_MODE_CONTINUOUS      0x00
@@ -41,8 +44,11 @@
 #define TMP102_EXTENDED_OFF         0x00 
 #define TMP102_EXTENDED_ON          0x01 
 
-// VALEURS PAR DEFAUT DES REGISTRES INTERNES
 #define TMP102_OS_DEFAULT           0x00  
+#define TMP102_OS_START_MEASURE     0x01
+#define TMP102_OS_MEASURING         0x00
+
+// CHAMPS EN LECTURE SEULE / INUTILISES
 #define TMP102_R_DEFAULT            0x03  
 #define TMP102_AL_DEFAULT           0x01  
 #define TMP102_PADD_DEFAULT         0x00  
@@ -52,24 +58,47 @@
 #define TMP102_NORM_BIT_LEN         12
 #define TMP102_EXT_BIT_LEN          13
 
+#define WRITE true
+#define READ  false
 
-typedef struct {
+// STRUCTURES DE MAPPING
+typedef struct 
+{
+    uint8_t byte_idx;
+    uint8_t position;
+    uint8_t length;
+    uint8_t *value_ptr;
+} TMP102_FieldMap_t;
+
+typedef struct 
+{
     uint8_t Mode;
     uint8_t ConversionRate;
     uint8_t ExtendedMode;
     uint8_t ThermostatMode;
     uint8_t AlertPolarity;
     uint8_t FaultQueue;
-} TMP102_config_t;
+    uint8_t OneShot;
+    uint8_t Resolution;
+    uint8_t Alert;
+    uint8_t Padding;
+} TMP102_Config_t;
 
-typedef struct {
+typedef struct 
+{
+    bool                is_measuring_one_shot;
     I2C_HandleTypeDef   *busI2C;
     uint8_t             address;
-    TMP102_config_t     config;
+    TMP102_Config_t     config;
+    float               T_High;  
+    float               T_Low;    
 } TMP102_t;
 
-bool TMP102_init(TMP102_t *htmp);
-bool TMP102_read_temperature(TMP102_t *htmp, float *Temperature);
+void TMP102_init_default(TMP102_t *htmp);
+bool TMP102_apply_config(TMP102_t *htmp);
+bool TMP102_get_temperature(TMP102_t *htmp, float *Temperature);
+bool TMP102_start_measure(TMP102_t *htmp);
+bool TMP102_is_measure_ready(TMP102_t *htmp);
 char* TMP102_temperature_to_string(float temperature, uint8_t precision);
 
 #endif

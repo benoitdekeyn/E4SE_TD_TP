@@ -29,11 +29,4 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>TMP102</name>
-			<type>2</type>
-			<location>C:/Users/benoi/Documents/GitHub/E4SE_TD_TP/architecture_numeriques_embarquees/STM32CubeIDE_v1.19.0/Bibliotheques/TMP102</location>
-		</link>
-	</linkedResources>
 </projectDescription>

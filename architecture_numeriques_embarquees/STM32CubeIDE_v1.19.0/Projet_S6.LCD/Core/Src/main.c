@@ -133,6 +133,10 @@ volatile bool   pluie_detectee              = false;
 volatile bool   alarme_intrusion            = false;
 volatile bool   alarme_gaz                  = false;
 
+volatile float temperature_valeur           = 0.0;
+volatile int   pluie_valeur                 = 0;
+volatile int   gaz_valeur                   = 0;
+
 volatile uint16_t adc_valeurs[NBR_CAPTEURS_ADC];
 TMP102_t thermometre;
 /* USER CODE END PV */
@@ -145,6 +149,28 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+void afficher_capteurs_ecran(void) 
+{
+    char ligne1[17];
+    char ligne2[17];
+
+    // Ligne 1 : "AWAY   | 18,38°C"
+    snprintf(ligne1, sizeof(ligne1), "%-7s  %5s\xDF" "C", 
+             (mode == HOME) ? "HOME" : "AWAY",
+             TMP102_temperature_to_string(temperature_valeur, 2));
+
+    // Ligne 2 : "Hu  21 | Ga  627"
+    snprintf(ligne2, sizeof(ligne2), "Hu %4d  Ga %4d", 
+             pluie_valeur, 
+             gaz_valeur);
+
+    lcd_put_cur(0, 0);
+    lcd_send_string(ligne1);
+
+    lcd_put_cur(1, 0);
+    lcd_send_string(ligne2);
+}
 
 void initialiser_thermometre(void) 
 {
@@ -227,7 +253,7 @@ void frequence_buzzer(int frequence)
 
 void evaluer_gaz() 
 {
-  int gaz_valeur = adc_valeurs[GAZ_ADC_RANK];
+  gaz_valeur = adc_valeurs[GAZ_ADC_RANK];
 	if (gaz_valeur >= SEUIL_GAZ) {
     printf("Gaz detecte !\r\n");
 		alarme_gaz = true;
@@ -239,7 +265,7 @@ void evaluer_gaz()
 
 void evaluer_pluie() 
 {
-  int pluie_valeur = adc_valeurs[PLUIE_ADC_RANK];
+  pluie_valeur = adc_valeurs[PLUIE_ADC_RANK];
 	if (pluie_valeur >= SEUIL_PLUIE) {
 		printf("Pluie detecte !\r\n");
 		pluie_detectee = true;
@@ -251,21 +277,22 @@ void evaluer_pluie()
 
 void evaluer_temperature() 
 {
-    float temperature;
+    float temperature_local;
 
-    if (TMP102_get_temperature(&thermometre, &temperature)) 
+    if (TMP102_get_temperature(&thermometre, &temperature_local)) 
     {
-        printf("                                      TEMP  = %s°C\r\n", TMP102_temperature_to_string(temperature, 2));
+      temperature_valeur = temperature_local;
+      printf("                                      TEMP  = %s°C\r\n", TMP102_temperature_to_string(temperature_valeur, 2));
     } 
     else 
     {
-        printf("                                      TEMP  = ERREUR LECTURE\r\n");
+      printf("                                      TEMP  = ERREUR LECTURE\r\n");
     }
 
-    if (temperature >= SEUIL_CHALEUR) {
+    if (temperature_valeur >= SEUIL_CHALEUR) {
       printf("Il fait chaud !\r\n");
     }
-    if (temperature <= SEUIL_FROID) {
+    if (temperature_valeur <= SEUIL_FROID) {
       printf("Il fait froid !\r\n");
     }
 }
@@ -493,7 +520,10 @@ int main(void)
     }
     if (TMP102_is_measure_ready(&thermometre)) {
       evaluer_temperature();
-      printf("\r\n"); // saut à la ligne apres la derniere mesure
+      // derniere mesure a etre evaluee
+      printf("\r\n");
+      afficher_capteurs_ecran();
+      
     }
     commande_buzzer();
     commande_led();

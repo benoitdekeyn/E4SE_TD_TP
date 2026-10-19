@@ -89,7 +89,7 @@ typedef struct {
 #define SERVO_180_DEG_MS  2.5
 
 #define FREQ_TIMER_BUZZER             25000000
-#define FREQ_TIMER_BANDE_LED          2500000
+#define FREQ_TIMER_BANDE_LED          100000000
 #define FREQ_CYCLE_ALARME             FREQ_CYCLE_DEBOUNCE
 #define FREQ_BLINK_ALARME_GAZ         10
 #define FREQ_BLINK_ALARME_INTRUSION   2
@@ -101,6 +101,7 @@ typedef struct {
 #define LED_HAUT_DROITE   1
 #define LED_HAUT_GAUCHE   2
 #define LED_BAS_GAUCHE    3
+#define LUMINOSITE_BASE   10 // 0-255
 
 // Maison
 typedef enum{
@@ -224,7 +225,9 @@ void initialiser_thermometre()
 void initialiser_bande_led()
 {
   BandeLED_Init(&bande_led, TIMER_BANDE_LED, CANAL_BANDE_LED, FREQ_TIMER_BANDE_LED, NB_LEDS_BANDE_RGB);
-  BandeLED_allumer(&bande_led);
+  for (int i = 0; i < NB_LEDS_BANDE_RGB; i++) {
+      BandeLED_set_led_luminosity(&bande_led, i, LUMINOSITE_BASE);
+  }
 }
 
 void angle_servo(int angle)
@@ -571,7 +574,9 @@ int main(void)
     	timer_debounce_flag = false;
       debounce_filter();
       update_cycle_alarme();
-      BandeLED_demo(&bande_led);
+      if (!BandeLED_demo(&bande_led)) {
+          printf("Erreur lors de l'execution de la demo de la bande LED\r\n");
+      }
     }
     if (timer_capteurs_flag) {
       timer_capteurs_flag = false;

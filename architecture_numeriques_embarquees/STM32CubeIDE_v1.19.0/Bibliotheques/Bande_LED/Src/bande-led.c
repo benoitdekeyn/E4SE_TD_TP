@@ -21,9 +21,11 @@ void BandeLED_Init(BandeLED_t* bande_led, TIM_HandleTypeDef *htim, uint32_t time
         bande_led->leds[i].power = true;
     }
     BandeLED_show(bande_led);
+    BandeLED_allumer(bande_led);
+
 }
 
-void BandeLED_show(BandeLED_t* bande_led)
+bool BandeLED_show(BandeLED_t* bande_led)
 {
     int nS_per_timer_tic     = BL_NSEC_IN_1_SEC  / bande_led->freq_timer;
     int pulse_bit_0_tics     = BL_PULSE_BIT_0_nS / nS_per_timer_tic;
@@ -66,7 +68,9 @@ void BandeLED_show(BandeLED_t* bande_led)
         dma_index++;
     }
     
-    HAL_TIM_PWM_Start_DMA(bande_led->PWM_timer, bande_led->PWM_channel, bande_led->dma_buffer, dma_index);
+    HAL_StatusTypeDef status = HAL_TIM_PWM_Start_DMA(bande_led->PWM_timer, bande_led->PWM_channel, bande_led->dma_buffer, dma_index);
+
+    return (status == HAL_OK);
 }
 
 void BandeLED_allumer(BandeLED_t* bande_led)
@@ -132,10 +136,10 @@ static uint32_t Roue_Chromatique(uint8_t position) {
 }
 
 // Fonction de démo non bloquante appelée à 20 Hz
-void BandeLED_demo(BandeLED_t* bande) {
+bool BandeLED_demo(BandeLED_t* bande) {
     static uint32_t tick = 0;
     tick++;
-    
+
     // --- 1. LEDs 0 et 1 : Arc-en-ciel à vitesses différentes ---
     uint8_t pos_led0 = (tick * 2) % 256; // Tourne doucement
     uint8_t pos_led1 = (tick * 6) % 256; // Tourne 3x plus vite
@@ -161,5 +165,5 @@ void BandeLED_demo(BandeLED_t* bande) {
     }
 
     // --- 3. Envoi physique vers le DMA ---
-    BandeLED_show(bande);
+    return BandeLED_show(bande);
 }

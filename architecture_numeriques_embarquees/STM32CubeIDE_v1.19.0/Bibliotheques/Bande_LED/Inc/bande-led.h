@@ -59,7 +59,7 @@ void BandeLED_set_led_state(BandeLED_t* bande_led, int led_id, bool state);
 void BandeLED_set_led_hexa(BandeLED_t* bande_led, int led_id, uint32_t hexa);
 void BandeLED_set_led_rgb(BandeLED_t* bande_led, int led_id, uint8_t r, uint8_t g, uint8_t b);
 void BandeLED_set_led_luminosity(BandeLED_t* bande_led, int led_id, uint8_t luminosity);
-void BandeLED_show(BandeLED_t* bande_led);
-void BandeLED_demo(BandeLED_t* bande);
+bool BandeLED_show(BandeLED_t* bande_led);
+bool BandeLED_demo(BandeLED_t* bande);
 
 #endif

@@ -74,8 +74,8 @@ typedef struct {
 
 #define SEUIL_GAZ         2200
 #define SEUIL_PLUIE       4000
-#define SEUIL_CHALEUR     25
-#define SEUIL_FROID       15
+#define SEUIL_CHALEUR     26
+#define SEUIL_FROID       24
 #define NBR_CAPTEURS_ADC  2
 #define GAZ_ADC_RANK      0
 #define PLUIE_ADC_RANK    1
@@ -113,7 +113,7 @@ typedef enum {FERMEE, OUVERTE} fenetre_t;
 #define ANGLE_SERVO_OUVERT  120 // ATTENTION maximum 120° sinon ça casse
 #define ANGLE_SERVO_FERME   0   // Montage effectué avec 0° fenetre fermee
 // Temperature
-typedef enum {FROID, CHAUD, INIT} temperature_t;
+typedef enum {FROID, CHAUD, TEMEPERE} temperature_t;
 
 /* USER CODE END PD */
 
@@ -147,7 +147,7 @@ volatile bool   pluie_detectee              = false;
 volatile bool   alarme_intrusion            = false;
 volatile bool   alarme_gaz                  = false;
 
-volatile temperature_t temperature          = INIT;
+volatile temperature_t temperature          = TEMEPERE;
 volatile float temperature_valeur           = 0.0;
 volatile int   pluie_valeur                 = 0;
 volatile int   gaz_valeur                   = 0;
@@ -340,22 +340,6 @@ void evaluer_temperature()
     {
       printf("                                      TEMP  = ERREUR LECTURE\r\n");
     }
-
-    // Contrôle de la température uniquement en mode HOME
-    if (mode == HOME){
-    if (temperature_valeur >= SEUIL_CHALEUR && temperature != CHAUD)
-     {
-      printf("Il fait chaud !\r\n");
-      temperature = CHAUD;
-      fenetre = OUVERTE;
-    }
-    if (temperature_valeur <= SEUIL_FROID && temperature != FROID) 
-    {
-      printf("Il fait froid !\r\n");
-      temperature = FROID;
-      fenetre = FERMEE;
-    }
-  }
 }
 
 void debounce_filter() 
@@ -527,6 +511,46 @@ int main(void)
       } 
       else 
       {
+        alarme_intrusion = false;
+        switch(temperature) {
+          case CHAUD:
+          if (temperature_valeur < SEUIL_CHALEUR)
+          {
+            temperature = TEMEPERE;
+            break;
+          }
+          else
+          {
+            break;
+          }
+          case FROID:
+          if (temperature_valeur > SEUIL_FROID)
+          {
+            temperature = TEMEPERE;
+            break;
+          }
+          else
+          {
+            break;
+          }
+          case TEMEPERE:
+            if (temperature_valeur >= SEUIL_CHALEUR && temperature != CHAUD)
+            {
+              temperature = CHAUD;
+              fenetre = OUVERTE;
+              break;
+            }
+            else if (temperature_valeur <= SEUIL_FROID && temperature != FROID)
+            {
+              temperature = FROID;
+              fenetre = FERMEE;
+              break;
+            }
+            else
+            {
+              break;
+            }
+        }
         if (bouton_fenetre_appuye) 
         {
           bouton_fenetre_appuye = false;
@@ -544,7 +568,6 @@ int main(void)
             break;
           }
         }
-        alarme_intrusion = false;
       }
     }
     break;

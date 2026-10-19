@@ -95,7 +95,7 @@ typedef struct
 } TMP102_t;
 
 void TMP102_init_default(TMP102_t *htmp);
-bool TMP102_apply_config(TMP102_t *htmp);
+bool TMP102_apply_registers(TMP102_t *htmp);
 bool TMP102_get_temperature(TMP102_t *htmp, float *Temperature);
 bool TMP102_start_measure(TMP102_t *htmp);
 bool TMP102_is_measure_ready(TMP102_t *htmp);

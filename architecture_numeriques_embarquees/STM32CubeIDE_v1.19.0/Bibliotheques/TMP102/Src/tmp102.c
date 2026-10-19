@@ -84,9 +84,11 @@ static void TMP102_celsius_to_register(float temperature, uint8_t *reg_value, bo
     reg_value[1] = (uint8_t)(raw_reg & 0xFF);
 }
 
-static void TMP102_register_to_celsius(uint8_t *reg_value, float *temperature, bool extended_mode) 
+static void TMP102_register_to_celsius(uint8_t *reg_value, float *temperature) 
 {
     // Sur combien de bits est codée la température
+    // en mode etendu, le dernier bit (LSB) du second byte indique le mode étendu
+    bool extended_mode = (reg_value[1] & 0x01) != 0;
     uint8_t temp_length = (extended_mode) 
                         ? TMP102_EXT_BIT_LEN 
                         : TMP102_NORM_BIT_LEN;
@@ -185,7 +187,7 @@ static  bool TMP102_write_T_LOW_T_HIGH_reg(TMP102_t *tmp102)
     return true;
 }
 
-bool TMP102_apply_config(TMP102_t *tmp102) 
+bool TMP102_apply_registers(TMP102_t *tmp102) 
 {
     // Écriture du registre de configuration d'après les valeurs stockées dans la structure
     if (!TMP102_write_config_reg(tmp102)) 
@@ -221,7 +223,7 @@ static bool TMP102_read_temperature_register(TMP102_t *tmp102, float *Temperatur
         return false;
     }
 
-    TMP102_register_to_celsius(buffer_temp_reg, Temperature, tmp102->config.ExtendedMode);
+    TMP102_register_to_celsius(buffer_temp_reg, Temperature);
 
     return true;
 }
@@ -264,20 +266,6 @@ bool TMP102_is_measure_ready(TMP102_t *tmp102)
 
 bool TMP102_get_temperature(TMP102_t *tmp102, float *Temperature) 
 {
-    // Si appel en mode shutdown : 10ms bloquantes le temps de la mesure
-    if (tmp102->config.Mode == TMP102_MODE_SHUTDOWN) 
-    {
-        if (!TMP102_start_measure(tmp102)) 
-        {
-            return false;
-        }
-
-        while (!TMP102_is_measure_ready(tmp102))
-        {
-            HAL_Delay(1);
-        }
-    }
-
     return TMP102_read_temperature_register(tmp102, Temperature);
 }
 

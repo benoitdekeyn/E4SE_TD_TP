@@ -154,29 +154,46 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-void afficher_capteurs_ecran(void) 
+void afficher_capteurs_ecran() 
 {
-    char ligne1[17];
-    char ligne2[17];
+    char ligne1[8+1];
+    char ligne2[16+1];
 
-    // Ligne 1 : "AWAY   | 18,38°C"
-    snprintf(ligne1, sizeof(ligne1), "%-7s  %5s\xDF" "C", 
-             (mode == HOME) ? "HOME" : "AWAY",
+    // Ligne 1 2nde moitié : " 18,38°C"
+    snprintf(ligne1, sizeof(ligne1), " %5s\xDF" "C",
              TMP102_temperature_to_string(temperature_valeur, 2));
 
-    // Ligne 2 : "Hu  21 | Ga  627"
+    // Ligne 2 : "Hu 1234  Ga 1234"
     snprintf(ligne2, sizeof(ligne2), "Hu %4d  Ga %4d", 
              pluie_valeur, 
              gaz_valeur);
 
-    lcd_put_cur(0, 0);
+    lcd_put_cur(0, 8);
     lcd_send_string(ligne1);
 
     lcd_put_cur(1, 0);
     lcd_send_string(ligne2);
 }
 
-void initialiser_thermometre(void) 
+void afficher_mode_ecran () 
+{ 
+  char ligne_mode[8];
+  snprintf(ligne_mode, sizeof(ligne_mode), "%4s",
+  (mode == HOME) ? "HOME" : "AWAY");
+
+  lcd_put_cur(0, 0);
+  lcd_send_string(ligne_mode);
+}
+
+void initialiser_ecran()
+{
+    lcd_init(BUS_I2C);
+    afficher_mode_ecran();
+    lcd_put_cur(1, 0);
+    lcd_send_string("Hello Abir (^w^)");
+}
+
+void initialiser_thermometre() 
 {
     TMP102_init_default(&thermometre);
 
@@ -185,7 +202,7 @@ void initialiser_thermometre(void)
     thermometre.config.Mode           = TMP102_MODE_SHUTDOWN;
     thermometre.config.ExtendedMode   = TMP102_EXTENDED_OFF;
 
-    if (TMP102_apply_config(&thermometre)) {
+    if (TMP102_apply_registers(&thermometre)) {
         printf("Capteur TMP102 configuré\r\n");
     } else {
         printf("Erreur d'initialisation du capteur TMP102\r\n");
@@ -293,10 +310,12 @@ void evaluer_temperature()
       printf("                                      TEMP  = ERREUR LECTURE\r\n");
     }
 
-    if (temperature_valeur >= SEUIL_CHALEUR) {
+    if (temperature_valeur >= SEUIL_CHALEUR)
+     {
       printf("Il fait chaud !\r\n");
     }
-    if (temperature_valeur <= SEUIL_FROID) {
+    if (temperature_valeur <= SEUIL_FROID) 
+    {
       printf("Il fait froid !\r\n");
     }
 }
@@ -420,6 +439,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM1_Init();
   MX_I2C3_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(TIMER_DEBOUNCE);
   HAL_TIM_Base_Start_IT(TIMER_CAPTEURS);
@@ -429,9 +449,8 @@ int main(void)
 
   initialiser_thermometre();
   
-  lcd_init(BUS_I2C);
-  lcd_put_cur(0, 0);
-  lcd_send_string("STM32 Pret !");
+  initialiser_ecran();
+
 
   printf("\r\n--- Demarrage Systeme STM32 ---\r\n\n");
   printf("Seuil gaz configure: %d\r\n", SEUIL_GAZ);
@@ -460,6 +479,7 @@ int main(void)
         mode = AWAY;
         fenetre = false;
         printf("Je sors de la maison\r\n");
+        afficher_mode_ecran();
       }
       else if (pluie_detectee)
       {
@@ -494,6 +514,7 @@ int main(void)
         bouton_home_appuye = false;
         mode = HOME;
         printf("Je rentre à la maison\r\n");
+        afficher_mode_ecran();
       } 
       else if (presence_detectee) 
       {
@@ -512,10 +533,10 @@ int main(void)
     if (timer_capteurs_flag) {
       timer_capteurs_flag = false;
       led_capteurs.state = !led_capteurs.state;
-      // Lancement des mesures ADC automatique (TGO event TIMER)
       if (!TMP102_start_measure(&thermometre)) {
         printf("Erreur lors du demarrage de la mesure TMP102 en mode One-Shot\r\n");
       }
+      // + Lancement des mesures ADC automatique (TGO event TIMER)
     }
     if (fin_mesure_ADC_flag){
       fin_mesure_ADC_flag = false;
@@ -527,7 +548,6 @@ int main(void)
       // derniere mesure a etre evaluee
       printf("\r\n");
       afficher_capteurs_ecran();
-      
     }
     commande_buzzer();
     commande_led();

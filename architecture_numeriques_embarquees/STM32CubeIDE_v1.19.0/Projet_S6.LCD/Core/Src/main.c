@@ -54,7 +54,7 @@ typedef struct {
 //  I2C_SCL   | D7  | PA_8  | I2C3 - SCL            | NO       | LCD+TEMP -> 5V
 //  SERVO     | D8  | PA_9  | TIMER 1 - CHANNEL 2   | NO       | 5V
 //  PIR_MVMT  | D9  | PC_7  | EXTI 7 - Rising Edge  | PULLDOWN | 3V3
-//  RGB_STRIP | D10 | PB_6  | TIMER 4 - CHANNEL 1   | NO       | 5V
+//  RGB_BANDE | D10 | PB_6  | TIMER 4 - CHANNEL 1   | NO       | 5V
 //  RGB_ROUGE | D11 | PA_7  | GPIO OUTPUT           | NO       | 3V3
 //  BTN_HOME  | D12 | PA_6  | EXTI 6 - Rising Edge  | PULLDOWN | 3V3
 //  GAZ       | A2  | PA_4  | ADC 1 - CHANNEL 4     | NO       | 5V
@@ -68,6 +68,8 @@ typedef struct {
 #define CANAL_SERVO     TIM_CHANNEL_2
 #define TIMER_BUZZER    (&htim3)
 #define CANAL_BUZZER    TIM_CHANNEL_2
+#define TIMER_BANDE_LED (&htim4)
+#define CANAL_BANDE_LED TIM_CHANNEL_1
 
 #define SEUIL_GAZ         2200
 #define SEUIL_PLUIE       4000
@@ -77,8 +79,8 @@ typedef struct {
 #define GAZ_ADC_RANK      0
 #define PLUIE_ADC_RANK    1
 
-#define FREQ_CYCLE_CAPTEURS 0.5
-#define FREQ_CYCLE_DEBOUNCE 20
+#define FREQ_CYCLE_CAPTEURS   0.5
+#define FREQ_CYCLE_DEBOUNCE   20
 
 #define FREQ_TIMER_SERVO  2500000
 #define FREQ_CYCLE_SERVO  50
@@ -86,11 +88,13 @@ typedef struct {
 #define SERVO_180_DEG_MS  2.5
 
 #define FREQ_TIMER_BUZZER             25000000
+#define FREQ_TIMER_BANDE_LED          2500000
 #define FREQ_CYCLE_ALARME             FREQ_CYCLE_DEBOUNCE
 #define FREQ_BLINK_ALARME_GAZ         10
 #define FREQ_BLINK_ALARME_INTRUSION   2
 #define FREQ_BUZZER_ALARME_GAZ        440
 #define FREQ_BUZZER_ALARME_INTRUSION  384
+
 
 // Maison
 #define HOME                true

@@ -61,11 +61,11 @@ bool BandeLED_show(BandeLED_t* bande_led)
         }
     }
     
+    for (int i = 0; i < bande_led->cycles_delai_maj; i++) {
         bande_led->dma_buffer[dma_index] = 0;
         dma_index++;
     }
     
-    HAL_StatusTypeDef status = HAL_TIM_PWM_Start_DMA(bande_led->PWM_timer, bande_led->PWM_channel, bande_led->dma_buffer, dma_index);
     HAL_TIM_PWM_Stop_DMA(bande_led->PWM_timer, bande_led->PWM_channel);
     
     __HAL_TIM_SET_COUNTER(bande_led->PWM_timer, 0);

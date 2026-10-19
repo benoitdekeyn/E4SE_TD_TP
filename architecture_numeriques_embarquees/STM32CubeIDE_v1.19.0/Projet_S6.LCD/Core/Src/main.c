@@ -138,7 +138,7 @@ volatile LED_t  led_capteurs                = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pi
 volatile LED_t  led_alarme_gaz              = {RGB_ROUGE_GPIO_Port, RGB_ROUGE_Pin, false};
 volatile LED_t  led_alarme_intrusion        = {LED_JAUNE_GPIO_Port, LED_JAUNE_Pin, false};
 volatile bool   buzzer                      = false;
-volatile fenetre_t fenetre                  = INIT;
+volatile fenetre_t fenetre                  = OUVERTE;
 
 volatile bool   debouncing_bouton_home      = false;
 volatile bool   debouncing_bouton_fenetre   = false;

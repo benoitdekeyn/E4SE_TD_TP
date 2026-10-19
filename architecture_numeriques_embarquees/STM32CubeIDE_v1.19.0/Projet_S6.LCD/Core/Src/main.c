@@ -306,7 +306,7 @@ void angle_servo(int angle)
 void commande_fenetre()
 { static fenetre_t etat_precedent = INIT;
   if (fenetre != etat_precedent) {
-  printf("Commande fenetre: %s\r\n", (fenetre == OUVERTE) ? "OUVERTE" : "FERMEE");
+  //printf("Commande fenetre: %s\r\n", (fenetre == OUVERTE) ? "OUVERTE" : "FERMEE");
   switch(fenetre) {
     case OUVERTE :
       angle_servo(ANGLE_SERVO_OUVERT);

@@ -109,7 +109,7 @@ typedef enum{
   AWAY
 } maison_mode_t;
 // Fenetre
-typedef enum {FERMEE, OUVERTE} fenetre_t;
+typedef enum {INIT, FERMEE, OUVERTE} fenetre_t;
 #define ANGLE_SERVO_OUVERT  120 // ATTENTION maximum 120° sinon ça casse
 #define ANGLE_SERVO_FERME   0   // Montage effectué avec 0° fenetre fermee
 // Temperature
@@ -248,7 +248,7 @@ void angle_servo(int angle)
 }
 
 void commande_fenetre()
-{ static fenetre_t etat_precedent = FERMEE;
+{ static fenetre_t etat_precedent = INIT;
   if (fenetre != etat_precedent) {
   printf("Commande fenetre: %s\r\n", (fenetre == OUVERTE) ? "OUVERTE" : "FERMEE");
   switch(fenetre) {
@@ -258,6 +258,11 @@ void commande_fenetre()
       break;
       }
     case FERMEE:
+      {
+      angle_servo(ANGLE_SERVO_FERME);
+      break;
+      }
+    case INIT:
       {
       angle_servo(ANGLE_SERVO_FERME);
       break;
@@ -473,6 +478,7 @@ int main(void)
   initialiser_thermometre();
   initialiser_ecran();
   initialiser_bande_led();
+
 
   printf("\r\n--- Demarrage Systeme STM32 ---\r\n\n");
   printf("Seuil gaz configure: %d\r\n", SEUIL_GAZ);

@@ -103,13 +103,16 @@ typedef struct {
 #define LED_BAS_GAUCHE    3
 
 // Maison
-enum maison_mode_t {HOME, AWAY};
+typedef enum{
+  HOME,
+  AWAY
+} maison_mode_t;
 // Fenetre
-enum fenetre_t {FERMEE, OUVERTE};
+typedef enum {FERMEE, OUVERTE} fenetre_t;
 #define ANGLE_SERVO_OUVERT  120 // ATTENTION maximum 120° sinon ça casse
 #define ANGLE_SERVO_FERME   0   // Montage effectué avec 0° fenetre fermee
 // Temperature
-enum temperature_t {FROID, CHAUD};
+typedef enum {FROID, CHAUD, INIT} temperature_t;
 
 /* USER CODE END PD */
 
@@ -143,7 +146,7 @@ volatile bool   pluie_detectee              = false;
 volatile bool   alarme_intrusion            = false;
 volatile bool   alarme_gaz                  = false;
 
-volatile temperature_t temperature          = FROID;
+volatile temperature_t temperature          = INIT;
 volatile float temperature_valeur           = 0.0;
 volatile int   pluie_valeur                 = 0;
 volatile int   gaz_valeur                   = 0;
@@ -335,17 +338,23 @@ void evaluer_temperature()
       printf("                                      TEMP  = ERREUR LECTURE\r\n");
     }
 
-    if (temperature_valeur >= SEUIL_CHALEUR)
+    // Contrôle de la température uniquement en mode HOME
+    if (mode == HOME){
+    if (temperature_valeur >= SEUIL_CHALEUR && temperature != CHAUD)
      {
       printf("Il fait chaud !\r\n");
       temperature = CHAUD;
+      fenetre = OUVERTE;
     }
-    if (temperature_valeur <= SEUIL_FROID) 
+    if (temperature_valeur <= SEUIL_FROID && temperature != FROID) 
     {
       printf("Il fait froid !\r\n");
       temperature = FROID;
+      fenetre = FERMEE;
     }
+  }
 }
+
 void debounce_filter() 
 {
 	if (debouncing_bouton_home && !HAL_GPIO_ReadPin(BTN_HOME_GPIO_Port, BTN_HOME_Pin)) {
@@ -557,21 +566,6 @@ int main(void)
       }
     }
 
-    // Machine à état pour la température 
-    switch(temperature) {
-      case FROID:
-       {
-          fenetre = FERMEE;
-          printf("On ferme les fenêtres !\r\n");
-          break;
-        }
-      case CHAUD:
-        {
-          fenetre = OUVERTE;
-          printf("On ouvre les fenêtres !\r\n");
-          break;
-        }
-    }
     // en continu
     if (timer_debounce_flag) {
     	timer_debounce_flag = false;

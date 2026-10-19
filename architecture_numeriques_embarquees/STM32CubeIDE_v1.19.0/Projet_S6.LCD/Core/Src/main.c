@@ -379,9 +379,9 @@ void evaluer_pluie()
 
 void evaluer_temperature() 
 {
-    float temperature_local;
+  float temperature_local;
 
-    if (TMP102_get_temperature(&thermometre, &temperature_local)) 
+  if (TMP102_get_temperature(&thermometre, &temperature_local)) 
     {
       temperature_valeur = temperature_local;
       printf("                                      TEMP  = %s°C\r\n", TMP102_temperature_to_string(temperature_valeur, 2));
@@ -390,6 +390,51 @@ void evaluer_temperature()
     {
       printf("                                      TEMP  = ERREUR LECTURE\r\n");
     }
+    
+    // Mise à jour de l'état de la température
+    if (mode == HOME && !pluie_detectee) 
+    {
+      switch(temperature) 
+      {
+        case CHAUD:
+          if (temperature_valeur < SEUIL_CHALEUR)
+            {
+              temperature = TEMEPERE;
+              break;
+            }
+          else
+            {
+              break;
+            }
+        case FROID:
+          if (temperature_valeur > SEUIL_FROID)
+            {
+              temperature = TEMEPERE;
+              break;
+            }
+          else
+            {
+            break;
+            }
+        case TEMEPERE:
+            if (temperature_valeur >= SEUIL_CHALEUR && temperature != CHAUD)
+              {
+                temperature = CHAUD;
+                fenetre = OUVERTE;
+                break;
+              }
+            else if (temperature_valeur <= SEUIL_FROID && temperature != FROID)
+              {
+                temperature = FROID;
+                fenetre = FERMEE;
+                break;
+              }
+            else
+              {
+                break;
+              }
+        }
+      }
 }
 
 void debounce_filter() 
@@ -563,45 +608,6 @@ int main(void)
       else 
       {
         alarme_intrusion = false;
-        switch(temperature) {
-          case CHAUD:
-          if (temperature_valeur < SEUIL_CHALEUR)
-          {
-            temperature = TEMEPERE;
-            break;
-          }
-          else
-          {
-            break;
-          }
-          case FROID:
-          if (temperature_valeur > SEUIL_FROID)
-          {
-            temperature = TEMEPERE;
-            break;
-          }
-          else
-          {
-            break;
-          }
-          case TEMEPERE:
-            if (temperature_valeur >= SEUIL_CHALEUR && temperature != CHAUD)
-            {
-              temperature = CHAUD;
-              fenetre = OUVERTE;
-              break;
-            }
-            else if (temperature_valeur <= SEUIL_FROID && temperature != FROID)
-            {
-              temperature = FROID;
-              fenetre = FERMEE;
-              break;
-            }
-            else
-            {
-              break;
-            }
-        }
         if (bouton_fenetre_appuye) 
         {
           bouton_fenetre_appuye = false;

@@ -72,7 +72,7 @@ typedef struct {
 #define TIMER_BANDE_LED (&htim4)
 #define CANAL_BANDE_LED TIM_CHANNEL_1
 
-#define SEUIL_GAZ         700
+#define SEUIL_GAZ         2500
 #define SEUIL_PLUIE       4000
 #define SEUIL_CHALEUR     26
 #define SEUIL_FROID       24

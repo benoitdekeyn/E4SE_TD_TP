@@ -49,9 +49,10 @@ typedef struct {
     uint32_t            PWM_channel;
     uint32_t*           dma_buffer;
     int                 freq_timer;
+    int                 cycles_delai_maj;
 } BandeLED_t;
 
-void BandeLED_Init(BandeLED_t* bande_led, uint32_t *dma_buffer, TIM_HandleTypeDef *htim, uint32_t timer_channel, uint32_t freq_timer, uint8_t nb_leds);
+void BandeLED_Init(BandeLED_t* bande_led, TIM_HandleTypeDef *htim, uint32_t timer_channel, uint32_t freq_timer, uint8_t nb_leds);
 void BandeLED_allumer(BandeLED_t* bande_led);
 void BandeLED_eteindre(BandeLED_t* bande_led);
 void BandeLED_set_led_state(BandeLED_t* bande_led, int led_id, bool state);
@@ -59,5 +60,6 @@ void BandeLED_set_led_hexa(BandeLED_t* bande_led, int led_id, uint32_t hexa);
 void BandeLED_set_led_rgb(BandeLED_t* bande_led, int led_id, uint8_t r, uint8_t g, uint8_t b);
 void BandeLED_set_led_luminosity(BandeLED_t* bande_led, int led_id, uint8_t luminosity);
 void BandeLED_show(BandeLED_t* bande_led);
+void BandeLED_demo(BandeLED_t* bande);
 
 #endif

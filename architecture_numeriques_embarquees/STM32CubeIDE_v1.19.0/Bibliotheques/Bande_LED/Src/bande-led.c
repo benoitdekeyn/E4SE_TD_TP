@@ -1,15 +1,16 @@
 #include "bande-led.h"
 #include <stdlib.h>
 
-void BandeLED_Init(BandeLED_t* bande_led, uint32_t *dma_buffer, TIM_HandleTypeDef *htim, uint32_t timer_channel, uint32_t freq_timer, uint8_t nb_leds)
+void BandeLED_Init(BandeLED_t* bande_led, TIM_HandleTypeDef *htim, uint32_t timer_channel, uint32_t freq_timer, uint8_t nb_leds)
 {
-    bande_led->PWM_timer    = htim;
-    bande_led->PWM_channel  = timer_channel;
-    bande_led->dma_buffer   = dma_buffer;
-    bande_led->freq_timer   = freq_timer;
-    bande_led->nb_leds      = nb_leds;
-    bande_led->leds         = malloc(nb_leds * sizeof(BL_RGB_t));
-    bande_led->power        = false;
+    bande_led->cycles_delai_maj = (BL_DELAI_MAJ_nS / (BL_NSEC_IN_1_SEC / BL_FREQ_CYCLE_PWM)) + 1;
+    bande_led->PWM_timer        = htim;
+    bande_led->PWM_channel      = timer_channel;
+    bande_led->dma_buffer       = malloc((nb_leds * 3 * 8 + bande_led->cycles_delai_maj) * sizeof(uint32_t));
+    bande_led->freq_timer       = freq_timer;
+    bande_led->nb_leds          = nb_leds;
+    bande_led->leds             = malloc(nb_leds * sizeof(BL_RGB_t));
+    bande_led->power            = false;
 
     for (int i = 0; i < nb_leds; i++)
     {
@@ -114,4 +115,51 @@ void BandeLED_set_led_luminosity(BandeLED_t* bande_led, int led_id, uint8_t lumi
     {
         bande_led->leds[led_id].alpha = luminosity;
     }
+}
+
+// Fonction utilitaire : convertit une valeur de 0 à 255 en couleur RGB
+static uint32_t Roue_Chromatique(uint8_t position) {
+    position = 255 - position;
+    if(position < 85) {
+        return ((255 - position * 3) << 16) | (0 << 8) | (position * 3);
+    }
+    if(position < 170) {
+        position -= 85;
+        return (0 << 16) | ((position * 3) << 8) | (255 - position * 3);
+    }
+    position -= 170;
+    return ((position * 3) << 16) | ((255 - position * 3) << 8) | 0;
+}
+
+// Fonction de démo non bloquante appelée à 20 Hz
+void BandeLED_demo(BandeLED_t* bande) {
+    static uint32_t tick = 0;
+    tick++;
+    
+    // --- 1. LEDs 0 et 1 : Arc-en-ciel à vitesses différentes ---
+    uint8_t pos_led0 = (tick * 2) % 256; // Tourne doucement
+    uint8_t pos_led1 = (tick * 6) % 256; // Tourne 3x plus vite
+
+    BandeLED_set_led_hexa(bande, 0, Roue_Chromatique(pos_led0));
+    BandeLED_set_led_hexa(bande, 1, Roue_Chromatique(pos_led1));
+
+    // --- 2. LEDs 2 et 3 : Flash Blanc à fréquences différentes ---
+    // À 20 Hz : 10 ticks = 0.5s. 
+    
+    // LED 2 : Clignote à ~2 Hz (5 ticks allumée, 5 ticks éteinte)
+    if ((tick % 10) < 5) {
+        BandeLED_set_led_hexa(bande, 2, BL_HEXA_BLANC);
+    } else {
+        BandeLED_set_led_hexa(bande, 2, BL_HEXA_NOIR);
+    }
+
+    // LED 3 : Clignote à ~5 Hz (2 ticks allumée, 2 ticks éteinte)
+    if ((tick % 4) < 2) {
+        BandeLED_set_led_hexa(bande, 3, BL_HEXA_BLANC);
+    } else {
+        BandeLED_set_led_hexa(bande, 3, BL_HEXA_NOIR);
+    }
+
+    // --- 3. Envoi physique vers le DMA ---
+    BandeLED_show(bande);
 }

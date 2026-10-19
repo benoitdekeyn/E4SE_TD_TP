@@ -96,6 +96,11 @@ typedef struct {
 #define FREQ_BUZZER_ALARME_GAZ        440
 #define FREQ_BUZZER_ALARME_INTRUSION  384
 
+#define NB_LEDS_BANDE_RGB 4
+#define LED_BAS_DROITE    0
+#define LED_HAUT_DROITE   1
+#define LED_HAUT_GAUCHE   2
+#define LED_BAS_GAUCHE    3
 
 // Maison
 enum maison_mode_t {HOME, AWAY};
@@ -145,6 +150,8 @@ volatile int   gaz_valeur                   = 0;
 
 volatile uint16_t adc_valeurs[NBR_CAPTEURS_ADC];
 TMP102_t thermometre;
+BandeLED_t bande_led;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -209,6 +216,12 @@ void initialiser_thermometre()
     } else {
         printf("Erreur d'initialisation du capteur TMP102\r\n");
     }
+}
+
+void initialiser_bande_led()
+{
+  BandeLED_Init(&bande_led, TIMER_BANDE_LED, CANAL_BANDE_LED, FREQ_TIMER_BANDE_LED, NB_LEDS);
+  BandeLED_allumer(&bande_led);
 }
 
 void angle_servo(int angle)
@@ -462,9 +475,8 @@ int main(void)
   HAL_ADC_Start_DMA(ADC_CAPTEURS, (uint32_t*)adc_valeurs, NBR_CAPTEURS_ADC);
 
   initialiser_thermometre();
-  
   initialiser_ecran();
-
+  initialiser_bande_led();
 
   printf("\r\n--- Demarrage Systeme STM32 ---\r\n\n");
   printf("Seuil gaz configure: %d\r\n", SEUIL_GAZ);
@@ -565,6 +577,7 @@ int main(void)
     	timer_debounce_flag = false;
       debounce_filter();
       update_cycle_alarme();
+      BandeLED_demo(&bande_led);
     }
     if (timer_capteurs_flag) {
       timer_capteurs_flag = false;

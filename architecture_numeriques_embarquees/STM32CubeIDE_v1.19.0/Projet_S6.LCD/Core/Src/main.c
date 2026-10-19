@@ -103,6 +103,15 @@ typedef struct {
 #define LED_BAS_GAUCHE    3
 #define LUMINOSITE_BASE   10 // 0-255
 
+// --- Couleurs du Tableau de bord LED ---
+#define COULEUR_CAPTEURS         BL_HEXA_VIOLET
+#define COULEUR_ALARME_GAZ       BL_HEXA_ROUGE
+#define COULEUR_ALARME_INTRUSION BL_HEXA_ORANGE
+#define COULEUR_TEMP_FROID       BL_HEXA_BLEU
+#define COULEUR_TEMP_TEMPERE     BL_HEXA_VERT
+#define COULEUR_TEMP_CHAUD       BL_HEXA_ORANGE
+#define COULEUR_ETEINTE          BL_HEXA_NOIR
+
 // Maison
 typedef enum{
   HOME,
@@ -230,6 +239,49 @@ void initialiser_bande_led()
   }
 }
 
+void update_bande_led()
+{
+    // 1. LED Capteurs (Haut Gauche) -> Synchronisée avec la LED physique
+    if (led_capteurs.state) {
+        BandeLED_set_led_hexa(&bande_led, LED_HAUT_GAUCHE, COULEUR_CAPTEURS);
+    } else {
+        BandeLED_set_led_hexa(&bande_led, LED_HAUT_GAUCHE, COULEUR_ETEINTE);
+    }
+
+    // 2. LED Alarme Gaz (Haut Droite) -> Synchronisée avec la LED physique rouge
+    if (led_alarme_gaz.state) {
+        BandeLED_set_led_hexa(&bande_led, LED_HAUT_DROITE, COULEUR_ALARME_GAZ);
+    } else {
+        BandeLED_set_led_hexa(&bande_led, LED_HAUT_DROITE, COULEUR_ETEINTE);
+    }
+
+    // 3. LED Alarme Intrusion (Bas Droite) -> Synchronisée avec la LED physique jaune
+    if (led_alarme_intrusion.state) {
+        BandeLED_set_led_hexa(&bande_led, LED_BAS_DROITE, COULEUR_ALARME_INTRUSION);
+    } else {
+        BandeLED_set_led_hexa(&bande_led, LED_BAS_DROITE, COULEUR_ETEINTE);
+    }
+
+    // 4. LED Température (Bas Gauche) -> Fixe selon la température
+    switch (temperature) {
+        case FROID:
+            BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_TEMP_FROID);
+            break;
+        case TEMEPERE:
+            BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_TEMP_TEMPERE);
+            break;
+        case CHAUD:
+            BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_TEMP_CHAUD);
+            break;
+        default:
+            BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_ETEINTE);
+            break;
+    }
+
+    // Envoi du signal physique
+    BandeLED_show(&bande_led);
+}
+
 void angle_servo(int angle)
 {
 	int pulse_tics = 
@@ -253,20 +305,15 @@ void commande_fenetre()
   printf("Commande fenetre: %s\r\n", (fenetre == OUVERTE) ? "OUVERTE" : "FERMEE");
   switch(fenetre) {
     case OUVERTE:
-      {
+    case OUVERTE :
       angle_servo(ANGLE_SERVO_OUVERT);
       break;
-      }
-    case FERMEE:
-      {
+    case FERMEE :
       angle_servo(ANGLE_SERVO_FERME);
       break;
-      }
-    case INIT:
-      {
-      angle_servo(ANGLE_SERVO_FERME);
+    case INIT :
+      angle_servo(ANGLE_SERVO_OUVERT);
       break;
-      }
     }
   etat_precedent = fenetre;
   }
@@ -573,6 +620,9 @@ int main(void)
             printf("J'ouvre la fenetre\r\n");
             break;
           }
+          case INIT:
+            // pris en charge au premier appel de commande_fenetre()
+            break;
         }
       }
     }
@@ -603,9 +653,7 @@ int main(void)
     	timer_debounce_flag = false;
       debounce_filter();
       update_cycle_alarme();
-      if (!BandeLED_demo(&bande_led)) {
-          printf("Erreur lors de l'execution de la demo de la bande LED\r\n");
-      }
+      update_bande_led();
     }
     if (timer_capteurs_flag) {
       timer_capteurs_flag = false;

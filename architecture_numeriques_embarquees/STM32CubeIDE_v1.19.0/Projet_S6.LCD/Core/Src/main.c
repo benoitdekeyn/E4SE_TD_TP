@@ -325,7 +325,7 @@ void evaluer_temperature()
       printf("                                      TEMP  = ERREUR LECTURE\r\n");
     }
 
-    // Machine a Etat Temperature
+    // Contrôle de la température uniquement en mode HOME
     if (mode == HOME){
     if (temperature_valeur >= SEUIL_CHALEUR && temperature != CHAUD)
      {

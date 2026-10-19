@@ -103,7 +103,7 @@ typedef enum{
   AWAY
 } maison_mode_t;
 // Fenetre
-typedef enum {FERMEE, OUVERTE, INIT} fenetre_t;
+typedef enum {FERMEE, OUVERTE} fenetre_t;
 #define ANGLE_SERVO_OUVERT  120 // ATTENTION maximum 120° sinon ça casse
 #define ANGLE_SERVO_FERME   0   // Montage effectué avec 0° fenetre fermee
 // Temperature
@@ -123,7 +123,7 @@ volatile LED_t  led_capteurs                = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pi
 volatile LED_t  led_alarme_gaz              = {RGB_ROUGE_GPIO_Port, RGB_ROUGE_Pin, false};
 volatile LED_t  led_alarme_intrusion        = {LED_JAUNE_GPIO_Port, LED_JAUNE_Pin, false};
 volatile bool   buzzer                      = false;
-volatile fenetre_t fenetre                  = INIT;
+volatile fenetre_t fenetre                  = FERMEE;
 
 volatile bool   debouncing_bouton_home      = false;
 volatile bool   debouncing_bouton_fenetre   = false;
@@ -325,17 +325,23 @@ void evaluer_temperature()
       printf("                                      TEMP  = ERREUR LECTURE\r\n");
     }
 
-    if (temperature_valeur >= SEUIL_CHALEUR)
+    // Machine a Etat Temperature
+    if (mode == HOME){
+    if (temperature_valeur >= SEUIL_CHALEUR && temperature != CHAUD)
      {
       printf("Il fait chaud !\r\n");
       temperature = CHAUD;
+      fenetre = OUVERTE;
     }
-    if (temperature_valeur <= SEUIL_FROID) 
+    if (temperature_valeur <= SEUIL_FROID && temperature != FROID) 
     {
       printf("Il fait froid !\r\n");
       temperature = FROID;
+      fenetre = FERMEE;
     }
+  }
 }
+
 void debounce_filter() 
 {
 	if (debouncing_bouton_home && !HAL_GPIO_ReadPin(BTN_HOME_GPIO_Port, BTN_HOME_Pin)) {
@@ -548,17 +554,6 @@ int main(void)
       }
     }
 
-    // Machine à état pour la température 
-    switch(temperature) {
-      case FROID:
-          fenetre = FERMEE;
-          printf("On ferme les fenêtres !\r\n");
-          break;
-      case CHAUD:
-          fenetre = OUVERTE;
-          printf("On ouvre les fenêtres !\r\n");
-          break;
-    }
     // en continu
     if (timer_debounce_flag) {
     	timer_debounce_flag = false;

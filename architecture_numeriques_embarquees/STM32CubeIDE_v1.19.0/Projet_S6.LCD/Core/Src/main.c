@@ -72,7 +72,7 @@ typedef struct {
 #define TIMER_BANDE_LED (&htim4)
 #define CANAL_BANDE_LED TIM_CHANNEL_1
 
-#define SEUIL_GAZ         2200
+#define SEUIL_GAZ         700
 #define SEUIL_PLUIE       4000
 #define SEUIL_CHALEUR     26
 #define SEUIL_FROID       24
@@ -237,44 +237,48 @@ void initialiser_bande_led()
   for (int i = 0; i < NB_LEDS_BANDE_RGB; i++) {
       BandeLED_set_led_luminosity(&bande_led, i, LUMINOSITE_BASE);
   }
+
+  // Affectation des couleurs fixes une seule fois en mémoire
+  BandeLED_set_led_hexa(&bande_led, LED_HAUT_GAUCHE, COULEUR_CAPTEURS);
+  BandeLED_set_led_hexa(&bande_led, LED_HAUT_DROITE, COULEUR_ALARME_GAZ);
+  BandeLED_set_led_hexa(&bande_led, LED_BAS_DROITE, COULEUR_ALARME_INTRUSION);
+
+  // Extinction de toutes les LEDs pour commencer proprement
+  BandeLED_set_led_state(&bande_led, LED_HAUT_GAUCHE, false);
+  BandeLED_set_led_state(&bande_led, LED_HAUT_DROITE, false);
+  BandeLED_set_led_state(&bande_led, LED_BAS_DROITE, false);
+  BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, false);
+
+  BandeLED_show(&bande_led);
 }
 
 void update_bande_led()
 {
-    // 1. LED Capteurs (Haut Gauche) -> Synchronisée avec la LED physique
-    if (led_capteurs.state) {
-        BandeLED_set_led_hexa(&bande_led, LED_HAUT_GAUCHE, COULEUR_CAPTEURS);
-    } else {
-        BandeLED_set_led_hexa(&bande_led, LED_HAUT_GAUCHE, COULEUR_ETEINTE);
-    }
+    // LED Capteurs (Couleur en mémoire, on gère juste l'état)
+    BandeLED_set_led_state(&bande_led, LED_HAUT_GAUCHE, led_capteurs.state);
 
-    // 2. LED Alarme Gaz (Haut Droite) -> Synchronisée avec la LED physique rouge
-    if (led_alarme_gaz.state) {
-        BandeLED_set_led_hexa(&bande_led, LED_HAUT_DROITE, COULEUR_ALARME_GAZ);
-    } else {
-        BandeLED_set_led_hexa(&bande_led, LED_HAUT_DROITE, COULEUR_ETEINTE);
-    }
+    // LED Alarme Gaz (Couleur en mémoire, on gère juste l'état)
+    BandeLED_set_led_state(&bande_led, LED_HAUT_DROITE, led_alarme_gaz.state);
 
-    // 3. LED Alarme Intrusion (Bas Droite) -> Synchronisée avec la LED physique jaune
-    if (led_alarme_intrusion.state) {
-        BandeLED_set_led_hexa(&bande_led, LED_BAS_DROITE, COULEUR_ALARME_INTRUSION);
-    } else {
-        BandeLED_set_led_hexa(&bande_led, LED_BAS_DROITE, COULEUR_ETEINTE);
-    }
+    // LED Alarme Intrusion (Couleur en mémoire, on gère juste l'état)
+    BandeLED_set_led_state(&bande_led, LED_BAS_DROITE, led_alarme_intrusion.state);
 
-    // 4. LED Température (Bas Gauche) -> Fixe selon la température
+    // LED Température (Couleur dynamique, on applique la couleur et on allume/éteint)
     switch (temperature) {
         case FROID:
+            BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, true);
             BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_TEMP_FROID);
             break;
         case TEMEPERE:
+            BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, true);
             BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_TEMP_TEMPERE);
             break;
         case CHAUD:
+            BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, true);
             BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_TEMP_CHAUD);
             break;
         default:
-            BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_ETEINTE);
+            BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, false);
             break;
     }
 
@@ -449,75 +453,82 @@ void debounce_filter()
 		debouncing_bouton_fenetre = false;
 	}
 }
-
-void update_cycle_alarme() 
+void update_cycle_alarmes_leds() 
 {
-  // Aucune alarme
   if (!alarme_gaz && !alarme_intrusion) {
-    buzzer = false;
     led_alarme_intrusion.state = false;
     led_alarme_gaz.state = false;
-    blink_counter_alarm = 0;
     return;
   }
 
-  blink_counter_alarm++;
+  if (alarme_gaz) {
+    int demi_periode_gaz = FREQ_CYCLE_ALARME / (2 * FREQ_BLINK_ALARME_GAZ);
+    if (blink_counter_alarm % demi_periode_gaz == 0) {
+      led_alarme_gaz.state = !led_alarme_gaz.state;
+    }
+  } else {
+    led_alarme_gaz.state = false;
+  }
 
-  // Alarme GAZ
+  if (alarme_intrusion) {
+    int demi_periode_intrusion = FREQ_CYCLE_ALARME / (2 * FREQ_BLINK_ALARME_INTRUSION);
+    if (blink_counter_alarm % demi_periode_intrusion == 0) {
+      led_alarme_intrusion.state = !led_alarme_intrusion.state;
+    }
+  } else {
+    led_alarme_intrusion.state = false;
+  }
+}
+
+void update_cycle_alarmes_buzzer() 
+{
+  if (!alarme_gaz && !alarme_intrusion) {
+    buzzer = false;
+    return;
+  }
+
+  // Uniquement Gaz
   if (alarme_gaz && !alarme_intrusion) {
     frequence_buzzer(FREQ_BUZZER_ALARME_GAZ);
-    led_alarme_intrusion.state = false;
-
-    if (blink_counter_alarm >= FREQ_CYCLE_ALARME / (2 * FREQ_BLINK_ALARME_GAZ)) {
-      led_alarme_gaz.state = !led_alarme_gaz.state;
-      buzzer = led_alarme_gaz.state;
-      blink_counter_alarm = 0;
-    }
+    buzzer = led_alarme_gaz.state; // Synchronisé avec la LED Gaz
   }
-
-  // Alarme INTRUSION
+  // Uniquement Intrusion
   else if (!alarme_gaz && alarme_intrusion) {
     frequence_buzzer(FREQ_BUZZER_ALARME_INTRUSION);
-    led_alarme_gaz.state = false;
-
-    if (blink_counter_alarm >= FREQ_CYCLE_ALARME / (2 * FREQ_BLINK_ALARME_INTRUSION)) {
-      led_alarme_intrusion.state = !led_alarme_intrusion.state;
-      buzzer = led_alarme_intrusion.state;
-      blink_counter_alarm = 0;
-    }
+    buzzer = led_alarme_intrusion.state; // Synchronisé avec la LED Intrusion
   }
-
-  // Alarme GAZ + INTRUSION
+  // Gaz ET Intrusion (Alternance)
   else if (alarme_gaz && alarme_intrusion) {
-    int half_period_intrusion = FREQ_CYCLE_ALARME / (2 * FREQ_BLINK_ALARME_INTRUSION);
-    int full_period_intrusion = FREQ_CYCLE_ALARME / FREQ_BLINK_ALARME_INTRUSION;
-    int half_period_gaz = FREQ_CYCLE_ALARME / (2 * FREQ_BLINK_ALARME_GAZ);
+    int full_period_alternance = FREQ_CYCLE_ALARME / FREQ_BLINK_ALARME_INTRUSION;
+    int half_period_alternance = full_period_alternance / 2;
+    int phase_actuelle = blink_counter_alarm % full_period_alternance;
 
-    // alarme intrusion en continu, alarme gaz eteinte
-    if (blink_counter_alarm <= half_period_intrusion) {
+    if (phase_actuelle < half_period_alternance) {
+      // Phase 1 : Son Intrusion
       frequence_buzzer(FREQ_BUZZER_ALARME_INTRUSION);
-      led_alarme_gaz.state = false;
-
-      led_alarme_intrusion.state = true;
-      buzzer = true;
-    // alarme gaz clignote, alarme intrusion eteinte
+      buzzer = true; // Son continu pendant cette phase
     } else {
+      // Phase 2 : Son Gaz
       frequence_buzzer(FREQ_BUZZER_ALARME_GAZ);
-      led_alarme_intrusion.state = false;
-
-      if ((blink_counter_alarm - half_period_intrusion) % half_period_gaz == 0) {
-        led_alarme_gaz.state = !led_alarme_gaz.state;
-        buzzer = led_alarme_gaz.state;
-      }
-    }
-
-    // fin periode alarme intrusion
-    if (blink_counter_alarm >= full_period_intrusion) {
-      blink_counter_alarm = 0;
-      led_alarme_gaz.state = false;
+      buzzer = led_alarme_gaz.state; // Suit le clignotement rapide pendant cette phase
     }
   }
 }
+
+// Fonction globale à appeler dans le main
+void update_cycle_alarmes() 
+{
+  // Gestion du compteur partagé
+  if (!alarme_gaz && !alarme_intrusion) {
+    blink_counter_alarm = 0;
+  } else {
+    blink_counter_alarm++;
+  }
+
+  update_cycle_alarmes_leds();
+  update_cycle_alarmes_buzzer();
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -656,7 +667,7 @@ int main(void)
     if (timer_debounce_flag) {
     	timer_debounce_flag = false;
       debounce_filter();
-      update_cycle_alarme();
+      update_cycle_alarmes();
       update_bande_led();
     }
     if (timer_capteurs_flag) {

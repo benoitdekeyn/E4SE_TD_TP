@@ -88,6 +88,8 @@ void Error_Handler(void);
 #define I2C_SCL_GPIO_Port GPIOB
 #define BUZZER_Pin GPIO_PIN_5
 #define BUZZER_GPIO_Port GPIOB
+#define RGB_BANDE_Pin GPIO_PIN_6
+#define RGB_BANDE_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

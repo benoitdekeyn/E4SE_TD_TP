@@ -223,7 +223,7 @@ void initialiser_thermometre()
 
 void initialiser_bande_led()
 {
-  BandeLED_Init(&bande_led, TIMER_BANDE_LED, CANAL_BANDE_LED, FREQ_TIMER_BANDE_LED, NB_LEDS);
+  BandeLED_Init(&bande_led, TIMER_BANDE_LED, CANAL_BANDE_LED, FREQ_TIMER_BANDE_LED, NB_LEDS_BANDE_RGB);
   BandeLED_allumer(&bande_led);
 }
 

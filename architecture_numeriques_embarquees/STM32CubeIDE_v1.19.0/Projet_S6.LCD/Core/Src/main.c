@@ -72,7 +72,7 @@ typedef struct {
 #define TIMER_BANDE_LED (&htim4)
 #define CANAL_BANDE_LED TIM_CHANNEL_1
 
-#define SEUIL_GAZ         1000
+#define SEUIL_GAZ         700
 #define SEUIL_PLUIE       4000
 #define SEUIL_CHALEUR     26
 #define SEUIL_FROID       24
@@ -237,39 +237,48 @@ void initialiser_bande_led()
   for (int i = 0; i < NB_LEDS_BANDE_RGB; i++) {
       BandeLED_set_led_luminosity(&bande_led, i, LUMINOSITE_BASE);
   }
+
+  // Affectation des couleurs fixes une seule fois en mémoire
+  BandeLED_set_led_hexa(&bande_led, LED_HAUT_GAUCHE, COULEUR_CAPTEURS);
+  BandeLED_set_led_hexa(&bande_led, LED_HAUT_DROITE, COULEUR_ALARME_GAZ);
+  BandeLED_set_led_hexa(&bande_led, LED_BAS_DROITE, COULEUR_ALARME_INTRUSION);
+
+  // Extinction de toutes les LEDs pour commencer proprement
+  BandeLED_set_led_state(&bande_led, LED_HAUT_GAUCHE, false);
+  BandeLED_set_led_state(&bande_led, LED_HAUT_DROITE, false);
+  BandeLED_set_led_state(&bande_led, LED_BAS_DROITE, false);
+  BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, false);
+
+  BandeLED_show(&bande_led);
 }
 
 void update_bande_led()
 {
-    if (led_capteurs.state) {
-        BandeLED_set_led_hexa(&bande_led, LED_HAUT_GAUCHE, COULEUR_CAPTEURS);
-    } else {
-        BandeLED_set_led_hexa(&bande_led, LED_HAUT_GAUCHE, COULEUR_ETEINTE);
-    }
-    if (led_alarme_gaz.state) {
-        BandeLED_set_led_hexa(&bande_led, LED_HAUT_DROITE, COULEUR_ALARME_GAZ);
-    } else {
-        BandeLED_set_led_hexa(&bande_led, LED_HAUT_DROITE, COULEUR_ETEINTE);
-    }
+    // LED Capteurs (Couleur en mémoire, on gère juste l'état)
+    BandeLED_set_led_state(&bande_led, LED_HAUT_GAUCHE, led_capteurs.state);
 
-    if (led_alarme_intrusion.state) {
-        BandeLED_set_led_hexa(&bande_led, LED_BAS_DROITE, COULEUR_ALARME_INTRUSION);
-    } else {
-        BandeLED_set_led_hexa(&bande_led, LED_BAS_DROITE, COULEUR_ETEINTE);
-    }
+    // LED Alarme Gaz (Couleur en mémoire, on gère juste l'état)
+    BandeLED_set_led_state(&bande_led, LED_HAUT_DROITE, led_alarme_gaz.state);
 
+    // LED Alarme Intrusion (Couleur en mémoire, on gère juste l'état)
+    BandeLED_set_led_state(&bande_led, LED_BAS_DROITE, led_alarme_intrusion.state);
+
+    // LED Température (Couleur dynamique, on applique la couleur et on allume/éteint)
     switch (temperature) {
         case FROID:
+            BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, true);
             BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_TEMP_FROID);
             break;
         case TEMEPERE:
+            BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, true);
             BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_TEMP_TEMPERE);
             break;
         case CHAUD:
+            BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, true);
             BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_TEMP_CHAUD);
             break;
         default:
-            BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_ETEINTE);
+            BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, false);
             break;
     }
 

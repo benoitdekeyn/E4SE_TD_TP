@@ -22,16 +22,12 @@ void BandeLED_Init(BandeLED_t* bande_led, uint32_t *dma_buffer, TIM_HandleTypeDe
     BandeLED_show(bande_led);
 }
 
-static void BandeLED_show(BandeLED_t* bande_led)
+void BandeLED_show(BandeLED_t* bande_led)
 {
     int nS_per_pulse_tic     = BL_NSEC_IN_1_SEC  / bande_led->freq_timer;
     int pulse_bit_0_tics     = BL_PULSE_BIT_0_nS / nS_per_pulse_tic;
     int pulse_bit_1_tics     = BL_PULSE_BIT_1_nS / nS_per_pulse_tic;
     int pulse_delai_maj_tics = BL_DELAI_MAJ_nS   / nS_per_pulse_tic;
-
-    uint8_t vert  = 1;
-    uint8_t rouge = 2;
-    uint8_t bleu  = 3;
 
     uint32_t dma_index = 0;
     for (int led_index = 0; led_index < bande_led->nb_leds; led_index++)
@@ -81,50 +77,38 @@ void BandeLED_eteindre(BandeLED_t* bande_led)
     BandeLED_show(bande_led);
 }
 
-void BandeLED_set_led_state(BandeLED_t* bande_led, int* led_ids, bool state)
+void BandeLED_set_led_state(BandeLED_t* bande_led, int led_id, bool state)
 {
-    for (int i = 0; i < sizeof(led_ids) / sizeof(led_ids[0]); i++)
+    if (led_id >= 0 && led_id < bande_led->nb_leds)
     {
-        if (led_ids[i] >= 0 && led_ids[i] < bande_led->nb_leds)
-        {
-            bande_led->leds[led_ids[i]].power = state;
-        }
+        bande_led->leds[led_id].power = state;
     }
 }
 
-void BandeLED_set_led_hexa(BandeLED_t* bande_led, int* led_ids, uint32_t hexa)
+void BandeLED_set_led_hexa(BandeLED_t* bande_led, int led_id, uint32_t hexa)
 {
-    for (int i = 0; i < sizeof(led_ids) / sizeof(led_ids[0]); i++)
+    if (led_id >= 0 && led_id < bande_led->nb_leds)
     {
-        if (led_ids[i] >= 0 && led_ids[i] < bande_led->nb_leds)
-        {
-            bande_led->leds[led_ids[i]].rouge = (hexa >> 16) & 0xFF;
-            bande_led->leds[led_ids[i]].vert = (hexa >> 8) & 0xFF;
-            bande_led->leds[led_ids[i]].bleu = hexa & 0xFF;
-        }
+        bande_led->leds[led_id].rouge = (hexa >> 16) & 0xFF;
+        bande_led->leds[led_id].vert  = (hexa >> 8) & 0xFF;
+        bande_led->leds[led_id].bleu  = hexa & 0xFF;
     }
 }
 
-void BandeLED_set_led_rgb(BandeLED_t* bande_led, int* led_ids, uint8_t rouge, uint8_t vert, uint8_t bleu)
+void BandeLED_set_led_rgb(BandeLED_t* bande_led, int led_id, uint8_t rouge, uint8_t vert, uint8_t bleu)
 {
-    for (int i = 0; i < sizeof(led_ids) / sizeof(led_ids[0]); i++)
+    if (led_id >= 0 && led_id < bande_led->nb_leds)
     {
-        if (led_ids[i] >= 0 && led_ids[i] < bande_led->nb_leds)
-        {
-            bande_led->leds[led_ids[i]].rouge = rouge;
-            bande_led->leds[led_ids[i]].vert = vert;
-            bande_led->leds[led_ids[i]].bleu = bleu;
-        }
+        bande_led->leds[led_id].rouge = rouge;
+        bande_led->leds[led_id].vert  = vert;
+        bande_led->leds[led_id].bleu  = bleu;
     }
 }
 
-void BandeLED_set_led_luminosity(BandeLED_t* bande_led, int* led_ids, uint8_t luminosity)
+void BandeLED_set_led_luminosity(BandeLED_t* bande_led, int led_id, uint8_t luminosity)
 {
-    for (int i = 0; i < sizeof(led_ids) / sizeof(led_ids[0]); i++)
+    if (led_id >= 0 && led_id < bande_led->nb_leds)
     {
-        if (led_ids[i] >= 0 && led_ids[i] < bande_led->nb_leds)
-        {
-            bande_led->leds[led_ids[i]].alpha = luminosity;
-        }
+        bande_led->leds[led_id].alpha = luminosity;
     }
 }

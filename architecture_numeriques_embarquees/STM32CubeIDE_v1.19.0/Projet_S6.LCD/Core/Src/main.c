@@ -304,7 +304,6 @@ void commande_fenetre()
   if (fenetre != etat_precedent) {
   printf("Commande fenetre: %s\r\n", (fenetre == OUVERTE) ? "OUVERTE" : "FERMEE");
   switch(fenetre) {
-    case OUVERTE:
     case OUVERTE :
       angle_servo(ANGLE_SERVO_OUVERT);
       break;

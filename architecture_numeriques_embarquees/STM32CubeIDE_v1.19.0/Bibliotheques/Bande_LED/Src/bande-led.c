@@ -24,29 +24,30 @@ void BandeLED_Init(BandeLED_t* bande_led, uint32_t *dma_buffer, TIM_HandleTypeDe
 
 void BandeLED_show(BandeLED_t* bande_led)
 {
-    int nS_per_pulse_tic     = BL_NSEC_IN_1_SEC  / bande_led->freq_timer;
-    int pulse_bit_0_tics     = BL_PULSE_BIT_0_nS / nS_per_pulse_tic;
-    int pulse_bit_1_tics     = BL_PULSE_BIT_1_nS / nS_per_pulse_tic;
-    int pulse_delai_maj_tics = BL_DELAI_MAJ_nS   / nS_per_pulse_tic;
+    int nS_per_timer_tic     = BL_NSEC_IN_1_SEC  / bande_led->freq_timer;
+    int pulse_bit_0_tics     = BL_PULSE_BIT_0_nS / nS_per_timer_tic;
+    int pulse_bit_1_tics     = BL_PULSE_BIT_1_nS / nS_per_timer_tic;
+    int nb_cycles_delai_maj = BL_DELAI_MAJ_nS / (BL_NSEC_IN_1_SEC / BL_FREQ_CYCLE_PWM) + 1; // +1 car le led attend >= BL_DELAI_MAJ_nS
 
     uint32_t dma_index = 0;
+
     for (int led_index = 0; led_index < bande_led->nb_leds; led_index++)
     {
         BL_RGB_t* led_courante = &bande_led->leds[led_index];
         for (int composante = 1; composante <= 3; composante++)
         {
-            uint8_t valeur_composante;
+            uint8_t valeur_composante = 0;
             switch (composante) 
             {
                 case BL_ROUGE_SEQ_RANG :
-                valeur_composante = led_courante->rouge * led_courante->alpha / 255;
-                break;
+                    valeur_composante = led_courante->rouge * led_courante->alpha / 255;
+                    break;
                 case BL_VERT_SEQ_RANG :
-                valeur_composante = led_courante->vert * led_courante->alpha / 255;
-                break;
+                    valeur_composante = led_courante->vert * led_courante->alpha / 255;
+                    break;
                 case BL_BLEU_SEQ_RANG :
-                valeur_composante = led_courante->bleu * led_courante->alpha / 255;
-                break;
+                    valeur_composante = led_courante->bleu * led_courante->alpha / 255;
+                    break;
             }
             uint8_t valeur_a_envoyer = (bande_led->power && led_courante->power) ? valeur_composante : 0;
             
@@ -56,12 +57,14 @@ void BandeLED_show(BandeLED_t* bande_led)
                 bande_led->dma_buffer[dma_index] = valeur_pulse;
                 dma_index++;
             }
-            uint8_t valeur_delai = pulse_delai_maj_tics;
-            bande_led->dma_buffer[dma_index] = valeur_delai;
-            dma_index++;
         }
     }
-    // mis a à jour du buffer DMA dans le timer
+    
+    for (int i = 0; i < nb_cycles_delai_maj; i++) {
+        bande_led->dma_buffer[dma_index] = 0;
+        dma_index++;
+    }
+    
     HAL_TIM_PWM_Start_DMA(bande_led->PWM_timer, bande_led->PWM_channel, bande_led->dma_buffer, dma_index);
 }
 

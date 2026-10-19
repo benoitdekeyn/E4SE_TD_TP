@@ -98,13 +98,16 @@ typedef struct {
 
 
 // Maison
-enum maison_mode_t {HOME, AWAY};
+typedef enum{
+  HOME,
+  AWAY
+} maison_mode_t;
 // Fenetre
-enum fenetre_t {FERMEE, OUVERTE};
+typedef enum {FERMEE, OUVERTE, INIT} fenetre_t;
 #define ANGLE_SERVO_OUVERT  120 // ATTENTION maximum 120° sinon ça casse
 #define ANGLE_SERVO_FERME   0   // Montage effectué avec 0° fenetre fermee
 // Temperature
-enum temperature_t {FROID, CHAUD};
+typedef enum {FROID, CHAUD, INIT} temperature_t;
 
 /* USER CODE END PD */
 
@@ -120,7 +123,7 @@ volatile LED_t  led_capteurs                = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pi
 volatile LED_t  led_alarme_gaz              = {RGB_ROUGE_GPIO_Port, RGB_ROUGE_Pin, false};
 volatile LED_t  led_alarme_intrusion        = {LED_JAUNE_GPIO_Port, LED_JAUNE_Pin, false};
 volatile bool   buzzer                      = false;
-volatile fenetre_t fenetre                  = FERMEE;
+volatile fenetre_t fenetre                  = INIT;
 
 volatile bool   debouncing_bouton_home      = false;
 volatile bool   debouncing_bouton_fenetre   = false;
@@ -138,7 +141,7 @@ volatile bool   pluie_detectee              = false;
 volatile bool   alarme_intrusion            = false;
 volatile bool   alarme_gaz                  = false;
 
-volatile temperature_t temperature          = FROID;
+volatile temperature_t temperature          = INIT;
 volatile float temperature_valeur           = 0.0;
 volatile int   pluie_valeur                 = 0;
 volatile int   gaz_valeur                   = 0;
@@ -548,17 +551,13 @@ int main(void)
     // Machine à état pour la température 
     switch(temperature) {
       case FROID:
-       {
           fenetre = FERMEE;
           printf("On ferme les fenêtres !\r\n");
           break;
-        }
       case CHAUD:
-        {
           fenetre = OUVERTE;
           printf("On ouvre les fenêtres !\r\n");
           break;
-        }
     }
     // en continu
     if (timer_debounce_flag) {

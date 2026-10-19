@@ -27,6 +27,7 @@
 #define PULSE_BIT_0_nS 400
 #define PULSE_BIT_1_nS 800
 #define DELAI_MAJ_nS   500000
+#define NSEC_IN_1_SEC  1000000000
 
 typedef struct {
     uint8_t rouge;

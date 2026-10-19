@@ -98,13 +98,13 @@ typedef struct {
 
 
 // Maison
-#define HOME                true
-#define AWAY                false
+enum maison_mode_t {HOME, AWAY};
 // Fenetre
-#define OUVERTE             true
-#define FERMEE              false
+enum fenetre_t {FERMEE, OUVERTE};
 #define ANGLE_SERVO_OUVERT  120 // ATTENTION maximum 120° sinon ça casse
 #define ANGLE_SERVO_FERME   0   // Montage effectué avec 0° fenetre fermee
+// Temperature
+enum temperature_t {FROID, CHAUD};
 
 /* USER CODE END PD */
 
@@ -120,7 +120,7 @@ volatile LED_t  led_capteurs                = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pi
 volatile LED_t  led_alarme_gaz              = {RGB_ROUGE_GPIO_Port, RGB_ROUGE_Pin, false};
 volatile LED_t  led_alarme_intrusion        = {LED_JAUNE_GPIO_Port, LED_JAUNE_Pin, false};
 volatile bool   buzzer                      = false;
-volatile bool   fenetre                     = false;
+volatile fenetre_t fenetre                  = FERMEE;
 
 volatile bool   debouncing_bouton_home      = false;
 volatile bool   debouncing_bouton_fenetre   = false;
@@ -132,12 +132,13 @@ volatile bool   timer_capteurs_flag         = false;
 volatile bool   fin_mesure_ADC_flag         = false;
 volatile int    blink_counter_alarm         = 0;
 
-volatile bool   mode                        = HOME;
+volatile maison_mode_t mode                 = HOME;
 volatile bool   presence_detectee           = false;
 volatile bool   pluie_detectee              = false;
 volatile bool   alarme_intrusion            = false;
 volatile bool   alarme_gaz                  = false;
 
+volatile temperature_t temperature          = FROID;
 volatile float temperature_valeur           = 0.0;
 volatile int   pluie_valeur                 = 0;
 volatile int   gaz_valeur                   = 0;
@@ -228,13 +229,23 @@ void angle_servo(int angle)
 }
 
 void commande_fenetre()
-{
-	if (fenetre == OUVERTE){
-		angle_servo(ANGLE_SERVO_OUVERT);
-	}
-	if (fenetre == FERMEE){
-		angle_servo(ANGLE_SERVO_FERME);
-	}
+{ static fenetre_t etat_precedent = FERMEE;
+  if (fenetre != etat_precedent) {
+  printf("Commande fenetre: %s\r\n", (fenetre == OUVERTE) ? "OUVERTE" : "FERMEE");
+  switch(fenetre) {
+    case OUVERTE:
+      {
+      angle_servo(ANGLE_SERVO_OUVERT);
+      break;
+      }
+    case FERMEE:
+      {
+      angle_servo(ANGLE_SERVO_FERME);
+      break;
+      }
+    }
+  etat_precedent = fenetre;
+  }
 }
 
 void commande_led()
@@ -314,10 +325,12 @@ void evaluer_temperature()
     if (temperature_valeur >= SEUIL_CHALEUR)
      {
       printf("Il fait chaud !\r\n");
+      temperature = CHAUD;
     }
     if (temperature_valeur <= SEUIL_FROID) 
     {
       printf("Il fait froid !\r\n");
+      temperature = FROID;
     }
 }
 void debounce_filter() 
@@ -472,19 +485,20 @@ int main(void)
     /* USER CODE BEGIN 3 */
 
     // Machine à état avec HOME et AWAY
-    if (mode == HOME) 
+    switch(mode) {
+    case  HOME: 
     {
       if      (bouton_home_appuye) 
       {
         bouton_home_appuye = false;
         mode = AWAY;
-        fenetre = false;
+        fenetre = FERMEE;
         printf("Je sors de la maison\r\n");
         afficher_mode_ecran();
       }
       else if (pluie_detectee)
       {
-        fenetre = false;
+        fenetre = FERMEE;
     	  bouton_fenetre_appuye = false;
       } 
       else 
@@ -492,22 +506,26 @@ int main(void)
         if (bouton_fenetre_appuye) 
         {
           bouton_fenetre_appuye = false;
-          if      (fenetre == OUVERTE) 
+          switch(fenetre){
+          case OUVERTE: 
           {
             fenetre = FERMEE;
             printf("Je ferme la fenetre\r\n");
+            break;
           } 
-          else if (fenetre == FERMEE) 
+          case FERMEE: 
           {
             fenetre = OUVERTE;
             printf("J'ouvre la fenetre\r\n");
+            break;
           }
         }
         alarme_intrusion = false;
       }
     }
-
-    if ( mode == AWAY) 
+    break;
+    }
+    case AWAY:
     {
     	bouton_fenetre_appuye = false;
       if      (bouton_home_appuye) 
@@ -523,8 +541,25 @@ int main(void)
         presence_detectee = false;
         printf("Intrusion detectee !\r\n");
       }
+      break;
+      }
     }
 
+    // Machine à état pour la température 
+    switch(temperature) {
+      case FROID:
+       {
+          fenetre = FERMEE;
+          printf("On ferme les fenêtres !\r\n");
+          break;
+        }
+      case CHAUD:
+        {
+          fenetre = OUVERTE;
+          printf("On ouvre les fenêtres !\r\n");
+          break;
+        }
+    }
     // en continu
     if (timer_debounce_flag) {
     	timer_debounce_flag = false;
@@ -553,8 +588,7 @@ int main(void)
     commande_buzzer();
     commande_led();
     commande_fenetre();
-	}
-
+  }
   /* USER CODE END 3 */
 }
 

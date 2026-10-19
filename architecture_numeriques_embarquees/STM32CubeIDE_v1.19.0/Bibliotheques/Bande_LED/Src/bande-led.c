@@ -1,11 +1,33 @@
 #include "bande-led.h"
+#include <stdlib.h>
 
-static void BandeLED_maj_materielle(BandeLED_t* bande_led)
+void BandeLED_Init(BandeLED_t* bande_led, uint32_t *dma_buffer, TIM_HandleTypeDef *htim, uint32_t timer_channel, uint32_t freq_timer, uint8_t nb_leds)
 {
-    int nS_per_pulse_tic     = NSEC_IN_1_SEC / bande_led->freq_timer;
-    int pulse_bit_0_tics     = PULSE_BIT_0_nS / nS_per_pulse_tic;
-    int pulse_bit_1_tics     = PULSE_BIT_1_nS / nS_per_pulse_tic;
-    int pulse_delai_maj_tics = DELAI_MAJ_nS / nS_per_pulse_tic;
+    bande_led->PWM_timer    = htim;
+    bande_led->PWM_channel  = timer_channel;
+    bande_led->dma_buffer   = dma_buffer;
+    bande_led->freq_timer   = freq_timer;
+    bande_led->nb_leds      = nb_leds;
+    bande_led->leds         = malloc(nb_leds * sizeof(BL_RGB_t));
+    bande_led->power        = false;
+
+    for (int i = 0; i < nb_leds; i++)
+    {
+        bande_led->leds[i].rouge = 0;
+        bande_led->leds[i].vert  = 0;
+        bande_led->leds[i].bleu  = 0;
+        bande_led->leds[i].alpha = 255;
+        bande_led->leds[i].power = true;
+    }
+    BandeLED_show(bande_led);
+}
+
+static void BandeLED_show(BandeLED_t* bande_led)
+{
+    int nS_per_pulse_tic     = BL_NSEC_IN_1_SEC  / bande_led->freq_timer;
+    int pulse_bit_0_tics     = BL_PULSE_BIT_0_nS / nS_per_pulse_tic;
+    int pulse_bit_1_tics     = BL_PULSE_BIT_1_nS / nS_per_pulse_tic;
+    int pulse_delai_maj_tics = BL_DELAI_MAJ_nS   / nS_per_pulse_tic;
 
     uint8_t vert  = 1;
     uint8_t rouge = 2;
@@ -20,18 +42,18 @@ static void BandeLED_maj_materielle(BandeLED_t* bande_led)
             uint8_t valeur_composante;
             switch (composante) 
             {
-                case BL_ROUGE_SEQ_RANG
-                    valeur_composante = led_courante->rouge * led_courante->alpha / 255;
-                    break;
-                case BL_VERT_SEQ_RANG
-                    valeur_composante = led_courante->vert * led_courante->alpha / 255;
-                    break;
-                case BL_BLEU_SEQ_RANG
-                    valeur_composante = led_courante->bleu * led_courante->alpha / 255;
-                    break;
+                case BL_ROUGE_SEQ_RANG :
+                valeur_composante = led_courante->rouge * led_courante->alpha / 255;
+                break;
+                case BL_VERT_SEQ_RANG :
+                valeur_composante = led_courante->vert * led_courante->alpha / 255;
+                break;
+                case BL_BLEU_SEQ_RANG :
+                valeur_composante = led_courante->bleu * led_courante->alpha / 255;
+                break;
             }
             uint8_t valeur_a_envoyer = (bande_led->power && led_courante->power) ? valeur_composante : 0;
-
+            
             for (int bit = 8-1; bit >= 0; bit--)
             {
                 uint32_t valeur_pulse = (valeur_a_envoyer & (1 << bit)) ? pulse_bit_1_tics : pulse_bit_0_tics;
@@ -47,34 +69,18 @@ static void BandeLED_maj_materielle(BandeLED_t* bande_led)
     HAL_TIM_PWM_Start_DMA(bande_led->PWM_timer, bande_led->PWM_channel, bande_led->dma_buffer, dma_index);
 }
 
-void BandeLED_Init(BandeLED_t* bande_led, uint32_t *dma_buffer, __TIM_HandleTypeDef *htim, uint32_t timer_channel, uint32_t freq_timer, uint8_t nb_leds)
-{
-    bande_led->PWM_timer = htim;
-    bande_led->PWM_channel = timer_channel;
-    bande_led->dma_buffer = dma_buffer;
-    bande_led->freq_timer = freq_timer;
-    bande_led->nb_leds = nb_leds;
-    bande_led->leds = malloc(nb_leds * sizeof(BL_RGB_t));
-    bande_led->power = false;
-    for (int i = 0; i < nb_leds; i++)
-    {
-        bande_led->leds[i].rouge = 0;
-        bande_led->leds[i].vert = 0;
-        bande_led->leds[i].bleu = 0;
-        bande_led->leds[i].alpha = 0;
-    }
-    BandeLED_maj_materielle(bande_led);
-}
 void BandeLED_allumer(BandeLED_t* bande_led)
 {
     bande_led->power = true;
-    BandeLED_maj_materielle(bande_led);
+    BandeLED_show(bande_led);
 }
+
 void BandeLED_eteindre(BandeLED_t* bande_led)
 {
     bande_led->power = false;
-    BandeLED_maj_materielle(bande_led);
+    BandeLED_show(bande_led);
 }
+
 void BandeLED_set_led_state(BandeLED_t* bande_led, int* led_ids, bool state)
 {
     for (int i = 0; i < sizeof(led_ids) / sizeof(led_ids[0]); i++)
@@ -85,7 +91,8 @@ void BandeLED_set_led_state(BandeLED_t* bande_led, int* led_ids, bool state)
         }
     }
 }
-void BandeLED_set_led_hexa(BandeLED_t* bande_led, int* led_ids, uint hexa)
+
+void BandeLED_set_led_hexa(BandeLED_t* bande_led, int* led_ids, uint32_t hexa)
 {
     for (int i = 0; i < sizeof(led_ids) / sizeof(led_ids[0]); i++)
     {
@@ -97,6 +104,7 @@ void BandeLED_set_led_hexa(BandeLED_t* bande_led, int* led_ids, uint hexa)
         }
     }
 }
+
 void BandeLED_set_led_rgb(BandeLED_t* bande_led, int* led_ids, uint8_t rouge, uint8_t vert, uint8_t bleu)
 {
     for (int i = 0; i < sizeof(led_ids) / sizeof(led_ids[0]); i++)
@@ -109,6 +117,7 @@ void BandeLED_set_led_rgb(BandeLED_t* bande_led, int* led_ids, uint8_t rouge, ui
         }
     }
 }
+
 void BandeLED_set_led_luminosity(BandeLED_t* bande_led, int* led_ids, uint8_t luminosity)
 {
     for (int i = 0; i < sizeof(led_ids) / sizeof(led_ids[0]); i++)

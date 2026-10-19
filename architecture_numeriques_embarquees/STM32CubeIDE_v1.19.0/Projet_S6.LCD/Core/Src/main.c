@@ -31,6 +31,7 @@
 #include "stdbool.h"
 #include "tmp102.h"
 #include "i2c-lcd.h"
+#include "bande-led.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

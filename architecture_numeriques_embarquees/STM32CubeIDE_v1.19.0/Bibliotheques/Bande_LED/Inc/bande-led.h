@@ -1,8 +1,9 @@
 #ifndef _BANDE_LED_H
 #define _BANDE_LED_H
 
-#include <main.h>
+#include "main.h"
 #include <stdbool.h>
+#include <stdint.h>
 
 // Couleurs predefinies
 #define BL_HEXA_BLANC  0xFFFFFF
@@ -41,16 +42,16 @@ typedef struct {
 } BL_RGB_t;
 
 typedef struct {
-    bool                    power;
-    int                     nb_leds;
-    BL_RGB_t*               leds;
-    __TIM_HandleTypeDef*    PWM_timer;
-    uint32_t                PWM_channel;
-    uint32_t*               dma_buffer;
-    int                     freq_timer;
+    bool                power;
+    int                 nb_leds;
+    BL_RGB_t*           leds;
+    TIM_HandleTypeDef*  PWM_timer;
+    uint32_t            PWM_channel;
+    uint32_t*           dma_buffer;
+    int                 freq_timer;
 } BandeLED_t;
 
-void BandeLED_Init(BandeLED_t* bande_led, uint32_t *dma_buffer, __TIM_HandleTypeDef *htim, uint32_t timer_channel, uint32_t freq_timer, uint8_t nb_leds);
+void BandeLED_Init(BandeLED_t* bande_led, uint32_t *dma_buffer, TIM_HandleTypeDef *htim, uint32_t timer_channel, uint32_t freq_timer, uint8_t nb_leds);
 void BandeLED_allumer(BandeLED_t* bande_led);
 void BandeLED_eteindre(BandeLED_t* bande_led);
 void BandeLED_set_led_state(BandeLED_t* bande_led, int* led_ids, bool state);

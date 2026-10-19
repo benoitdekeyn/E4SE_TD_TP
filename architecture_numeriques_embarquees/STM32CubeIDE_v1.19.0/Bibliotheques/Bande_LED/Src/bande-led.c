@@ -22,15 +22,13 @@ void BandeLED_Init(BandeLED_t* bande_led, TIM_HandleTypeDef *htim, uint32_t time
     }
     BandeLED_show(bande_led);
     BandeLED_allumer(bande_led);
-
 }
 
 bool BandeLED_show(BandeLED_t* bande_led)
 {
-    int nS_per_timer_tic     = BL_NSEC_IN_1_SEC  / bande_led->freq_timer;
-    int pulse_bit_0_tics     = BL_PULSE_BIT_0_nS / nS_per_timer_tic;
-    int pulse_bit_1_tics     = BL_PULSE_BIT_1_nS / nS_per_timer_tic;
-    int nb_cycles_delai_maj = BL_DELAI_MAJ_nS / (BL_NSEC_IN_1_SEC / BL_FREQ_CYCLE_PWM) + 1; // +1 car le led attend >= BL_DELAI_MAJ_nS
+    int nS_per_timer_tic    = BL_NSEC_IN_1_SEC  / bande_led->freq_timer;
+    int pulse_bit_0_tics    = BL_PULSE_BIT_0_nS / nS_per_timer_tic;
+    int pulse_bit_1_tics    = BL_PULSE_BIT_1_nS / nS_per_timer_tic;
 
     uint32_t dma_index = 0;
 
@@ -63,14 +61,18 @@ bool BandeLED_show(BandeLED_t* bande_led)
         }
     }
     
-    for (int i = 0; i < nb_cycles_delai_maj; i++) {
         bande_led->dma_buffer[dma_index] = 0;
         dma_index++;
     }
     
     HAL_StatusTypeDef status = HAL_TIM_PWM_Start_DMA(bande_led->PWM_timer, bande_led->PWM_channel, bande_led->dma_buffer, dma_index);
+    HAL_TIM_PWM_Stop_DMA(bande_led->PWM_timer, bande_led->PWM_channel);
+    
+    __HAL_TIM_SET_COUNTER(bande_led->PWM_timer, 0);
 
-    return (status == HAL_OK);
+    bool status = (HAL_TIM_PWM_Start_DMA(bande_led->PWM_timer, bande_led->PWM_channel, bande_led->dma_buffer, dma_index) == HAL_OK);
+
+    return status;
 }
 
 void BandeLED_allumer(BandeLED_t* bande_led)

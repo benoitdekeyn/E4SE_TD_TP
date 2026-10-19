@@ -23,7 +23,7 @@
 #define BL_HEXA_MARRON 0x804000
 #define BL_HEXA_CIEL   0x800000
 
-// Paramtres datasheet bande led
+// Parametres datasheet bande led
 #define BL_FREQ_CYCLE_PWM 800000
 #define BL_PULSE_BIT_0_nS 400
 #define BL_PULSE_BIT_1_nS 800

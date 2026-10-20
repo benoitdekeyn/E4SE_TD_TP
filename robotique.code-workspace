@@ -2,6 +2,10 @@
 	"folders": [
 		{
 			"path": "./robotique_et_navigation"
+		},
+		{
+			"name": "SSH FS - turtle_bot_3",
+			"uri": "ssh://turtle_bot_3/home/ubuntu"
 		}
 	],
 	"settings": {

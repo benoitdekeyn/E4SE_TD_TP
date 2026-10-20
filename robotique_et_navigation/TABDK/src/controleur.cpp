@@ -9,6 +9,7 @@
 #include <tf/tf.h>
 #include <std_msgs/Empty.h>
 #include <std_srvs/Empty.h>
+#include <cmath>
 
 #define FREQUENCY 5
 #define MAX_LINEAR_SPEED 0.15
@@ -29,6 +30,15 @@
 #define KEY_ZERO 48
 #define KEY_R 114
 
+#define Kp_POS 1.0
+#define Kd_POS 1.0
+#define Ki_POS 1.0
+#define SEUIL_PRECISION_POS 0.01
+#define Kp_ANG 1.0
+#define Kd_ANG 1.0
+#define Ki_ANG 1.0
+#define SEUIL_PRECISION_ANG 0.005
+
 using namespace ros;
 using namespace std_msgs;
 using namespace geometry_msgs;
@@ -42,7 +52,9 @@ enum RobotState {
   BACKWARD,
   PIVOTER_GAUCHE,
   PIVOTER_DROITE,
-  STOP
+  STOP,
+  REACH_POSITION,
+  REACH_ANGLE
 };
 
 enum RobotMode {
@@ -97,9 +109,51 @@ int move_tot_tm = move_fwd_tm + move_bwd_tm + move_stp_tm;
 double linear_speed = LINEAR_SPEED;
 double angular_speed = ANGULAR_SPEED;
 double frequence = FREQUENCY;
+double target_position = 0.0;
+double target_angle = 0.0;
 
 // structure qui contient les ordres issus du clavier
 KeyboardInputs keyboard_inputs = {false, NONE, false};
+
+double rad_to_deg(double radians) {
+  return radians * (180.0 / M_PI);
+}
+
+double deg_to_rad(double degrees) {
+  return degrees * (M_PI / 180.0);
+}
+
+double cal_angle_offset(double current_angle, double offset) {
+  double new_angle = current_angle + offset;
+  while (new_angle > M_PI) new_angle -= 2 * M_PI;
+  while (new_angle < -M_PI) new_angle += 2 * M_PI;
+  return new_angle;
+}
+
+float cal_delta_Theta(float _theta, float _theta0) 
+{
+  float theta, theta0, delta_theta;
+
+  if  (_theta < 0)  theta = _theta + 2 * M_PI;
+  else theta = _theta;
+
+  if  (_theta0 < 0)  theta0 = _theta0 + 2 * M_PI;
+  else theta0 = _theta0;
+
+  delta_theta = theta - theta0;
+
+  if (delta_theta < -M_PI)
+  {
+      delta_theta = delta_theta + 2 * M_PI;
+  } 
+  else 
+  {
+    if (delta_theta >= M_PI) {
+      delta_theta = delta_theta - 2 * M_PI;
+    }
+  }
+  return delta_theta;
+}
 
 // L'impl des fonctions
 int ms_to_ticks(int ms) {
@@ -161,7 +215,7 @@ void keyboardCallback(const Int8::ConstPtr &msg){
   }
 }
 
-void odomCallback(const nav_msgs::Odometry::ConstPtr &msg){
+void odometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
   robot_odometry.x = msg->pose.pose.position.x;
   robot_odometry.y = msg->pose.pose.position.y;
   tf::Quaternion q = tf::Quaternion(
@@ -193,6 +247,36 @@ void backward(double v) {
   pub_vel.publish(robot_velocity);
 }
 
+void reach_position(double x) {
+  double error = x - robot_odometry.x;
+  double control_signal = fabs(Kp_POS * error);
+  control_signal = control_signal > linear_speed ? linear_speed : control_signal;
+
+  if (error > SEUIL_PRECISION_POS) {
+    forward(control_signal);
+  } else if (error < -SEUIL_PRECISION_POS) {
+    backward(control_signal);
+  } else {
+    stop();
+  }
+}
+
+
+
+void reach_angle(double angle) {
+  double error = cal_delta_Theta(angle, robot_odometry.rotation);
+  double control_signal = fabs(Kp_ANG * error);
+  control_signal = control_signal > angular_speed ? angular_speed : control_signal;
+
+  if (error > SEUIL_PRECISION_ANG) {
+    pivoter(control_signal);
+  } else if (error < -SEUIL_PRECISION_ANG) {
+    pivoter(-control_signal);
+  } else {
+    stop();
+  }
+}
+
 void apply_state() {
   switch(current_state){
     case FORWARD:
@@ -209,6 +293,12 @@ void apply_state() {
       break;
     case BACKWARD:
       backward(linear_speed);
+      break;
+    case REACH_POSITION:
+      reach_position(target_position);
+      break;
+    case REACH_ANGLE:
+      reach_angle(target_angle);
       break;
     default:
       stop();
@@ -297,16 +387,20 @@ void update_FSM_auto() {
 void update_FSM_manual() {
   switch (keyboard_inputs.direction) {
     case UP:
-      current_state = FORWARD;
+      target_position += 0.1;
+      current_state = REACH_POSITION;
       break;
     case DOWN:
-      current_state = BACKWARD;
+      target_position -= 0.1;
+      current_state = REACH_POSITION;
       break;
     case LEFT:
-      current_state = PIVOTER_GAUCHE;
+      target_angle = cal_angle_offset(target_angle, deg_to_rad(+15));
+      current_state = REACH_ANGLE;
       break;
     case RIGHT:
-      current_state = PIVOTER_DROITE;
+      target_angle = cal_angle_offset(target_angle, deg_to_rad(-15));
+      current_state = REACH_ANGLE;
       break;
     default:
       break;
@@ -342,6 +436,7 @@ int main(int argc, char **argv) {
 
   nh.getParam("frequence", frequence);
   nh.getParam("linear_speed", linear_speed);
+  nh.getParam("angular_speed", angular_speed);
   nh.getParam("move_fwd_tm", move_fwd_tm);
   nh.getParam("move_bwd_tm", move_bwd_tm);
   nh.getParam("move_stp_tm", move_stp_tm);
@@ -351,13 +446,13 @@ int main(int argc, char **argv) {
   client_reset_sim = nh.serviceClient<std_srvs::Empty>("/gazebo/reset_simulation");
 
   sub_keyboard = nh.subscribe("/keyboard_input", 1000, keyboardCallback);
-  sub_odometry = nh.subscribe("/odom", 1000, odomCallback);
+  sub_odometry = nh.subscribe("/odom", 1000, odometryCallback);
 
   Rate loop_rate(frequence);
 
   while (ok()) {
 
-    ROS_INFO_THROTTLE(1, "x=%.2f y=%.2f rotation=%.2f rad", robot_odometry.x, robot_odometry.y, robot_odometry.rotation);
+    ROS_INFO_THROTTLE(1, "x=%.2f y=%.2f rotation=%.3f deg", robot_odometry.x, robot_odometry.y, rad_to_deg(robot_odometry.rotation));
     
     update_Mode();
     update_FSM();

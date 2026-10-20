@@ -5,6 +5,8 @@
 #include <std_msgs/String.h>
 #include "std_msgs/Int8.h"
 #include <string>
+#include <nav_msgs/Odometry.h>
+#include <tf/tf.h>
 
 #define FREQUENCY 5
 #define MAX_LINEAR_SPEED 0.15
@@ -60,6 +62,12 @@ struct KeyboardInputs {
   bool play_pause;
 };
 
+struct odometry {
+  double x;
+  double y;
+  double rotation;
+};
+
 #define DEFAULT_STATE FORWARD
 #define DEFAULT_MODE AUTO
 
@@ -72,8 +80,10 @@ int ticks_counter = 0;
 //autres variables globales
 Publisher pub_vel;
 Subscriber sub_keyboard;
+Subscriber sub_odometry;
 
-Twist vel;
+Twist robot_velocity;
+odometry robot_odometry = {0.0, 0.0, 0.0};
 int move_counter = 0;
 int move_fwd_tm = MOVE_FWD_TM;
 int move_bwd_tm = MOVE_BWD_TM;
@@ -127,24 +137,36 @@ void keyboardCallback(const Int8::ConstPtr &msg){
   }
 }
 
+void odomCallback(const nav_msgs::Odometry::ConstPtr &msg){
+  robot_odometry.x = msg->pose.pose.position.x;
+  robot_odometry.y = msg->pose.pose.position.y;
+  tf::Quaternion q = tf::Quaternion(
+      msg->pose.pose.orientation.x,
+      msg->pose.pose.orientation.y,
+      msg->pose.pose.orientation.z,
+      msg->pose.pose.orientation.w
+  );
+  robot_odometry.rotation = tf::getYaw(q);
+}
+
 void stop() {
-  vel = Twist();
-  pub_vel.publish(vel);
+  robot_velocity = Twist();
+  pub_vel.publish(robot_velocity);
 }
 
 void forward(double v) {
-  vel.linear.x = v;
-  pub_vel.publish(vel);
+  robot_velocity.linear.x = v;
+  pub_vel.publish(robot_velocity);
 }
 
 void pivoter(double w) {
-  vel.angular.z = w;
-  pub_vel.publish(vel);
+  robot_velocity.angular.z = w;
+  pub_vel.publish(robot_velocity);
 }
 
 void backward(double v) {
-  vel.linear.x = -v;
-  pub_vel.publish(vel);
+  robot_velocity.linear.x = -v;
+  pub_vel.publish(robot_velocity);
 }
 
 void apply_state() {
@@ -303,10 +325,13 @@ int main(int argc, char **argv) {
   pub_vel = nh.advertise<Twist>("/cmd_vel", 1000);
 
   sub_keyboard = nh.subscribe("/keyboard_input", 1000, keyboardCallback);
+  sub_odometry = nh.subscribe("/odom", 1000, odomCallback);
 
   Rate loop_rate(frequence);
 
   while (ok()) {
+
+    ROS_INFO_THROTTLE(1, "x=%.2f y=%.2f rotation=%.2f rad", robot_odometry.x, robot_odometry.y, robot_odometry.rotation);
     
     update_Mode();
     update_FSM();

@@ -22,6 +22,7 @@
 #define KEY_DOWN 66
 #define KEY_RIGHT 67
 #define KEY_LEFT 68
+#define KEY_ZERO 48
 
 using namespace ros;
 using namespace std_msgs;
@@ -34,6 +35,8 @@ void sigintHandler(int sig);
 enum RobotState {
   FORWARD,
   BACKWARD,
+  PIVOTER_GAUCHE,
+  PIVOTER_DROITE,
   STOP
 };
 
@@ -112,7 +115,12 @@ void keyboardCallback(const Int8::ConstPtr &msg){
       keyboard_inputs.direction = RIGHT;
       break;
     case KEY_SPACE:
+      ROS_INFO("SPACE key received");
       keyboard_inputs.play_pause = 1;
+      break;
+    case KEY_ZERO:
+      ROS_INFO("ZERO key received");
+      keyboard_inputs.direction = NONE;
       break;
     default:
       break;
@@ -120,12 +128,17 @@ void keyboardCallback(const Int8::ConstPtr &msg){
 }
 
 void stop() {
-  vel.linear.x = 0;
+  vel = Twist();
   pub_vel.publish(vel);
 }
 
 void forward(double v) {
   vel.linear.x = v;
+  pub_vel.publish(vel);
+}
+
+void pivoter(double w) {
+  vel.angular.z = w;
   pub_vel.publish(vel);
 }
 
@@ -138,6 +151,12 @@ void apply_state() {
   switch(current_state){
     case FORWARD:
       forward(linear_speed);
+      break;
+    case PIVOTER_GAUCHE:
+      pivoter(angular_speed);
+      break;
+    case PIVOTER_DROITE:
+      pivoter(-angular_speed);
       break;
     case STOP:
       stop();
@@ -229,13 +248,21 @@ void update_FSM_auto() {
   ticks_counter++;
 }
 
-void update_FSM_manual() { 
+void update_FSM_manual() {
+  if (current_mode != MANUAL)
+    return;
   switch (keyboard_inputs.direction) {
     case UP:
       current_state = FORWARD;
       break;
     case DOWN:
       current_state = BACKWARD;
+      break;
+    case LEFT:
+      current_state = PIVOTER_GAUCHE;
+      break;
+    case RIGHT:
+      current_state = PIVOTER_DROITE;
       break;
     default:
       break;

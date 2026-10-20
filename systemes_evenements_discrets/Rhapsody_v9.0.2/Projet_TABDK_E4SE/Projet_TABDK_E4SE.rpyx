@@ -427,8 +427,8 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">Projet_TABDK_E4SE</_name>
-			<_modifiedTimeWeak type="a">10.13.2026::22:20:3</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::22:21:37</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.20.2026::9:39:6</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.20.2026::9:39:6</_modifiedTime>
 			<_lastID type="a">4</_lastID>
 			<_UserColors type="w">
 				<IRPYRawContainer type="e">
@@ -966,8 +966,8 @@
 			</_properties>
 			<_name type="a">ClassDiagram</_name>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::22:20:5</_modifiedTime>
-			<_lastModifiedTime type="a">10.13.2026::22:20:5</_lastModifiedTime>
+			<_modifiedTime type="a">10.20.2026::9:39:6</_modifiedTime>
+			<_lastModifiedTime type="a">10.20.2026::9:39:6</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -1245,7 +1245,7 @@
 			<m_polygon type="a">4 2 329  2 1451  1061 1451  1061 329  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
-			<frameset type="a">&lt;frameset rows=61%25,39%25&gt;
+			<frameset type="a">&lt;frameset rows=65%25,35%25&gt;
 &lt;frame name=AttributeListCompartment&gt;
 &lt;frame name=OperationListCompartment&gt;</frameset>
 			<Attrs type="c">
@@ -1611,9 +1611,29 @@
 							<_hid type="a">GUID 5c2a020a-740f-4d19-8afd-293f587054f0</_hid>
 						</IHandle>
 					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">valeur_initiale_limiteur</_hname>
+							<_hid type="a">GUID 71c8e3e6-a9ff-4614-8748-d56568a35ece</_hid>
+						</IHandle>
+					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">limiteur_attente</_hname>
+							<_hid type="a">GUID 0bf91ed3-b915-4a89-9d0e-699b07844a9d</_hid>
+						</IHandle>
+					
 				</IRPYRawContainer>
 			</Items>
-			<_itemValueOfFontPropertiesMapCount type="a">38</_itemValueOfFontPropertiesMapCount>
+			<_itemValueOfFontPropertiesMapCount type="a">40</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>

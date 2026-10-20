@@ -7,6 +7,8 @@
 #include <string>
 #include <nav_msgs/Odometry.h>
 #include <tf/tf.h>
+#include <std_msgs/Empty.h>
+#include <std_srvs/Empty.h>
 
 #define FREQUENCY 5
 #define MAX_LINEAR_SPEED 0.15
@@ -25,6 +27,7 @@
 #define KEY_RIGHT 67
 #define KEY_LEFT 68
 #define KEY_ZERO 48
+#define KEY_R 114
 
 using namespace ros;
 using namespace std_msgs;
@@ -81,6 +84,8 @@ int ticks_counter = 0;
 Publisher pub_vel;
 Subscriber sub_keyboard;
 Subscriber sub_odometry;
+Publisher pub_reset;
+ServiceClient client_reset_sim;
 
 Twist robot_velocity;
 odometry robot_odometry = {0.0, 0.0, 0.0};
@@ -132,6 +137,25 @@ void keyboardCallback(const Int8::ConstPtr &msg){
       ROS_INFO("ZERO key received");
       keyboard_inputs.direction = NONE;
       break;
+    case KEY_R: {
+      ROS_INFO("R key received : reset robot + simulation");
+      // Robot réel : message vide sur /reset
+      pub_reset.publish(std_msgs::Empty());
+      // Simulation Gazebo
+      std_srvs::Empty srv;
+      if (!client_reset_sim.call(srv)) {
+        ROS_WARN("Echec de l'appel au service /gazebo/reset_simulation");
+      }
+      // Remise à zéro de l'état interne du contrôleur
+      current_state = DEFAULT_STATE;
+      previous_state = DEFAULT_STATE;
+      current_mode = DEFAULT_MODE;
+      previous_mode = DEFAULT_MODE;
+      move_counter = 0;
+      ticks_counter = 0;
+      keyboard_inputs.direction = NONE;
+      break;
+    }
     default:
       break;
   }
@@ -323,6 +347,8 @@ int main(int argc, char **argv) {
   nh.getParam("move_stp_tm", move_stp_tm);
 
   pub_vel = nh.advertise<Twist>("/cmd_vel", 1000);
+  pub_reset = nh.advertise<std_msgs::Empty>("/reset", 1);
+  client_reset_sim = nh.serviceClient<std_srvs::Empty>("/gazebo/reset_simulation");
 
   sub_keyboard = nh.subscribe("/keyboard_input", 1000, keyboardCallback);
   sub_odometry = nh.subscribe("/odom", 1000, odomCallback);

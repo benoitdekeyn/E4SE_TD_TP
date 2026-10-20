@@ -249,8 +249,6 @@ void update_FSM_auto() {
 }
 
 void update_FSM_manual() {
-  if (current_mode != MANUAL)
-    return;
   switch (keyboard_inputs.direction) {
     case UP:
       current_state = FORWARD;
@@ -283,6 +281,7 @@ void update_FSM() {
       break;
     case PAUSE:
       stop();
+      keyboard_inputs.direction = NONE;
       break;
     default:
       break;

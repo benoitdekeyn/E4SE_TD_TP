@@ -122,7 +122,7 @@ typedef enum {INIT, FERMEE, OUVERTE} fenetre_t;
 #define ANGLE_SERVO_OUVERT  120 // ATTENTION maximum 120° sinon ça casse
 #define ANGLE_SERVO_FERME   0   // Montage effectué avec 0° fenetre fermee
 // Temperature
-typedef enum {FROID, CHAUD, TEMEPERE} temperature_t;
+typedef enum {FROID, CHAUD, TEMPEREE} temperature_t;
 
 /* USER CODE END PD */
 
@@ -156,7 +156,7 @@ volatile bool   pluie_detectee              = false;
 volatile bool   alarme_intrusion            = false;
 volatile bool   alarme_gaz                  = false;
 
-volatile temperature_t temperature          = TEMEPERE;
+volatile temperature_t temperature          = TEMPEREE;
 volatile float temperature_valeur           = 0.0;
 volatile int   pluie_valeur                 = 0;
 volatile int   gaz_valeur                   = 0;
@@ -254,22 +254,18 @@ void initialiser_bande_led()
 
 void update_bande_led()
 {
-    // LED Capteurs (Couleur en mémoire, on gère juste l'état)
     BandeLED_set_led_state(&bande_led, LED_HAUT_GAUCHE, led_capteurs.state);
 
-    // LED Alarme Gaz (Couleur en mémoire, on gère juste l'état)
     BandeLED_set_led_state(&bande_led, LED_HAUT_DROITE, led_alarme_gaz.state);
 
-    // LED Alarme Intrusion (Couleur en mémoire, on gère juste l'état)
     BandeLED_set_led_state(&bande_led, LED_BAS_DROITE, led_alarme_intrusion.state);
 
-    // LED Température (Couleur dynamique, on applique la couleur et on allume/éteint)
     switch (temperature) {
         case FROID:
             BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, true);
             BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_TEMP_FROID);
             break;
-        case TEMEPERE:
+        case TEMPEREE:
             BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, true);
             BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_TEMP_TEMPERE);
             break;
@@ -282,7 +278,6 @@ void update_bande_led()
             break;
     }
 
-    // Envoi du signal physique
     BandeLED_show(&bande_led);
 }
 
@@ -386,71 +381,72 @@ void evaluer_temperature()
   float temperature_local;
 
   if (TMP102_get_temperature(&thermometre, &temperature_local)) 
-    {
-      temperature_valeur = temperature_local;
-      printf("                                      TEMP  = %s°C\r\n", TMP102_temperature_to_string(temperature_valeur, 2));
-    } 
-    else 
-    {
-      printf("                                      TEMP  = ERREUR LECTURE\r\n");
-    }
+  {
+    temperature_valeur = temperature_local;
+    printf("                                      TEMP  = %s°C\r\n", TMP102_temperature_to_string(temperature_valeur, 2));
+  } 
+  else 
+  {
+    printf("                                      TEMP  = ERREUR LECTURE\r\n");
+  }
     
-    // Mise à jour de l'état de la température
-    if (mode == HOME && !pluie_detectee) 
-    {
-      switch(temperature) 
+
+  switch(temperature)
+  {
+    case CHAUD:
+      if (temperature_valeur < SEUIL_CHALEUR)
       {
-        case CHAUD:
-          if (temperature_valeur < SEUIL_CHALEUR)
-            {
-              temperature = TEMEPERE;
-              break;
-            }
-          else
-            {
-              break;
-            }
-        case FROID:
-          if (temperature_valeur > SEUIL_FROID)
-            {
-              temperature = TEMEPERE;
-              break;
-            }
-          else
-            {
-            break;
-            }
-        case TEMEPERE:
-            if (temperature_valeur >= SEUIL_CHALEUR && temperature != CHAUD)
-              {
-                temperature = CHAUD;
-                fenetre = OUVERTE;
-                break;
-              }
-            else if (temperature_valeur <= SEUIL_FROID && temperature != FROID)
-              {
-                temperature = FROID;
-                fenetre = FERMEE;
-                break;
-              }
-            else
-              {
-                break;
-              }
-        }
+        temperature = TEMPEREE;
+        break;
       }
+      else
+      {
+        break;
+      }
+    case FROID:
+      if (temperature_valeur > SEUIL_FROID)
+      {
+        temperature = TEMPEREE;
+        break;
+      }
+      else
+      {
+      break;
+      }
+    case TEMPEREE:
+      if (temperature_valeur >= SEUIL_CHALEUR && temperature != CHAUD)
+      {
+        temperature = CHAUD;
+        if (mode == HOME && !pluie_detectee) {
+          fenetre = OUVERTE;
+        }
+        break;
+      }
+      else if (temperature_valeur <= SEUIL_FROID && temperature != FROID)
+      {
+        temperature = FROID;
+        if (mode == HOME && !pluie_detectee) {
+          fenetre = FERMEE;
+        }
+        break;
+      }
+      else
+      {
+        break;
+      }
+  }
 }
 
 void debounce_filter() 
 {
 	if (debouncing_bouton_home && !HAL_GPIO_ReadPin(BTN_HOME_GPIO_Port, BTN_HOME_Pin)) {
-		bouton_home_appuye = true;
 		debouncing_bouton_home = false;
+		bouton_home_appuye = true;
 	}
 
 	if (debouncing_bouton_fenetre && !HAL_GPIO_ReadPin(BTN_FENTR_GPIO_Port, BTN_FENTR_Pin)) {
-		bouton_fenetre_appuye = true;
 		debouncing_bouton_fenetre = false;
+		bouton_fenetre_appuye = true;
 	}
 }
 void update_cycle_alarmes_leds() 

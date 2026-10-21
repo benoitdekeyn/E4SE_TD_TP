@@ -427,8 +427,8 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">Projet_TABDK_E4SE</_name>
-			<_modifiedTimeWeak type="a">10.21.2026::7:51:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.21.2026::7:51:0</_modifiedTime>
+			<_modifiedTimeWeak type="a">10.21.2026::9:23:17</_modifiedTimeWeak>
+			<_modifiedTime type="a">10.21.2026::9:23:17</_modifiedTime>
 			<_lastID type="a">4</_lastID>
 			<_UserColors type="w">
 				<IRPYRawContainer type="e">
@@ -966,8 +966,8 @@
 			</_properties>
 			<_name type="a">ClassDiagram</_name>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.21.2026::7:51:0</_modifiedTime>
-			<_lastModifiedTime type="a">10.21.2026::7:51:0</_lastModifiedTime>
+			<_modifiedTime type="a">10.21.2026::9:23:18</_modifiedTime>
+			<_lastModifiedTime type="a">10.21.2026::9:23:18</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -1223,7 +1223,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2152</m_drawBehavior>
-			<m_transform type="a">1.05769 0 0 1.35383 225.091 -377.128 </m_transform>
+			<m_transform type="a">1.05769 0 0 1.65151 218.091 -340.003 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -1245,7 +1245,7 @@
 			<m_polygon type="a">4 2 329  2 1451  1061 1451  1061 329  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
-			<frameset type="a">&lt;frameset rows=70%25,30%25&gt;
+			<frameset type="a">&lt;frameset rows=67%25,33%25&gt;
 &lt;frame name=AttributeListCompartment&gt;
 &lt;frame name=OperationListCompartment&gt;</frameset>
 			<Attrs type="c">
@@ -1634,7 +1634,7 @@
 							<_hm2Class type="a">IAttribute</_hm2Class>
 							<_hsubsystem type="a">_MonPkg</_hsubsystem>
 							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">bluetooth_vehicule</_hname>
+							<_hname type="a">VOYANT_bluetooth_vehicule</_hname>
 							<_hid type="a">GUID a516dcd4-df14-4931-94e1-49b8e17b9209</_hid>
 						</IHandle>
 					
@@ -1643,7 +1643,7 @@
 							<_hm2Class type="a">IAttribute</_hm2Class>
 							<_hsubsystem type="a">_MonPkg</_hsubsystem>
 							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">telephone_appairage</_hname>
+							<_hname type="a">VOYANT_telephone_appairage</_hname>
 							<_hid type="a">GUID 936e4228-23e1-484a-9bfe-1ab379e1a8d2</_hid>
 						</IHandle>
 					
@@ -1652,7 +1652,7 @@
 							<_hm2Class type="a">IAttribute</_hm2Class>
 							<_hsubsystem type="a">_MonPkg</_hsubsystem>
 							<_hclass type="a">_SysVehicule</_hclass>
-							<_hname type="a">telephone_connecte</_hname>
+							<_hname type="a">VOYANT_telephone_connecte</_hname>
 							<_hid type="a">GUID a603bdfb-8d7a-4925-9427-45e40aed998c</_hid>
 						</IHandle>
 					
@@ -1710,9 +1710,19 @@
 							<_hid type="a">GUID 33adccdb-16e5-4c80-bc4c-6e3dec0be71c</_hid>
 						</IHandle>
 					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">VOYANT_vehicule_connecte</_hname>
+							<_hid type="a">GUID 0b758532-4190-45cb-9be2-9a8ceb595e15</_hid>
+						</IHandle>
+					
 				</IRPYRawContainer>
 			</Items>
-			<_itemValueOfFontPropertiesMapCount type="a">49</_itemValueOfFontPropertiesMapCount>
+			<_itemValueOfFontPropertiesMapCount type="a">50</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
@@ -1769,7 +1779,12 @@
 			<m_displayOption type="a">All</m_displayOption>
 			<m_bShowInherited type="a">0</m_bShowInherited>
 			<m_bOrdered type="a">0</m_bOrdered>
-			<_itemValueOfFontPropertiesMapCount type="a">24</_itemValueOfFontPropertiesMapCount>
+			<_itemValueOfFontPropertiesMapCount type="a">29</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>

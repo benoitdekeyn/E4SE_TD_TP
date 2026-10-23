@@ -11,6 +11,9 @@
 #include <std_srvs/Empty.h>
 #include <cmath>
 
+#define X 0
+#define Y 1
+
 #define FREQUENCY 5
 #define MAX_LINEAR_SPEED 0.15
 #define MAX_ANGULAR_SPEED 2.84
@@ -33,11 +36,11 @@
 #define Kp_POS 1.0
 #define Kd_POS 1.0
 #define Ki_POS 1.0
-#define SEUIL_PRECISION_POS 0.01
-#define Kp_ANG 1.0
+#define SEUIL_PRECISION_POS 0.02 // m
+#define Kp_ANG 2.0
 #define Kd_ANG 1.0
 #define Ki_ANG 1.0
-#define SEUIL_PRECISION_ANG 0.005
+#define SEUIL_PRECISION_ANG 2 // deg
 
 using namespace ros;
 using namespace std_msgs;
@@ -54,6 +57,7 @@ enum RobotState {
   PIVOTER_DROITE,
   STOP,
   REACH_POSITION,
+  REACH_POSITION_X,
   REACH_ANGLE
 };
 
@@ -83,8 +87,8 @@ struct odometry {
   double rotation;
 };
 
-#define DEFAULT_STATE FORWARD
-#define DEFAULT_MODE AUTO
+#define DEFAULT_STATE STOP
+#define DEFAULT_MODE MANUAL
 
 RobotState current_state = DEFAULT_STATE;
 RobotState previous_state = DEFAULT_STATE;
@@ -109,8 +113,14 @@ int move_tot_tm = move_fwd_tm + move_bwd_tm + move_stp_tm;
 double linear_speed = LINEAR_SPEED;
 double angular_speed = ANGULAR_SPEED;
 double frequence = FREQUENCY;
-double target_position = 0.0;
+double target_position_x = 0.0;
 double target_angle = 0.0;
+double target_position[2] = {0.0, 0.0};
+double angle_target = 0.0;
+double erreur_angle = 0.0;
+double erreur_distance = 0.0;
+double delta_x = 0.0;
+double delta_y = 0.0;
 
 // structure qui contient les ordres issus du clavier
 KeyboardInputs keyboard_inputs = {false, NONE, false};
@@ -155,9 +165,134 @@ float cal_delta_Theta(float _theta, float _theta0)
   return delta_theta;
 }
 
-// L'impl des fonctions
+// L'impl des fonctionsm
 int ms_to_ticks(int ms) {
   return frequence * (ms / 1000);
+}
+
+
+void odometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
+  robot_odometry.x = msg->pose.pose.position.x;
+  robot_odometry.y = msg->pose.pose.position.y;
+  tf::Quaternion q = tf::Quaternion(
+      msg->pose.pose.orientation.x,
+      msg->pose.pose.orientation.y,
+      msg->pose.pose.orientation.z,
+      msg->pose.pose.orientation.w
+  );
+  robot_odometry.rotation = tf::getYaw(q);
+}
+
+void stop() {
+  robot_velocity = Twist();
+  pub_vel.publish(robot_velocity);
+}
+
+void forward(double v) {
+  robot_velocity = Twist();
+  robot_velocity.linear.x = v;
+  pub_vel.publish(robot_velocity);
+}
+
+void pivoter(double w) {
+  robot_velocity = Twist();
+  robot_velocity.angular.z = w;
+  pub_vel.publish(robot_velocity);
+}
+
+void backward(double v) {
+  robot_velocity = Twist();
+  robot_velocity.linear.x = -v;
+  pub_vel.publish(robot_velocity);
+}
+
+void reach_position_x(double x) {
+  double error = x - robot_odometry.x;
+  double control_signal = fabs(Kp_POS * error);
+  control_signal = control_signal > linear_speed ? linear_speed : control_signal;
+
+  if (error > SEUIL_PRECISION_POS) {
+    forward(control_signal);
+  } else if (error < -SEUIL_PRECISION_POS) {
+    backward(control_signal);
+  } else {
+    stop();
+  }
+}
+
+void reach_angle(double angle) {
+  double error = cal_delta_Theta(angle, robot_odometry.rotation);
+  double control_signal = fabs(Kp_ANG * error);
+  control_signal = control_signal > angular_speed ? angular_speed : control_signal;
+
+  if (error > deg_to_rad(SEUIL_PRECISION_ANG)) {
+    pivoter(control_signal);
+  } else if (error < -deg_to_rad(SEUIL_PRECISION_ANG)) {
+    pivoter(-control_signal);
+  } else {
+    stop();
+  }
+}
+
+void reach_position(double x, double y) {
+  delta_x = x - robot_odometry.x;
+  delta_y = y - robot_odometry.y;
+  angle_target = atan2(delta_y, delta_x);
+  erreur_distance = sqrt(pow(delta_x, 2) + pow(delta_y, 2));
+  erreur_angle = cal_delta_Theta(angle_target, robot_odometry.rotation);
+
+  if (fabs(erreur_angle) > deg_to_rad(SEUIL_PRECISION_ANG)) {
+    double control_signal_a = fabs(Kp_ANG * erreur_angle);
+    control_signal_a = control_signal_a > angular_speed ? angular_speed : control_signal_a;
+
+    if (erreur_angle > deg_to_rad(SEUIL_PRECISION_ANG)) {
+      pivoter(control_signal_a);
+    } else if (erreur_angle < -deg_to_rad(SEUIL_PRECISION_ANG)) {
+      pivoter(-control_signal_a);
+    }
+  }
+  else
+  {
+    double control_signal = fabs(Kp_POS * erreur_distance);
+    control_signal = control_signal > linear_speed ? linear_speed : control_signal;
+
+    if (erreur_distance > SEUIL_PRECISION_POS) {
+      forward(control_signal);
+    } else if (erreur_distance < -SEUIL_PRECISION_POS) {
+      backward(control_signal);
+    } else {
+      stop();
+    }
+  }
+}
+
+void reset_robot() {
+  // Robot réel : message vide sur /reset
+  pub_reset.publish(std_msgs::Empty());
+  // Simulation Gazebo
+  std_srvs::Empty srv;
+  if (!client_reset_sim.call(srv)) {
+    ROS_WARN("Echec de l'appel au service /gazebo/reset_simulation");
+  }
+  stop();
+  // Remise à zéro de l'état interne du contrôleur
+  current_state = DEFAULT_STATE;
+  previous_state = DEFAULT_STATE;
+  current_mode = DEFAULT_MODE;
+  previous_mode = DEFAULT_MODE;
+  move_counter = 0;
+  ticks_counter = 0;
+  keyboard_inputs.direction = NONE;
+  keyboard_inputs.play_pause = 0;
+  target_position_x = 0.0;
+  target_angle = 0.0;
+  target_position[0] = 0.0;
+  target_position[1] = 0.0;
+  delta_x = 0.0;
+  delta_y = 0.0;
+  erreur_distance = 0.0;
+  erreur_angle = 0.0;
+  angle_target = 0.0;
 }
 
 void keyboardCallback(const Int8::ConstPtr &msg){
@@ -193,87 +328,11 @@ void keyboardCallback(const Int8::ConstPtr &msg){
       break;
     case KEY_R: {
       ROS_INFO("R key received : reset robot + simulation");
-      // Robot réel : message vide sur /reset
-      pub_reset.publish(std_msgs::Empty());
-      // Simulation Gazebo
-      std_srvs::Empty srv;
-      if (!client_reset_sim.call(srv)) {
-        ROS_WARN("Echec de l'appel au service /gazebo/reset_simulation");
-      }
-      // Remise à zéro de l'état interne du contrôleur
-      current_state = DEFAULT_STATE;
-      previous_state = DEFAULT_STATE;
-      current_mode = DEFAULT_MODE;
-      previous_mode = DEFAULT_MODE;
-      move_counter = 0;
-      ticks_counter = 0;
-      keyboard_inputs.direction = NONE;
+      reset_robot();
       break;
     }
     default:
       break;
-  }
-}
-
-void odometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
-  robot_odometry.x = msg->pose.pose.position.x;
-  robot_odometry.y = msg->pose.pose.position.y;
-  tf::Quaternion q = tf::Quaternion(
-      msg->pose.pose.orientation.x,
-      msg->pose.pose.orientation.y,
-      msg->pose.pose.orientation.z,
-      msg->pose.pose.orientation.w
-  );
-  robot_odometry.rotation = tf::getYaw(q);
-}
-
-void stop() {
-  robot_velocity = Twist();
-  pub_vel.publish(robot_velocity);
-}
-
-void forward(double v) {
-  robot_velocity.linear.x = v;
-  pub_vel.publish(robot_velocity);
-}
-
-void pivoter(double w) {
-  robot_velocity.angular.z = w;
-  pub_vel.publish(robot_velocity);
-}
-
-void backward(double v) {
-  robot_velocity.linear.x = -v;
-  pub_vel.publish(robot_velocity);
-}
-
-void reach_position(double x) {
-  double error = x - robot_odometry.x;
-  double control_signal = fabs(Kp_POS * error);
-  control_signal = control_signal > linear_speed ? linear_speed : control_signal;
-
-  if (error > SEUIL_PRECISION_POS) {
-    forward(control_signal);
-  } else if (error < -SEUIL_PRECISION_POS) {
-    backward(control_signal);
-  } else {
-    stop();
-  }
-}
-
-
-
-void reach_angle(double angle) {
-  double error = cal_delta_Theta(angle, robot_odometry.rotation);
-  double control_signal = fabs(Kp_ANG * error);
-  control_signal = control_signal > angular_speed ? angular_speed : control_signal;
-
-  if (error > SEUIL_PRECISION_ANG) {
-    pivoter(control_signal);
-  } else if (error < -SEUIL_PRECISION_ANG) {
-    pivoter(-control_signal);
-  } else {
-    stop();
   }
 }
 
@@ -295,7 +354,10 @@ void apply_state() {
       backward(linear_speed);
       break;
     case REACH_POSITION:
-      reach_position(target_position);
+      reach_position(target_position[X], target_position[Y]);
+      break;
+    case REACH_POSITION_X:
+      reach_position_x(target_position_x);
       break;
     case REACH_ANGLE:
       reach_angle(target_angle);
@@ -387,20 +449,20 @@ void update_FSM_auto() {
 void update_FSM_manual() {
   switch (keyboard_inputs.direction) {
     case UP:
-      target_position += 0.1;
+      target_position[X] += 0.1;
       current_state = REACH_POSITION;
       break;
     case DOWN:
-      target_position -= 0.1;
+      target_position[X] -= 0.1;
       current_state = REACH_POSITION;
       break;
     case LEFT:
-      target_angle = cal_angle_offset(target_angle, deg_to_rad(+15));
-      current_state = REACH_ANGLE;
+      target_position[Y] -= 0.1;
+      current_state = REACH_POSITION;
       break;
     case RIGHT:
-      target_angle = cal_angle_offset(target_angle, deg_to_rad(-15));
-      current_state = REACH_ANGLE;
+      target_position[Y] += 0.1;
+      current_state = REACH_POSITION;
       break;
     default:
       break;
@@ -452,7 +514,10 @@ int main(int argc, char **argv) {
 
   while (ok()) {
 
-    ROS_INFO_THROTTLE(1, "x=%.2f y=%.2f rotation=%.3f deg", robot_odometry.x, robot_odometry.y, rad_to_deg(robot_odometry.rotation));
+    ROS_INFO_THROTTLE(1, "x=%.4f y=%.4f rotation=%.4f deg", robot_odometry.x, robot_odometry.y, rad_to_deg(robot_odometry.rotation));
+    ROS_INFO_THROTTLE(1, "target_x=%.4f target_y=%.4f", target_position[X], target_position[Y]);
+    ROS_INFO_THROTTLE(1, "angle_target=%.4f deg, erreur_angle=%.4f deg, erreur_distance=%.4f", rad_to_deg(angle_target), rad_to_deg(erreur_angle), erreur_distance);
+    ROS_INFO_THROTTLE(1, "delta_x=%.4f delta_y=%.4f", delta_x, delta_y);
     
     update_Mode();
     update_FSM();
@@ -476,8 +541,7 @@ void sigintHandler(int sig) {
   // Log quit
   ROS_INFO("Exiting program gracefully ...");
 
-  stop();
-  // MESSAGE A PUBLIER le MESSAGE
+  reset_robot();
 
   // Kill all open subscriptions, publications, service calls, and service
   // servers

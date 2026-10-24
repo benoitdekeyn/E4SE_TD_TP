@@ -70,18 +70,21 @@
 
 #### Contraintes de brochage
 
-On a voulu rester sur l'**Arduino Header** de la Nucleo pour simplifier le câblage avec la breadboard notamment. Si on reprend le pinout fourni sur BlackBoard : 
+On a voulu rester sur l'**Arduino Header** de la Nucleo pour simplifier le câblage avec la breadboard notamment. 
+A partir du scenario 6, il a fallu réorganiser le brochage arbitraire qu'on faisait au début pour tout faire rentrer sur le header Arduino.
+On a donc listé tous les composants et leur fonctions pour leur assigner des broches du plus contraignant au moins contraignant.
 
-![Fonctions alternatives disponibles sur l'Arduino Header de la NUCLEO-F411RE](media/Arduino_Header_with legend.png)
+Si on reprend le pinout fourni sur BlackBoard : 
 
-A partir du scenario 6, il a fallu reorganiser le brochage arbitraire qu'on faisait au début pour tout faire rentrer dur le header Arduino.
-ON a donc listé tous les composants et leur fonctions pour leur assigner des broches du plus contraignant au moins contraignant.
+![Fonctions alternatives disponibles sur l'Arduino Header de la NUCLEO-F411RE](media/Arduino_Header_with_legend.png)
+
+
 
 ---
 
 **Priorité 1 — Broches fixées par le matériel**
 
-Les broches suivantes sont assignées d'emblée:
+On est parti de cette base :
 
 - **PA2 & PA3** → USART2 TX/RX, reliés physiquement au ST-LINK sur la Nucleo pour la liaison série USB.
 - **PA5 (D13)** → LED built-in, inutilisée pour pouvoir déporter les LEDs (avant d'implémenter les NeoPixels).
@@ -89,9 +92,9 @@ Les broches suivantes sont assignées d'emblée:
 
 ---
 
-**Priorité 2 — I²C : SCL et SDA**
+**Priorité 2 — I²C**
 
-Seules 2 broches supportent les fonctions I2Cx_SCL & I2Cx_SDA donc on les a réservée aussi directement :
+le header Arduino n'avait qu'une paire de broches SDA & SCL disponibles, donc on les a réservée directement :
 
 Le module **I2C3** est disponible avec :
 - SCL sur **PA8 (D7)**
@@ -107,10 +110,10 @@ On avait besoin de 4 timers :
 - PWM de la bande de 4 LEDs NeoPixel
 - Timer pour l'échantillonnage
 
-On a que 4 timers dispos sur le header Arduino.
-Or pour l'échantillonnage on voulait que l'ADC soit déclenché par un TGO event du timer d'echantillonnage, or il y a que les timers 2 et 3 qui permettent ça.
+On a que 4 timers disponibles sur le header Arduino.
+Or pour l'échantillonnage on voulait que l'ADC soit déclenché par un TGO event du timer d'échantillonnage, or il y a que les timers 2 et 3 qui permettent ça.
 On a donc choisit arbitrairement le timer 2 pour l'échantillonnage.
-Pour le reste on a choisit arbitrairement quel composant allait sur quel timer, sachant que APB1 et APB2 sont tous les deux à 100Mhz donc pas de différence sur ce point.
+Pour le reste, on a choisi arbitrairement quel composant allait sur quel timer, sachant que APB1 et APB2 sont tous les deux à 100Mhz donc pas de différence sur ce point.
 
 Résultat :
 - Timer 1 → Servomoteur sur le channel 3 : PA9 (D8)
@@ -123,7 +126,7 @@ Résultat :
 **Priorité 4 — Voies analogiques**
 
 Deux mesures analogiques sont nécessaires (gaz MQ-2 et capteur de pluie). 
-L'ADC1 est le seul ADC de la carte. mais on a plusieurs entrées sur les broches analogiques notemment qui sont traditionnellement reservées aux mesures analogiques. On arbitrairement chois parmi les AX restantes : 
+L'ADC1 est le seul ADC de la carte. mais on a plusieurs entrées sur les broches analogiques notemment qui sont traditionnellement reservées aux mesures analogiques. On arbitrairement choisi parmi les AX restantes : 
 
 - **A2 (PA4)** → ADC1 canal 4 → capteur de gaz MQ-2
 - **A3 (PB0)** → ADC1 canal 8 → capteur de pluie
@@ -161,21 +164,21 @@ PS : C'est seulement à la fin que nous avons décidé d'ajouter les 4 LEDs NeoP
 
 | Composant | Label CubeMX | Connecteur Arduino | Broche STM32 | Périphérique / Mode | Pull | Tension |
 |---|---|---|---|---|---|---|
-| Bouton fenêtre | BTN_FENTR | D2 | PA10 | EXTI10 – Falling Edge | PULLUP | 3V3 |
-| LED alarme intrusion | LED_JAUNE | D3 | PB3 | GPIO Output | — | 3V3 |
-| Buzzer passif | BUZZER | D4 | PB5 | TIM3 CH2 – PWM | — | 3V3 |
-| TMP102 + LCD (SDA) | I2C_SDA | D5 | PB4 | I2C3 SDA | — | 5V |
-| LED cycle capteurs | LED_BLEUE | D6 | PB10 | GPIO Output | — | 3V3 |
-| TMP102 + LCD (SCL) | I2C_SCL | D7 | PA8 | I2C3 SCL | — | 5V |
-| Servomoteur fenêtre | SERVO | D8 | PA9 | TIM1 CH2 – PWM | — | 5V |
-| Capteur PIR | PIR_MVMT | D9 | PC7 | EXTI7 – Rising Edge | PULLDOWN | 3V3 |
-| Bande LED NeoPixel | RGB_BANDE | D10 | PB6 | TIM4 CH1 – PWM + DMA | — | 5V |
-| LED alarme gaz | RGB_ROUGE | D11 | PA7 | GPIO Output | — | 3V3 |
-| Bouton HOME/AWAY | BTN_HOME | D12 | PA6 | EXTI6 – Falling Edge | PULLUP | 3V3 |
-| Capteur gaz MQ-2 | GAZ | A2 | PA4 | ADC1 CH4 | — | 5V |
-| Capteur de pluie | PLUIE | A3 | PB0 | ADC1 CH8 | — | 5V |
 | Liaison série USB | SERIAL_TX | — | PA2 | USART2 TX (ST-LINK) | — | 3V3 |
 | Liaison série USB | SERIAL_RX | — | PA3 | USART2 RX (ST-LINK) | — | 3V3 |
+| TMP102 + LCD (SDA) | I2C_SDA | D5 | PB4 | I2C3 SDA | — | 5V |
+| TMP102 + LCD (SCL) | I2C_SCL | D7 | PA8 | I2C3 SCL | — | 5V |
+| Buzzer passif | BUZZER | D4 | PB5 | TIM3 CH2 – PWM | — | 3V3 |
+| Servomoteur fenêtre | SERVO | D8 | PA9 | TIM1 CH2 – PWM | — | 5V |
+| Bande LED NeoPixel | RGB_BANDE | D10 | PB6 | TIM4 CH1 – PWM + DMA | — | 5V |
+| Capteur gaz MQ-2 | GAZ | A2 | PA4 | ADC1 CH4 | — | 5V |
+| Capteur de pluie | PLUIE | A3 | PB0 | ADC1 CH8 | — | 5V |
+| Capteur PIR | PIR_MVMT | D9 | PC7 | EXTI7 – Rising Edge | PULLDOWN | 3V3 |
+| Bouton HOME/AWAY | BTN_HOME | D12 | PA6 | EXTI6 – Falling Edge | PULLUP | 3V3 |
+| Bouton fenêtre | BTN_FENTR | D2 | PA10 | EXTI10 – Falling Edge | PULLUP | 3V3 |
+| LED alarme intrusion | LED_JAUNE | D3 | PB3 | GPIO Output | — | 3V3 |
+| LED cycle capteurs | LED_BLEUE | D6 | PB10 | GPIO Output | — | 3V3 |
+| LED alarme gaz | RGB_ROUGE | D11 | PA7 | GPIO Output | — | 3V3 |
 
 ### 2.2 Arbre d'horloge et fréquences
 

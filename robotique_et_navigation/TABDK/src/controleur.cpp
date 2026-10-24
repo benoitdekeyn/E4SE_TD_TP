@@ -41,6 +41,7 @@
 #define Kd_ANG 1.0
 #define Ki_ANG 1.0
 #define SEUIL_PRECISION_ANG 2 // deg
+#define SEUIL_NOUVELLE_RECHERCHE 4 // deg
 
 using namespace ros;
 using namespace std_msgs;
@@ -206,6 +207,13 @@ void backward(double v) {
   pub_vel.publish(robot_velocity);
 }
 
+void move(double linear, double angular) {
+  robot_velocity = Twist();
+  robot_velocity.linear.x = linear;
+  robot_velocity.angular.z = angular;
+  pub_vel.publish(robot_velocity);
+}
+
 void reach_position_x(double x) {
   double error = x - robot_odometry.x;
   double control_signal = fabs(Kp_POS * error);
@@ -241,6 +249,8 @@ void reach_position(double x, double y) {
   erreur_distance = sqrt(pow(delta_x, 2) + pow(delta_y, 2));
   erreur_angle = cal_delta_Theta(angle_target, robot_odometry.rotation);
 
+  if (fabs(erreur_angle) > deg_to_rad(SEUIL_PRECISION_ANG_)) {
+
   if (fabs(erreur_angle) > deg_to_rad(SEUIL_PRECISION_ANG)) {
     double control_signal_a = fabs(Kp_ANG * erreur_angle);
     control_signal_a = control_signal_a > angular_speed ? angular_speed : control_signal_a;
@@ -251,6 +261,7 @@ void reach_position(double x, double y) {
       pivoter(-control_signal_a);
     }
   }
+
   else
   {
     double control_signal = fabs(Kp_POS * erreur_distance);

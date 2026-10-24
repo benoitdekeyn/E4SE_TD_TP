@@ -1,17 +1,17 @@
 # Rapport de Projet — Maison Intelligente STM32
 
-**Unité d'enseignement :** Architecture Numériques Embarquées  
-**Membres du groupe :** _[À compléter]_  
-**Date :** _[À compléter]_  
-**Carte cible :** NUCLEO-F411RE (STM32F411RETx)
+**ECUE :** Architecture Numériques Embarquées  
+**Binôme :** Thibault AGUEH, Benoît DE KEYN   
+**Date :** 26/10/2026  
+**Carte cible :** NUCLEO-F411RE (STM32F411RET6)
 
 ---
 
 ## Table des matières
 
-1. [Introduction](#1--introduction)
+1. [Fonctionnement global](#1--fonctionnement-global)
 2. [Architecture globale du système](#2--architecture-globale-du-système)
-   1. [Brochage retenu](#21-brochage-retenu)
+   1. [Branchement des composants](#21-branchement-des-composants)
    2. [Arbre d'horloge et fréquences](#22-arbre-dhorloge-et-fréquences)
    3. [Organisation logicielle](#23-organisation-logicielle)
 3. [Scénario 1 — Base temporelle pour l'échantillonnage](#3--scénario-1--base-temporelle-pour-léchantillonnage)
@@ -53,20 +53,44 @@
     1. [Clignotement non bloquant par compteur partagé](#111-clignotement-non-bloquant-par-compteur-partagé)
     2. [Gestion du buzzer avec fréquences distinctes](#112-gestion-du-buzzer-avec-fréquences-distinctes)
     3. [Cas simultané : alternance gaz / intrusion](#113-cas-simultané--alternance-gaz--intrusion)
-12. [Difficultés rencontrées et solutions](#12--difficultés-rencontrées-et-solutions)
-13. [Conclusion](#13--conclusion)
 
 ---
 
-## 1 — Introduction
+## 1 — Fonctionnement Global
 
-> _Présenter brièvement le contexte du projet (maquette Keyestudio Smart Home, carte NUCLEO-F411RE), l'objectif global (application embarquée unique et cohérente intégrant tous les scénarios), et les outils utilisés (STM32CubeMX, STM32CubeIDE, HAL)._
+### 1.1 Photos de la maison
 
----
+![Face 1](media/photo_maison_1.jpg)
+![Face 2](media/photo_maison_2.jpg)
+
+### 1.2 Description du fonctionnement
+
+On peut entrer et sortir de la maison avec le bouton HOME.
+Une fois sorti, la fenêtre reste fermée, et l'alarme intrusion peut se déclencher si une présence est détectée.
+L'alarme instrusion continue de sonner tant qu'on n'est pas rentré à nouveau dans la maison.
+
+Si on est à la maison, on peut ouvrir et fermer la fenêtre avec le bouton fenêtre.
+Si il commence à pleuvoir, la fenêtre se ferme automatiquement et force la fermeture tant qu'il pleut.
+Aussi, si il fait trop chaud, la fenêtre s'ouvre automatiquement une fois (sans maintenir forcée l'ouverture) et vice versa s'il fait trop froid, la fenêtre se ferme une fois (sans maintenir forcée la fermeture).
+
+L'alarme de gaz peut se déclencher à tout moment.
+
+Des logs sur le monieteur série permettent de suivre la valeur des capteurs et les différentes situations.
+
+L'écran LCD indique la température, le niveau de gaz, le niveau de pluie et si on est sorti ou non.
+
+Les 4 LEDs NeoPixel indiquent : 
+- l'alarme intrusion en jaune clignotant
+- l'alarme gaz en rouge clignotant
+- la mise à jour de la valeur des capteurs, en bleu par un toogle.
+- la tranche de température : 
+   - bleu si trop froid
+   - vert si tempéré
+   - orange si trop chaud
 
 ## 2 — Architecture globale du système
 
-### 2.1 Brochage retenu
+### 2.1 Branchement des composants
 
 #### Contraintes de brochage
 
@@ -77,8 +101,6 @@ On a donc listé tous les composants et leur fonctions pour leur assigner des br
 Si on reprend le pinout fourni sur BlackBoard : 
 
 ![Fonctions alternatives disponibles sur l'Arduino Header de la NUCLEO-F411RE](media/Arduino_Header_with_legend.png)
-
-
 
 ---
 
@@ -183,6 +205,8 @@ PS : C'est seulement à la fin que nous avons décidé d'ajouter les 4 LEDs NeoP
 ### 2.2 Arbre d'horloge et fréquences
 
 > _Décrire la configuration de l'horloge système : HSE 8 MHz, PLL configuré (PLLM=4, PLLN=100, PLLP=2) pour obtenir SYSCLK = 100 MHz. Indiquer les fréquences dérivées : AHB = 100 MHz, APB1 = 50 MHz (timers APB1 = 100 MHz), APB2 = 100 MHz. Expliquer pourquoi ces fréquences sont importantes pour le calcul des prescalers/périodes des timers._
+
+![Arbre d'horloge](media/clock_tree.png)
 
 ### 2.3 Organisation logicielle
 
@@ -353,21 +377,3 @@ PS : C'est seulement à la fin que nous avons décidé d'ajouter les 4 LEDs NeoP
 ### 11.3 Cas simultané : alternance gaz / intrusion
 
 > _Décrire la stratégie quand les deux alarmes sont actives simultanément : le buzzer alterne entre les deux fréquences (intrusion puis gaz) par demi-périodes, tandis que chaque LED clignote indépendamment à sa propre fréquence. Justifier ce choix pour permettre d'identifier les deux alarmes même quand elles sont concomitantes._
-
----
-
-## 12 — Difficultés rencontrées et solutions
-
-> _Lister les principaux problèmes rencontrés durant le projet et les solutions apportées. Exemples possibles :_
-> - _Rebonds des boutons poussoirs → implémentation du filtre anti-rebond par timer_
-> - _Protocole WS2812B exigeant en timing → utilisation du DMA + PWM pour garantir la précision_
-> - _Cohabitation I²C entre LCD et TMP102 → vérification des adresses, pas d'accès concurrent_
-> - _Absence de `%f` fiable dans `snprintf` embarqué → écriture d'une fonction de conversion maison_
-> - _Limitation mécanique du servo → angle max borné à 120°_
-> - _Temps de chauffe du MQ-2 et stabilisation des mesures_
-
----
-
-## 13 — Conclusion
-
-> _Synthétiser les résultats obtenus : tous les scénarios sont intégrés dans une application unique, la boucle principale gère de manière non bloquante l'ensemble des capteurs/actionneurs, les bibliothèques TMP102 et Bande LED ont été développées en propre. Mentionner les éventuelles améliorations possibles (AHT20 pour humidité, ajout d'un mode alerte LCD plus visible, gestion de priorités d'interruption, etc.)._

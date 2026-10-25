@@ -204,7 +204,7 @@ PS : C'est seulement à la fin que nous avons décidé d'ajouter les 4 LEDs NeoP
 
 ### 2.2 Arbre d'horloge et fréquences
 
-> _Décrire la configuration de l'horloge système : HSE 8 MHz, PLL configuré (PLLM=4, PLLN=100, PLLP=2) pour obtenir SYSCLK = 100 MHz. Indiquer les fréquences dérivées : AHB = 100 MHz, APB1 = 50 MHz (timers APB1 = 100 MHz), APB2 = 100 MHz. Expliquer pourquoi ces fréquences sont importantes pour le calcul des prescalers/périodes des timers._
+Pour le réglage des horloge, nous avons simplement gardé la configuration que nous avions faite au premier TD, donc en gardant la plus haute fréquence possible pour l'AHB et l'APB1 et l'APB2 soit 100 MHz.
 
 ![Arbre d'horloge](media/clock_tree.png)
 
@@ -230,7 +230,74 @@ PS : C'est seulement à la fin que nous avons décidé d'ajouter les 4 LEDs NeoP
 
 ### 4.1 Bouton MODE et anti-rebond
 
-> _Expliquer le choix d'utiliser le bouton sur PA6 en EXTI sur front descendant (falling edge) avec pull-up interne. Justifier le mécanisme d'anti-rebond implémenté : à l'appui, un flag `debouncing_bouton_home` est levé et le compteur de TIM5 est remis à zéro. TIM5 est configuré à 20 Hz (Prescaler=10000-1, Period=500-1 → 50 ms). Au prochain tick de TIM5, `debounce_filter()` vérifie que le bouton est bien relâché (état stable) avant de valider l'appui. Expliquer pourquoi cette méthode est plus fiable qu'un simple délai bloquant._
+```mermaid
+---
+config:
+  theme: default
+  layout: elk
+---
+flowchart TB
+    A(["Start Parser"]) --> n40["B021 = code profilé à 3 lettres + 5 espaces<br>"]
+    B@{ label: "Y a t-il<br>des valeurs <br>d'angles dans la <br>colonne 4" } -- oui --> n1["Ces valeurs<br>sont-elles dans <br>le paragraphe <br>v ou o ?"]
+    n1 -- v --> n2["Orientation : debout"]
+    n1 -- o --> n3["Orientation : à plat"]
+    n3 --> n42["B035 = Hauteur profil"]
+    n4["AK o(4;1)"] -- &lt; 0 --> n5["S051 = AK v(1;4)"]
+    n4 -- "&gt;= 0" --> n6["S051 = AK v(1;2)"]
+    n7["AK v(4;4)<br>"] -- &lt; 0 --> n8["S051 = AK o(1;2)"]
+    n2 --> n43["B035 = Largeur profil"]
+    n10["AK v(4;2)"] -- "&lt;= 0" --> n11["S051 = AK o(1;3)"]
+    n10 -- &gt; 0 --> n12["S051 = AK o(1;4)"]
+    n7 -- "&gt;= 0" --> n10
+    B -- non --> n3
+    n40 --> n41["S052 = Quantité<br>S053 = Quantité"]
+    n41 --> B
+    n42 --> n46["S054 = 90 - AK o(4;1)"]
+    n43 --> n48["S054 = 90 + AK v(4;4)"]
+    n46 --> n47["S055 = 90 - AK o(4;3)"]
+    n48 --> n49["S055 = 90 + AK v(4;2)"]
+    n47 --> n4
+    n49 --> n7
+
+    n40@{ shape: rect}
+    B@{ shape: diamond}
+    n1@{ shape: diam}
+    n4@{ shape: diam}
+    n7@{ shape: diam}
+    n8@{ shape: rect}
+    n43@{ shape: rect}
+    n10@{ shape: diam}
+    n41@{ shape: rect}
+    n48@{ shape: rect}
+    n49@{ shape: rect}
+     n40:::B021
+     n2:::Aqua
+     n3:::Aqua
+     n42:::B035
+     n5:::S051
+     n6:::S051
+     n8:::S051
+     n43:::B035
+     n11:::S051
+     n12:::S051
+     n41:::S052-3
+     n46:::S054
+     n48:::S054
+     n47:::S055
+     n49:::S055
+    classDef Peach stroke-width:1px, stroke-dasharray:none, stroke:#FBB35A, fill:#FFEFDB, color:#8F632D
+    classDef Ash stroke-width:1px, stroke-dasharray:none, stroke:#999999, fill:#EEEEEE, color:#000000
+    classDef Aqua stroke-width:1px, stroke-dasharray:none, stroke:#46EDC8, fill:#DEFFF8, color:#378E7A
+    classDef Pine stroke-width:1px, stroke-dasharray:none, stroke:#254336, fill:#27654A, color:#FFFFFF
+    classDef S052-3 stroke:#33CA97, fill:#FFFFFF, color:#000000, stroke-width:4px, stroke-dasharray: 0
+    classDef S051 stroke:#F77FE5, fill:#FFAAF3, stroke-width:4px, stroke-dasharray: 0, color:#000000
+    classDef B021 stroke:#FF0000, fill:#FFFFFF, color:#000000, stroke-width:4px, stroke-dasharray: 0
+    classDef B035 stroke:#A0F757, fill:#D8FE92, color:#000000, stroke-width:4px, stroke-dasharray: 0
+    classDef S054 fill:#6CE2FE, color:#000000, stroke:#00A6EF, stroke-width:4px, stroke-dasharray: 0
+    classDef S055 stroke-width:4px, stroke-dasharray: 0, stroke:#FFA98C, fill:#FFC8D1, color:#000000
+```
+
+> Expliquer le choix d'utiliser le bouton sur PA6 en EXTI sur front descendant (falling edge) avec pull-up interne. Justifier le mécanisme d'anti-rebond implémenté : à l'appui, un flag `debouncing_bouton_home` est levé et le compteur de TIM5 est remis à zéro. TIM5 est configuré à 20 Hz (Prescaler=10000-1, Period=500-1 → 50 ms). Au prochain tick de TIM5, `debounce_filter()` vérifie que le bouton est bien relâché (état stable) avant de valider l'appui. Expliquer pourquoi cette méthode est plus fiable qu'un simple délai bloquant._
 
 ### 4.2 Machine à états HOME / AWAY
 

@@ -36,15 +36,15 @@
    3. [Détection de pluie (Steam Sensor via ADC)](#73-détection-de-pluie-steam-sensor-via-adc)
    4. [Logique de décision de la fenêtre](#74-logique-de-décision-de-la-fenêtre)
 8. [Scénario 6 — Mesure de température (TMP102)](#8--scénario-6--mesure-de-température-tmp102)
-   1. [Configuration de l'I²C (I2C3)](#81-configuration-de-li²c-i2c3)
+   1. [Configuration Bus I²C](#81-configuration-bus-i²c)
    2. [Développement du driver TMP102](#82-développement-du-driver-tmp102)
    3. [Mode One-Shot et polling non bloquant](#83-mode-one-shot-et-polling-non-bloquant)
    4. [Conversion et affichage de la température](#84-conversion-et-affichage-de-la-température)
    5. [Gestion automatique de la fenêtre par la température](#85-gestion-automatique-de-la-fenêtre-par-la-température)
 9. [Scénario 7 — Intégration et affichage LCD](#9--scénario-7--intégration-et-affichage-lcd)
-   1. [Intégration de la bibliothèque LCD I²C](#91-intégration-de-la-bibliothèque-lcd-i²c)
-   2. [Stratégie d'affichage sur écran 16×2](#92-stratégie-daffichage-sur-écran-16×2)
-   3. [Cohabitation LCD et TMP102 sur le même bus I²C](#93-cohabitation-lcd-et-tmp102-sur-le-même-bus-i²c)
+   1. [Configuration Bus I²C](#91-configuration-bus-i²c)
+   2. [Intégration de la bibliothèque LCD I²C](#92-intégration-de-la-bibliothèque-lcd-i²c)
+   3. [Stratégie d'affichage sur écran 16×2](#93-stratégie-daffichage-sur-écran-16×2)
 10. [Bibliothèque Bande LED RGB (WS2812B)](#10--bibliothèque-bande-led-rgb-ws2812b)
     1. [Principe de communication (protocole one-wire)](#101-principe-de-communication-protocole-one-wire)
     2. [Implémentation PWM + DMA (TIM4)](#102-implémentation-pwm--dma-tim4)
@@ -344,13 +344,96 @@ En observant la LED à l'oscilloscope, nous avons pu vérifier que la période d
 
 ## 8 — Scénario 6 — Mesure de température (TMP102)
 
-### 8.1 Configuration de l'I²C (I2C3)
+### 8.1 Branchement et configuration CubeMX
 
-> _Justifier le choix de I2C3 (SCL = PA8, SDA = PB4) pour communiquer avec le TMP102 et le LCD. Mentionner l'adresse I²C du TMP102 : 0x48 (broche ADD0 à GND), décalée à gauche de 1 bit pour le HAL (0x90). Indiquer le mode standard (100 kHz ou 400 kHz selon la config)._
+*Extrait de la datasheet du TMP102 :*  
 
-### 8.2 Développement du driver TMP102
+<img src="media/TMP102_datasheet_broches.png"/>
+
+#### Alimentation (VCC/GND)
+
+Nous avons alimenté le capteur avec la broche 3.3V de la carte Nucleo.
+
+| Signal | Broche |
+| :--- | :--- |
+| VCC | 3.3V |
+| GND | GND |
+
+#### Bus I²C (SDA/SCL)
+
+Pour tous les composants I²C (à savoir le TMP102 et l'écran LCD) nous avons utilisé le bus I2C3 en suivant le branchement suivant : 
+
+| Signal | Broche | Arduino |
+| :--- | :--- | :--- |
+| SDA | PB4 | A4 |
+| SCL | PA8 | A5 |
+
+Nous n'avons pas touché à la configuration par défaut après avoir assigné les 2 broches :  
+
+<img src="media/stm32cubeide_I2C3.png" width="400"/>
+
+Les interruptions et le DMA sont désactivés.
+
+#### Adresse I²C (ADD0)
+
+L'adresse I²C du TMP102 est par défaut 0x48.
+Cependant il est possible de la choisir en fonction du branchement de la broche ADDR0 :
+
+*Extrait de la datasheet du capteur TMP102 :*  
+<img src="media/TMP102_datasheet_adresses.png" width="200"/>
+
+Pour lever toute ambiguité, nous avons simplement mis la broche ADDR0 à la masse, ce qui correspond à l'adresse 0x48 (1001000).
+
+#### Broche (ALT)
+
+Comme expliqué ci-dessous, nous n'avons pas eu besoin d'utiliser les alertes du cpateurs, nous avons donc laissé la broche ALERT déconnectée.
+
+### 8.2 Choix de configuration d'après la datasheet
 
 > _Décrire l'architecture du driver développé sans bibliothèque prête à l'emploi. Expliquer les structures de données : `TMP102_t` (état complet du capteur), `TMP102_Config_t` (champs du registre de configuration), `TMP102_FieldMap_t` (mapping bit-à-bit des champs). Détailler le mécanisme générique de sérialisation/désérialisation du registre de configuration via `TMP102_SyncConfigBuffer()` : un tableau de `FieldMap` décrit pour chaque champ son byte, sa position et sa longueur, permettant l'encodage (structure → buffer) et le décodage (buffer → structure) en une seule fonction bidirectionnelle. Justifier ce choix d'architecture (maintenabilité, lisibilité, réduction des erreurs de masquage manuel)._
+
+#### Registres accessibles
+
+Nous avons d'abord lu toute la datasheet sur les modes et les registres accessibles depuis I²C.
+Nous avons remarqué qu'il y avait 4 registres de 16 bits accessibles en I²C par une adresse sur 2 bits interprétée par le pointer register : 
+
+<img src="media/TMP102_datasheet_registres.png"/>
+
+#### registre de température
+
+Le registre de température contient simplement une valeur sur 12 ou 13 bits en fonction du mode de résolution.
+La valeur est alignée à gauche et suivie d'un padding de 3 ou 4 '0'.
+La conversion se fait selon une série d'étapes détaillées ici :
+
+*Extrait de la datasheet du capteur TMP102 :*      
+<img src="media/TMP102_datasheet_conversion_temperature.png">
+
+#### registre de configuration
+
+Le registre de configuration (adresse 0x01) permet de régler plusieurs paramètres du capteur :
+
+* La résolution de la mesure (12bits ou 13 bits en "Extended mode")
+* Le mode de mesure : Shutdown avec One-Shot ou Continous
+* La fréquence d'actualisation du registre de température en mode "Continous" (1, 2, 4 ou 8 Hz)
+* Le fonctionnement des alertes de dépassement de seuil haut/bas (polarité, interruption, stabilisation, ...)
+
+Nous avons préféré écrire une bibliothèque complète qui permette d'utiliser l'ensemble des fonctionnalités du capteur.  
+Cependant nous n'avons pas utilisé ni la résolution sur 13 bits (car une maison n'a pas besoin de mesurer plus de 128°C), ni les alertes car il était demandé explicitement de mesurer la température périodiquement toutes les 2-5 secondes.  
+
+Comme il était indiqué dans le TP de coder une fonction pour lancer une mesure, et pour configurer le capteur (sachant que par défaut, le capteur est en mode "Continous"), et par souci d'optimisation des resources, nous avons choisi de mettre le capteur en mode "Shutdown" et de lancer une mesure avant de lire le registre de température à chaque cycle du timer d'échantillonage.
+
+Le cpateur est donc en veille pendant 2 secondes et se réveille pendant ~10 ms le temps de la mesure, puis se remet en veille automatiquement à la fin de sa mesure. En veille il consomme moins de 0,15µA contre 2,6µA pendant le temps d'attente entre 2 mesures du mode "Continous".  
+D'autant plus que le choix de la fréquence en mode "Continous" étant limmité, il aurait fallu déclencher une mesure 2 fois plus souvent (à 1Hz) sachant qu'une mesure consomme 55µA pendant ~10ms.
+
+*Extraits de la datasheet du capteur TMP102 :*
+
+![TMP102_datasheet_ressources_continous_mode.png](media/TMP102_datasheet_ressources_continous_mode.png)
+
+![TMP102_datasheet_ressources_shutdown_mode.png](media/TMP102_datasheet_ressources_shutdown_mode.png)
+
+#### Registres T_LOW et T_HIGH
+
+Nous n'avons pas utilisé
 
 ### 8.3 Mode One-Shot et polling non bloquant
 
@@ -368,24 +451,19 @@ En observant la LED à l'oscilloscope, nous avons pu vérifier que la période d
 
 ## 9 — Scénario 7 — Intégration et affichage LCD
 
-### 9.1 Intégration de la bibliothèque LCD I²C
+### 9.1 Configuration Bus I²C
 
-#### Brachement Bus I²C
+#### Branchement et configuration CubeMX
 
-Pour tous les composants I²C (à savoir le TMP102 et l'écran LCD) nous avons utilisé le bus I2C3 en suivant le branchement suivant : 
+Commun au capteur TMP102   
+→ [8.1 Configuration Bus I²C](#81-configuration-bus-i²c).
 
-| Signal | Broche | Arduino |
-| :--- | :--- | :--- |
-| SDA | PB4 | A4 |
-| SCL | PA8 | A5 |
+#### Adresse I²C
 
-#### Configuration CubeMX
+Nous n'avons pas changé l'adresse par défaut de l'écran car nous avons seulement deux composants aux adresses compatibles.  
+Nous utilisons donc l'adresse 0x27 (toujours décalée de 1 bit).
 
-Nous n'avons pas touché à la configuration par défaut après avoir assigné les 2 broches :  
-
-<img src="media/stm32cubeide_I2C3.png" width="400"/>
-
-Les interruptions et le DMA sont désactivés.
+### 9.2 Intégration de la bibliothèque LCD I²C
 
 #### Modification de l'initialisation
 
@@ -401,22 +479,14 @@ void lcd_init (I2C_HandleTypeDef *bus_i2c)
    ...
 }
 ```
-#### Adresse I²C
 
-Nous n'avons pas changé l'adresse par défaut de l'écran car nous avons seulement deux composants aux adresses compatibles.  
-Nous utilisons donc l'adresse 0x27 (toujours décalée de 1 bit).
-
-### 9.2 Affichage des données en 16x2
+### 9.3 Affichage des données en 16x2
 
 > _Justifier l'organisation de l'affichage sur les 2 lignes de 16 caractères :_
 > - _Ligne 1 : `HOME  18,38°C` — mode courant (4 car.) + température (8 car.)_
 > - _Ligne 2 : `Hu 1234  Ga 1234` — valeur pluie et valeur gaz_
 >
 > _Expliquer que l'affichage du mode n'est mis à jour qu'au changement, et que les valeurs des capteurs sont mises à jour à chaque cycle de 2 s (après la dernière mesure disponible : la température). Justifier ce découpage pour maximiser l'information affichée dans l'espace contraint. Mentionner le message de bienvenue au démarrage._
-
-### 9.3 Cohabitation LCD et TMP102 sur le même bus I²C
-
-> _Expliquer que le LCD (0x27) et le TMP102 (0x48) ont des adresses I²C différentes et partagent le bus I2C3 sans conflit. Mentionner les précautions éventuelles (pas d'accès I²C concurrent depuis les ISR)._
 
 ---
 

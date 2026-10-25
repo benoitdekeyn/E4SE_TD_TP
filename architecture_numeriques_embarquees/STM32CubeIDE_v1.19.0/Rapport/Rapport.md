@@ -225,13 +225,16 @@ Pour chaque routine d'interruption, nous avons préféré réduire au maximum le
 Pour l'écran LCD, le capteur de température et les 4 NeoPixels, nous avons créé des bibliothèques séparées comme demandé.
 En revanche, au lieu de les placer à la racine du projet, comme nous en créions un nouveau pour chaque scénario, nous les avons regroupées dans un dossier `Bibliotheques`.  
 
-Nous avons donc créé des liens symboliques, ajouté les chemins des includes au compilateur, et inclus les dossiers au build pour qu'elles soient bien lues et compilées.
+Nous avons donc créé des liens symboliques, ajouté les chemins des header au compilateur, et inclus les dossiers symboliques au build pour qu'elles soient bien lues et compilées.
 
-Include path dans les project settings 
-![Include path dans project settings](media/stm32cubeide_include_path_project_settings.png)  
+Dossiers symboliques
+![Dossiers symboliques](media/stm32cubeide_liens_symboliques.png)  
 
 Décochage de "Exclude from Build" dans les folder settings 
 ![Exclude from build dans project settings](media/stm32cubeide_exclude_from_build_project_settings.png)
+
+Include path dans les project settings 
+![Include path dans project settings](media/stm32cubeide_include_path_project_settings.png)  
 
 ---
 

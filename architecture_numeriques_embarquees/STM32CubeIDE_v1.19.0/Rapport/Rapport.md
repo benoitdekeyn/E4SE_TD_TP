@@ -247,34 +247,93 @@ Pour éviter les erreurs de recopie, faciliter la compréhension du code et surt
 
 ### 3.1 Configuration du Timer (TIM2)
 
-### Choix du timer et calcul de la période
-
 Nous avons choisi le TIM2 pour cadencer la prise de mesure de nos capteurs, nous permettant ainsi d'éviter l'utilisation de boucles bloquantes, garantissant ainsi un échantillonage régulier. L'horloge timer étant de 100 MHz, nous avons configuré les registres pour obtenir une période d'échantillonage de 2s (sois 0,5 Hz):
-   - Prescaler : (`PSC = 10000 - 1`) : pour obtenir une fréquence après prescaler de 10 kHz (le compteur s'incrémente toutes les 0,1 ms).
-   - Period  : (`ARR = 20000 - 1`) pour obtenir une période de 2 s (0.5 Hz).
 
-De plus, TIM2 peut être configuré en Master avec TRGO = Update pour déclencher automatiquement les conversions ADC (dont les détails sont expliqués dans le [Scénario 3 — Détection de gaz](#5--scénario-3--détection-de-gaz)).
+   - Prescaler : Le registre PSC étant codé sur 16 bits, sa valeur maximale est $2^{16} - 1 = 65\,535$ (soit un facteur de division de $65\,536$).
+    $$f_{\text{PSC, min}} = \frac{100\text{ MHz}}{65\,536} \approx 1\,525{,}88\text{ Hz}$$ Nous avons donc choisi un Prescaler : (`PSC = 10000 - 1`)   qui nous donne pour obtenir une fréquence après prescaler de 10 kHz, largement au-dessus de la fréquence minimale possible et qui incrémente le compteur toutes les 0.1 ms.
+   - Period : la valeur maximale de ARR est identique à celle du PSC. À une fréquence de $10\text{ kHz}$, la durée maximale mesurable serait de :
+    $$T_{\text{max}} = \frac{65\,536}{10\,000\text{ Hz}} \approx 6{,}55\text{ secondes}$$
+   Nous avons donc choisit une Period:  (`ARR = 20000 - 1`) qui nous permet donc d'obtenir une durée exacte de 2 secondes ($20\,000 \times 0{,}1\text{ ms}$) inférieure à la durée maximale, et qui laisse une grande marge pour mofifier la période d'échantillonnage si besoin.
+
+TIM2 peut également être configuré en Master avec TRGO = Update pour déclencher automatiquement les conversions ADC (dont les détails sont expliqués dans le [Scénario 3 — Détection de gaz](#5--scénario-3--détection-de-gaz)).
 
 ### 3.2 Validation expérimentale
 
-Pour valider le bon fonctionnement du timer TIM2, nous avons configuré une LED (PB10) pour qu'elle change d'état à chaque interruption générée par TIM2 :
-Dans la routine d'interruption du timer (`HAL_TIM_PeriodElapsedCallback`), nous avons fait basculer l'état de la LED  (`HAL_GPIO_TogglePin`).
+Pour valider le bon fonctionnement du timer TIM3, nous avions configuré une LED (PB10) pour qu'elle change d'état à chaque interruption générée par TIM3. :
+Dans la routine d'interruption du timer (`HAL_TIM_PeriodElapsedCallback`), nous avions fait basculer l'état de la LED  (`HAL_GPIO_TogglePin`).
 ```c
+#define BLUE_Pin GPIO_PIN_10
+#define BLUE_GPIO_Port GPIOB
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-    if (htim->Instance == TIM2) {
-        HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_10);
+    if (htim->Instance == TIM3) {
+        HAL_GPIO_TogglePin(BLUE_GPIO_Port, BLUE_Pin);
     }
 }
 ```
-En observant la LED à l'oscilloscope, nous avons pu vérifier que la période du signal correspond bien à 4 s, confirmant ainsi un cycle de clignotement de 2s. Cela montre que le timer fonctionne comme prévu et que le timer est correctement configuré pour fournir la base temporelle souhaitée.
+En observant la LED à l'oscilloscope, nous avions pu vérifier que la période du signal correspond bien à 4 s, confirmant ainsi un cycle de clignotement de 2s. Cela montre que le timer fonctionne comme prévu et que TIM3 est correctement configuré pour fournir la base temporelle souhaitée.
 
+Plus tard dans le projet, le TIM3 est utilisé pour générer des interruptions périodiques pour la lecture des capteurs. La LED bleu  associée aux bon fonctionnement des capteurs et est définie par une structure `LED_t` contenant sont port GPIO, le Numéro de la broche, et son état :  
+```c
+typedef struct {
+    GPIO_TypeDef *port;
+    uint16_t pin;
+    bool state;
+} LED_t;
+
+...
+volatile LED_t  led_capteurs                = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pin, false};
+
+```
+
+Le clignotement de la LED bleu à été gardé mais déplacé dans la boucle while (1) : 
+```c
+volatile bool timer_capteurs_flag           = false;
+volatile TIM_HandleTypeDef *TIMER_CAPTEURS = &htim3;
+
+...
+
+while (1){
+
+   ... 
+   if (timer_capteurs_flag) {
+      timer_capteurs_flag = false;
+      led_capteurs.state = !led_capteurs.state;
+      ...
+   }
+...
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  ...
+  if (htim == TIMER_CAPTEURS)
+  {
+    timer_capteurs_flag = true;
+  }
+}
+````
 ---
 
 ## 4 — Scénario 2 — Sécurité : HOME/AWAY et détection d'intrusion
 
 ### 4.1 Bouton MODE et anti-rebond
 
-> Expliquer le choix d'utiliser le bouton sur PA6 en EXTI sur front descendant (falling edge) avec pull-up interne. Justifier le mécanisme d'anti-rebond implémenté : à l'appui, un flag `debouncing_bouton_home` est levé et le compteur de TIM5 est remis à zéro. TIM5 est configuré à 20 Hz (Prescaler=10000-1, Period=500-1 → 50 ms). Au prochain tick de TIM5, `debounce_filter()` vérifie que le bouton est bien relâché (état stable) avant de valider l'appui. Expliquer pourquoi cette méthode est plus fiable qu'un simple délai bloquant._
+> _Expliquer le choix d'utiliser le bouton sur PA6 en EXTI sur front descendant (falling edge) avec pull-up interne. Justifier le mécanisme d'anti-rebond implémenté : à l'appui, un flag `debouncing_bouton_home` est levé et le compteur de TIM5 est remis à zéro. TIM5 est configuré à 20 Hz (Prescaler=10000-1, Period=500-1 → 50 ms). Au prochain tick de TIM5, `debounce_filter()` vérifie que le bouton est bien relâché (état stable) avant de valider l'appui. Expliquer pourquoi cette méthode est plus fiable qu'un simple délai bloquant._
+
+### Configuration de l'interruption externe (EXTI)
+Le bouton MODE est connecté à PA6 et configuré en EXTI sur front descendant (_L'interruption est déclenchée au moment précis où l'utilisateur appuie sur le bouton, lorsque le signal passe de haut à bas_) avec pull-up interne (_maintient le signal à l'état haut_). 
+Cela permet de détecter les appuis sur le bouton tout en évitant les faux déclenchements dus au bruit. 
+
+#### Mécanisme d'anti-rebond non bloquant via TIM5
+Pour s'assurer que l'appui sur le bouton est correctement détecté sans être perturbé par les rebonds mécaniques, nous avons mis en place un mécanisme anti-rebond via TIM5.
+
+Lors de l'appui sur le bouton MODE, l'interruption EXTI sur PA6 est déclenchée. Dans le gestionnaire d'interruption, le flag `debouncing_bouton_home` est levé et le compteur de TIM5 est remis à zéro. TIM5, configuré à 20 Hz, génère des ticks toutes les 50 ms. À chaque tick, la fonction `debounce_filter()` vérifie si le bouton est toujours relâché. Si l'état est stable, l'appui est validé et le flag `debouncing_bouton_home` est réinitialisé. Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrairement à un simple délai qui stopperait l'exécution du programme.
+
+#### Pourquoi cette méthode dépasse le simple délai bloquant ?
+
+L'utilisation de TIM5 pour gérer l'anti-rebond permet au microcontrôleur de continuer à exécuter d'autres tâches pendant la période de stabilisation du bouton. Contrairement à un simple délai bloquant qui stopperait l'exécution du programme, cette méthode non bloquante assure que le système reste réactif et que d'autres événements (comme la détection PIR ou le clignotement LED) peuvent être traités simultanément.
+
 
 ### 4.2 Machine à états HOME / AWAY
 

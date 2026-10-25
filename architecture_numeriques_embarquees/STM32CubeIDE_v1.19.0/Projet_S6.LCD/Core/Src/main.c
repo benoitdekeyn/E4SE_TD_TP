@@ -112,6 +112,9 @@ typedef struct {
 #define COULEUR_TEMP_CHAUD       BL_HEXA_ORANGE
 #define COULEUR_ETEINTE          BL_HEXA_NOIR
 
+#define ANGLE_SERVO_OUVERT  120 // ATTENTION maximum 120° sinon ça casse
+#define ANGLE_SERVO_FERME   0   // Montage effectué avec 0° fenetre fermee
+
 // Maison
 typedef enum{
   HOME,
@@ -119,8 +122,6 @@ typedef enum{
 } maison_mode_t;
 // Fenetre
 typedef enum {INIT, FERMEE, OUVERTE} fenetre_t;
-#define ANGLE_SERVO_OUVERT  120 // ATTENTION maximum 120° sinon ça casse
-#define ANGLE_SERVO_FERME   0   // Montage effectué avec 0° fenetre fermee
 // Temperature
 typedef enum {FROID, CHAUD, TEMPEREE} temperature_t;
 

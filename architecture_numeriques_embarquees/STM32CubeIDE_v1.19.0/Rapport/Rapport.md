@@ -236,6 +236,11 @@ Décochage de "Exclude from Build" dans les folder settings
 Include path dans les project settings 
 ![Include path dans project settings](media/stm32cubeide_include_path_project_settings.png)  
 
+
+#### Pas de Hardcoding
+
+Pour éviter les erreurs de recopie, faciliter la compréhension du code et surtout permettre de reconfigurer facilement des valeurs ou des changements de brochage, nous avons défini des constantes de compilation ```c #define``` pour toutes les valeurs et objets HAL présents dans notre code.
+
 ---
 
 ## 3 — Scénario 1 — Base temporelle pour l'échantillonnage
@@ -365,9 +370,43 @@ En observant la LED à l'oscilloscope, nous avons pu vérifier que la période d
 
 ### 9.1 Intégration de la bibliothèque LCD I²C
 
-> _Décrire l'intégration de la bibliothèque LCD fournie. Mentionner l'adresse I²C du LCD : 0x27 (décalée 0x4E). Expliquer la fonction `lcd_init()` qui prend en paramètre le bus I²C (I2C3 partagé avec le TMP102) et réalise la séquence d'initialisation en mode 4 bits._
+#### Brachement Bus I²C
 
-### 9.2 Stratégie d'affichage sur écran 16×2
+Pour tous les composants I²C (à savoir le TMP102 et l'écran LCD) nous avons utilisé le bus I2C3 en suivant le branchement suivant : 
+
+| Signal | Broche | Arduino |
+| :--- | :--- | :--- |
+| SDA | PB4 | A4 |
+| SCL | PA8 | A5 |
+
+#### Configuration CubeMX
+
+Nous n'avons pas touché à la configuration par défaut après avoir assigné les 2 broches :  
+
+<img src="media/stm32cubeide_I2C3.png" width="400"/>
+
+Les interruptions et le DMA sont désactivés.
+
+#### Modification de l'initialisation
+
+Comme nous avons défini l'objet I2C3 de l'HAL en macro, nous avons modifié la fonction d'initialisation de la biibliothèque pour stocker l'objet dans une variable globale interne au .c :
+
+*Extrait de Bibliotheques/Ecran_LCD/Src/i2c-lcd.c :*
+```c
+static I2C_HandleTypeDef *local_bus_i2c = NULL;
+
+void lcd_init (I2C_HandleTypeDef *bus_i2c)
+{
+   local_bus_i2c = bus_i2c;
+   ...
+}
+```
+#### Adresse I²C
+
+Nous n'avons pas changé l'adresse par défaut de l'écran car nous avons seulement deux composants aux adresses compatibles.  
+Nous utilisons donc l'adresse 0x27 (toujours décalée de 1 bit).
+
+### 9.2 Affichage des données en 16x2
 
 > _Justifier l'organisation de l'affichage sur les 2 lignes de 16 caractères :_
 > - _Ligne 1 : `HOME  18,38°C` — mode courant (4 car.) + température (8 car.)_

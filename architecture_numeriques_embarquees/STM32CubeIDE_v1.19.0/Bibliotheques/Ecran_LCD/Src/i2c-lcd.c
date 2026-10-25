@@ -2,7 +2,7 @@
 /** Put this in the src folder **/
 
 #include "i2c-lcd.h"
-I2C_HandleTypeDef *local_bus_i2c = NULL;  // change your handler here accordingly
+static I2C_HandleTypeDef *local_bus_i2c = NULL;
 
 #define SLAVE_ADDRESS_LCD 0x27<<1 // change this according to ur setup
 

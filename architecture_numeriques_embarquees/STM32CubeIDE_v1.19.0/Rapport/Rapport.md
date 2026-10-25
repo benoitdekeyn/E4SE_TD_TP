@@ -69,15 +69,16 @@ Pour simplifier le cablage notamment pour les premiers scénarios, nous avons so
 
 ### 1.2 Description du fonctionnement
 
-On peut entrer et sortir de la maison avec le bouton HOME.
-Une fois sorti, la fenêtre reste fermée, et l'alarme intrusion peut se déclencher si une présence est détectée.
-L'alarme instrusion continue de sonner tant qu'on n'est pas rentré à nouveau dans la maison.
+Toutes les fonctionnalités respectent le cahier des charges du projet et, lorsque le sujet nous en laissait la liberté, une approche axée sur l'expérience utilisateur à été privilégié.
 
-Si on est à la maison, on peut ouvrir et fermer la fenêtre avec le bouton fenêtre.
+L'entrée et la sortie de la maison se font avec le bouton HOME.
+Une fois sorti, la fenêtre reste fermée ou se ferme automatiquement, et l'alarme intrusion devient active et se déclenche automatiquement si une présence est détectée. Elle continue de sonner tant qu'on n'est pas rentré à nouveau dans la maison.
+
+Dans la maison, on peut ouvrir et fermer la fenêtre avec le bouton fenêtre.
 Si il commence à pleuvoir, la fenêtre se ferme automatiquement et force la fermeture tant qu'il pleut.
-Aussi, si il fait trop chaud, la fenêtre s'ouvre automatiquement une fois (sans maintenir forcée l'ouverture) et vice versa s'il fait trop froid, la fenêtre se ferme une fois (sans maintenir forcée la fermeture).
+Le controle de la fenêtre suis également la température : si il fait trop chaud, la fenêtre s'ouvre automatiquement une fois (sans maintenir forcée l'ouverture) et vice versa s'il fait trop froid, la fenêtre se ferme une fois (sans maintenir forcée la fermeture).
 
-L'alarme de gaz peut se déclencher à tout moment.
+L'alarme de gaz peut se déclencher à tout moment, quel que soit l'état de la maison.
 
 Des logs sur le monieteur série permettent de suivre la valeur des capteurs et les différentes situations.
 

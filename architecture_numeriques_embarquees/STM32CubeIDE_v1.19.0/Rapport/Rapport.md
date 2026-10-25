@@ -244,6 +244,14 @@ Include path dans les project settings
 
 > _Justifier le choix de TIM2 pour la base temporelle d'échantillonnage. Détailler le calcul : horloge timer = 100 MHz, Prescaler = 10000-1 → fréquence après prescaler = 10 kHz, Period = 20000-1 → période de 2 s (0.5 Hz). Expliquer que TIM2 est également configuré en Master avec TRGO = Update pour déclencher automatiquement les conversions ADC._
 
+### Choix du timer et calcul de la période
+
+Nous avons choisi le TIM2 pour cadencer la prise de mesure de nos capteurs, nous permettant ainsi d'éviter l'utilisation de boucles bloquantes, garantissant un échantillonage régulier. L'horloge timer etant de 100 MHz, nous avonc configuré les registres pour obtenir une période d'échantillonage de 2s (sois 0,5 Hz):
+   - Prescaler : (`PSC = 10000 - 1`) : pour obtenir une fréquence après prescaler de 10 kHz (le compteur s'incrémente toutes les 0,1 ms).
+   - Period  : (`ARR = 20000 - 1`) pour obtenir une période de 2 s (0.5 Hz).
+
+De plus, TIM2 peut être configuré en Master avec TRGO = Update pour déclencher automatiquement les conversions ADC (dont les détails sont expliqués dans le [Scénario 3 — Détection de gaz](#5--scénario-3--détection-de-gaz)).
+
 ### 3.2 Validation expérimentale
 
 > _Décrire comment tu as validé le timer : toggling de la LED bleue (PA5 ou PB10) à chaque interruption TIM2 et vérification à l'oscilloscope de la période de 2 s._

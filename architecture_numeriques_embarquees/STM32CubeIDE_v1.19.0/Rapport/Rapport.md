@@ -215,8 +215,6 @@ Pour le réglage des horloge, nous avons simplement gardé la configuration que 
 
 ### 2.3 Organisation logicielle
 
-> _Décrire l'architecture logicielle du projet : une boucle principale (`while(1)`) pilotée par des flags positionnés dans des callbacks d'interruption (Timer, EXTI, ADC/DMA). Expliquer le principe de fonctionnement non bloquant : aucune boucle d'attente active dans le `main`, les ISR sont courtes (positionnent un flag), et le traitement se fait dans la boucle principale. Mentionner l'organisation en bibliothèques séparées (TMP102, Bande LED, LCD fourni)._
-
 #### Boucle principale et gestion des interruptions
 
 Tout le code que nous avons écrit n'utilise jamais de delay ou de boucle while bloquante. Toutes les fonctions appelées dans la boucle while(1) sont des actions "instantannées" qui n'attendent pas un évènement pour se terminer.
@@ -225,11 +223,15 @@ Pour chaque routine d'interruption, nous avons préféré réduire au maximum le
 #### Organisation en bibliothèques
 
 Pour l'écran LCD, le capteur de température et les 4 NeoPixels, nous avons créé des bibliothèques séparées comme demandé.
-En revanche, au lieu de les placer à la racine du projet, comme nous en créions un nouveau pour chaque scénario, nous les avons regroupées dans un dossier `Bibliothèques`.
+En revanche, au lieu de les placer à la racine du projet, comme nous en créions un nouveau pour chaque scénario, nous les avons regroupées dans un dossier `Bibliotheques`.  
+
 Nous avons donc créé des liens symboliques, ajouté les chemins des includes au compilateur, et inclus les dossiers au build pour qu'elles soient bien lues et compilées.
 
-![Include path in project settings](media/stm32cubeide_include_path_project_settings.png)
+Include path dans les project settings 
+![Include path dans project settings](media/stm32cubeide_include_path_project_settings.png)  
 
+Décochage de "Exclude from Build" dans les folder settings 
+![Exclude from build dans project settings](media/stm32cubeide_exclude_from_build_project_settings.png)
 
 ---
 

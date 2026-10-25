@@ -227,8 +227,8 @@ En revanche, au lieu de les placer à la racine du projet, comme nous en créion
 
 Nous avons donc créé des liens symboliques, ajouté les chemins des header au compilateur, et inclus les dossiers symboliques au build pour qu'elles soient bien lues et compilées.
 
-Dossiers symboliques
-![Dossiers symboliques](media/stm32cubeide_liens_symboliques.png)  
+Dossiers symboliques  
+<img src="media/stm32cubeide_liens_symboliques.png" alt="Dossiers symboliques" width="200">
 
 Décochage de "Exclude from Build" dans les folder settings 
 ![Exclude from build dans project settings](media/stm32cubeide_exclude_from_build_project_settings.png)

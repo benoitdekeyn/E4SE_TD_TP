@@ -63,6 +63,10 @@
 ![Face 1](media/photo_maison_1.jpg)
 ![Face 2](media/photo_maison_2.jpg)
 
+Pour simplifier le cablage notamment pour les premiers scénarios, nous avons soudé des boutons, des LED (une RGB, une jaune et une bleue), et collé une breadboard sur un shield Arduino vierge. Voici à quoi ressemble notre montage :
+
+![Shield Arduino](media/breadboard.jpg)
+
 ### 1.2 Description du fonctionnement
 
 On peut entrer et sortir de la maison avec le bouton HOME.

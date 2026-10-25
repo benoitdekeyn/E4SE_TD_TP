@@ -99,9 +99,9 @@ Les 4 LEDs NeoPixel indiquent :
 
 #### Contraintes de brochage
 
-On a voulu rester sur l'**Arduino Header** de la Nucleo pour simplifier le câblage avec la breadboard notamment. 
+Nous avons voulu rester sur l'**Arduino Header** de la Nucleo pour simplifier le câblage avec la breadboard notamment. 
 A partir du scenario 6, il a fallu réorganiser le brochage arbitraire qu'on faisait au début pour tout faire rentrer sur le header Arduino.
-On a donc listé tous les composants et leur fonctions pour leur assigner des broches du plus contraignant au moins contraignant.
+Nous avons donc listé tous les composants et leur fonctions pour leur assigner des broches du plus contraignant au moins contraignant.
 
 Si on reprend le pinout fourni sur BlackBoard : 
 
@@ -111,7 +111,7 @@ Si on reprend le pinout fourni sur BlackBoard :
 
 **Priorité 1 — Broches fixées par le matériel**
 
-On est parti de cette base :
+Nous sommes partis de cette base :
 
 - **PA2 & PA3** → USART2 TX/RX, reliés physiquement au ST-LINK sur la Nucleo pour la liaison série USB.
 - **PA5 (D13)** → LED built-in, inutilisée pour pouvoir déporter les LEDs (avant d'implémenter les NeoPixels).
@@ -121,7 +121,7 @@ On est parti de cette base :
 
 **Priorité 2 — I²C**
 
-le header Arduino n'avait qu'une paire de broches SDA & SCL disponibles, donc on les a réservée directement :
+Le header Arduino n'avait qu'une paire de broches SDA & SCL disponibles, donc nous les avons réservée directement :
 
 Le module **I2C3** est disponible avec :
 - SCL sur **PA8 (D7)**
@@ -131,16 +131,16 @@ Le module **I2C3** est disponible avec :
 
 **Priorité 3 — Timers**
 
-On avait besoin de 4 timers :
+Nous avions besoin de 4 timers :
 - PWM du servomoteur
 - PWM du buzzer passif
 - PWM de la bande de 4 LEDs NeoPixel
 - Timer pour l'échantillonnage
 
-On a que 4 timers disponibles sur le header Arduino.
-Or pour l'échantillonnage on voulait que l'ADC soit déclenché par un TGO event du timer d'échantillonnage, or il y a que les timers 2 et 3 qui permettent ça.
-On a donc choisit arbitrairement le timer 2 pour l'échantillonnage.
-Pour le reste, on a choisi arbitrairement quel composant allait sur quel timer, sachant que APB1 et APB2 sont tous les deux à 100Mhz donc pas de différence sur ce point.
+n'Nous avons que 4 timers disponibles sur le header Arduino.
+Or pour l'échantillonnage nous voulions que l'ADC soit déclenché par un TGO event du timer d'échantillonnage, or il y a que les timers 2 et 3 qui permettent ça.
+Nous avons donc choisit arbitrairement le timer 2 pour l'échantillonnage.
+Pour le reste, nous avons choisi arbitrairement quel composant allait sur quel timer, sachant que APB1 et APB2 sont tous les deux à 100Mhz donc pas de différence sur ce point.
 
 Résultat :
 - Timer 1 → Servomoteur sur le channel 3 : PA9 (D8)
@@ -162,12 +162,12 @@ L'ADC1 est le seul ADC de la carte. mais on a plusieurs entrées sur les broches
 
 **Priorité 5 — Broches d'interruption**
 
-On avait besoin de 3 interruptions externes (EXTI) :
+Nous avions besoin de 3 interruptions externes (EXTI) :
 - **Bouton HOME** (bascule mode HOME/AWAY)
 - **Bouton FENÊTRE** (commande manuelle de la fenêtre)
 - **Capteur PIR** (détection de mouvement)
 
-La contrainte importante est que deux broches de **même numéro** sur des ports différents partagent la même ligne EXTI. Il fallait choisir des broches qui aient un numéro différent. On a choisi :
+La contrainte importante est que deux broches de **même numéro** sur des ports différents partagent la même ligne EXTI. Il fallait choisir des broches qui aient un numéro différent. Nous avons choisi :
 
 - **PA6 (D12)** → EXTI 6   → Bouton HOME
 - **PA10 (D2)** → EXTI 10  → Bouton FENÊTRE
@@ -177,13 +177,13 @@ La contrainte importante est que deux broches de **même numéro** sur des ports
 
 **Priorité 6 — Sorties GPIO**
 
-On avait besoin de 3 sorties GPIO pour les LEDs indicatrices. On a choisi arbitrairement parmi les broches restantes :
+Nous avions besoin de 3 sorties GPIO pour les LEDs indicatrices. Nous avons choisi arbitrairement parmi les broches restantes :
 
 - **PB3 (D3)** → LED jaune du shield : Alarme intrusion
 - **PA7 (D11)** → LED RGB couleur rouge du shield : Alarme gaz
 - **PB10 (D6)** → LED bleue (imposé par la soudure) : cycle capteurs
 
-PS : C'est seulement à la fin que nous avons décidé d'ajouter les 4 LEDs NeoPixels WS2812B en bonus. Mais on l'avait déjà prise en compte au moment du refacto des pins. Finalement on a gardé les 2 systèmes de LED ensemble.
+PS : C'est seulement à la fin que nous avons décidé d'ajouter les 4 LEDs NeoPixels WS2812B en bonus. Mais nous l'avions déjà prise en compte au moment du refacto des pins. Finalement nous avons gardé les 2 systèmes de LED ensemble.
 
 ---
 
@@ -217,7 +217,7 @@ Pour le réglage des horloge, nous avons simplement gardé la configuration que 
 
 #### Boucle principale et gestion des interruptions
 
-Tout le code que nous avons écrit n'utilise jamais de delay ou de boucle while bloquante. Toutes les fonctions appelées dans la boucle while(1) sont des actions "instantannées" qui n'attendent pas un évènement pour se terminer.
+Tout le code que nous avons écrit n'utilise jamais de delay ou de boucle while bloquante. Toutes les fonctions appelées dans la boucle while(1) sont des actions "instantanées" qui n'attendent pas un évènement pour se terminer.
 Pour chaque routine d'interruption, nous avons préféré réduire au maximum le temps passé à l'intérieur en se contentant de lever un flag indiquant que l'évènement correspondant s'est produit. Le traitement est délocalisé dans des fonctions appelées à chaque passage de la boucle while(1) qui vérifient ces flags.
 
 #### Organisation en bibliothèques

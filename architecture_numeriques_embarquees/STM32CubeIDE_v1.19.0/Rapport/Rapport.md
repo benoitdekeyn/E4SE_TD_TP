@@ -9,7 +9,7 @@
 
 ## Table des matières
 
-1. [Fonctionnement global](#1--fonctionnement-global)
+1. [Introduction](#1--introduction)
 2. [Architecture globale du système](#2--architecture-globale-du-système)
    1. [Branchement des composants](#21-branchement-des-composants)
    2. [Arbre d'horloge et fréquences](#22-arbre-dhorloge-et-fréquences)
@@ -56,7 +56,7 @@
 
 ---
 
-## 1 — Fonctionnement Global
+## 1 — Introduction
 
 ### 1.1 Photos de la maison
 

@@ -242,11 +242,9 @@ Include path dans les project settings
 
 ### 3.1 Configuration du Timer (TIM2)
 
-> _Justifier le choix de TIM2 pour la base temporelle d'échantillonnage. Détailler le calcul : horloge timer = 100 MHz, Prescaler = 10000-1 → fréquence après prescaler = 10 kHz, Period = 20000-1 → période de 2 s (0.5 Hz). Expliquer que TIM2 est également configuré en Master avec TRGO = Update pour déclencher automatiquement les conversions ADC._
-
 ### Choix du timer et calcul de la période
 
-Nous avons choisi le TIM2 pour cadencer la prise de mesure de nos capteurs, nous permettant ainsi d'éviter l'utilisation de boucles bloquantes, garantissant un échantillonage régulier. L'horloge timer etant de 100 MHz, nous avonc configuré les registres pour obtenir une période d'échantillonage de 2s (sois 0,5 Hz):
+Nous avons choisi le TIM2 pour cadencer la prise de mesure de nos capteurs, nous permettant ainsi d'éviter l'utilisation de boucles bloquantes, garantissant ainsi un échantillonage régulier. L'horloge timer étant de 100 MHz, nous avons configuré les registres pour obtenir une période d'échantillonage de 2s (sois 0,5 Hz):
    - Prescaler : (`PSC = 10000 - 1`) : pour obtenir une fréquence après prescaler de 10 kHz (le compteur s'incrémente toutes les 0,1 ms).
    - Period  : (`ARR = 20000 - 1`) pour obtenir une période de 2 s (0.5 Hz).
 
@@ -254,7 +252,16 @@ De plus, TIM2 peut être configuré en Master avec TRGO = Update pour déclenche
 
 ### 3.2 Validation expérimentale
 
-> _Décrire comment tu as validé le timer : toggling de la LED bleue (PA5 ou PB10) à chaque interruption TIM2 et vérification à l'oscilloscope de la période de 2 s._
+Pour valider le bon fonctionnement du timer TIM2, nous avons configuré une LED (PB10) pour qu'elle change d'état à chaque interruption générée par TIM2 :
+Dans la routine d'interruption du timer (`HAL_TIM_PeriodElapsedCallback`), nous avons fait basculer l'état de la LED  (`HAL_GPIO_TogglePin`).
+```c
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+    if (htim->Instance == TIM2) {
+        HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_10);
+    }
+}
+```
+En observant la LED à l'oscilloscope, nous avons pu vérifier que la période du signal correspond bien à 4 s, confirmant ainsi un cycle de clignotement de 2s. Cela montre que le timer fonctionne comme prévu et que le timer est correctement configuré pour fournir la base temporelle souhaitée.
 
 ---
 

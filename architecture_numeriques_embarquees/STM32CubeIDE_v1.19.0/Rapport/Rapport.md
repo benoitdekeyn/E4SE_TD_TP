@@ -323,7 +323,6 @@ led_capteurs.state = false;
 led_capteurs.state = !led_capteurs.state;
 ```
 
----
 
 ## 5. — Scénario 1 — Base temporelle pour l'échantillonnage
 
@@ -331,18 +330,18 @@ led_capteurs.state = !led_capteurs.state;
 ### 5.1. Configuration du Timer
 
 Comme justifié dans la partie [3.1. Branchement des composants](#31-branchement-des-composants), nous avons choisi le Timer 2 pour cadencer la prise de mesure de nos capteurs.
-Nous avons utilisé un timer avec interruptions pour éviter l'utilisation de boucles bloquantes, garantissant ainsi un échantillonnage régulier. L'horloge source du timer étant de 100 MHz, nous avons configuré les registres PSC et ARR pour obtenir une période d'échantillonnage de 2s (soit une fréquence de 0,5 Hz) : 
+Nous avons utilisé un timer avec interruptions pour éviter l'utilisation de boucles bloquantes, garantissant ainsi un échantillonnage régulier. L'horloge source du timer étant de 100 MHz, nous avons configuré les registres PSC et ARR pour obtenir une période d'échantillonnage de 2s (soit une période complète de 4 s) : 
+
+#### Objectif de départ
+Notre objectif est de mesurer une période d'échantillonnage de 4 secondes avec un timer 16 bits, en évitant tout risque de saturation du registre. La fréquence maximale de comptage ne doit donc pas dépasser $f = {2^{16}}\times\frac{1}{10\text{ s}} =16\,384\text{ Hz}$ 
 
 #### Calcul du Prescaler
-Le registre $PSC$ étant codé sur 16 bits, sa valeur maximale est $2^{16} - 1 = 65\,535$ (soit un facteur de division de $65\,536$).
-    $f_{\text{PSC, min}} = \frac{100\text{ MHz}}{65\,536} \approx 1\,525{,}88\text{ Hz}$ Nous avons donc choisi un Prescaler : (`PSC = 10000 - 1`)   qui nous donne pour obtenir une fréquence après prescaler de 10 kHz, largement au-dessus de la fréquence minimale possible et qui incrémente le compteur toutes les 0.1 ms.
-
-    
+En choisisant `PSC = 10 000 - 1`, nous fixons une fréquence de comptage de $f = \frac{100\text{ MHz}}{10\,000}$ = 10 kHz. Chaque tic du timer dure ainsi 0,1 ms, soit 10 000 tics par seconde. A cette fréquence, la période maximale  est de $65\,535 \times 0,1\text{ ms} = 6,55\text{ s}$. On respecte donc les conditions énoncé précedemments. 
 
 #### Calcul de la Période
-La valeur maximale de $ARR$ est identique à celle du $PSC$. À une fréquence de $10\text{ kHz}$, la durée maximale mesurable serait de :
-    $T_{\text{max}} = \frac{65\,536}{10\,000\text{ Hz}} \approx 6{,}55\text{ secondes}$
-   Nous avons donc choisit une Period:  (`ARR = 20000 - 1`) qui nous permet donc d'obtenir une durée exacte de 2 secondes ($20\,000 \times 0{,}1\text{ ms}$) inférieure à la durée maximale, et qui laisse une grande marge pour mofifier la période d'échantillonnage si besoin.
+Ainsi pour mesurer une durée de 4 secondes, le nombre total de tics requis est de 40 000 (4 s × 10 000 tics/s),
+soit `ARR = 40 000 - 1`.Cette valeur restant inférieure à la limite de 65 535 ($2^{16} - 1$ bits), le réglage s'inscrit parfaitement sans risque de saturation du compteur.
+
 
 ### 5.2. Clignotement de la LED témoin
 
@@ -388,32 +387,30 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 ## 6. — Scénario 2 — Sécurité : HOME/AWAY et détection d'intrusion
 
-
 ### 6.1. Bouton MODE et anti-rebond
 
-> _Expliquer le choix d'utiliser le bouton sur PA6 en EXTI sur front descendant (falling edge) avec pull-up interne. Justifier le mécanisme d'anti-rebond implémenté : à l'appui, un flag `debouncing_bouton_home` est levé et le compteur de TIM5 est remis à zéro. TIM5 est configuré à 20 Hz (Prescaler=10000-1, Period=500-1 → 50 ms). Au prochain tick de TIM5, `debounce_filter()` vérifie que le bouton est bien relâché (état stable) avant de valider l'appui. Expliquer pourquoi cette méthode est plus fiable qu'un simple délai bloquant._
-
-### 6.2. Configuration de l'interruption externe (EXTI)
-Le bouton MODE est connecté à PA6 et configuré en EXTI sur front descendant (_L'interruption est déclenchée au moment précis où l'utilisateur appuie sur le bouton, lorsque le signal passe de haut à bas_) avec pull-up interne (_maintient le signal à l'état haut_). 
+Le bouton MODE est connecté à PA6 et configuré en EXTI sur front descendant (_L'interruption est déclenchée au moment précis où l'utilisateur appuie sur le bouton, lorsque le signal passe de haut à bas_) avec pull-up interne (_le bouton étant configuré pour renvoyer en 0 si pressé et 1 sinon, le signal est maintenu à l'état haut par défaut_)
 Cela permet de détecter les appuis sur le bouton tout en évitant les faux déclenchements dus au bruit. 
 
 #### Mécanisme d'anti-rebond non bloquant via TIM5
 Pour s'assurer que l'appui sur le bouton est correctement détecté sans être perturbé par les rebonds mécaniques, nous avons mis en place un mécanisme anti-rebond via TIM5.
 
-* **Prescaler** (`PSC = 10000-1`) : Nous avons gardé la meme résolution que pour le TIM3 soit une résolution exacte de $0{,}1\text{ ms}$ par tic.
-* **Counter Period (`500-1`) :** Nous cherchons une période de  **$50\text{ ms}$** ($\frac{500}{10\,000\text{ Hz}}$) (20Hz), largement satisfaisante pour couvrir largement la fenêtre de rebonds mécaniques du bouton.
+ ##### Prescaler
+ (`PSC = 10000-1`) : Nous avons gardé la meme résolution que pour le TIM3 soit une résolution exacte de $0{,}1\text{ ms}$ par tic.
+ ##### Period 
+( `ARR = 500-1`) Nous cherchons une période de $\frac{500}{10\,000} = 50\text{ ms}$, soit une fréquence de 20Hz, largement satisfaisante pour couvrir largement la fenêtre de rebonds mécaniques du bouton.
 
 Lors de l'appui sur le bouton MODE, l'interruption EXTI sur PA6 est déclenchée. Dans le gestionnaire d'interruption, le flag `debouncing_bouton_home` est levé et le compteur de TIM5 est remis à zéro. 
 ```c
 // Définition utilisé pour l'anti-rebond
 #define BTN_HOME_Pin GPIO_PIN_6
 #define BTN_HOME_GPIO_Port GPIOA
-#define TIMER_DEBOUNCE &htim5
 
 // Flag utilisé pour l'anti-rebond
 volatile bool   timer_debounce_flag         = false;
 volatile bool   debouncing_bouton_home      = false;
 
+// dans USER CODE 4
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim == TIMER_DEBOUNCE)
@@ -436,8 +433,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   ...
 }
 ```
-À chaque tick, la fonction `debounce_filter()` vérifie si le bouton est toujours relâché. Si l'état est stable, l'appui est validé et le flag `debouncing_bouton_home` est réinitialisé. Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrairement à un simple délai qui stopperait l'exécution du programme.
+À chaque tic, la fonction `debounce_filter()` vérifie si le bouton est toujours relâché. Si l'état est stable, l'appui est validé et le flag `debouncing_bouton_home` est réinitialisé. Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrairement à un simple délai qui stopperait l'exécution du programme.
 ```c
+// dans USER CODE 0
 void debounce_filter() 
 {
 	if (debouncing_bouton_home && !HAL_GPIO_ReadPin(BTN_HOME_GPIO_Port, BTN_HOME_Pin)) {
@@ -452,21 +450,155 @@ void debounce_filter()
 }
 ```
 
-#### Pourquoi cette méthode dépasse le simple délai blquant ?
+#### Pourquoi cette méthode dépasse le simple délai bloquant ?
 
 L'utilisation de TIM5 pour gérer l'anti-rebond permet au microcontrôleur de continuer à exécuter d'autres tâches pendant la période de stabilisation du bouton. Contrairement à un simple délai bloquant qui stopperait l'exécution du programme, cette méthode non bloquante assure que le système reste réactif et que d'autres événements (comme la détection PIR ou le clignotement LED) peuvent être traités simultanément.
 
 
-### 6.3. Machine à états HOME / AWAY
+### 6.2. Machine à états HOME / AWAY
 
-> _Décrire la machine à états dans la boucle principale : état `HOME` (éclairage/fenêtre actifs, pas d'alarme intrusion) et état `AWAY` (fenêtre forcée fermée, bouton fenêtre ignoré, détection PIR active). Expliquer les transitions : bouton MODE bascule HOME→AWAY (ferme la fenêtre) ou AWAY→HOME (désactive l'alarme intrusion). Justifier que le changement de mode est signalé sur l'écran LCD et via UART._
+Nous avons défini une machine à états pour gérer les différents modes de la maison : `HOME`, `AWAY`. Cette machine à états permet de contrôler le comportement des fenêtres, de l'alarme intrusion et de la signalisation sur l'écran LCD et via UART en fonction de l'état courant et des événements externes (boutons, capteur PIR). (_Note : le fonctionnement global est expliqué dans_ [2.2. Description du fonctionnement](#22-description-du-fonctionnement) _et la machine à états complète dans_)
 
-### 6.4. Capteur PIR et alarme intrusion
+````mermaid
+stateDiagram
+  direction TB
+  [*] --> HOME
+  HOME --> AWAY:Bouton MODE appuyé /<br> signaler AWAY sur LCD et UART
+  AWAY --> HOME:Bouton MODE appuyé/<br>signaler HOME sur LCD et UART
+  AWAY --> ALARME:PIR détecte un mouvement / déclencher l'alarme
+  ALARME --> HOME:Bouton MODE appuyé / signaler HOME sur LCD et UART
+  ALARME --> ALARME:maintenir l'alarme
+  HOME:<b>HOME :</b>
+HOME:Alarme intrusion désactivée<br>
 
-> _Décrire la configuration du PIR sur PC7 en EXTI Rising Edge avec pull-down. Expliquer le comportement : en mode AWAY, le front montant positionne `presence_detectee = true`, ce qui déclenche l'alarme intrusion dans la boucle principale. En mode HOME, l'interruption PIR est ignorée. Justifier que le traitement est minimal dans l'ISR (un simple flag)._
+  AWAY:<b>AWAY</b>
+AWAY:Alarme intrusion active
 
-### 6.5. Gestion non bloquante des alarmes
+  ALARME:ALARME INTRUSION<br>effective
+````
 
+
+### 6.3. Capteur PIR et alarme intrusion
+
+#### 6.3.1 Configuration matérielle et logicielle 
+##### Capteur de Mouvement
+Le capteur de présence PIR est raccordé sur la broche PC7 et configurée en interruption externe. 
+
+```c
+#define PIR_MVMT_Pin GPIO_PIN_7
+#define PIR_MVMT_GPIO_Port GPIOC
+#define PIR_MVMT_EXTI_IRQn EXTI9_5_IRQn
+```
+On la configure de manière à ce qu'elle se déclenche sur le front montant (rising edge) et avec une résistance de tirage pull-down interne, de manière à garantir un signal stable en l'absence de mouvement.
+
+##### Alarme intrusion 
+L'alarme intrusion est contrôlée par les variables `alarme_intrusion` et `presence_detectee`.
+```c
+// dans CODE PV
+volatile bool presence_detectee = false;
+bool alarme_intrusion = false;
+```
+##### Configuration led et buzzer
+Dans le scénario d'intrusion, deux composant s'active pour signaler l'alarme : 
+- une led jaune qui clignote en cas d'intrusion
+```c
+//DANS USER CODE PV 
+// configuration led 
+LED_t           led_alarme_intrusion        = {LED_JAUNE_GPIO_Port, LED_JAUNE_Pin, false};
+```
+- un buzzer qui émet un son continu de 384 Hz en cas d'intrusion . (la configuation du buzzer est expliqué plus tard en TODO), manipulé par le boléen `buzzer`
+```c
+// dans CODE PV
+bool buzzer = false;
+```   
+la commande de ces composants est réalisé via les fonctions `commande_led()` et `commande_buzzer()` qui vérifie les actions à réalier a chaque boucle while(1).
+
+##### Comportement selon le mode (AWAY vs HOME)
+Afin de manipuler plus facilement les états de la maison, nous avons définit une énumération `maison_mode_t` qui représente les différents modes possibles : `HOME` et `AWAY`.
+```c
+//dans CODE PTD
+typedef enum {
+    HOME,
+    AWAY
+} maison_mode_t;
+
+// dans CODE PV
+maison_mode_t mode = HOME;
+
+```
+Lorsqu'un front montant est détecté, la routine d'interruption (`HAL_GPIO_EXTI_Callback`) est exécutée et adapte son action en fonction de l'état du système :
+
+##### En mode AWAY: 
+Le système de surveillance est activé. A la détection d'un mouvement, le front montant passe immédiatement le flag global `presence_detectee` à `true`.
+```c
+//Dans USER CODE 4
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+   // Autres traitements d'interruptions éventuels
+   ....
+   // Vérification du capteur PIR
+	if (GPIO_Pin == PIR_MVMT_Pin)
+  {
+    if (mode == AWAY){
+      presence_detectee = true;
+		}
+	}
+   ...
+}
+```
+ La boucle principale (`while(1)`) capture ce changement d'état et active le scénario d'alarme intrusion (clignotement de la Led et Buzzer).le flag `presence_detectee` redescend à `false`, évitant ainsi tout déclenchement intempestif.
+
+TODO : redirection comamnd eled et buzzer.
+
+```c
+// Gestion du mode AWAY dans la boucle principale
+case AWAY:
+    {
+    	...
+      else if (presence_detectee) 
+      {
+        alarme_intrusion = true;
+        presence_detectee = false;
+        printf("Intrusion detectee !\r\n");
+      }
+      break;
+    }
+...
+    void commande_led(){
+      //commande des autres Led
+      ...
+      if (led_alarme_intrusion.state) {
+    HAL_GPIO_WritePin(led_alarme_intrusion.port, led_alarme_intrusion.pin, 1);
+  } else {
+    HAL_GPIO_WritePin(led_alarme_intrusion.port, led_alarme_intrusion.pin, 0);
+  }
+    }
+
+    void commande_buzzer() 
+{
+	if (buzzer) {
+	  HAL_TIM_PWM_Start(TIMER_BUZZER, CANAL_BUZZER);
+	} else {
+	  HAL_TIM_PWM_Stop(TIMER_BUZZER, CANAL_BUZZER);
+	}
+}
+```
+##### En mode HOME :
+ Le système est désarmé en entrant dans la maison et `alarme_intrusion` retourne à `false`. L'interruption PIR est ignorée dans la logique applicative.
+```c
+ case  HOME: 
+    {
+     //Gestion des événements en mode HOME
+     ...
+      else 
+      {
+        alarme_intrusion = false;
+        ..
+      }
+      break;
+    }
+```
+### 6.4. Gestion non bloquante des alarmes
 > _Renvoyer vers la section 11 pour le détail de l'implémentation non bloquante du clignotement LED + buzzer._
 
 ---

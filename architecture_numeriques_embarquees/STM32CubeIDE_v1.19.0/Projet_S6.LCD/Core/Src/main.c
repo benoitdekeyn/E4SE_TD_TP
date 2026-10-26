@@ -36,11 +36,30 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+
 typedef struct {
     GPIO_TypeDef *port;
     uint16_t pin;
     bool state;
 } LED_t;
+
+typedef enum{
+  HOME,
+  AWAY
+} maison_mode_t;
+
+typedef enum {
+  INIT,
+  FERMEE,
+  OUVERTE
+} fenetre_t;
+
+typedef enum {
+  FROID,
+  CHAUD,
+  TEMPEREE
+} temperature_t;
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -115,16 +134,6 @@ typedef struct {
 #define ANGLE_SERVO_OUVERT  120 // ATTENTION maximum 120° sinon ça casse
 #define ANGLE_SERVO_FERME   0   // Montage effectué avec 0° fenetre fermee
 
-// Maison
-typedef enum{
-  HOME,
-  AWAY
-} maison_mode_t;
-// Fenetre
-typedef enum {INIT, FERMEE, OUVERTE} fenetre_t;
-// Temperature
-typedef enum {FROID, CHAUD, TEMPEREE} temperature_t;
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -135,32 +144,32 @@ typedef enum {FROID, CHAUD, TEMPEREE} temperature_t;
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-volatile LED_t  led_capteurs                = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pin, false};
-volatile LED_t  led_alarme_gaz              = {RGB_ROUGE_GPIO_Port, RGB_ROUGE_Pin, false};
-volatile LED_t  led_alarme_intrusion        = {LED_JAUNE_GPIO_Port, LED_JAUNE_Pin, false};
-volatile bool   buzzer                      = false;
-volatile fenetre_t fenetre                  = OUVERTE;
+LED_t           led_capteurs                = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pin, false};
+LED_t           led_alarme_gaz              = {RGB_ROUGE_GPIO_Port, RGB_ROUGE_Pin, false};
+LED_t           led_alarme_intrusion        = {LED_JAUNE_GPIO_Port, LED_JAUNE_Pin, false};
+bool            buzzer                      = false;
+fenetre_t       fenetre                     = OUVERTE;
 
 volatile bool   debouncing_bouton_home      = false;
 volatile bool   debouncing_bouton_fenetre   = false;
-volatile bool   bouton_home_appuye          = false;
-volatile bool   bouton_fenetre_appuye       = false;
+bool            bouton_home_appuye          = false;
+bool            bouton_fenetre_appuye       = false;
 
 volatile bool   timer_debounce_flag         = false;
 volatile bool   timer_capteurs_flag         = false;
 volatile bool   fin_mesure_ADC_flag         = false;
-volatile int    blink_counter_alarm         = 0;
+int             blink_counter_alarm         = 0;
 
-volatile maison_mode_t mode                 = HOME;
+maison_mode_t   mode                        = HOME;
 volatile bool   presence_detectee           = false;
-volatile bool   pluie_detectee              = false;
-volatile bool   alarme_intrusion            = false;
-volatile bool   alarme_gaz                  = false;
+bool            pluie_detectee              = false;
+bool            alarme_intrusion            = false;
+bool            alarme_gaz                  = false;
 
-volatile temperature_t temperature          = TEMPEREE;
-volatile float temperature_valeur           = 0.0;
-volatile int   pluie_valeur                 = 0;
-volatile int   gaz_valeur                   = 0;
+temperature_t   temperature                 = TEMPEREE;
+float           temperature_valeur          = 0.0;
+int             pluie_valeur                = 0;
+int             gaz_valeur                  = 0;
 
 volatile uint16_t adc_valeurs[NBR_CAPTEURS_ADC];
 TMP102_t thermometre;

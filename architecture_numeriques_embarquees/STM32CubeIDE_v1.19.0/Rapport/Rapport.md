@@ -19,9 +19,9 @@
    - [3.1. Branchement des composants](#31-branchement-des-composants)
    - [3.2. Arbre d'horloge et fréquences](#32-arbre-dhorloge-et-fr%C3%A9quences)
    - [3.3. Organisation logicielle](#33-organisation-logicielle)
-- [4. Macros et types personalisés](#4-macros-et-types-personalis%C3%A9s)
+- [4. Define et types personalisés](#4-define-et-types-personalis%C3%A9s)
    - [4.1. Pas de Hardcoding](#41-pas-de-hardcoding)
-   - [4.2. Macros matérielles](#42-macros-mat%C3%A9rielles)
+   - [4.2. Define matériels](#42-define-mat%C3%A9riels)
    - [4.3. Structure pour les LEDs](#43-structure-pour-les-leds)
 - [5. — Scénario 1 — Base temporelle pour l'échantillonnage](#5--sc%C3%A9nario-1--base-temporelle-pour-l%C3%A9chantillonnage)
    - [5.1. Configuration du Timer](#51-configuration-du-timer)
@@ -52,13 +52,14 @@
    - [10.2. Analyse de la datasheet](#102-analyse-de-la-datasheet)
    - [10.3. Communication I²C avec le capteur](#103-communication-ic-avec-le-capteur)
    - [10.4. Structure de la bibliothèque](#104-structure-de-la-biblioth%C3%A8que)
-   - [10.5. Initialisation et configuration](#105-initialisation-et-configuration)
-   - [10.6. Lecture du registre de température](#106-lecture-du-registre-de-temp%C3%A9rature)
-   - [10.7. Conversion et affichage de la température](#107-conversion-et-affichage-de-la-temp%C3%A9rature)
-   - [10.8. Mesure One-Shot en mode Shutdown](#108-mesure-one-shot-en-mode-shutdown)
-   - [10.9. Utilisation de la bibliothèque dans le code](#109-utilisation-de-la-biblioth%C3%A8que-dans-le-code)
-   - [10.10. Gestion automatique de la fenêtre par la température](#1010-gestion-automatique-de-la-fen%C3%AAtre-par-la-temp%C3%A9rature)
-   - [10.11. Analyse des trames I²C](#1011-analyse-des-trames-ic)
+   - [10.5. Mise à jour des registres du capteur](#105-mise-%C3%A0-jour-des-registres-du-capteur)
+   - [10.6. Initialisation](#106-initialisation)
+   - [10.7. Lecture du registre de température](#107-lecture-du-registre-de-temp%C3%A9rature)
+   - [10.8. Conversion et affichage de la température](#108-conversion-et-affichage-de-la-temp%C3%A9rature)
+   - [10.9. Mesure One-Shot en mode Shutdown](#109-mesure-one-shot-en-mode-shutdown)
+   - [10.10. Utilisation de la bibliothèque dans le code](#1010-utilisation-de-la-biblioth%C3%A8que-dans-le-code)
+   - [10.11. Gestion automatique de la fenêtre par la température](#1011-gestion-automatique-de-la-fen%C3%AAtre-par-la-temp%C3%A9rature)
+   - [10.12. Analyse des trames I²C](#1012-analyse-des-trames-ic)
 - [11. — Scénario 7 — Intégration et affichage LCD](#11--sc%C3%A9nario-7--int%C3%A9gration-et-affichage-lcd)
    - [11.1. Configuration Bus I²C](#111-configuration-bus-ic)
    - [11.2. Intégration de la bibliothèque LCD I²C](#112-int%C3%A9gration-de-la-biblioth%C3%A8que-lcd-ic)
@@ -253,16 +254,16 @@ Décochage de "Exclude from Build" dans les propriété des dossiers symboliques
 Include path dans les project settings 
 ![Include path dans project settings](media/stm32cubeide_include_path_project_settings.png)  
 
-## 4. Macros et types personalisés
+## 4. Define et types personalisés
 
 
 ### 4.1. Pas de Hardcoding
 
-Pour éviter les erreurs de recopie, faciliter la compréhension du code et surtout permettre de reconfigurer facilement des valeurs ou des changements de brochage, nous avons défini des macros (```#define```) pour chaque valeur ou objet HAL utilisés dans notre code.
+Pour éviter les erreurs de recopie, faciliter la compréhension du code et surtout permettre de reconfigurer facilement des valeurs ou des changements de brochage, nous avons défini des macros (`#define`) pour chaque valeur ou objet HAL utilisés dans notre code.
 
-### 4.2. Macros matérielles
+### 4.2. Define matériels
 
-Voici les macros matérielles définies dans le main.c qui permettent de pointer vers les différents périphériques sans avoir à changer toutes les occurences en cas de changement dans le .ioc :
+Voici les `#define`s matérielles définies dans le main.c qui permettent de pointer vers les différents périphériques sans avoir à changer toutes les occurences en cas de changement dans le .ioc :
 ```c
 #define ADC_CAPTEURS    (&hadc1)
 #define BUS_I2C         (&hi2c3)
@@ -295,10 +296,10 @@ typedef struct {
 
 Voici un exemple de déclaration de LED dans le ```main.c``` :
 ```c
-volatile LED_t led_capteurs = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pin, false};
+LED_t led_capteurs = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pin, false};
 ...
 ```
-*NB : Les macros associées aux Port et Pin des broches sont générée automatiquement par le .ioc dans le fichier ```main.h```.*
+*NB : Les `#define`s associées aux Port et Pin des broches sont générée automatiquement par le .ioc dans le fichier ```main.h```.*
 
 Dans la boucle while(1) de la fonction main, nous appelons à chaque exécution la fonction de commande des LED, qui va modifier l'état des LED en fonction de leur état mémorisé :
 
@@ -375,7 +376,7 @@ En observant la LED à l'oscilloscope, nous avions pu vérifier que la période 
 
 ### 5.4. Ancienne méthode
 
-Au début, nous avions utilisé le Timer 3 de manière totalement arbitraire, sans ```#define``` personnelisé pour les objets HAL, sans structure pour les LED, et sans flag pour les routines d'interruption :
+Au début, nous avions utilisé le Timer 3 de manière totalement arbitraire, sans `#define` personnalisé pour les objets HAL, sans structure pour les LED, et sans flag pour les routines d'interruption :
 
 ```c
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
@@ -621,7 +622,7 @@ Le paramètre `I2C_MEMADD_SIZE_8BIT` indique que l'adresse du registre (le point
 
 Pour éviter tout hardcoding, l'adresse I²C et le pointeur vers le bus sont stockés dans la structure `TMP102_t`, ce qui permet théoriquement de brancher plusieurs capteurs sur le même bus avec des adresses différentes sans changer une ligne de bibliothèque.
 
-#### Alternatives avec les fonctions I²C de base de la HAL
+#### Alternatives HAL non utilisées
 
 Si nous avions voulu réinventer la roue sans utiliser `HAL_I2C_Mem_*`, nous avions deux options en utilisant les fonctions de base de la HAL :
 
@@ -680,9 +681,9 @@ Cette approche présente plusieurs avantages : on peut instancier plusieurs capt
 
 *NB : Pour simplifier les explications, on appellera "Objet TMP102" une instance de la structure TMP102.*
    
-#### Macros
+#### Define
 
-Pour ne jamais rien hardcoder, nous avons utilisé une macro pour chaque valeur constante issue de la datsheet pour les mêmes raison que mentionnées ici :
+Pour ne jamais rien hardcoder, nous avons utilisé une `#define` pour chaque valeur constante issue de la datsheet pour les mêmes raison que mentionnées ici :
 
 ```c
 // TAILLES et TIMEOUTS 
@@ -716,7 +717,7 @@ Pour ne jamais rien hardcoder, nous avons utilisé une macro pour chaque valeur 
 #define TMP102_EXT_BIT_LEN          13
 ```
 
-#### Gestion des champs du registre de configuration
+#### Organisation des champs du registre de configuration
 
 Le registre de configuration du TMP102 est un registre de 16 bits dont les champs ne sont pas alignés sur des octets entiers. Pour éviter de dupliquer la logique de masquage (une fois pour l'écriture, une fois pour la lecture), et pour définir de manière claire et unique les champs du registre, nous avons conçu un système de mapping générique.
 
@@ -757,15 +758,130 @@ static void TMP102_SyncConfigBuffer(TMP102_t *tmp102, uint8_t *buffer, bool is_w
    // Encodage (Structure -> Buffer) ou decodage (Buffer -> Structure)
    ...
 }
+``` 
 
-// TO be continued (bitwise operation)
+Les valeurs du pseudo tableau ci-dessus sont données ici par:
+
 *Extrait de la datasheet du TMP102 :*
-<img src="media/>
+<img src="media/TMP102_datasheet_register_map.png"></img>
 
+#### Synchronisation entre le registre de configuration et l'objet TMP102
+
+// todo
+
+### 10.5. Mise à jour des registres du capteur
+
+La fonction publique `TMP102_apply_registers()` envoie la configuration stockée dans l'objet TMP102 vers le capteur via I²C. Elle commence par le registre de configuration en appelant `TMP102_write_config_reg()`, puis écrit les registres de seuil de température T_LOW et T_HIGH avec la fonction `TMP102_write_T_LOW_T_HIGH_reg()`.  
+
+```c
+bool TMP102_apply_registers(TMP102_t *tmp102) 
+{
+   if (!TMP102_write_config_reg(tmp102))       return false;
+    if (!TMP102_write_T_LOW_T_HIGH_reg(tmp102)) return false;
+    return true;
+}
+```
+Le retour `bool` permet de détecter un problème de communication I²C.
+
+#### Application du registre de configuration
+
+La fonction `TMP102_write_config_reg()` met à jour le registre de configuration du TMP102 en appelant `TMP102_SyncConfigBuffer()` pour encoder la structure en buffer et en utilisant les fonctions HAL pour la lecture/écriture de registres en I²C :
+
+1. **Initialisation des variables**
+```c
+uint8_t write_buffer[TMP102_NBR_CONFIG_REG_BYTES];
 ```
 
-### 10.5. Initialisation et configuration
+2. **Encodage de la structure en buffer**
 
+```c
+   TMP102_SyncConfigBuffer(tmp102, write_buffer, WRITE);
+```
+La fonction `TMP102_SyncConfigBuffer()` est détaillée ici
+-> [10.5.4 Synchronization entre la configuration interne et le registre de configuration](#1054-synchronisation-entre-la-configuration-interne-et-le-registre-de-configuration)
+
+3. **Envoi du buffer vers le registre de configuration du capteur**
+
+```c
+if (HAL_I2C_Mem_Write(tmp102->busI2C, tmp102->address,
+                        TMP102_REG_CONFIG,
+                        I2C_MEMADD_SIZE_8BIT,
+                        write_buffer,
+                        TMP102_NBR_CONFIG_REG_BYTES,
+                        TMP102_I2C_TIMEOUT) 
+   != HAL_OK) 
+{
+   return false;
+}    
+return true;
+```
+On spécifie à la fonction HAL : 
+- le bus I²C
+- l'adresse I²C du capteur
+- l'adresse interne du registre
+- la taille du registre en octets
+- le buffer contenant la valeur à écrire
+- la taille du buffer en octets
+- le timeout de la transaction
+
+#### Application des registres de seuil de température
+
+```cpp
+bool TMP102_write_T_LOW_T_HIGH_reg(TMP102_t *tmp102);
+```
+La fonction met à jour les registres de seuil de température T_LOW et T_HIGH du TMP102 en appelant `TMP102_celsius_to_register()` pour convertir les températures en valeurs de registre et en utilisant les fonctions HAL pour l'écriture de registres en I²C :
+
+1. **Déclaration des buffers**
+```c
+uint8_t t_low_reg_bytes[TMP102_NBR_REG_TEMP_BYTES];
+uint8_t t_high_reg_bytes[TMP102_NBR_REG_TEMP_BYTES];
+```
+
+2. **Conversion des températures en valeurs de registre**
+
+```cpp
+TMP102_celsius_to_register(tmp102->T_Low, t_low_reg_bytes, tmp102->config.ExtendedMode);
+TMP102_celsius_to_register(tmp102->T_High, t_high_reg_bytes, tmp102->config.ExtendedMode);
+```
+La fonction `TMP102_celsius_to_register()` est expliquée plus bas   
+-> [10.8 Température en °C → Registre brut](#temp%C3%A9rature-en-c--registre-brut)
+
+3. **Envoi des buffers vers le capteur en I²C**
+
+```c
+// Registre T_LOW
+bool i2c_ok = (HAL_I2C_Mem_Write(tmp102->busI2C, tmp102->address,
+                           TMP102_REG_TLOW,
+                           I2C_MEMADD_SIZE_8BIT,
+                           t_low_reg_bytes,
+                           TMP102_NBR_REG_TEMP_BYTES,
+                           TMP102_I2C_TIMEOUT)
+                   == HAL_OK);
+if (!i2c_ok) return false;
+// Registre T_HIGH
+i2c_ok = (HAL_I2C_Mem_Write(tmp102->busI2C, tmp102->address,
+                           TMP102_REG_THIGH,
+                           I2C_MEMADD_SIZE_8BIT,
+                           t_high_reg_bytes,
+                           TMP102_NBR_REG_TEMP_BYTES,
+                           TMP102_I2C_TIMEOUT)
+                   == HAL_OK);
+if (!i2c_ok) return false;
+return true;
+```
+Pour chaque registre, on spécifie à la fonction HAL : 
+- le bus I²C
+- l'adresse I²C du capteur
+- l'adresse interne du registre
+- la taille du registre en octets
+- le buffer contenant la valeur à écrire
+- la taille du buffer en octets
+- le timeout de la transaction
+
+### 10.6. Initialisation
+
+#### Création de l'objet TMP102
+// TODO
 
 #### Valeurs par défaut
 
@@ -800,52 +916,67 @@ void TMP102_init_default(TMP102_t *tmp102)
 
 Une fois cette initialisation faite, pour modifier la configuration, il suffit de réécrire les champs que l'on veut modifier un par un, puis d'appliquer la configuration au capteur avec la fonction `TMP102_apply_registers()` détaillée ci-dessous.
 
-#### Mise à jour de la configuration
+### 10.7. Lecture du registre de température
 
-La fonction publique `TMP102_apply_registers()` envoie la configuration stockée dans l'objet TMP102 vers le capteur via I²C. Elle commence par le registre de configuration (en appelant `TMP102_write_config_reg()` qui appelle elle-même `TMP102_SyncConfigBuffer()` pour encoder la structure en buffer), puis écrit les registres T_LOW et T_HIGH :
+#### Fonction de lecture
+La lecture de la température se fait avec la fonction suivante qui lit le registre de température du TMP102 en I²C :
 
 ```c
-bool TMP102_apply_registers(TMP102_t *tmp102) 
+static bool TMP102_read_temperature_register(TMP102_t *tmp102, float *Temperature) 
+``` 
+1. **Initialisation des variables :**  
+```c
+    uint8_t buffer_temp_reg[TMP102_NBR_REG_TEMP_BYTES] = {0};
+```
+Le buffer est un tableau de 2 octets correpsondant au registre de température du TMP102.
+
+2. **Lecture de registre en I²C**  
+```c
+    bool i2c_ok = (HAL_I2C_Mem_Read(tmp102->busI2C, 
+                                    tmp102->address, 
+                                    TMP102_REG_TEMP, 
+                                    I2C_MEMADD_SIZE_8BIT, 
+                                    buffer_temp_reg, 
+                                    TMP102_NBR_REG_TEMP_BYTES, 
+                                    TMP102_I2C_TIMEOUT)
+                   == HAL_OK);
+```
+Pour la fonction HAL on spécifie : 
+- le bus I2C
+- l'adresse I²C du capteur
+- l'adresse interne du registre
+- la taille du registre en octets
+- le buffer de stockage des données lues
+- la taille du buffer en octets
+- le timeout de la transaction
+
+3. **Si la communication I²C a échouée**
+```c
+if (!i2c_ok) 
 {
-    if (!TMP102_write_config_reg(tmp102))       return false;
-    if (!TMP102_write_T_LOW_T_HIGH_reg(tmp102)) return false;
-    return true;
+   *Temperature = -999.0f;
+   return false;
+}
+```
+En cas de problème de communication, la température est mise à -999.0f pour rendre l'erreur plus visible encore, et la fonction retourne `false`.
+
+4. **Conversion du registre de température en température en °C :**  
+```cpp
+TMP102_register_to_celsius(buffer_temp_reg, Temperature);
+```
+
+#### Appel externe
+
+Cette fonction est statique car elle n'est pas destinée à être appelée directement depuis l'extérieur de la bibliothèque mais par la fonction non static `TMP102_get_temperature()` pour découpler l'appel externe de la résolution interne, même si il n'y a finalement plus d'autres fonctions de la bibliothèque qui ont besoin de lire la température.  
+Pour lire la temperature en mode "Continous" par exemple, depuis le `main.c` il faudrait utiliser cette fonction non static :  
+```c
+bool TMP102_get_temperature(TMP102_t *tmp102, float *Temperature) 
+{
+    return TMP102_read_temperature_register(tmp102, Temperature);
 }
 ```
 
-La fonction `TMP102_write_config_reg()` met à jour le registre de configuration du TMP102 en appelant `TMP102_SyncConfigBuffer()` pour encoder la structure en buffer et en utilisant les fonctions HAL pour la lecture/écriture de registres en I²C :
-
-```c
-bool TMP102_write_config_reg(TMP102_t *tmp102) 
-{
-   uint8_t write_buffer[TMP102_NBR_CONFIG_REG_BYTES];
-   
-   // Encode la structure en buffer de 16 bits
-   TMP102_SyncConfigBuffer(tmp102, write_buffer, WRITE);
-   
-   // Envoi du buffer vers le registre de configuration du capteur
-   if (HAL_I2C_Mem_Write(tmp102->busI2C, tmp102->address,
-                           TMP102_REG_CONFIG,
-                           I2C_MEMADD_SIZE_8BIT,
-                           write_buffer,
-                           TMP102_NBR_CONFIG_REG_BYTES,
-                           TMP102_I2C_TIMEOUT) 
-      != HAL_OK) 
-   {
-      return false;
-   }    
-   return true;
-}
-```
-
-Le retour `bool` permet de détecter un problème de communication I²C.
-
-### 10.6. Lecture du registre de température
-
-
-// TO be continued (implementation of the function)
-
-### 10.7. Conversion et affichage de la température
+### 10.8. Conversion et affichage de la température
 
 #### Registre brut → température en °C
 
@@ -854,7 +985,7 @@ Nous allons expliquer la fonction de conversion du registre de température en v
 static void TMP102_register_to_celsius(uint8_t *reg_value, float *temperature);
 ```
 
-Le registre de température est un entier signé en complément à 2, aligné à **gauche** sur 16 bits. Les bits de poids faible sont des zéros de padding (3 en mode normal, 4 si extended). La conversion se fait en plusieurs étapes :
+Le registre de température est un entier signé en complément à 2, aligné à gauche sur 16 bits. Les bits de poids faible sont des zéros de padding (3 en mode normal, 4 si extended). La conversion se fait en plusieurs étapes :
 
 *Extrait de la datasheet du TMP102 :*
 <img src="media/TMP102_datasheet_conversion.png">
@@ -888,10 +1019,17 @@ Cette ligne multiplie la valeur entière du registre par la résolution du capte
 
 Pour écrire les seuils T_LOW et T_HIGH, nous avons également créé la fonction inverse
 ```c
-static void TMP102_celsius_to_register(uint8_t *reg_value, float *temperature);
+static void TMP102_celsius_to_register(uint8_t *reg_value, float *temperature, bool extended_mode);
 ```
 
-On effectue les mêmes étapes mais en sens inverse :  
+Cette fois, le mode étendu n'est plus défini dans le registre de température mais en paramètre de la fonction.
+```c
+uint8_t temp_length = (extended_mode) 
+                      ? TMP102_EXT_BIT_LEN 
+                      : TMP102_NORM_BIT_LEN;
+```
+
+Puis on effectue les mêmes étapes mais en sens inverse :  
 1. **On divise la température par la résolution**
 ```c
 float reg_value_float = temperature / TMP102_TEMP_RESOLUTION;
@@ -976,7 +1114,7 @@ La précision de 4 est excessive par rapport à la précision de l'encodage du c
 Ici, la notation `%0*d` dans le `snprintf` permet de forcer le zéro-padding de la partie décimale (ex. `18,06` et non `18,6`).
 
 
-### 10.8. Mesure One-Shot en mode Shutdown
+### 10.9. Mesure One-Shot en mode Shutdown
 
 #### Mode Continous vs Shutdown
 Comme il était indiqué dans le TP de coder une fonction pour lancer une mesure, et pour configurer le capteur (sachant que par défaut, le capteur est en mode "Continous"), et par souci d'optimisation des resources, nous avons choisi de mettre le capteur en mode "Shutdown" et de lancer une mesure avant de lire le registre de température à chaque cycle du timer d'échantillonage.
@@ -1035,28 +1173,30 @@ bool TMP102_is_measure_ready(TMP102_t *tmp102)
 
 Une fois la mesure effectuée, il suffit simplement de lire le registre de température du capteur comme indiqué précédemment 
 
-### 10.9. Utilisation de la bibliothèque dans le code
+### 10.10. Utilisation de la bibliothèque dans le code
 
 
 #### Déclaration et initialisation dans le `main.c`
 
 Le capteur est représenté par une unique variable globale de type `TMP102_t`.
 
+*Dans la section `USER CODE PV` du fichier `main.c`*
 ```c
 TMP102_t thermometre;
 ```
 
-Son initialisation est regroupée dans la fonction `initialiser_thermometre()` appelée une seule fois au démarrage :
+Son initialisation est regroupée dans la fonction `initialiser_thermometre()` appelée une seule fois au début de la fonction `main()` :
 
+*Dans la section `USER CODE 0` du fichier `main.c`*
 ```c
 void initialiser_thermometre() 
 {
-    TMP102_init_default(&thermometre); // Valeurs sûres par défaut
+    TMP102_init_default(&thermometre); // Valeurs par défaut
 
-    thermometre.busI2C              = BUS_I2C;             // &hi2c3
-    thermometre.address             = TMP102_I2C_ADDR_GND; // 0x48 << 1
-    thermometre.config.Mode         = TMP102_MODE_SHUTDOWN; // Mode veille
-    thermometre.config.ExtendedMode = TMP102_EXTENDED_OFF;  // 12 bits
+    thermometre.busI2C              = BUS_I2C;             
+    thermometre.address             = TMP102_I2C_ADDR_GND; 
+    thermometre.config.Mode         = TMP102_MODE_SHUTDOWN; 
+    thermometre.config.ExtendedMode = TMP102_EXTENDED_OFF;
 
     if (TMP102_apply_registers(&thermometre)) {
         printf("Capteur TMP102 configuré\r\n");
@@ -1066,28 +1206,51 @@ void initialiser_thermometre()
 }
 ```
 
-On commence par appeler `TMP102_init_default()` pour partir d'un état connu, puis on surcharge uniquement les champs qui diffèrent des valeurs par défaut. Ici, on change le `Mode` (passe de `CONTINUOUS` à `SHUTDOWN`) et l'on confirme explicitement `ExtendedMode` à OFF. Tous les autres champs (polarité d'alerte, FaultQueue, etc.) gardent leurs valeurs par défaut définies dans `TMP102_init_default()`.
+On commence par appeler `TMP102_init_default()` pour partir d'un état connu, puis on modifie uniquement les champs qui diffèrent des valeurs par défaut. Ici, on change le `Mode` (passe de `CONTINUOUS` à `SHUTDOWN`) et l'on confirme explicitement `ExtendedMode` à OFF. Tous les autres champs (polarité d'alerte, FaultQueue, etc.) gardent leurs valeurs par défaut définies dans `TMP102_init_default()` car nous ne les utilisont pas.
 
 #### Cycle de mesure dans la boucle principale
 
 Le cycle de mesure complet se déroule sur plusieurs itérations de la boucle `while(1)`, sans jamais bloquer. On peut décomposer la séquence :
 
-1. **Déclenchement** : au tick du `TIMER_CAPTEURS` (toutes les 2 s), `TMP102_start_measure()` écrit le bit OS à 1 via I²C — cette écriture est instantanée (quelques µs).
-2. **Attente non bloquante** : pendant les ~26 ms de la conversion, la boucle continue de traiter les autres événements. À chaque itération, `TMP102_is_measure_ready()` relit le registre de configuration ; tant que le bit OS est à 0, elle retourne `false` immédiatement.
-3. **Lecture et traitement** : dès que le bit OS repasse à 1, `evaluer_temperature()` appelle `TMP102_get_temperature()` qui lit le registre de température et décode la valeur en °C.
-
+1. **Déclenchement** : au tick du `TIMER_CAPTEURS` (toutes les 2 s), `TMP102_start_measure()` est lancé :
 ```c
-// Dans la boucle while(1)
+if (timer_capteurs_flag) {
+      timer_capteurs_flag = false;
+      ...
+      if (!TMP102_start_measure(&thermometre)) {
+        printf("Erreur lors du demarrage de la mesure TMP102 en mode One-Shot\r\n");
+      }
+      ...
+    }
+```
+2. **Attente non bloquante** : pendant les ~26 ms de la conversion, la boucle continue de traiter les autres événements. À chaque itération, `TMP102_is_measure_ready()` permet de vérifier si la mesure est terminée :
+
+*Dans la boucle `while(1)` de la fonction `main()` :*
+```c
 if (TMP102_is_measure_ready(&thermometre)) {
-    evaluer_temperature();
-    printf("\r\n");
-    afficher_capteurs_ecran(); // Mise à jour LCD
+   evaluer_temperature();
+   printf("\r\n");
+   afficher_capteurs_ecran();
+}
+```
+Nous mettons à jour l'affichage LCD après la lecture de température, qui est la dernière valeur à arriver lors du déclenchement des différentes mesures (l'ADC est très rapide comparé au TMP102 qui a besoin de ~10 ms).
+
+3. **Lecture et traitement** : dès que la mesure est terminée, `evaluer_temperature()` appelle `TMP102_get_temperature()` qui lit le registre de température et décode la valeur en °C :
+
+*Dans la section `USER CODE 0` du fichier `main.c` :*
+```c
+void evaluer_temperature() 
+{
+  if (TMP102_get_temperature(&thermometre, &temperature_valeur)) 
+  {
+    printf("TEMP  = %s°C\r\n", TMP102_temperature_to_string(temperature_valeur, 2));
+  } else {
+    printf("TEMP  = ERREUR LECTURE\r\n");
+  }
 }
 ```
 
-On a fait le choix de mettre à jour l'affichage LCD après la lecture de température et non après les mesures ADC. Cela garantit que toutes les valeurs affichées sur une même rafraîchissement de l'écran appartiennent au même cycle de 2 s : les valeurs ADC (gaz, pluie) sont évaluées dès la fin de la conversion DMA, et la température est la dernière à arriver (le capteur a besoin de ~26 ms). L'écran est donc toujours cohérent.
-
-### 10.10. Gestion automatique de la fenêtre par la température
+### 10.11. Gestion automatique de la fenêtre par la température
 
 #### Seuils et états de température
 
@@ -1100,10 +1263,20 @@ Deux seuils sont définis en haut du `main.c` :
 
 L'état de la température est représenté par une variable de type énuméré `temperature_t` qui peut prendre trois valeurs :
 
+*Dans la section `USER CODE PTD` du fichier `main.c` :*
 ```c
-typedef enum {FROID, CHAUD, TEMPEREE} temperature_t;
-volatile temperature_t temperature = TEMPEREE;
+typedef enum {
+   FROID,
+   CHAUD, 
+   TEMPEREE
+} temperature_t;
 ```
+
+*Dans la section `USER CODE PV` du fichier `main.c` :*
+```c
+temperature_t temperature = TEMPEREE;
+```
+// TODO
 
 La plage tempérée (24–26°C) crée une **hystérésis** naturelle : une fois détecté comme `CHAUD`, le capteur ne revient à `TEMPEREE` que si la température descend en dessous de `SEUIL_CHALEUR` (et non en dessous de `SEUIL_FROID`). Cela évite les oscillations rapides de la fenêtre autour du seuil.
 
@@ -1129,63 +1302,9 @@ case TEMPEREE:
 
 La transition de `CHAUD` ou `FROID` vers `TEMPEREE` ne déclenche **aucune** action sur la fenêtre : on revient simplement à un état neutre, et l'utilisateur reprend le contrôle manuel. Les conditions `mode == HOME` et `!pluie_detectee` garantissent que la fenêtre ne s'ouvre jamais s'il pleut ou si la maison est inoccupée.
 
-### 10.11. Analyse des trames I²C
+### 10.12. Analyse des trames I²C
 
-#### Trame d'écriture de la configuration (initialisation)
-
-L'écriture du registre de configuration génère une trame I²C de 4 octets de données après l'adresse :
-
-| Champ | Valeur | Signification |
-|:---|:---|:---|
-| START + Addr (W) | `0x90` | `0x48 << 1`, bit R/W = 0 |
-| Pointer Register | `0x01` | Sélection du registre CONFIG |
-| Config Byte 0 | `0x01` | OS=0, R=00, F=00, POL=0, TM=0, **SD=1** |
-| Config Byte 1 | `0x60` | CR=11 (8 Hz), AL=1, EM=0, PADD=0 |
-| STOP | — | Fin de transaction |
-
-Le bit SD=1 dans l'octet 0 place le capteur en mode Shutdown. Le champ CR=11 en octet 1 fixe la fréquence de conversion à 8 Hz (inutile en mode Shutdown, mais conservé pour être cohérent avec les valeurs par défaut).
-
-#### Trame de déclenchement One-Shot
-
-À chaque cycle de 2 s, une trame identique est émise avec le bit OS=1 (bit 7 de l'octet 0) pour déclencher la mesure :
-
-| Champ | Valeur | Signification |
-|:---|:---|:---|
-| START + Addr (W) | `0x90` | Adresse capteur en écriture |
-| Pointer Register | `0x01` | Registre CONFIG |
-| Config Byte 0 | `0x81` | **OS=1**, SD=1 |
-| Config Byte 1 | `0x60` | Inchangé |
-| STOP | — | Fin de transaction |
-
-Dès que le capteur reçoit cette trame, il démarre une conversion et remet automatiquement le bit OS à 0 jusqu'à la fin de la mesure.
-
-#### Trame de polling (vérification de fin de mesure)
-
-Pour savoir si la mesure est terminée, on relit le registre de configuration :
-
-| Champ | Valeur | Signification |
-|:---|:---|:---|
-| START + Addr (W) | `0x90` | Adresse en écriture (sélection du registre) |
-| Pointer Register | `0x01` | Registre CONFIG |
-| RESTART + Addr (R) | `0x91` | Adresse en lecture |
-| Config Byte 0 (réponse) | `0x81` ou `0x01` | **OS=1** si terminé, OS=0 si en cours |
-| Config Byte 1 (réponse) | `0x60` | Inchangé |
-| STOP | — | Fin de transaction |
-
-#### Trame de lecture du registre de température
-
-Une fois la mesure prête, on lit le registre de température (adresse `0x00`) :
-
-| Champ | Valeur | Signification |
-|:---|:---|:---|
-| START + Addr (W) | `0x90` | Sélection du registre |
-| Pointer Register | `0x00` | Registre TEMPERATURE |
-| RESTART + Addr (R) | `0x91` | Lecture |
-| Temp Byte 0 (MSB) | ex. `0x18` | `0001 1000` |
-| Temp Byte 1 (LSB) | ex. `0x60` | `0110 0000` |
-| STOP | — | Fin de transaction |
-
-Pour l'exemple ci-dessus : `0x1860` → décalage de 4 bits à droite → `0x186` = 390 en décimal → 390 × 0,0625 = **24,375 °C**.
+Nous avons oublié de faire l'analyse des trames I²C le jour de la démo, quand nous sommes arrivé avec le Scénario 6 enfin terminé.
 
 ---
 
@@ -1194,7 +1313,7 @@ Pour l'exemple ci-dessus : `0x1860` → décalage de 4 bits à droite → `0x186
 ### 11.1. Configuration Bus I²C
 
 #### Branchement et configuration CubeMX
-Commun au capteur TMP102   
+Commun au capteur TMP102
 → [Bus I²C (SDA/SCL)](#bus-ic-sdascl).
 
 #### Adresse I²C
@@ -1204,7 +1323,7 @@ Nous utilisons donc l'adresse 0x27 (toujours décalée de 1 bit).
 ### 11.2. Intégration de la bibliothèque LCD I²C
 
 #### Modification de l'initialisation
-Comme nous avons défini l'objet I2C3 de l'HAL en macro, nous avons modifié la fonction d'initialisation de la biibliothèque pour stocker le pointeur vers un objet I2C de la HAL dans une variable globale interne au code source de la bibliothèque :
+Comme nous avons défini l'objet I2C3 de l'HAL en `#define`, nous avons modifié la fonction d'initialisation de la biibliothèque pour stocker le pointeur vers un objet I2C de la HAL dans une variable globale interne au code source de la bibliothèque :
 
 *Extrait de Bibliotheques/Ecran_LCD/Src/i2c-lcd.c :*
 ```c

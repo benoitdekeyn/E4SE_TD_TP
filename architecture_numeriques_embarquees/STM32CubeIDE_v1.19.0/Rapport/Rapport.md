@@ -459,25 +459,45 @@ L'utilisation de TIM5 pour gérer l'anti-rebond permet au microcontrôleur de co
 
 ### 6.2. Machine à états HOME / AWAY
 
-Nous avons défini une machine à états pour gérer les différents modes de la maison : `HOME`, `AWAY`. Cette machine à états permet de contrôler le comportement des fenêtres, de l'alarme intrusion et de la signalisation sur l'écran LCD et via UART en fonction de l'état courant et des événements externes (boutons, capteur PIR). (_Note : le fonctionnement global est expliqué dans_ [2.2. Description du fonctionnement](#22-description-du-fonctionnement) _et la machine à états complète dans_)
+Nous avons défini une première machine à états pour gérer les différents modes de la maison : `HOME`, `AWAY`.  . (_Note : la machine à états complète est détaillée dans_)
 
 ````mermaid
 stateDiagram
   direction TB
-  [*] --> HOME
+[*] --> HOME
+  AWAY:AWAY
+  HOME:HOME
   HOME --> AWAY:Bouton MODE appuyé /<br> signaler AWAY sur LCD et UART
-  AWAY --> HOME:Bouton MODE appuyé/<br>signaler HOME sur LCD et UART
-  AWAY --> ALARME:PIR détecte un mouvement / déclencher l'alarme
-  ALARME --> HOME:Bouton MODE appuyé / signaler HOME sur LCD et UART
-  ALARME --> ALARME:maintenir l'alarme
-  HOME:<b>HOME :</b>
-HOME:Alarme intrusion désactivée<br>
-
-  AWAY:<b>AWAY</b>
-AWAY:Alarme intrusion active
-
-  ALARME:ALARME INTRUSION<br>effective
+  AWAY --> HOME:Bouton MODE appuyé /<br> signaler HOME sur LCD et UART
 ````
+```c
+//Exemple de code pour la première machine à états HOME / AWAY
+switch (mode) {
+    case HOME:
+{
+    if (bouton_mode_appuye) 
+    {
+        bouton_mode_appuye = false;
+        mode = AWAY;
+        printf("Je sors de la maison\n");
+        afficher_mode_ecran();    
+    }
+}
+        break;
+    case AWAY:
+    {
+        bouton_fenetre_appuye = false;
+        if (bouton_home_appuye)
+        {
+            bouton_home_appuye = false;
+            mode = HOME;
+            printf("Je rentre à la maison\r\n");
+            afficher_mode_ecran();
+        }
+    }
+        break;
+}
+```
 
 
 ### 6.3. Capteur PIR et alarme intrusion
@@ -515,7 +535,29 @@ bool buzzer = false;
 ```   
 la commande de ces composants est réalisé via les fonctions `commande_led()` et `commande_buzzer()` qui vérifie les actions à réalier a chaque boucle while(1).
 
-##### Comportement selon le mode (AWAY vs HOME)
+### 6.3.2 Comportement selon le mode (AWAY vs HOME)
+
+ ##### Machine à états avec alarme intrusion
+Nous avons donc ajouté la gestion de l'alarme intrusion en fonction du mode de la maison. L'alarme se déclenche en mode `AWAY` uniquement à l'activation du detecteur à mouvement (cf [2.2. Description du fonctionnement](#22-description-du-fonctionnement)).
+```mermaid
+stateDiagram
+  direction TB
+  [*] --> HOME
+  HOME --> AWAY:Bouton MODE appuyé /<br> signaler AWAY sur LCD et UART
+  AWAY --> HOME:Bouton MODE appuyé/<br>signaler HOME sur LCD et UART
+  AWAY --> ALARME_AWAY:PIR détecte un mouvement / déclencher l'alarme
+  ALARME_AWAY --> HOME:Bouton MODE appuyé / signaler HOME sur LCD et UART
+  ALARME_AWAY --> ALARME_AWAY:maintenir l'alarme
+  HOME:<b>HOME :</b>
+HOME:Alarme intrusion désactivée<br>message d'accueil<br>
+
+  AWAY:<b>AWAY</b>
+AWAY:Alarme intrusion active<br>message de sortie<br>
+ALARME_AWAY:<b>ALARME_AWAY<b>
+ALARME_AWAY:Alarme intrusion effective<br>Signal sonore et visuel activé<br>message d'alerte intrusion</b>
+
+```
+##### Description logicielle
 Afin de manipuler plus facilement les états de la maison, nous avons définit une énumération `maison_mode_t` qui représente les différents modes possibles : `HOME` et `AWAY`.
 ```c
 //dans CODE PTD
@@ -528,7 +570,7 @@ typedef enum {
 maison_mode_t mode = HOME;
 
 ```
-Lorsqu'un front montant est détecté, la routine d'interruption (`HAL_GPIO_EXTI_Callback`) est exécutée et adapte son action en fonction de l'état du système :
+Lorsqu'un front montant est détecté, la routine d'interruption (`HAL_GPIO_EXTI_Callback`) est exécutée et adapte son action en fonction de l'état du système
 
 ##### En mode AWAY: 
 Le système de surveillance est activé. A la détection d'un mouvement, le front montant passe immédiatement le flag global `presence_detectee` à `true`.
@@ -601,8 +643,6 @@ case AWAY:
     }
 ```
 ### 6.4. Gestion non bloquante des alarmes
-
-
 
 Nous avons donc décidé de mettre en place une gestion non bloquante des alarmes 
 

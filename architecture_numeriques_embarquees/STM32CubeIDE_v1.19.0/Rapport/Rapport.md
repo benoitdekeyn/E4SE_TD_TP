@@ -335,6 +335,8 @@ Nous avons utilisé un timer avec interruptions pour éviter l'utilisation de bo
 Le registre $PSC$ étant codé sur 16 bits, sa valeur maximale est $2^{16} - 1 = 65\,535$ (soit un facteur de division de $65\,536$).
     $f_{\text{PSC, min}} = \frac{100\text{ MHz}}{65\,536} \approx 1\,525{,}88\text{ Hz}$ Nous avons donc choisi un Prescaler : (`PSC = 10000 - 1`)   qui nous donne pour obtenir une fréquence après prescaler de 10 kHz, largement au-dessus de la fréquence minimale possible et qui incrémente le compteur toutes les 0.1 ms.
 
+    
+
 #### Calcul de la Période
 La valeur maximale de $ARR$ est identique à celle du $PSC$. À une fréquence de $10\text{ kHz}$, la durée maximale mesurable serait de :
     $T_{\text{max}} = \frac{65\,536}{10\,000\text{ Hz}} \approx 6{,}55\text{ secondes}$
@@ -394,9 +396,59 @@ Le bouton MODE est connecté à PA6 et configuré en EXTI sur front descendant (
 Cela permet de détecter les appuis sur le bouton tout en évitant les faux déclenchements dus au bruit. 
 
 #### Mécanisme d'anti-rebond non bloquant via TIM5
-Por s'assurer que l'appui sur le bouton est correctement détecté sans être perturbé par les rebonds mécaniques, nous avons mis en place un mécanisme anti-rebond via TIM5.
+Pour s'assurer que l'appui sur le bouton est correctement détecté sans être perturbé par les rebonds mécaniques, nous avons mis en place un mécanisme anti-rebond via TIM5.
 
-Lors de l'appui sur le bouton MODE, l'interruption EXTI sur PA6 est déclenchée. Dans le gestionnaire d'interruption, le flag `debouncing_bouton_home` est levé et le compteur de TIM5 est remis à zéro. TIM5, configuré à 20 Hz, génère des ticks toutes les 50 ms. À chaque tick, la fonction `debounce_filter()` vérifie si le bouton est toujours relâché. Si l'état est stable, l'appui est validé et le flag `debouncing_bouton_home` est réinitialisé. Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrairement à un simple délai qui stopperait l'exécution du programme.
+* **Prescaler** (`PSC = 10000-1`) : Nous avons gardé la meme résolution que pour le TIM3 soit une résolution exacte de $0{,}1\text{ ms}$ par tic.
+* **Counter Period (`500-1`) :** Nous cherchons une période de  **$50\text{ ms}$** ($\frac{500}{10\,000\text{ Hz}}$) (20Hz), largement satisfaisante pour couvrir largement la fenêtre de rebonds mécaniques du bouton.
+
+Lors de l'appui sur le bouton MODE, l'interruption EXTI sur PA6 est déclenchée. Dans le gestionnaire d'interruption, le flag `debouncing_bouton_home` est levé et le compteur de TIM5 est remis à zéro. 
+```c
+// Définition utilisé pour l'anti-rebond
+#define BTN_HOME_Pin GPIO_PIN_6
+#define BTN_HOME_GPIO_Port GPIOA
+#define TIMER_DEBOUNCE &htim5
+
+// Flag utilisé pour l'anti-rebond
+volatile bool   timer_debounce_flag         = false;
+volatile bool   debouncing_bouton_home      = false;
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if (htim == TIMER_DEBOUNCE)
+  {
+	  timer_debounce_flag = true;
+  }
+  ...
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+   ...
+  if (GPIO_Pin == BTN_HOME_Pin)
+  {
+    if (!debouncing_bouton_home) {
+      debouncing_bouton_home = true;
+      __HAL_TIM_SET_COUNTER(TIMER_DEBOUNCE, 0);
+    }
+  }
+  ...
+}
+```
+. À chaque tick, la fonction `debounce_filter()` vérifie si le bouton est toujours relâché. Si l'état est stable, l'appui est validé et le flag `debouncing_bouton_home` est réinitialisé. Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrairement à un simple délai qui stopperait l'exécution du programme.
+```c
+void debounce_filter() 
+{
+	if (debouncing_bouton_home && !HAL_GPIO_ReadPin(BTN_HOME_GPIO_Port, BTN_HOME_Pin)) {
+		debouncing_bouton_home = false;
+		bouton_home_appuye = true;
+	}
+
+	if (debouncing_bouton_fenetre && !HAL_GPIO_ReadPin(BTN_FENTR_GPIO_Port, BTN_FENTR_Pin)) {
+		debouncing_bouton_fenetre = false;
+		bouton_fenetre_appuye = true;
+	}
+}
+```
 
 #### Pourquoi cette méthode dépasse le simple délai blquant ?
 

@@ -49,10 +49,15 @@
    - [9.4. Logique de décision de la fenêtre](#94-logique-de-d%C3%A9cision-de-la-fen%C3%AAtre)
 - [10. — Scénario 6 — Mesure de température (TMP102)](#10--sc%C3%A9nario-6--mesure-de-temp%C3%A9rature-tmp102)
    - [10.1. Branchement et configuration CubeMX](#101-branchement-et-configuration-cubemx)
-   - [10.2. Choix de configuration d'après la datasheet](#102-choix-de-configuration-dapr%C3%A8s-la-datasheet)
-   - [10.3. Mode One-Shot et polling non bloquant](#103-mode-one-shot-et-polling-non-bloquant)
-   - [10.4. Conversion et affichage de la température](#104-conversion-et-affichage-de-la-temp%C3%A9rature)
-   - [10.5. Gestion automatique de la fenêtre par la tepérature](#105-gestion-automatique-de-la-fen%C3%AAtre-par-la-tep%C3%A9rature)
+   - [10.2. Analyse de la datasheet](#102-analyse-de-la-datasheet)
+   - [10.3. Communication I²C avec le capteur](#103-communication-ic-avec-le-capteur)
+   - [10.4. Structure de la bibliothèque](#104-structure-de-la-biblioth%C3%A8que)
+   - [10.5. Initialisation et configuration](#105-initialisation-et-configuration)
+   - [10.6. Mode One-Shot et polling non bloquant](#106-mode-one-shot-et-polling-non-bloquant)
+   - [10.7. Conversion et affichage de la température](#107-conversion-et-affichage-de-la-temp%C3%A9rature)
+   - [10.8. Utilisation de la bibliothèque dans le code](#108-utilisation-de-la-biblioth%C3%A8que-dans-le-code)
+   - [10.9. Gestion automatique de la fenêtre par la température](#109-gestion-automatique-de-la-fen%C3%AAtre-par-la-temp%C3%A9rature)
+   - [10.10. Analyse des trames I²C](#1010-analyse-des-trames-ic)
 - [11. — Scénario 7 — Intégration et affichage LCD](#11--sc%C3%A9nario-7--int%C3%A9gration-et-affichage-lcd)
    - [11.1. Configuration Bus I²C](#111-configuration-bus-ic)
    - [11.2. Intégration de la bibliothèque LCD I²C](#112-int%C3%A9gration-de-la-biblioth%C3%A8que-lcd-ic)
@@ -494,7 +499,7 @@ Pour tous les composants I²C (à savoir le TMP102 et l'écran LCD) nous avons u
 
 Nous n'avons pas touché à la configuration par défaut après avoir assigné les 2 broches :  
 
-<img src="media/stm32cubeide_I2C3.png" width="400"/>
+<img src="media/stm32cubeide_I2C3.png" width="600"/>
 
 Les interruptions et le DMA sont désactivés.
 
@@ -503,20 +508,17 @@ L'adresse I²C du TMP102 est par défaut 0x48.
 Cependant il est possible de la choisir en fonction du branchement de la broche ADDR0 :
 
 *Extrait de la datasheet du capteur TMP102 :*  
-<img src="media/TMP102_datasheet_adresses.png" width="200"/>
+<img src="media/TMP102_datasheet_adresses.png" width="400"/>
 
 Pour lever toute ambiguité, nous avons simplement mis la broche ADDR0 à la masse, ce qui correspond à l'adresse 0x48 (1001000).
 
 #### Broche (ALT)
-Comme expliqué ci-dessous, nous n'avons pas eu besoin d'utiliser les alertes du cpateurs, nous avons donc laissé la broche ALERT déconnectée.
+Comme expliqué ci-dessous, nous n'avons pas eu besoin d'utiliser les alertes du capteurs, nous avons donc laissé la broche ALERT déconnectée.
 
-### 10.2. Choix de configuration d'après la datasheet
-
-> _Décrire l'architecture du driver développé sans bibliothèque prête à l'emploi. Expliquer les structures de données : `TMP102_t` (état complet du capteur), `TMP102_Config_t` (champs du registre de configuration), `TMP102_FieldMap_t` (mapping bit-à-bit des champs). Détailler le mécanisme générique de sérialisation/désérialisation du registre de configuration via `TMP102_SyncConfigBuffer()` : un tableau de `FieldMap` décrit pour chaque champ son byte, sa position et sa longueur, permettant l'encodage (structure → buffer) et le décodage (buffer → structure) en une seule fonction bidirectionnelle. Justifier ce choix d'architecture (maintenabilité, lisibilité, réduction des erreurs de masquage manuel)._
+### 10.2. Analyse de la datasheet
 
 #### Registres accessibles
-Nous avons d'abord lu toute la datasheet sur les modes et les registres accessibles depuis I²C.
-Nous avons remarqué qu'il y avait 4 registres de 16 bits accessibles en I²C par une adresse sur 2 bits interprétée par le pointer register : 
+En lisant la datasheet sur les modes et les registres accessibles depuis I²C, nous avons remarqué qu'il y avait 4 registres de 16 bits accessibles en I²C par une adresse sur 2 bits interprétée par le pointer register : 
 
 <img src="media/TMP102_datasheet_registres.png"/>
 
@@ -539,9 +541,22 @@ Le registre de configuration (adresse 0x01) permet de régler plusieurs paramèt
 Nous avons préféré écrire une bibliothèque complète qui permette d'utiliser l'ensemble des fonctionnalités du capteur.  
 Cependant nous n'avons pas utilisé ni la résolution sur 13 bits (car une maison n'a pas besoin de mesurer plus de 128°C), ni les alertes car il était demandé explicitement de mesurer la température périodiquement toutes les 2-5 secondes.  
 
+#### Registres T_LOW et T_HIGH
+
+Nous n'avons pas utilisé ces 2 registres qui permettent de définir un seuil haut et bas en encodant une température limite pour les déclenchement de l'alerte, selon le même encodage que pour le registre de température.
+Nous avons néamoins laissé la possibilité de les modifier de manière fonctionnelle dans la bibliothèque.
+
+### 10.3. Communication I²C avec le capteur
+
+### 10.4. Structure de la bibliothèque
+
+### 10.5. Initialisation et configuration
+
+### 10.6. Mode One-Shot et polling non bloquant
+
 Comme il était indiqué dans le TP de coder une fonction pour lancer une mesure, et pour configurer le capteur (sachant que par défaut, le capteur est en mode "Continous"), et par souci d'optimisation des resources, nous avons choisi de mettre le capteur en mode "Shutdown" et de lancer une mesure avant de lire le registre de température à chaque cycle du timer d'échantillonage.
 
-Le cpateur est donc en veille pendant 2 secondes et se réveille pendant ~10 ms le temps de la mesure, puis se remet en veille automatiquement à la fin de sa mesure. En veille il consomme moins de 0,15µA contre 2,6µA pendant le temps d'attente entre 2 mesures du mode "Continous".  
+Le capteur est donc en veille pendant 2 secondes et se réveille pendant ~10 ms le temps de la mesure, puis se remet en veille automatiquement à la fin de sa mesure. En veille il consomme moins de 0,15µA contre 2,6µA pendant le temps d'attente entre 2 mesures du mode "Continous".  
 D'autant plus que le choix de la fréquence en mode "Continous" étant limmité, il aurait fallu déclencher une mesure 2 fois plus souvent (à 1Hz) sachant qu'une mesure consomme 55µA pendant ~10ms.
 
 *Extraits de la datasheet du capteur TMP102 :*
@@ -550,22 +565,15 @@ D'autant plus que le choix de la fréquence en mode "Continous" étant limmité,
 
 ![TMP102_datasheet_ressources_shutdown_mode.png](media/TMP102_datasheet_ressources_shutdown_mode.png)
 
-#### Registres T_LOW et T_HIGH
-
-Nous n'avons pas utilisé
-
-### 10.3. Mode One-Shot et polling non bloquant
-
-> _Justifier le choix du mode Shutdown + One-Shot plutôt que le mode continu : économie d'énergie et synchronisation avec la base de temps de 2 s. Expliquer la séquence : à chaque tick TIM2, `TMP102_start_measure()` écrit le bit OS=1 dans le registre de config. Puis, dans la boucle principale, `TMP102_is_measure_ready()` lit le registre de config et vérifie si OS est repassé à 1 (conversion terminée). Ce polling est non bloquant car il ne fait qu'un appel I²C par tour de boucle._
-
-### 10.4. Conversion et affichage de la température
-
-> _Décrire les fonctions `TMP102_register_to_celsius()` et `TMP102_celsius_to_register()` : concaténation des 2 bytes, décalage selon le mode (12 ou 13 bits), multiplication par la résolution (0.0625 °C/LSB). Expliquer `TMP102_temperature_to_string()` : conversion float→string sans `%f` (décomposition partie entière/décimale avec arrondi) pour contourner les limitations de `snprintf` en embarqué._
-
-### 10.5. Gestion automatique de la fenêtre par la tepérature
+### 10.7. Conversion et affichage de la température
 
 
-> _Décrire le mécanisme optionnel implémenté : trois états de température (FROID, TEMPEREE, CHAUD) avec hystérésis (seuil chaud = 26 °C, seuil froid = 24 °C). Quand la température passe en CHAUD (≥26 °C) et qu'on est en HOME sans pluie, la fenêtre s'ouvre pour ventiler. Quand la température passe en FROID (≤24 °C), la fenêtre se ferme. L'hystérésis évite les oscillations autour du seuil. Justifier les valeurs retenues._
+### 10.8. Utilisation de la bibliothèque dans le code
+
+
+### 10.9. Gestion automatique de la fenêtre par la température
+
+### 10.10. Analyse des trames I²C
 
 ---
 

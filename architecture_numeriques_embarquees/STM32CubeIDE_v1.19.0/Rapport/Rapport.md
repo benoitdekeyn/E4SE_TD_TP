@@ -658,8 +658,7 @@ case AWAY:
 ```
 ### 6.6. Gestion non bloquante des alarmes
 
-Nous avons donc décidé de mettre en place une gestion non bloquante des alarmes 
-
+Nous avons donc décidé de mettre en place une gestion non bloquante des alarmes afin de ne pas bloquer la boucle principale avec des temporisations ou des boucles d'attente.
 ---
 
 ## 7. — Scénario 3 — Détection de gaz
@@ -968,10 +967,33 @@ void angle_servo(int angle)
 
 La formule creprend celle expliqée plus haut pour la conversion d'un angle cible vers une impulsion en ticss.
 Le registre de comparaison CCR est mis à jour avec la valeur de `pulse_tics` via `__HAL_TIM_SET_COMPARE()`.
-
-> Lors du montage de la maison nous avons réglé le servo à 0° avant de visser la fenêtre en position fermée. Ensuite, nous avons testé de manière empirique quel angle permettait d'ouvrir parfaitement la fenêtre. On a trouvé 120° : en deça, la fenêtre n'est pas complétement ouverte, au delà, la fenêtre dépasse contre le mur (surchauffe car physiquement c'est impossible).
+ Lors du montage de la maison nous avons réglé le servo à 0° avant de visser la fenêtre en position fermée. Ensuite, nous avons testé de manière empirique quel angle permettait d'ouvrir parfaitement la fenêtre. On a trouvé 120° : en deça, la fenêtre n'est pas complétement ouverte, au delà, la fenêtre dépasse contre le mur (surchauffe car physiquement c'est impossible).
 
 // TODO
+#### Machine à états du servo fenêtre
+
+Le servo de la fenêtre est commandé par une machine à états simple avec trois états possibles : `INIT`, `FERMEE` et `OUVERTE`. L'état `INIT` correspond à l'initialisation du système, `FERMEE` à la fenêtre fermée et `OUVERTE` à la fenêtre ouverte. La transition entre ces états est d'abord déclenchée par les commandes de l'utilisateur via le bouton fenêtre puis plus tard, par les conditions environnementales (cf TODO redirection temparature et pluie).
+
+```mermaid
+---
+config:
+  layout: elk
+---
+stateDiagram
+  direction TB
+  [*] --> INIT:Initialisation
+  INIT --> FERMEE:Initialisation terminée
+  OUVERTE --> FERMEE: Mode HOME et Appui bouton fenêtre
+  OUVERTE --> FERMEE: Mode AWAY
+  FERMEE --> OUVERTE: Mode HOME et Appui bouton fenêtre
+  FERMEE --> FERMEE: Mode AWAY et Appui bouton fenêtre
+  OUVERTE:OUVERTE
+  OUVERTE:message ouverture
+  FERMEE:FERMEE
+  FERMEE:message fermeture
+  
+  
+```
 
 #### Fonction `commande_fenetre()` — envoi uniquement sur changement d'état
 
@@ -1000,11 +1022,11 @@ La variable `etat_precedent` est déclarée `static` : elle est initialisée une
 
 ### 9.2. Bouton fenêtre et anti-rebond
 
-Le bouton fenêtre est connecté sur **PA10 (D2)**, configuré en **EXTI sur front descendant** avec une résistance de tirage interne **Pull-up**. Le bouton est donc actif bas : l'appui tire la broche à GND et génère un front descendant.
+Le bouton fenêtre est connecté sur PA10 (D2), configuré en EXTI sur front descendant avec une résistance de tirage interne Pull-up. Le bouton est donc actif bas : l'appui tire la broche à GND et génère un front descendant.
 
 Ce bouton utilise exactement le même mécanisme d'anti-rebond que le bouton MODE, déjà décrit dans la [section 6.1](#61-bouton-mode-et-anti-rebond). La routine `HAL_GPIO_EXTI_Callback` arme le flag `debouncing_bouton_fenetre` et remet le compteur TIM5 à zéro pour déclencher la vérification 50 ms plus tard.
 
-Dans la machine à états du `main()`, le flag `bouton_fenetre_appuye` est consommé uniquement **en mode HOME et hors condition de pluie** :
+Dans la machine à états du `main()`, le flag `bouton_fenetre_appuye` est consommé uniquement en mode HOME et hors condition de pluie :
 
 ```c
 // main.c — Machine à états, case HOME
@@ -1020,7 +1042,15 @@ else {
 }
 ```
 
-En mode **AWAY**, le flag `bouton_fenetre_appuye` est immédiatement effacé sans traitement. En cas de **pluie détectée**, la branche `else` qui gère le bouton est ignorée au profit de la fermeture forcée de la fenêtre.
+En mode `AWAY`, le flag `bouton_fenetre_appuye` est immédiatement effacé sans traitement : la fenêtre se ferme automatiquement et l'utilisateur ne peut pas l'ouvrir tant que le mode reste `AWAY` même en appuyant sur le bouton.
+```c
+// main.c — Machine à états, case AWAY
+case AWAY:
+    {
+    	bouton_fenetre_appuye = false;
+        ...
+    }
+```
 
 // FIN TODO
 
@@ -1154,9 +1184,46 @@ L'ADC1 avec sa résolution 12 bits produit une valeur entre 0 et $2^{12}-1 = 409
 Nous avons mesuré que la valeur ADC reste sous 1000 quand le capteur est sec et monte directement à son maximum 4095 en présence ne serait-ce que d'un doigt. Nous avons donc retenu `SEUIL_PLUIE = 4000` pour éviter les faux positifs.
 
 ### 9.4. Logique de décision de la fenêtre
+On ajoute à notre logique précédente la prise en compte de la pluie pour la commande de la fenêtre(cf [9.1. Commande du servomoteur](#91-commande-du-servomoteur))
+La commande de la fenêtre suit l'ordre de priorité suivant :
 
-> _Résumer les règles de priorité de la fenêtre : (1) mode AWAY → fermée, (2) pluie détectée → fermée, (3) commande manuelle (bouton) si HOME et pas de pluie, (4) commande automatique par température (voir scénario 6). Expliquer que `commande_fenetre()` n'envoie le signal PWM au servo que lors d'un changement d'état (variable `etat_precedent`) pour éviter des commandes inutiles._
+- Mode `AWAY` : la fenêtre doit être fermée et les appuis sur le bouton fenêtre sont ignorés.
+-  `Pluie détectée` : la fermeture est forcée, quel que soit l'état précédent de la fenêtre.
+- Commande manuelle : en mode `HOME` et sans pluie, un appui sur le bouton fenêtre inverse l'état (`OUVERTE` ou `FERMEE`).
 
+```mermaid
+---
+config:
+  layout: elk
+---
+stateDiagram
+    state "HOME" as HOME {
+        state "fenêtre" as fenetre{
+        state "OUVERTE" as OUVERTE
+        state "FERMEE" as FERMEE
+        OUVERTE --> FERMEE: Appui bouton fenêtre et Pluie non détectée
+        OUVERTE --> FERMEE: Pluie détectée
+        FERMEE --> OUVERTE: Appui bouton fenêtre et Pluie non détectée
+        FERMEE --> FERMEE: Pluie détectée
+        }
+    }
+```
+
+De la même manière que l'on bloque la fenêtre en mode `AWAY`, lorsque la pluie est détectée, la valeur de `bouton_fenetre_appuye` est directement effacée.
+
+```c
+//boucle principale while(1)
+case  HOME: 
+    {
+      ...
+      else if (pluie_detectee)
+      {
+        fenetre = FERMEE;
+    	  bouton_fenetre_appuye = false;
+      } 
+    }
+```
+La fenêtre étant automatiquement fermée en mode `AWAY` et lorsque l'utilisateur rentre dans la maison, la vérification de la detection de pluie hors `HOME` est triviale, la fenêtre reste fermée.
 ---
 
 ## 10. — Scénario 6 — Mesure de température (TMP102)
@@ -2019,13 +2086,40 @@ typedef enum {
 ```c
 temperature_t temperature = TEMPEREE;
 ```
-// TODO
+La plage tempérée (24–26°C) crée une hystérésis naturelle : une fois détecté comme `CHAUD`, le capteur ne revient à `TEMPEREE` que si la température descend en dessous de `SEUIL_CHALEUR` (et non en dessous de `SEUIL_FROID`). Cela évite les oscillations rapides de la fenêtre autour du seuil. On suit donc la température selon la machine à états suivante.
 
-La plage tempérée (24–26°C) crée une **hystérésis** naturelle : une fois détecté comme `CHAUD`, le capteur ne revient à `TEMPEREE` que si la température descend en dessous de `SEUIL_CHALEUR` (et non en dessous de `SEUIL_FROID`). Cela évite les oscillations rapides de la fenêtre autour du seuil.
-
+```mermaid
+stateDiagram-v2
+    [*] --> TEMPEREE
+    TEMPEREE --> CHAUD : Temperature >= SEUIL_CHALEUR
+    TEMPEREE --> FROID : Temperature <= SEUIL_FROID
+    CHAUD --> TEMPEREE : Temperature < SEUIL_CHALEUR
+    FROID --> TEMPEREE : Temperature > SEUIL_FROID
+```
 #### Logique de décision de la fenêtre
+On ajoute un dernier scénario pour notre machine à état de commande de fenêtre :
+ - en mode `HOME` et en l'absence de pluie, la fenêtre s'ouvre s'il fait trop chaud ou se ferme s'il fait trop froid.
+En dehors de ce scénario, la fenêtre reste sous le contrôle manuel de l'utilisateur ou est forcée par la détection de pluie.
 
-La fonction `evaluer_temperature()` implémente une machine à états sur la variable `temperature`. La logique est asymétrique : une transition déclenche une action **unique** sur la fenêtre (sans la maintenir forcée), contrairement à la pluie qui force la fermeture tant qu'elle persiste.
+```mermaid
+---
+config:
+  layout: elk
+---
+stateDiagram
+    state "HOME et Pluie non détectée" as HOME {
+        state "fenêtre" as fenetre{
+        state "OUVERTE" as OUVERTE
+        state "FERMEE" as FERMEE
+        OUVERTE --> FERMEE: Appui bouton fenêtre
+        FERMEE --> OUVERTE: Appui bouton fenêtre  
+        OUVERTE --> FERMEE: Température < Seuil de Chaleur
+        FERMEE --> OUVERTE: Température > Seuil de Froid
+        }
+        
+    }
+```
+La fonction `evaluer_temperature()` implémente une machine à états sur la variable `temperature`. La logique est asymétrique : une transition déclenche une action unique sur la fenêtre (sans la maintenir forcée), contrairement à la pluie qui force la fermeture tant qu'elle persiste.
 
 ```c
 case TEMPEREE:

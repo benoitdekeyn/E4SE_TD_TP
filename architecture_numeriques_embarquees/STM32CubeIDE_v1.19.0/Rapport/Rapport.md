@@ -13,65 +13,65 @@
 
 - [1. Table des matières](#1-table-des-mati%C3%A8res)
 - [2. Introduction](#2-introduction)
-   - [2.1. Photos de la maison](#21-photos-de-la-maison)
-   - [2.2. Description du fonctionnement](#22-description-du-fonctionnement)
+    - [2.1. Photos de la maison](#21-photos-de-la-maison)
+    - [2.2. Description du fonctionnement](#22-description-du-fonctionnement)
 - [3. Architecture globale du système](#3-architecture-globale-du-syst%C3%A8me)
-   - [3.1. Branchement des composants](#31-branchement-des-composants)
-   - [3.2. Arbre d'horloge et fréquences](#32-arbre-dhorloge-et-fr%C3%A9quences)
-   - [3.3. Organisation logicielle](#33-organisation-logicielle)
+    - [3.1. Branchement des composants](#31-branchement-des-composants)
+    - [3.2. Arbre d'horloge et fréquences](#32-arbre-dhorloge-et-fr%C3%A9quences)
+    - [3.3. Organisation logicielle](#33-organisation-logicielle)
 - [4. Define et types personalisés](#4-define-et-types-personalis%C3%A9s)
-   - [4.1. Pas de Hardcoding](#41-pas-de-hardcoding)
-   - [4.2. Define matériels](#42-define-mat%C3%A9riels)
-   - [4.3. Structure pour les LEDs](#43-structure-pour-les-leds)
+    - [4.1. Pas de Hardcoding](#41-pas-de-hardcoding)
+    - [4.2. Define matériels](#42-define-mat%C3%A9riels)
+    - [4.3. Structure pour les LEDs](#43-structure-pour-les-leds)
 - [5. — Scénario 1 — Base temporelle pour l'échantillonnage](#5--sc%C3%A9nario-1--base-temporelle-pour-l%C3%A9chantillonnage)
-   - [5.1. Configuration du Timer](#51-configuration-du-timer)
-   - [5.2. Clignotement de la LED témoin](#52-clignotement-de-la-led-t%C3%A9moin)
-   - [5.3. Validation expérimentale](#53-validation-exp%C3%A9rimentale)
-   - [5.4. Ancienne méthode](#54-ancienne-m%C3%A9thode)
+    - [5.1. Configuration du Timer](#51-configuration-du-timer)
+    - [5.2. Clignotement de la LED témoin](#52-clignotement-de-la-led-t%C3%A9moin)
+    - [5.3. Validation expérimentale](#53-validation-exp%C3%A9rimentale)
+    - [5.4. Ancienne méthode](#54-ancienne-m%C3%A9thode)
 - [6. — Scénario 2 — Sécurité : HOME/AWAY et détection d'intrusion](#6--sc%C3%A9nario-2--s%C3%A9curit%C3%A9--homeaway-et-d%C3%A9tection-dintrusion)
-   - [6.1. Bouton MODE et anti-rebond](#61-bouton-mode-et-anti-rebond)
-   - [6.2. Configuration de l'interruption externe (EXTI)](#62-configuration-de-linterruption-externe-exti)
-   - [6.3. Machine à états HOME / AWAY](#63-machine-%C3%A0-%C3%A9tats-home--away)
-   - [6.4. Capteur PIR et alarme intrusion](#64-capteur-pir-et-alarme-intrusion)
-   - [6.5. Gestion non bloquante des alarmes](#65-gestion-non-bloquante-des-alarmes)
+    - [6.1. Bouton MODE et anti-rebond](#61-bouton-mode-et-anti-rebond)
+    - [6.2. Configuration de l'interruption externe (EXTI)](#62-configuration-de-linterruption-externe-exti)
+    - [6.3. Machine à états HOME / AWAY](#63-machine-%C3%A0-%C3%A9tats-home--away)
+    - [6.4. Capteur PIR et alarme intrusion](#64-capteur-pir-et-alarme-intrusion)
+    - [6.5. Gestion non bloquante des alarmes](#65-gestion-non-bloquante-des-alarmes)
 - [7. — Scénario 3 — Détection de gaz](#7--sc%C3%A9nario-3--d%C3%A9tection-de-gaz)
-   - [7.1. Configuration de l'ADC et du DMA](#71-configuration-de-ladc-et-du-dma)
-   - [7.2. Caractérisation du MQ-2 et seuil](#72-caract%C3%A9risation-du-mq-2-et-seuil)
-   - [7.3. Alarme gaz](#73-alarme-gaz)
+    - [7.1. Configuration de l'ADC et du DMA](#71-configuration-de-ladc-et-du-dma)
+    - [7.2. Caractérisation du MQ-2 et seuil](#72-caract%C3%A9risation-du-mq-2-et-seuil)
+    - [7.3. Alarme gaz](#73-alarme-gaz)
 - [8. — Scénario 4 — Supervision UART](#8--sc%C3%A9nario-4--supervision-uart)
-   - [8.1. Configuration de l'USART2](#81-configuration-de-lusart2)
-   - [8.2. Redirection de printf](#82-redirection-de-printf)
-   - [8.3. Informations transmises](#83-informations-transmises)
+    - [8.1. Configuration de l'USART2](#81-configuration-de-lusart2)
+    - [8.2. Redirection de printf](#82-redirection-de-printf)
+    - [8.3. Informations transmises](#83-informations-transmises)
 - [9. — Scénario 5 — Gestion intelligente de la fenêtre](#9--sc%C3%A9nario-5--gestion-intelligente-de-la-fen%C3%AAtre)
-   - [9.1. Commande du servomoteur (TIM1 PWM)](#91-commande-du-servomoteur-tim1-pwm)
-   - [9.2. Bouton fenêtre et anti-rebond](#92-bouton-fen%C3%AAtre-et-anti-rebond)
-   - [9.3. Détection de pluie (Steam Sensor via ADC)](#93-d%C3%A9tection-de-pluie-steam-sensor-via-adc)
-   - [9.4. Logique de décision de la fenêtre](#94-logique-de-d%C3%A9cision-de-la-fen%C3%AAtre)
+    - [9.1. Commande du servomoteur (TIM1 PWM)](#91-commande-du-servomoteur-tim1-pwm)
+    - [9.2. Bouton fenêtre et anti-rebond](#92-bouton-fen%C3%AAtre-et-anti-rebond)
+    - [9.3. Détection de pluie (Steam Sensor via ADC)](#93-d%C3%A9tection-de-pluie-steam-sensor-via-adc)
+    - [9.4. Logique de décision de la fenêtre](#94-logique-de-d%C3%A9cision-de-la-fen%C3%AAtre)
 - [10. — Scénario 6 — Mesure de température (TMP102)](#10--sc%C3%A9nario-6--mesure-de-temp%C3%A9rature-tmp102)
-   - [10.1. Branchement et configuration CubeMX](#101-branchement-et-configuration-cubemx)
-   - [10.2. Analyse de la datasheet](#102-analyse-de-la-datasheet)
-   - [10.3. Communication I²C avec le capteur](#103-communication-ic-avec-le-capteur)
-   - [10.4. Structure de la bibliothèque](#104-structure-de-la-biblioth%C3%A8que)
-   - [10.5. Mise à jour des registres du capteur](#105-mise-%C3%A0-jour-des-registres-du-capteur)
-   - [10.6. Initialisation](#106-initialisation)
-   - [10.7. Lecture du registre de température](#107-lecture-du-registre-de-temp%C3%A9rature)
-   - [10.8. Conversion et affichage de la température](#108-conversion-et-affichage-de-la-temp%C3%A9rature)
-   - [10.9. Mesure One-Shot en mode Shutdown](#109-mesure-one-shot-en-mode-shutdown)
-   - [10.10. Utilisation de la bibliothèque dans le code](#1010-utilisation-de-la-biblioth%C3%A8que-dans-le-code)
-   - [10.11. Gestion automatique de la fenêtre par la température](#1011-gestion-automatique-de-la-fen%C3%AAtre-par-la-temp%C3%A9rature)
-   - [10.12. Analyse des trames I²C](#1012-analyse-des-trames-ic)
+    - [10.1. Branchement et configuration CubeMX](#101-branchement-et-configuration-cubemx)
+    - [10.2. Analyse de la datasheet](#102-analyse-de-la-datasheet)
+    - [10.3. Communication I²C avec le capteur](#103-communication-ic-avec-le-capteur)
+    - [10.4. Structure de la bibliothèque](#104-structure-de-la-biblioth%C3%A8que)
+    - [10.5. Mise à jour des registres du capteur](#105-mise-%C3%A0-jour-des-registres-du-capteur)
+    - [10.6. Initialisation](#106-initialisation)
+    - [10.7. Lecture du registre de température](#107-lecture-du-registre-de-temp%C3%A9rature)
+    - [10.8. Conversion et affichage de la température](#108-conversion-et-affichage-de-la-temp%C3%A9rature)
+    - [10.9. Mesure One-Shot en mode Shutdown](#109-mesure-one-shot-en-mode-shutdown)
+    - [10.10. Utilisation de la bibliothèque dans le code](#1010-utilisation-de-la-biblioth%C3%A8que-dans-le-code)
+    - [10.11. Gestion automatique de la fenêtre par la température](#1011-gestion-automatique-de-la-fen%C3%AAtre-par-la-temp%C3%A9rature)
+    - [10.12. Analyse des trames I²C](#1012-analyse-des-trames-ic)
 - [11. — Scénario 7 — Intégration et affichage LCD](#11--sc%C3%A9nario-7--int%C3%A9gration-et-affichage-lcd)
-   - [11.1. Configuration Bus I²C](#111-configuration-bus-ic)
-   - [11.2. Intégration de la bibliothèque LCD I²C](#112-int%C3%A9gration-de-la-biblioth%C3%A8que-lcd-ic)
-   - [11.3. Affichage des données en 16x2](#113-affichage-des-donn%C3%A9es-en-16x2)
+    - [11.1. Configuration Bus I²C](#111-configuration-bus-ic)
+    - [11.2. Intégration de la bibliothèque LCD I²C](#112-int%C3%A9gration-de-la-biblioth%C3%A8que-lcd-ic)
+    - [11.3. Affichage des données en 16x2](#113-affichage-des-donn%C3%A9es-en-16x2)
 - [12. — Bonus — Bibliothèque Bande LED RGB (WS2812B)](#12--bonus--biblioth%C3%A8que-bande-led-rgb-ws2812b)
-   - [12.1. Principe de communication (protocole one-wire)](#121-principe-de-communication-protocole-one-wire)
-   - [12.2. Implémentation PWM + DMA (TIM4)](#122-impl%C3%A9mentation-pwm--dma-tim4)
-   - [12.3. Tableau de bord LED](#123-tableau-de-bord-led)
+    - [12.1. Principe de communication (protocole one-wire)](#121-principe-de-communication-protocole-one-wire)
+    - [12.2. Implémentation PWM + DMA (TIM4)](#122-impl%C3%A9mentation-pwm--dma-tim4)
+    - [12.3. Tableau de bord LED](#123-tableau-de-bord-led)
 - [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes)
-   - [13.1. Clignotement non bloquant par compteur partagé](#131-clignotement-non-bloquant-par-compteur-partag%C3%A9)
-   - [13.2. Gestion du buzzer avec fréquences distinctes](#132-gestion-du-buzzer-avec-fr%C3%A9quences-distinctes)
-   - [13.3. Cas simultané : alternance gaz / intrusion](#133-cas-simultan%C3%A9--alternance-gaz--intrusion)
+    - [13.1. Clignotement non bloquant par compteur partagé](#131-clignotement-non-bloquant-par-compteur-partag%C3%A9)
+    - [13.2. Gestion du buzzer avec fréquences distinctes](#132-gestion-du-buzzer-avec-fr%C3%A9quences-distinctes)
+    - [13.3. Cas simultané : alternance gaz / intrusion](#133-cas-simultan%C3%A9--alternance-gaz--intrusion)
 
 <!-- /TOC -->
 ---
@@ -1218,8 +1218,8 @@ La précision de 4 est excessive par rapport à la précision de l'encodage du c
              negatif ? "-" : "", partie_entiere, precision, partie_decimale);
     return buffer;
 ```
-Ici, la notation `%0*d` dans le `snprintf` permet de forcer le zéro-padding de la partie décimale (ex. `18,06` et non `18,6`).
-
+Ici, `%0*d` dans le `snprintf` permet de forcer le zéro-padding de la partie décimale (ex. `18,06` et non `18,6`). 
+Nous avons également pensé à inclure la bibliothèque `<stdio>` dans le header de la bibliothèque.
 
 ### 10.9. Mesure One-Shot en mode Shutdown
 
@@ -1444,11 +1444,97 @@ void lcd_init (I2C_HandleTypeDef *bus_i2c)
 
 ### 11.3. Affichage des données en 16x2
 
-> _Justifier l'organisation de l'affichage sur les 2 lignes de 16 caractères :_
-> - _Ligne 1 : `HOME  18,38°C` — mode courant (4 car.) + température (8 car.)_
-> - _Ligne 2 : `Hu 1234  Ga 1234` — valeur pluie et valeur gaz_
->
-> _Expliquer que l'affichage du mode n'est mis à jour qu'au changement, et que les valeurs des capteurs sont mises à jour à chaque cycle de 2 s (après la dernière mesure disponible : la température). Justifier ce découpage pour maximiser l'information affichée dans l'espace contraint. Mentionner le message de bienvenue au démarrage._
+L'écran LCD 16x2 n'a pas beaucoup d'espace d'affichage (32 caractères au total). Nous avons donc optimisé la disposition des informations pour afficher le statut de la maison et l'état des trois capteurs :
+
+* **Ligne 1 :** Mode courant à gauche (`HOME` ou `AWAY`) et température à droite (ex: ` 18,38°C`).
+* **Ligne 2 :** Valeurs analogiques des capteurs de pluie et de gaz (ex: `Hu 1234  Ga 1234`).
+
+#### Initialisation
+
+L'initialisation de l'afficheur est regroupée dans la fonction `initialiser_ecran()`, appelée une seule fois au démarrage dans le `main()` :
+
+*Dans la section `USER CODE 0` du fichier `main.c` :*
+```c
+void initialiser_ecran()
+{
+    lcd_init(BUS_I2C);
+    afficher_mode_ecran();
+    lcd_put_cur(1, 0);
+    lcd_send_string("Hello Abir (^w^)");
+}
+```
+
+1. **Configuration matérielle**   
+D'abord on appelle `lcd_init(BUS_I2C)` en lui passant le bus `I2C3` (défini par le `#define BUS_I2C (&hi2c3)`)  
+→ Cf. [Modification de l'initialisation](#modification-de-linitialisation)
+2. **Affichage du mode initial** : `afficher_mode_ecran()` écrit immédiatement le mode par défaut (`HOME`) en haut à gauche dès le début.
+3. **Message d'accueil**  
+On affiche un message de bienvenue personnalisé sur la ligne 2. Il reste visible pendant les 2 premières secondes, jusqu'à l'arrivée de la première mesure des capteurs qui viendra écraser cette seconde ligne.
+
+#### HOME / AWAY
+
+L'affichage du mode est volontairement dissocié du rafraîchissement des mesures capteurs car on veut que le mode soit affiché dès le début et s'actualise uniquement lors d'un appui sur le bouton HOME.
+Tandis que les mesures capteurs sont actualisées toutes les 2 secondes.
+
+*Extrait de la section `USER CODE 0` du fichier `main.c` :*  
+```c
+void afficher_mode_ecran() 
+{ 
+  char ligne_mode[8];
+  snprintf(ligne_mode, sizeof(ligne_mode), "%4s",
+           (mode == HOME) ? "HOME" : "AWAY");
+
+  lcd_put_cur(0, 0);
+  lcd_send_string(ligne_mode);
+}
+```
+
+1. **Chaîne de caractères** : On utilise `snprintf` de la bibliothèque standard `<stdio>` pour formater la chaîne de manière à ce qu'elle fasse toujours exactement 4 caractères (`%4s`), remplaçant proprement `HOME` par `AWAY` (et inversement) sans toucher au reste de la ligne (la température).
+2. **Curseur** : le curseur est placé au début de la première ligne (`lcd_put_cur(0, 0)`).
+
+*NB : Cette fonction n'est appelée que sur la transition d'un MODE à l'autre de la machine à états et non pas en continu.*
+
+#### Valeurs capteurs
+
+Les trois capteurs sont mis à jour ensemble à chaque fin de cycle de mesure via la fonction `afficher_capteurs_ecran()` :
+
+*Extrait de la section `USER CODE 0` du fichier `main.c` :*
+```c
+void afficher_capteurs_ecran() 
+{
+    char ligne1[8+1];
+    char ligne2[16+1];
+
+    // Ligne 1 (2nde moitié) : " 18,38°C"
+    snprintf(ligne1, sizeof(ligne1), " %5s\xDF" "C",
+             TMP102_temperature_to_string(temperature_valeur, 2));
+
+    // Ligne 2 : "Hu 1234  Ga 1234"
+    snprintf(ligne2, sizeof(ligne2), "Hu %4d  Ga %4d", 
+             pluie_valeur, 
+             gaz_valeur);
+
+    lcd_put_cur(0, 8);
+    lcd_send_string(ligne1);
+
+    lcd_put_cur(1, 0);
+    lcd_send_string(ligne2);
+}
+```
+
+Cette fonction applique plusieurs choix de conception :
+
+1. **Préservation du mode** : la température est écrite à partir de la colonne 8 (`lcd_put_cur(0, 8)`). Les 8 premières colonnes de la ligne 1 restent ainsi totalement intactes, ce qui permet de conserver le texte `HOME` ou `AWAY`.
+
+2. **Formatage à largeur fixe** :
+* La température est cadrée sur 5 caractères grâce à `TMP102_temperature_to_string()` (ex: `"18,38"`).
+* Les valeurs ADC de pluie (`Hu` pour humidité) et de gaz (`Ga`) sont formatées avec `%4d`. Cela force l'affichage sur 4 chiffres, évitant que les chiffres d'une mesure précédente ne restent affichés si la valeur passe par exemple de 1024 à 95.
+
+3. **Synchronisation avec la dernière mesure prête** : dans la boucle `while(1)`, `afficher_capteurs_ecran()` n'est appelée que lorsque `TMP102_is_measure_ready(&thermometre)` devient vrai. Comme la mesure du TMP102 prend ~26 ms alors que les conversions ADC en DMA sont quasi instantanées, la température est toujours la dernière donnée disponible. L'affichage est donc rafraîchi une seule fois par cycle de 2 s avec des valeurs parfaitement synchronisées.
+Cf. [Cycle de mesure dans la boucle principale](#cycle-de-mesure-dans-la-boucle-principale)
+   
+4. **Caractère degré personnalisé (`\xDF`)** : la table ASCII standard ne contient pas le symbole degré `°`. Dans la mémoire ROM du contrôleur I²C de l'écran il y a une table de caractères où le caractère `°` est situé à l'adresse hexadécimale `1101 1111` en binaire soit `0xDF` en hexadécimal :  
+<img src="media/ecran_LCD_CGROM_ASCII_degre.jpg" alt="CGROM ASCII degre"></img>  
 
 ---
 

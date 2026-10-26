@@ -841,7 +841,7 @@ Comme nous envoyons systématiquement toutes les 2 secondes ls valeurs de ces 3 
 
 #### Événements d'état (asynchrones)
 
-Tout changement d'état du système est signalé immédiatement :
+Seules ces 8 actions provoquent un message sur l'UART en plus des mesures périodiques :
 
 | Événement | Message transmis |
 | :--- | :--- |

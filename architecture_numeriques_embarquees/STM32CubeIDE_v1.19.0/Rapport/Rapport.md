@@ -45,7 +45,7 @@
   - [8.4. Supervision en temps réel](#84-supervision-en-temps-r%C3%A9el)
   - [8.5. Validation avec un terminal série](#85-validation-avec-un-terminal-s%C3%A9rie)
 - [9. — Scénario 5 — Gestion intelligente de la fenêtre](#9--sc%C3%A9nario-5--gestion-intelligente-de-la-fen%C3%AAtre)
-  - [9.1. Commande du servomoteur (TIM1 PWM)](#91-commande-du-servomoteur-tim1-pwm)
+  - [9.1. Commande du servomoteur](#91-commande-du-servomoteur)
   - [9.2. Bouton fenêtre et anti-rebond](#92-bouton-fen%C3%AAtre-et-anti-rebond)
   - [9.3. Détection de pluie avec ADC DMA multi-canaux](#93-d%C3%A9tection-de-pluie-avec-adc-dma-multi-canaux)
   - [9.4. Logique de décision de la fenêtre](#94-logique-de-d%C3%A9cision-de-la-fen%C3%AAtre)
@@ -806,13 +806,169 @@ Pour valider la liaison, nous avons utilisé le moniteur série intégré à STM
 ## 9. — Scénario 5 — Gestion intelligente de la fenêtre
 
 
-### 9.1. Commande du servomoteur (TIM1 PWM)
+### 9.1. Commande du servomoteur
 
-> _Expliquer la configuration de TIM1 CH2 en PWM pour le servo (PA9). Détailler le calcul : horloge APB2 Timer = 100 MHz, Prescaler = 40-1 → fréquence timer = 2.5 MHz, Period = 50000-1 → fréquence PWM = 50 Hz (période de 20 ms, standard servo). Décrire la fonction `angle_servo(int angle)` qui convertit un angle (0°–180°) en nombre de ticks de comparaison : impulsion de 0.5 ms (0°) à 2.5 ms (180°). Mentionner la limitation matérielle à 120° max pour éviter d'endommager le montage._
+#### Brochage et alimentation
+
+*Extrait de la datasheet du servomoteur :*
+
+<img src="media/datasheet_servo_pinout.png"/>
+
+Le servomoteur est alimenté en 5V et le signal de commande PWM (broche orange) est connecté sur PA9 (D8), correspondant au TIM1 CH2.
+
+#### Protocole PWM du servo
+
+Comme c'est un servomoteur à position analogique, il se commande par un signal PWM à 50 Hz (période de 20 ms). La position angulaire est encodée via la largeur de l'impulsion haute comme décrit ci-dessous :
+
+*Extrait de la datasheet du servomoteur :*
+<img src="media/datasheet_servo_pwm.png"/>
+
+Exemple :
+| Position | Durée de l'impulsion |
+| :--- | :--- |
+| 0° | 0,5 ms |
+| 90° | 1,5 ms |
+| 180° | 2,5 ms |
+
+#### Configuration du Timer 1 dans CubeMX
+
+Le Timer 1 est branché sur l'horloge APB2 Timer à 100 MHz. Nous devons générer une PWM à 50 Hz. Aussi, nous avons décidé d'obtenir la meilleure résolution possible sur la largeur d'impulsion.
+
+Les contraintes pour le calculs sont : 
+- La période de la PWM est de 50 Hz, donc 20 ms.
+- Là fréquence de l'horloge source est de 100 MHz.
+- Le prescaler est sur 16 bits.
+- Le ARR est sur 16 bits.
+
+On peut d'abord résoudre la fréquence de comptage maximum qui nous permet de compter sur ARR pour obtenir une fréquence PWM de 50Hz :
+
+$$ARR = \frac{f_{timer}}{50\, \text{Hz}}$$
+Or $$ARR \leq 2^{16}-1 $$ 
+$$ARR \leq 65 535$$
+Donc $$\frac{f_{timer}}{50\, \text{Hz}} \leq 65 535$$
+$$f_{timer} \leq 3,276 \text{ MHz}$$
+
+On cherche certes la fréquence de comptage la plus élevée possible mais qui soit quand même un diviseur entier de 100 MHz et qui donne un ARR entier à 50 Hz. On prend donc 
+
+$$f_{timer} = 2{,}5\, \text{ MHz}$$
+$$\implies \text{PSC} = \frac{100\, \text{MHz}}{2{,}5\, \text{MHz}} - 1 = 40 - 1 = 39$$
+
+$$\implies ARR = \frac{2{,}5\, \text{MHz}}{50\, \text{Hz}} - 1 = 50\,000 - 1 = 49\,999$$
+
+On obtient ainsi une fréquence PWM exactement égale à 50 Hz, avec une résolution de comptage de :
+
+$$T_{tic} = \frac{1}{2{,}5\, \text{MHz}} = 0{,}4\, \mu\text{s par tic}$$
+
+Ce qui donne ceci dans Cube MX :
+
+<img src="media/stm32cubeide_Timer_1.png"/>
+
+#### Calcul de la résolution angulaire
+
+Le mapping angle → impulsion est linéaire entre 0° et 180° :
+La formule pour convertir un angle en impulsion est donc : 
+
+$$\text{Impulsion}_{cible} = \frac{\text{Angle}_{cible}}{180°} \times (\text{Impulsion}_{180°} - \text{Impulsion}_{0°}) + \text{Impulsion}_{0°}$$
+
+Si on ne reprend que les constantes de la datasheet et configurées dans cubeMX, la formule donne : 
+
+$$\text{Impulsion}_{cible} = \frac{\text{Angle}_{cible}}{180°} \times (2{,}5\, \text{ms} - 0{,}5\, \text{ms}) + 0{,}5\, \text{ms}$$
+
+Voici 3 valeurs types :   
+| Angle | Impulsion | Nombre de tics (÷ 0,4 µs) |
+| :--- | :--- | :--- |
+| 0° | 0,5 ms | $0{,}5\, \text{ms} \div 0{,}4\, \mu\text{s} = \mathbf{1250}$ tics |
+| 180° | 2,5 ms | $2{,}5\, \text{ms} \div 0{,}4\, \mu\text{s} = \mathbf{6250}$ tics |
+
+Si on divise la plage de tics $(6250 - 1250 = 5000\, \text{tics})$ par la plage d'angle de 0° à 180°, on obtient :
+
+$$\frac{5000\, \text{tics}}{180°} \approx 27{,}8\, \text{tics/degré}$$
+
+Ce qui donne une résolution angulaire théorique de $\approx 0{,}036°$ par tic, largement suffisante pour commander une fenêtre !
+
+#### Fonction `angle_servo()`
+
+Nous avons implémenté une fonction pour la conversion d'un angle vers la valeur de CCR à encoder en s'appuyant uniquement sur les macros définies en tête de `main.c` :
+
+```c
+// main.c
+#define FREQ_TIMER_SERVO  2500000   // 2.5 MHz
+#define SERVO_0_DEG_MS    0.5       // impulsion à 0°   (ms)
+#define SERVO_180_DEG_MS  2.5       // impulsion à 180° (ms)
+
+void angle_servo(int angle)
+{
+    int pulse_tics =
+    (
+        (
+            (angle / 180.0)
+            * (SERVO_180_DEG_MS - SERVO_0_DEG_MS) / 1000.0
+        )
+        + (SERVO_0_DEG_MS / 1000.0)
+    )
+    * FREQ_TIMER_SERVO;
+
+    __HAL_TIM_SET_COMPARE(TIMER_SERVO, CANAL_SERVO, pulse_tics);
+}
+```
+
+La formule creprend celle expliqée plus haut pour la conversion d'un angle cible vers une impulsion en ticss.
+Le registre de comparaison CCR est mis à jour avec la valeur de `pulse_tics` via `__HAL_TIM_SET_COMPARE()`.
+
+> Lors du montage de la maison nous avons réglé le servo à 0° avant de visser la fenêtre en position fermée. Ensuite, nous avons testé de manière empirique quel angle permettait d'ouvrir parfaitement la fenêtre. On a trouvé 120° : en deça, la fenêtre n'est pas complétement ouverte, au delà, la fenêtre dépasse contre le mur (surchauffe car physiquement c'est impossible).
+
+// TODO
+
+#### Fonction `commande_fenetre()` — envoi uniquement sur changement d'état
+
+Pour éviter d'envoyer continuellement la même commande PWM au servo à chaque tour de boucle principale, `commande_fenetre()` n'agit que lorsque l'état `fenetre` change :
+
+```c
+// main.c
+#define ANGLE_SERVO_OUVERT  120   // ATTENTION maximum 120° sinon ça casse
+#define ANGLE_SERVO_FERME   0
+
+void commande_fenetre()
+{
+    static fenetre_t etat_precedent = INIT;
+    if (fenetre != etat_precedent) {
+        switch(fenetre) {
+            case OUVERTE : angle_servo(ANGLE_SERVO_OUVERT); break;
+            case FERMEE  : angle_servo(ANGLE_SERVO_FERME);  break;
+            case INIT    : break;
+        }
+        etat_precedent = fenetre;
+    }
+}
+```
+
+La variable `etat_precedent` est déclarée `static` : elle est initialisée une seule fois à `INIT` et conserve sa valeur entre les appels. Au premier passage dans le `main()`, `fenetre = OUVERTE` (valeur par défaut) ≠ `INIT`, donc le servo est immédiatement positionné à 0° à l'initialisation.
 
 ### 9.2. Bouton fenêtre et anti-rebond
 
-> _Expliquer que le bouton fenêtre (PA10, EXTI Falling Edge, Pull-up) utilise le même mécanisme d'anti-rebond que le bouton MODE via TIM5. Justifier le choix du front descendant + pull-up (le bouton est actif bas). En mode HOME et sans pluie, chaque appui bascule la fenêtre entre OUVERTE et FERMEE. En mode AWAY ou en cas de pluie, l'appui est ignoré._
+Le bouton fenêtre est connecté sur **PA10 (D2)**, configuré en **EXTI sur front descendant** avec une résistance de tirage interne **Pull-up**. Le bouton est donc actif bas : l'appui tire la broche à GND et génère un front descendant.
+
+Ce bouton utilise exactement le même mécanisme d'anti-rebond que le bouton MODE, déjà décrit dans la [section 6.1](#61-bouton-mode-et-anti-rebond). La routine `HAL_GPIO_EXTI_Callback` arme le flag `debouncing_bouton_fenetre` et remet le compteur TIM5 à zéro pour déclencher la vérification 50 ms plus tard.
+
+Dans la machine à états du `main()`, le flag `bouton_fenetre_appuye` est consommé uniquement **en mode HOME et hors condition de pluie** :
+
+```c
+// main.c — Machine à états, case HOME
+else {
+    if (bouton_fenetre_appuye) {
+        bouton_fenetre_appuye = false;
+        switch(fenetre) {
+            case OUVERTE: fenetre = FERMEE; printf("Je ferme la fenetre\r\n"); break;
+            case FERMEE:  fenetre = OUVERTE; printf("J'ouvre la fenetre\r\n"); break;
+            case INIT: break;
+        }
+    }
+}
+```
+
+En mode **AWAY**, le flag `bouton_fenetre_appuye` est immédiatement effacé sans traitement. En cas de **pluie détectée**, la branche `else` qui gère le bouton est ignorée au profit de la fermeture forcée de la fenêtre.
+
+// FIN TODO
 
 ### 9.3. Détection de pluie avec ADC DMA multi-canaux
 

@@ -1,3 +1,68 @@
+<!-- TOC -->
+
+- [1. Table des matières](#1-table-des-mati%C3%A8res)
+- [2. Introduction](#2-introduction)
+   - [2.1. Photos de la maison](#21-photos-de-la-maison)
+   - [2.2. Description du fonctionnement](#22-description-du-fonctionnement)
+- [3. Architecture globale du système](#3-architecture-globale-du-syst%C3%A8me)
+   - [3.1. Branchement des composants](#31-branchement-des-composants)
+   - [3.2. Arbre d'horloge et fréquences](#32-arbre-dhorloge-et-fr%C3%A9quences)
+   - [3.3. Organisation logicielle](#33-organisation-logicielle)
+- [4. Define et types personalisés](#4-define-et-types-personalis%C3%A9s)
+   - [4.1. Pas de Hardcoding](#41-pas-de-hardcoding)
+   - [4.2. Define matériels](#42-define-mat%C3%A9riels)
+   - [4.3. Structure pour les LEDs](#43-structure-pour-les-leds)
+- [5. — Scénario 1 — Base temporelle pour l'échantillonnage](#5--sc%C3%A9nario-1--base-temporelle-pour-l%C3%A9chantillonnage)
+   - [5.1. Configuration du Timer](#51-configuration-du-timer)
+   - [5.2. Clignotement de la LED témoin](#52-clignotement-de-la-led-t%C3%A9moin)
+   - [5.3. Validation expérimentale](#53-validation-exp%C3%A9rimentale)
+   - [5.4. Ancienne méthode](#54-ancienne-m%C3%A9thode)
+- [6. — Scénario 2 — Sécurité : HOME/AWAY et détection d'intrusion](#6--sc%C3%A9nario-2--s%C3%A9curit%C3%A9--homeaway-et-d%C3%A9tection-dintrusion)
+   - [6.1. Bouton MODE et anti-rebond](#61-bouton-mode-et-anti-rebond)
+   - [6.2. Configuration de l'interruption externe (EXTI)](#62-configuration-de-linterruption-externe-exti)
+   - [6.3. Machine à états HOME / AWAY](#63-machine-%C3%A0-%C3%A9tats-home--away)
+   - [6.4. Capteur PIR et alarme intrusion](#64-capteur-pir-et-alarme-intrusion)
+   - [6.5. Gestion non bloquante des alarmes](#65-gestion-non-bloquante-des-alarmes)
+- [7. — Scénario 3 — Détection de gaz](#7--sc%C3%A9nario-3--d%C3%A9tection-de-gaz)
+   - [7.1. Configuration de l'ADC et du DMA](#71-configuration-de-ladc-et-du-dma)
+   - [7.2. Caractérisation du MQ-2 et seuil](#72-caract%C3%A9risation-du-mq-2-et-seuil)
+   - [7.3. Alarme gaz](#73-alarme-gaz)
+- [8. — Scénario 4 — Supervision UART](#8--sc%C3%A9nario-4--supervision-uart)
+   - [8.1. Configuration de l'USART2](#81-configuration-de-lusart2)
+   - [8.2. Redirection de printf](#82-redirection-de-printf)
+   - [8.3. Informations transmises](#83-informations-transmises)
+- [9. — Scénario 5 — Gestion intelligente de la fenêtre](#9--sc%C3%A9nario-5--gestion-intelligente-de-la-fen%C3%AAtre)
+   - [9.1. Commande du servomoteur (TIM1 PWM)](#91-commande-du-servomoteur-tim1-pwm)
+   - [9.2. Bouton fenêtre et anti-rebond](#92-bouton-fen%C3%AAtre-et-anti-rebond)
+   - [9.3. Détection de pluie (Steam Sensor via ADC)](#93-d%C3%A9tection-de-pluie-steam-sensor-via-adc)
+   - [9.4. Logique de décision de la fenêtre](#94-logique-de-d%C3%A9cision-de-la-fen%C3%AAtre)
+- [10. — Scénario 6 — Mesure de température (TMP102)](#10--sc%C3%A9nario-6--mesure-de-temp%C3%A9rature-tmp102)
+   - [10.1. Branchement et configuration CubeMX](#101-branchement-et-configuration-cubemx)
+   - [10.2. Analyse de la datasheet](#102-analyse-de-la-datasheet)
+   - [10.3. Communication I²C avec le capteur](#103-communication-ic-avec-le-capteur)
+   - [10.4. Structure de la bibliothèque](#104-structure-de-la-biblioth%C3%A8que)
+   - [10.5. Mise à jour des registres du capteur](#105-mise-%C3%A0-jour-des-registres-du-capteur)
+   - [10.6. Initialisation](#106-initialisation)
+   - [10.7. Lecture du registre de température](#107-lecture-du-registre-de-temp%C3%A9rature)
+   - [10.8. Conversion et affichage de la température](#108-conversion-et-affichage-de-la-temp%C3%A9rature)
+   - [10.9. Mesure One-Shot en mode Shutdown](#109-mesure-one-shot-en-mode-shutdown)
+   - [10.10. Utilisation de la bibliothèque dans le code](#1010-utilisation-de-la-biblioth%C3%A8que-dans-le-code)
+   - [10.11. Gestion automatique de la fenêtre par la température](#1011-gestion-automatique-de-la-fen%C3%AAtre-par-la-temp%C3%A9rature)
+   - [10.12. Analyse des trames I²C](#1012-analyse-des-trames-ic)
+- [11. — Scénario 7 — Intégration et affichage LCD](#11--sc%C3%A9nario-7--int%C3%A9gration-et-affichage-lcd)
+   - [11.1. Configuration Bus I²C](#111-configuration-bus-ic)
+   - [11.2. Intégration de la bibliothèque LCD I²C](#112-int%C3%A9gration-de-la-biblioth%C3%A8que-lcd-ic)
+   - [11.3. Affichage des données en 16x2](#113-affichage-des-donn%C3%A9es-en-16x2)
+- [12. — Bonus — Bibliothèque Bande LED RGB (WS2812B)](#12--bonus--biblioth%C3%A8que-bande-led-rgb-ws2812b)
+   - [12.1. Principe de communication (protocole one-wire)](#121-principe-de-communication-protocole-one-wire)
+   - [12.2. Implémentation PWM + DMA (TIM4)](#122-impl%C3%A9mentation-pwm--dma-tim4)
+   - [12.3. Tableau de bord LED](#123-tableau-de-bord-led)
+- [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes)
+   - [13.1. Clignotement non bloquant par compteur partagé](#131-clignotement-non-bloquant-par-compteur-partag%C3%A9)
+   - [13.2. Gestion du buzzer avec fréquences distinctes](#132-gestion-du-buzzer-avec-fr%C3%A9quences-distinctes)
+   - [13.3. Cas simultané : alternance gaz / intrusion](#133-cas-simultan%C3%A9--alternance-gaz--intrusion)
+
+<!-- /TOC -->
 # Rapport de Projet - Maison Intelligente STM32
 
 **ECUE :** Architecture Numériques Embarquées  
@@ -767,7 +832,107 @@ Les valeurs du pseudo tableau ci-dessus sont données ici par:
 
 #### Synchronisation entre le registre de configuration et l'objet TMP102
 
-// todo
+Une fois le tableau de descripteurs défini, une boucle `for` parcourt l'ensemble des champs pour effectuer l'encodage ou le décodage bit à bit selon la valeur du flag `is_write` :
+
+```c
+uint8_t num_fields = sizeof(fields) / sizeof(fields[0]);
+for (uint8_t i = 0; i < num_fields; i++) 
+{
+    uint8_t mask = (1U << fields[i].length) - 1;
+    
+    if (is_write) 
+    {
+        // Encode : Structure -> Buffer
+        buffer[fields[i].byte_idx] 
+        |=   (*fields[i].value_ptr & mask) 
+            << fields[i].position;
+    } 
+    else 
+    {
+        // Décode : Buffer -> Structure
+               *fields[i].value_ptr = 
+        (buffer[fields[i].byte_idx] 
+             >> fields[i].position) 
+        & mask;
+    }
+}
+```
+Le traitement repose sur trois étapes :
+1. **Calcul dynamique du masque de bits**
+```c
+uint8_t mask = (1U << fields[i].length) - 1;
+```
+On génère un masque adapté à la largeur de chaque champ.
+> Exemple pour un champ sur 2 bits :  
+> `(1 << 2) = 0100` → `0100 - 1 = 0011`  
+> On obtient bien un masque de 2 bits : `0011`
+
+*NB : 1U force l'entier 1 à être interprété comme un entier non signé, évitant ainsi un warning du compilateur lors du décalage vers la gauche du bit de signe qui disparaîtrait si on utilisait simplement 1.* 
+
+2. **Encodage : Structure $\rightarrow$ Buffer (`is_write == true`)**
+```c
+   buffer[fields[i].byte_idx] 
+   |=   (*fields[i].value_ptr & mask) 
+       << fields[i].position;
+```
+* On masque la valeur pointée dans l'objet TMP102 (`*fields[i].value_ptr & mask`) pour éliminer tout bit parasite dépassant de la taille du champ.
+* On décale les bits vers la gauche du nombre de sa `position` pour les positionner au bon endroit dans l'octet du buffer (`<< fields[i].position`)
+* On utilise un OU binaire (`|=`) pour fusionner ce champ avec les bits des autres champs partageant le même octet dans le buffer. Si il y a un `0` à un certain index dans la valeur masquée et décalée, le bit du buffer à cet index restera inchangé.
+
+*NB : le buffer doit être initialisé à 0 avant l'appel de la fonction, car chaque champ est fusionné avec les bits des autres champs partageant le même octet dans le buffer.*
+
+> Exemple avec 2 champs :  
+> * buffer = `0000 0000`
+> * Champ 1 : position = 0, length = 3, value = `110`
+> * Champ 2 : position = 3, length = 5, value = `10101`
+> 
+> Opération sur le premier champ :  
+> `mask = 0000 0111`  
+> `(value & mask) = 0000 0110`  
+> `0000 0110 << position = 0000 0110`  
+> `buffer = 0000 0000`  
+> `buffer |= 0000 0110`  
+> → `buffer = 0000 0110`   
+>   
+> Opération sur le second champ :  
+> `mask = 0001 1111`  
+> `(value & mask) = 0001 0101`  
+> `0001 0101 << position = 1010 1000`  
+> `buffer = 0000 0110`   
+> `buffer |= 1010 1000`   
+> → `buffer = 1010 1110`    
+
+3. **Décodage : Buffer $\rightarrow$ Structure (`is_write == false`)**
+```c
+       *fields[i].value_ptr =
+(buffer[fields[i].byte_idx] 
+     >> fields[i].position) 
+& mask;
+```
+* On lit l'octet correspondant dans le buffer brut reçu par I²C (`buffer[fields[i].byte_idx]`).
+* On décale les bits vers la droite du nombre de sa `position` (`>> fields[i].position`) pour ramener les bits du champ tout à droite (alignés sur le bit 0).
+* On applique le masque avec un ET binaire (`& mask`) pour mettre à `0` tous les bits devant la valeur ciblée.
+* On affecte le résultat obtenu directement dans la variable de la structure `config` de l'objet TMP102 via son pointeur `*fields[i].value_ptr`.
+
+> Exemple en reprenant le buffer obtenu à l'étape 2 :
+> * buffer = `1010 1110`
+> * Champ 1 : position = 0, length = 3, value = `110`
+> * Champ 2 : position = 3, length = 5, value = `10101`
+> 
+> Opération sur le premier champ :  
+> `mask = 0000 0111`   
+> `buffer = 1010 1110`  
+> `1010 1110 >> position = 1010 1110`    
+> `1010 1110 & mask = 0000 0110`   
+> → `*value_ptr = 110` (valeur d'origine)  
+>   
+> Opération sur le second champ :  
+> `mask = 0001 1111`  
+> `buffer = 1010 1110`  
+> `1010 1110 >> position = 0001 0101`    
+> `0001 0101 & mask = 0001 0101`   
+> → `*value_ptr = 10101` (valeur d'origine)  
+
 
 ### 10.5. Mise à jour des registres du capteur
 
@@ -880,10 +1045,11 @@ Pour chaque registre, on spécifie à la fonction HAL :
 
 ### 10.6. Initialisation
 
-#### Création de l'objet TMP102
-// TODO
+#### 1. Instanciation
 
-#### Valeurs par défaut
+Pour manipuler le capteur avec la bibliothèque, il suffit d'instancier une variable de type `TMP102_t`. Cet objet regroupe l'ensemble du contexte matériel et logiciel du capteur (bus I²C, adresse, configuration des registres, seuils d'alerte et état des mesures).
+
+#### 2. Valeurs par défaut
 
 Avant de configurer quoi que ce soit, on initialise la structure avec des valeurs sûres via `TMP102_init_default()`.  
 Sinon les champs de la structure peuvent contenir des valeurs indéterminées (variables locales non initialisées en C).  
@@ -913,8 +1079,14 @@ void TMP102_init_default(TMP102_t *tmp102)
     tmp102->config.Padding        = TMP102_PADD_DEFAULT;
 }
 ```
+Ensuite il faut appeler `TMP102_apply_registers()` pour appliquer la configuration au capteur.
 
+#### 3. Personnalisation
 Une fois cette initialisation faite, pour modifier la configuration, il suffit de réécrire les champs que l'on veut modifier un par un, puis d'appliquer la configuration au capteur avec la fonction `TMP102_apply_registers()` détaillée ci-dessous.
+
+#### Exemple dans notre code
+
+→ [Déclaration et initialisation](#déclaration-et-initialisation).
 
 ### 10.7. Lecture du registre de température
 
@@ -1175,8 +1347,7 @@ Une fois la mesure effectuée, il suffit simplement de lire le registre de temp�
 
 ### 10.10. Utilisation de la bibliothèque dans le code
 
-
-#### Déclaration et initialisation dans le `main.c`
+#### Déclaration et initialisation
 
 Le capteur est représenté par une unique variable globale de type `TMP102_t`.
 

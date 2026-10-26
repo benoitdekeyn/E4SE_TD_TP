@@ -436,7 +436,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   ...
 }
 ```
-. À chaque tick, la fonction `debounce_filter()` vérifie si le bouton est toujours relâché. Si l'état est stable, l'appui est validé et le flag `debouncing_bouton_home` est réinitialisé. Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrairement à un simple délai qui stopperait l'exécution du programme.
+À chaque tick, la fonction `debounce_filter()` vérifie si le bouton est toujours relâché. Si l'état est stable, l'appui est validé et le flag `debouncing_bouton_home` est réinitialisé. Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrairement à un simple délai qui stopperait l'exécution du programme.
 ```c
 void debounce_filter() 
 {
@@ -684,6 +684,8 @@ Cette approche présente plusieurs avantages : on peut instancier plusieurs capt
 #### Define
 
 Pour ne jamais rien hardcoder, nous avons utilisé une `#define` pour chaque valeur constante issue de la datsheet pour les mêmes raison que mentionnées ici :
+
+*Extraits de `Bibliotheques/TMP102/Inc/tmp102.h`:*  
 
 ```c
 // TAILLES et TIMEOUTS 
@@ -1410,7 +1412,8 @@ La transition de `CHAUD` ou `FROID` vers `TEMPEREE` ne déclenche **aucune** act
 
 ### 10.12. Analyse des trames I²C
 
-Nous avons oublié de faire l'analyse des trames I²C le jour de la démo, quand nous sommes arrivé avec le Scénario 6 enfin terminé.
+Nous avons oublié de faire l'analyse des trames I²C le jour de la démo, quand nous sommes arrivé avec le Scénario 6 enfin terminé. 
+Cependant nous sommes capable de décrire à quoi cela devrait ressembler en théorie.
 
 ---
 

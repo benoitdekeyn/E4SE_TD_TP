@@ -13,65 +13,65 @@
 
 - [1. Table des matières](#1-table-des-mati%C3%A8res)
 - [2. Introduction](#2-introduction)
-    - [2.1. Photos de la maison](#21-photos-de-la-maison)
-    - [2.2. Description du fonctionnement](#22-description-du-fonctionnement)
+  - [2.1. Photos de la maison](#21-photos-de-la-maison)
+  - [2.2. Description du fonctionnement](#22-description-du-fonctionnement)
 - [3. Architecture globale du système](#3-architecture-globale-du-syst%C3%A8me)
-    - [3.1. Branchement des composants](#31-branchement-des-composants)
-    - [3.2. Arbre d'horloge et fréquences](#32-arbre-dhorloge-et-fr%C3%A9quences)
-    - [3.3. Organisation logicielle](#33-organisation-logicielle)
+  - [3.1. Branchement des composants](#31-branchement-des-composants)
+  - [3.2. Arbre d'horloge et fréquences](#32-arbre-dhorloge-et-fr%C3%A9quences)
+  - [3.3. Organisation logicielle](#33-organisation-logicielle)
 - [4. Define et types personalisés](#4-define-et-types-personalis%C3%A9s)
-    - [4.1. Pas de Hardcoding](#41-pas-de-hardcoding)
-    - [4.2. Define matériels](#42-define-mat%C3%A9riels)
-    - [4.3. Structure pour les LEDs](#43-structure-pour-les-leds)
+  - [4.1. Pas de Hardcoding](#41-pas-de-hardcoding)
+  - [4.2. Define matériels](#42-define-mat%C3%A9riels)
+  - [4.3. Structure pour les LEDs](#43-structure-pour-les-leds)
 - [5. — Scénario 1 — Base temporelle pour l'échantillonnage](#5--sc%C3%A9nario-1--base-temporelle-pour-l%C3%A9chantillonnage)
-    - [5.1. Configuration du Timer](#51-configuration-du-timer)
-    - [5.2. Clignotement de la LED témoin](#52-clignotement-de-la-led-t%C3%A9moin)
-    - [5.3. Validation expérimentale](#53-validation-exp%C3%A9rimentale)
-    - [5.4. Ancienne méthode](#54-ancienne-m%C3%A9thode)
+  - [5.1. Configuration du Timer](#51-configuration-du-timer)
+  - [5.2. Clignotement de la LED témoin](#52-clignotement-de-la-led-t%C3%A9moin)
+  - [5.3. Validation expérimentale](#53-validation-exp%C3%A9rimentale)
+  - [5.4. Ancienne méthode](#54-ancienne-m%C3%A9thode)
 - [6. — Scénario 2 — Sécurité : HOME/AWAY et détection d'intrusion](#6--sc%C3%A9nario-2--s%C3%A9curit%C3%A9--homeaway-et-d%C3%A9tection-dintrusion)
-    - [6.1. Bouton MODE et anti-rebond](#61-bouton-mode-et-anti-rebond)
-    - [6.2. Configuration de l'interruption externe (EXTI)](#62-configuration-de-linterruption-externe-exti)
-    - [6.3. Machine à états HOME / AWAY](#63-machine-%C3%A0-%C3%A9tats-home--away)
-    - [6.4. Capteur PIR et alarme intrusion](#64-capteur-pir-et-alarme-intrusion)
-    - [6.5. Gestion non bloquante des alarmes](#65-gestion-non-bloquante-des-alarmes)
+  - [6.1. Bouton MODE et anti-rebond](#61-bouton-mode-et-anti-rebond)
+  - [6.2. Machine à états HOME / AWAY](#62-machine-%C3%A0-%C3%A9tats-home--away)
+  - [6.3. Capteur PIR et alarme intrusion](#63-capteur-pir-et-alarme-intrusion)
+  - [6.4. Gestion non bloquante des alarmes](#64-gestion-non-bloquante-des-alarmes)
 - [7. — Scénario 3 — Détection de gaz](#7--sc%C3%A9nario-3--d%C3%A9tection-de-gaz)
-    - [7.1. Configuration de l'ADC et du DMA](#71-configuration-de-ladc-et-du-dma)
-    - [7.2. Caractérisation du MQ-2 et seuil](#72-caract%C3%A9risation-du-mq-2-et-seuil)
-    - [7.3. Alarme gaz](#73-alarme-gaz)
+  - [7.1. Déclenchement de l'ADC par le Timer 2](#71-d%C3%A9clenchement-de-ladc-par-le-timer-2)
+  - [7.2. Lecture de la valeur ADC au Scénario 3 et problème rencontré](#72-lecture-de-la-valeur-adc-au-sc%C3%A9nario-3-et-probl%C3%A8me-rencontr%C3%A9)
+  - [7.3. Tests du capteur et seuil](#73-tests-du-capteur-et-seuil)
+  - [7.4. Alarme gaz](#74-alarme-gaz)
 - [8. — Scénario 4 — Supervision UART](#8--sc%C3%A9nario-4--supervision-uart)
-    - [8.1. Configuration de l'USART2](#81-configuration-de-lusart2)
-    - [8.2. Redirection de printf](#82-redirection-de-printf)
-    - [8.3. Informations transmises](#83-informations-transmises)
+  - [8.1. Configuration de l'USART2](#81-configuration-de-lusart2)
+  - [8.2. Redirection de printf](#82-redirection-de-printf)
+  - [8.3. Informations transmises](#83-informations-transmises)
 - [9. — Scénario 5 — Gestion intelligente de la fenêtre](#9--sc%C3%A9nario-5--gestion-intelligente-de-la-fen%C3%AAtre)
-    - [9.1. Commande du servomoteur (TIM1 PWM)](#91-commande-du-servomoteur-tim1-pwm)
-    - [9.2. Bouton fenêtre et anti-rebond](#92-bouton-fen%C3%AAtre-et-anti-rebond)
-    - [9.3. Détection de pluie (Steam Sensor via ADC)](#93-d%C3%A9tection-de-pluie-steam-sensor-via-adc)
-    - [9.4. Logique de décision de la fenêtre](#94-logique-de-d%C3%A9cision-de-la-fen%C3%AAtre)
+  - [9.1. Commande du servomoteur (TIM1 PWM)](#91-commande-du-servomoteur-tim1-pwm)
+  - [9.2. Bouton fenêtre et anti-rebond](#92-bouton-fen%C3%AAtre-et-anti-rebond)
+  - [9.3. Détection de pluie avec ADC DMA multi-canaux](#93-d%C3%A9tection-de-pluie-avec-adc-dma-multi-canaux)
+  - [9.4. Logique de décision de la fenêtre](#94-logique-de-d%C3%A9cision-de-la-fen%C3%AAtre)
 - [10. — Scénario 6 — Mesure de température (TMP102)](#10--sc%C3%A9nario-6--mesure-de-temp%C3%A9rature-tmp102)
-    - [10.1. Branchement et configuration CubeMX](#101-branchement-et-configuration-cubemx)
-    - [10.2. Analyse de la datasheet](#102-analyse-de-la-datasheet)
-    - [10.3. Communication I²C avec le capteur](#103-communication-ic-avec-le-capteur)
-    - [10.4. Structure de la bibliothèque](#104-structure-de-la-biblioth%C3%A8que)
-    - [10.5. Mise à jour des registres du capteur](#105-mise-%C3%A0-jour-des-registres-du-capteur)
-    - [10.6. Initialisation](#106-initialisation)
-    - [10.7. Lecture du registre de température](#107-lecture-du-registre-de-temp%C3%A9rature)
-    - [10.8. Conversion et affichage de la température](#108-conversion-et-affichage-de-la-temp%C3%A9rature)
-    - [10.9. Mesure One-Shot en mode Shutdown](#109-mesure-one-shot-en-mode-shutdown)
-    - [10.10. Utilisation de la bibliothèque dans le code](#1010-utilisation-de-la-biblioth%C3%A8que-dans-le-code)
-    - [10.11. Gestion automatique de la fenêtre par la température](#1011-gestion-automatique-de-la-fen%C3%AAtre-par-la-temp%C3%A9rature)
-    - [10.12. Analyse des trames I²C](#1012-analyse-des-trames-ic)
+  - [10.1. Branchement et configuration CubeMX](#101-branchement-et-configuration-cubemx)
+  - [10.2. Analyse de la datasheet](#102-analyse-de-la-datasheet)
+  - [10.3. Communication I²C avec le capteur](#103-communication-ic-avec-le-capteur)
+  - [10.4. Structure de la bibliothèque](#104-structure-de-la-biblioth%C3%A8que)
+  - [10.5. Mise à jour des registres du capteur](#105-mise-%C3%A0-jour-des-registres-du-capteur)
+  - [10.6. Initialisation](#106-initialisation)
+  - [10.7. Lecture du registre de température](#107-lecture-du-registre-de-temp%C3%A9rature)
+  - [10.8. Conversion et affichage de la température](#108-conversion-et-affichage-de-la-temp%C3%A9rature)
+  - [10.9. Mesure One-Shot en mode Shutdown](#109-mesure-one-shot-en-mode-shutdown)
+  - [10.10. Utilisation de la bibliothèque dans le code](#1010-utilisation-de-la-biblioth%C3%A8que-dans-le-code)
+  - [10.11. Gestion automatique de la fenêtre par la température](#1011-gestion-automatique-de-la-fen%C3%AAtre-par-la-temp%C3%A9rature)
+  - [10.12. Analyse des trames I²C](#1012-analyse-des-trames-ic)
 - [11. — Scénario 7 — Intégration et affichage LCD](#11--sc%C3%A9nario-7--int%C3%A9gration-et-affichage-lcd)
-    - [11.1. Configuration Bus I²C](#111-configuration-bus-ic)
-    - [11.2. Intégration de la bibliothèque LCD I²C](#112-int%C3%A9gration-de-la-biblioth%C3%A8que-lcd-ic)
-    - [11.3. Affichage des données en 16x2](#113-affichage-des-donn%C3%A9es-en-16x2)
+  - [11.1. Configuration Bus I²C](#111-configuration-bus-ic)
+  - [11.2. Intégration de la bibliothèque LCD I²C](#112-int%C3%A9gration-de-la-biblioth%C3%A8que-lcd-ic)
+  - [11.3. Affichage des données en 16x2](#113-affichage-des-donn%C3%A9es-en-16x2)
 - [12. — Bonus — Bibliothèque Bande LED RGB (WS2812B)](#12--bonus--biblioth%C3%A8que-bande-led-rgb-ws2812b)
-    - [12.1. Principe de communication (protocole one-wire)](#121-principe-de-communication-protocole-one-wire)
-    - [12.2. Implémentation PWM + DMA (TIM4)](#122-impl%C3%A9mentation-pwm--dma-tim4)
-    - [12.3. Tableau de bord LED](#123-tableau-de-bord-led)
+  - [12.1. Principe de communication (protocole one-wire)](#121-principe-de-communication-protocole-one-wire)
+  - [12.2. Implémentation PWM + DMA (TIM4)](#122-impl%C3%A9mentation-pwm--dma-tim4)
+  - [12.3. Tableau de bord LED](#123-tableau-de-bord-led)
 - [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes)
-    - [13.1. Clignotement non bloquant par compteur partagé](#131-clignotement-non-bloquant-par-compteur-partag%C3%A9)
-    - [13.2. Gestion du buzzer avec fréquences distinctes](#132-gestion-du-buzzer-avec-fr%C3%A9quences-distinctes)
-    - [13.3. Cas simultané : alternance gaz / intrusion](#133-cas-simultan%C3%A9--alternance-gaz--intrusion)
+  - [13.1. Clignotement non bloquant par compteur partagé](#131-clignotement-non-bloquant-par-compteur-partag%C3%A9)
+  - [13.2. Gestion du buzzer avec fréquences distinctes](#132-gestion-du-buzzer-avec-fr%C3%A9quences-distinctes)
+  - [13.3. Cas simultané : alternance gaz / intrusion](#133-cas-simultan%C3%A9--alternance-gaz--intrusion)
 
 <!-- /TOC -->
 ---
@@ -599,24 +599,89 @@ case AWAY:
     }
 ```
 ### 6.4. Gestion non bloquante des alarmes
-> _Renvoyer vers la section 11 pour le détail de l'implémentation non bloquante du clignotement LED + buzzer._
+
+
+
+Nous avons donc décidé de mettre en place une gestion non bloquante des alarmes 
 
 ---
 
 ## 7. — Scénario 3 — Détection de gaz
 
+### 7.1. Déclenchement de l'ADC par le Timer 2
 
-### 7.1. Configuration de l'ADC et du DMA
+Pour cadencer les acquisitions ADC à intervalle régulier sans utiliser le processeur en permanence, nous avons configuré le Timer 2 comme source de déclenchement de l'ADC1.  
+La configuration du Timer 2 (période de 2 s, PSC et ARR) est détaillée dans [5. — Scénario 1 — Base temporelle pour l'échantillonnage](#5--sc%C3%A9nario-1--base-temporelle-pour-l%C3%A9chantillonnage).
 
-> _Expliquer la configuration de l'ADC1 en mode Scan avec 2 canaux (CH4 pour le gaz, CH8 pour la pluie). Justifier l'utilisation du DMA en mode circulaire (DMA2 Stream0) pour le transfert automatique des résultats dans le tableau `adc_valeurs[2]`. Expliquer le déclenchement externe par TIM2 TRGO (Event Update) : à chaque période de 2 s, une séquence de conversion est automatiquement lancée sans intervention logicielle. Le callback `HAL_ADC_ConvCpltCallback` positionne un flag pour le traitement dans la boucle principale._
+Le seul paramètre spécifique modifié dans le scénario 3 est l'activation du **Trigger Output (TRGO)** sur l'événement *Update* du Timer 2 dans CubeMX :
 
-### 7.2. Caractérisation du MQ-2 et seuil
+<img src="media/stm32cubeide_Timer2_TRGO.png"/>
 
-> _Décrire les mesures expérimentales réalisées pour caractériser le capteur MQ-2 : valeur au repos (air ambiant) vs. valeur en présence de gaz (briquet/allumette). Justifier le seuil `SEUIL_GAZ = 2500` retenu sur une plage ADC de 0–4095 (12 bits). Mentionner le temps de chauffe du capteur si observé._
+À chaque fin de période (toutes les 2 secondes), le Timer 2 émet automatiquement un signal TRGO matériel vers le trigger de l'ADC1, qui lance une séquence de conversion sans avoir à coder quoi que ce soit.
 
-### 7.3. Alarme gaz
+Dans CubeMX, nous avons donc défini l'ADC1 comme ceci :
 
-> _Expliquer que la surveillance du gaz est active en permanence (indépendante du mode HOME/AWAY), conformément au cahier des charges. Quand `gaz_valeur >= SEUIL_GAZ`, le flag `alarme_gaz` est activé, ce qui déclenche le clignotement de la LED rouge (RGB_ROUGE sur PA7) et le buzzer à 440 Hz. Un message « Gaz detecte ! » est envoyé sur UART et affiché sur le LCD._
+<img src="media/stm32cubeide_ADC_Scenario_3.png"/>
+
+Nous avons globalement laissé les paramètres par défaut, à part :
+- le TRGO sur l'Update du Timer 2.
+- les 480 cycles d'échantillonnage pour être sûr que la valeur soit stable.
+
+### 7.2. Lecture de la valeur ADC au Scénario 3 et problème rencontré
+
+Au moment du scénario 3, seul le capteur de gaz était connecté sur le Channel 4 (A2). L'ADC fonctionnait en conversion unique sur un canal, et nous lisions la valeur directement dans le callback du Timer 2, sans attendre la fin de la conversion.
+
+```c
+// Extrait du main.c — version Scénario 3
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    // TIM2 -> PER = 2s pour l'échantillonnage des capteurs
+    if (htim->Instance == TIM2)
+    {
+        HAL_GPIO_TogglePin(BLUE_GPIO_Port, BLUE_Pin);
+        update_mesure_gaz();
+    }
+}
+
+void update_mesure_gaz() {
+    gaz_value = HAL_ADC_GetValue(&hadc1);
+    if (gaz_value >= SEUIL_GAZ) {
+        alarme_gaz = true;
+    } else {
+        alarme_gaz = false;
+    }
+}
+```
+
+`HAL_ADC_GetValue()` lisait le registre contenant le résultat de l'ADC en même temps de déclencher une autre mesure, sans vérifier si une conversion est terminée.  
+Le problème c'est que la conversion prend un certain temps (d'autant plus que nous avions paramétré l'ADC à 480 cycles d'échantillonnage).  
+Donc en lisant directement dans l'ISR du TIM2 au moment du déclenchement, on récupérait en réalité la valeur de la conversion précédente, c'est-à-dire celle qui a été lancée 2 secondes plus tôt. La valeur affichée avait donc systématiquement un cycle de retard.
+
+Nous avons identifié le bug au Scénario 5, au moment d'ajouter le capteur de pluie. C'est à ce moment-là que nous avons entièrement revu l'architecture de la chaîne ADC pour passer à une implémentation multi-canaux avec DMA.
+
+> _La version finale de l'ADC (mode Scan, 2 canaux, DMA circulaire, callback de fin de conversion) est expliquée là [9.3. Détection de pluie avec ADC DMA multi-canaux](#93-détection-de-pluie-avec-adc-dma-multi-canaux)._
+
+### 7.3. Tests du capteur et seuil
+
+Le capteur MQ-2 génère une tension proportionnelle à la concentration de gaz détécté entre 0 et 5V d'après la datasheet du capteur. L'ADC1 avec sa résolution 12 bits produit une valeur entre 0 et $2^{12}-1 = 4095$, sur une plage de 0 à Vref+ d'après la datasheet de la nucléo : 
+
+<img src="media/Nucleo_datasheet_ADC_supply.png"> 
+
+Mais en cherchant (Ctrl+F) "Vref+" sur les deux datasheets (HAL et STM32) nous n'avons pas trouvé de valeur en Volts. Cependant, comme nous avions imprudemment testé le capteur en suivant les 5v indiqués dans sa datasheet, et que l'ADC semblait bien fonctionner, et aussi que M.ROY a lui-même connecté le 5V aux broches analogiques avec nous pour des tests, nous en avons conclu que Vref+ = 5v.
+Nous voulions poser la question mais nous avons oublié entre temps.
+
+Nous avons surveillé la valeur en temps réel sur le moniteur série pour définir le seuil de détection de gaz :
+- **En air ambiant** : la valeur ADC se stabilise aux alentours de **500–800** quand le capteur a bien chauffé.
+- **En présence de vapeurs** : la valeur monte à plus de 3000.
+
+Nous avons donc retenu `SEUIL_GAZ = 2500` comme compromis entre sensibilité et faux positifs.
+
+> Le capteur a besoin de préchauffer sa résistance interne donc juste après sa mise sous tension, il fallait attendre environ 2 minutes que la tension descende progressivement au fur et mesure de l'échauffement, avant de pouvoir utiliser le capteur avec un seuil bas quand on le testait avec notre souffle hors des TPs.
+
+### 7.4. Alarme gaz
+
+La détection de gaz est permanente et indépendante du mode HOME/AWAY comme demandé dans le TP, car une fuite de gaz reste dangereuse, que l'on soit présent ou absent.  
+La variable globale `alarme_gaz` est positionnée à `true` dans `evaluer_gaz()` dès que la valeur dépasse le seuil. Le déclenchement effectif du buzzer et de la LED est géré par la fonction non bloquante `update_cycle_alarmes()`, qui est décrite dans la partie [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes).
 
 ---
 
@@ -648,9 +713,134 @@ case AWAY:
 
 > _Expliquer que le bouton fenêtre (PA10, EXTI Falling Edge, Pull-up) utilise le même mécanisme d'anti-rebond que le bouton MODE via TIM5. Justifier le choix du front descendant + pull-up (le bouton est actif bas). En mode HOME et sans pluie, chaque appui bascule la fenêtre entre OUVERTE et FERMEE. En mode AWAY ou en cas de pluie, l'appui est ignoré._
 
-### 9.3. Détection de pluie (Steam Sensor via ADC)
+### 9.3. Détection de pluie avec ADC DMA multi-canaux
 
-> _Décrire le Steam Sensor connecté sur PB0 (ADC1 CH8). Expliquer la caractérisation expérimentale et justifier le seuil `SEUIL_PLUIE = 4000`. Quand la pluie est détectée, la fenêtre est forcée fermée et le bouton fenêtre est ignoré tant que la condition persiste._
+C'est au moment d'ajouter le capteur de pluie au Scénario 5 que nous avons entièrement revu l'architecture ADC pour passer à une solution multi-canaux et avec interruption de fin de conversion.
+
+#### Déclenchement des mesures
+
+Le déclenchement périodique des conversions ADC reste assuré par le Timer 2 via son signal TRGO, exactement comme décrit pour le Scénario 3 : [7.1. Déclenchement de l'ADC par le Timer 2](#71-déclenchement-de-ladc-par-le-timer-2)
+
+#### Configuration ADC en mode Scan multi-canaux
+
+Pour acquérir simultanément deux capteurs (GAZ sur A2, et PLUIE sur A3), nous avons activé le mode Scan de l'ADC1 avec 2 conversions en séquence.
+
+Par rapport à la configuration du Scénario 3, les paramètres suivants ont été modifiés dans CubeMX :
+
+
+<img src="media/stm32cubeide_ADC_Scenario_5.png"/>
+
+| Paramètre | Scénario 3 | Scénario 5 |
+| :--- | :--- | :--- |
+| Number of Conversions | 1 | 2 |
+| Scan Conversion Mode | Disabled | Enabled |
+| Rank 1 | CH4 (GAZ) — 480 cycles | CH4 (GAZ) — 3 cycles |
+| Rank 2 | — | CH8 (PLUIE) — 3 cycles |
+| DMA Continuous Requests | Disabled | Enabled |
+
+<img src="media/stm32cubeide_ADC_2_channels.png"/>
+
+Dans le scénario 3 nous avions choisi 480 cycles d'échantillonnage, ce qui donnait environ 19,7 µs par canal pour bien stabiliser la mesure, mais en essayant de résuire au maximum la latence entre déclenchement et mesure, nous avons testé avec 3 cycles, et la valeur était tout à fait cohérente et stable.
+
+**Détail du calcul :**
+
+<img src="media/Nucleo_datasheet_cycles_ADC.png"/>
+
+> Horloge $= 100\, \text{MHz}$   
+> Prescaler $= 4$   
+> Fréquence ADC $= 100\, \text{MHz} / 4 = 25\, \text{MHz}$  
+> Période ADC $= 1 / 25\, \text{MHz} = 40\, \text{ns}$  
+> Nombre de cycles pour 12 bits $= 12$ 
+
+> Nombre de cycles d'échantillonnage $= 480$    
+> Total cycles $= 12 + 480 = 492$  
+> Latence $= 492 \times 40\, \text{ns} = 19,68\, \mu \text{s}$   
+
+> Nombre de cycles d'échantillonnage $= 3$    
+> Total cycles $= 12 + 3 = 15$  
+> Latence $= 15 \times 40\, \text{ns} = 600\, \text{ns}$ 
+
+Il s'avère qu'on reste bien en desous de la période de 100 µs du Timer 2 qui tourne à 10 kHz, ce qui laisse une bonne marge pour déclencher les mesures. Mais nous avons tout de même préféré garder l'ADC à 3 cycles d'échantillonnage.  
+
+#### Configuration DMA
+
+Pour que les deux résultats de conversion soient stockés automatiquement en mémoire sans intervention du CPU, nous avons activé le DMA en mode circulaire sur le canal ADC1 :
+
+<img src="media/stm32cubeide_ADC_DMA.png"/>
+
+En mode circulaire, le DMA recommence automatiquement depuis le début du buffer dès qu'il a rempli toutes les cases, sans jamais s'arrêter. Ainsi, `adc_valeurs[0]` reçoit toujours la valeur du Rank 1 (GAZ) et `adc_valeurs[1]` celle du Rank 2 (PLUIE).
+
+Le buffer est déclaré `volatile` car il est modifié par le DMA, ce qui oblige le compilateur à le relire en mémoire à chaque accès plutôt que de se fier à une valeur en registre :
+
+```c
+// main.c — Variables globales
+volatile uint16_t adc_valeurs[NBR_CAPTEURS_ADC];  // NBR_CAPTEURS_ADC = 2
+```
+
+Le démarrage du DMA se fait une seule fois au début du `main()`. Ensuite le DMA et le TIM2 TRGO fonctionnent de façon autonome :
+
+```c
+// main.c — Initialisation (USER CODE BEGIN 2)
+HAL_TIM_Base_Start_IT(TIMER_CAPTEURS);                              // TIM2 → TRGO + IRQ
+HAL_ADC_Start_DMA(ADC_CAPTEURS, (uint32_t*)adc_valeurs, NBR_CAPTEURS_ADC);
+```
+
+#### Interruptions ADC et DMA activées
+
+<img src="media/stm32cubeide_ADC_NVIC.png"/>
+
+Deux interruptions sont activées dans le NVIC :
+- **ADC IRQ** (`ADC_IRQn`) : pour que le callback `HAL_ADC_ConvCpltCallback` soit appelé à la fin de la séquence de conversion.
+- **DMA2 Stream0 IRQ** (`DMA2_Stream0_IRQn`) par défaut.
+
+```c
+// main.c — Callback de fin de conversion ADC (USER CODE BEGIN 4)
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+    if (hadc == ADC_CAPTEURS)
+    {
+        fin_mesure_ADC_flag = true;
+    }
+}
+```
+
+Ce callback est déclenché par le DMA quand il a finit sa séquence de mesures. C'est à ce moment et pas avant, qu'on lit le buffer qui vient d'être rempli par le DMA :
+
+#### Lecture et évaluation des capteurs
+
+Dans la boucle principale, dès que `fin_mesure_ADC_flag` est levé, les deux fonctions d'évaluation sont appelées :
+
+```c
+// main.c — Boucle principale
+if (fin_mesure_ADC_flag) {
+    fin_mesure_ADC_flag = false;
+    evaluer_pluie();
+    evaluer_gaz();
+}
+```
+
+Chaque fonction lit la case correspondante du buffer DMA :
+
+```c
+void evaluer_gaz() {
+    gaz_valeur = adc_valeurs[GAZ_ADC_RANK];    // GAZ_ADC_RANK = 0 → Rank 1
+    alarme_gaz = (gaz_valeur >= SEUIL_GAZ);    // SEUIL_GAZ = 2500
+    printf("GAZ   = %d\r\n", gaz_valeur);
+}
+
+void evaluer_pluie() {
+    pluie_valeur = adc_valeurs[PLUIE_ADC_RANK]; // PLUIE_ADC_RANK = 1 → Rank 2
+    pluie_detectee = (pluie_valeur >= SEUIL_PLUIE); // SEUIL_PLUIE = 4000
+    printf("PLUIE = %d\r\n", pluie_valeur);
+}
+```
+
+#### Tests du capteur de pluie et seuil
+
+Le capteur de pluie génère une tension proportionnelle à la quantité d'humidité à sa surface entre 0 et 5V.  
+L'ADC1 avec sa résolution 12 bits produit une valeur entre 0 et $2^{12}-1 = 4095$. Pour la plage de tension de référence de l'ADC, Cf [7.3. Tests du capteur et seuil](#73-tests-du-capteur-et-seuil).  
+
+Nous avons mesuré que la valeur ADC reste sous 1000 si le capteur est sec et monte directement à son maximum 4095 en présence ne serait-ce que d'un doigt. Nous avons donc retenu `SEUIL_PLUIE = 4000` pour éviter les faux positifs.
 
 ### 9.4. Logique de décision de la fenêtre
 
@@ -662,6 +852,8 @@ case AWAY:
 
 
 ### 10.1. Branchement et configuration CubeMX
+
+Pour configurer et brnacher le capteurnous avons d'abord considéré ceci :
 
 *Extrait de la datasheet du TMP102 :*  
 

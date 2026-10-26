@@ -1,3 +1,70 @@
+<!-- TOC -->
+
+- [1. Table des matières](#1-table-des-mati%C3%A8res)
+- [2. Introduction](#2-introduction)
+  - [2.1. Photos de la maison](#21-photos-de-la-maison)
+  - [2.2. Description du fonctionnement](#22-description-du-fonctionnement)
+- [3. Architecture globale du système](#3-architecture-globale-du-syst%C3%A8me)
+  - [3.1. Branchement des composants](#31-branchement-des-composants)
+  - [3.2. Arbre d'horloge et fréquences](#32-arbre-dhorloge-et-fr%C3%A9quences)
+  - [3.3. Organisation logicielle](#33-organisation-logicielle)
+- [4. Define et types personalisés](#4-define-et-types-personalis%C3%A9s)
+  - [4.1. Pas de Hardcoding](#41-pas-de-hardcoding)
+  - [4.2. Define matériels](#42-define-mat%C3%A9riels)
+  - [4.3. Structure pour les LEDs](#43-structure-pour-les-leds)
+- [5. — Scénario 1 — Base temporelle pour l'échantillonnage](#5--sc%C3%A9nario-1--base-temporelle-pour-l%C3%A9chantillonnage)
+  - [5.1. Configuration du Timer](#51-configuration-du-timer)
+  - [5.2. Clignotement de la LED témoin](#52-clignotement-de-la-led-t%C3%A9moin)
+  - [5.3. Validation expérimentale](#53-validation-exp%C3%A9rimentale)
+  - [5.4. Ancienne méthode](#54-ancienne-m%C3%A9thode)
+- [6. — Scénario 2 — Sécurité : HOME/AWAY et détection d'intrusion](#6--sc%C3%A9nario-2--s%C3%A9curit%C3%A9--homeaway-et-d%C3%A9tection-dintrusion)
+  - [6.1. Bouton MODE et anti-rebond](#61-bouton-mode-et-anti-rebond)
+  - [6.2. Machine à états HOME / AWAY](#62-machine-%C3%A0-%C3%A9tats-home--away)
+  - [6.3. Capteur PIR et alarme intrusion](#63-capteur-pir-et-alarme-intrusion)
+  - [6.4. Gestion non bloquante des alarmes](#64-gestion-non-bloquante-des-alarmes)
+- [7. — Scénario 3 — Détection de gaz](#7--sc%C3%A9nario-3--d%C3%A9tection-de-gaz)
+  - [7.1. Déclenchement de l'ADC par le Timer 2](#71-d%C3%A9clenchement-de-ladc-par-le-timer-2)
+  - [7.2. Lecture de la valeur ADC au Scénario 3 et problème rencontré](#72-lecture-de-la-valeur-adc-au-sc%C3%A9nario-3-et-probl%C3%A8me-rencontr%C3%A9)
+  - [7.3. Tests du capteur et seuil](#73-tests-du-capteur-et-seuil)
+  - [7.4. Alarme gaz](#74-alarme-gaz)
+- [8. — Scénario 4 — Supervision UART](#8--sc%C3%A9nario-4--supervision-uart)
+  - [8.1. Configuration de l'UART avec ST-LINK](#81-configuration-de-luart-avec-st-link)
+  - [8.2. Redirection de printf vers l'UART](#82-redirection-de-printf-vers-luart)
+  - [8.3. Message de bienvenue au démarrage](#83-message-de-bienvenue-au-d%C3%A9marrage)
+  - [8.4. Supervision en temps réel](#84-supervision-en-temps-r%C3%A9el)
+  - [8.5. Validation avec un terminal série](#85-validation-avec-un-terminal-s%C3%A9rie)
+- [9. — Scénario 5 — Gestion intelligente de la fenêtre](#9--sc%C3%A9nario-5--gestion-intelligente-de-la-fen%C3%AAtre)
+  - [9.1. Commande du servomoteur (TIM1 PWM)](#91-commande-du-servomoteur-tim1-pwm)
+  - [9.2. Bouton fenêtre et anti-rebond](#92-bouton-fen%C3%AAtre-et-anti-rebond)
+  - [9.3. Détection de pluie avec ADC DMA multi-canaux](#93-d%C3%A9tection-de-pluie-avec-adc-dma-multi-canaux)
+  - [9.4. Logique de décision de la fenêtre](#94-logique-de-d%C3%A9cision-de-la-fen%C3%AAtre)
+- [10. — Scénario 6 — Mesure de température (TMP102)](#10--sc%C3%A9nario-6--mesure-de-temp%C3%A9rature-tmp102)
+  - [10.1. Branchement et configuration CubeMX](#101-branchement-et-configuration-cubemx)
+  - [10.2. Analyse de la datasheet](#102-analyse-de-la-datasheet)
+  - [10.3. Communication I²C avec le capteur](#103-communication-ic-avec-le-capteur)
+  - [10.4. Structure de la bibliothèque](#104-structure-de-la-biblioth%C3%A8que)
+  - [10.5. Mise à jour des registres du capteur](#105-mise-%C3%A0-jour-des-registres-du-capteur)
+  - [10.6. Initialisation](#106-initialisation)
+  - [10.7. Lecture du registre de température](#107-lecture-du-registre-de-temp%C3%A9rature)
+  - [10.8. Conversion et affichage de la température](#108-conversion-et-affichage-de-la-temp%C3%A9rature)
+  - [10.9. Mesure One-Shot en mode Shutdown](#109-mesure-one-shot-en-mode-shutdown)
+  - [10.10. Utilisation de la bibliothèque dans le code](#1010-utilisation-de-la-biblioth%C3%A8que-dans-le-code)
+  - [10.11. Gestion automatique de la fenêtre par la température](#1011-gestion-automatique-de-la-fen%C3%AAtre-par-la-temp%C3%A9rature)
+  - [10.12. Analyse des trames I²C](#1012-analyse-des-trames-ic)
+- [11. — Scénario 7 — Intégration et affichage LCD](#11--sc%C3%A9nario-7--int%C3%A9gration-et-affichage-lcd)
+  - [11.1. Configuration Bus I²C](#111-configuration-bus-ic)
+  - [11.2. Intégration de la bibliothèque LCD I²C](#112-int%C3%A9gration-de-la-biblioth%C3%A8que-lcd-ic)
+  - [11.3. Affichage des données en 16x2](#113-affichage-des-donn%C3%A9es-en-16x2)
+- [12. — Bonus — Bibliothèque Bande LED RGB (WS2812B)](#12--bonus--biblioth%C3%A8que-bande-led-rgb-ws2812b)
+  - [12.1. Principe de communication (protocole one-wire)](#121-principe-de-communication-protocole-one-wire)
+  - [12.2. Implémentation PWM + DMA (TIM4)](#122-impl%C3%A9mentation-pwm--dma-tim4)
+  - [12.3. Tableau de bord LED](#123-tableau-de-bord-led)
+- [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes)
+  - [13.1. Clignotement non bloquant par compteur partagé](#131-clignotement-non-bloquant-par-compteur-partag%C3%A9)
+  - [13.2. Gestion du buzzer avec fréquences distinctes](#132-gestion-du-buzzer-avec-fr%C3%A9quences-distinctes)
+  - [13.3. Cas simultané : alternance gaz / intrusion](#133-cas-simultan%C3%A9--alternance-gaz--intrusion)
+
+<!-- /TOC -->
 # Rapport de Projet - Maison Intelligente STM32
 
 **ECUE :** Architecture Numériques Embarquées  
@@ -39,9 +106,11 @@
   - [7.3. Tests du capteur et seuil](#73-tests-du-capteur-et-seuil)
   - [7.4. Alarme gaz](#74-alarme-gaz)
 - [8. — Scénario 4 — Supervision UART](#8--sc%C3%A9nario-4--supervision-uart)
-  - [8.1. Configuration de l'USART2](#81-configuration-de-lusart2)
-  - [8.2. Redirection de printf](#82-redirection-de-printf)
-  - [8.3. Informations transmises](#83-informations-transmises)
+  - [8.1. Identification de la liaison UART reliée au ST-LINK](#81-identification-de-la-liaison-uart-reli%C3%A9e-au-st-link)
+  - [8.2. Redirection de printf vers l'UARTRT](#82-redirection-de-printf-vers-luartrt)
+  - [8.3. Message de bienvenue au démarrage](#83-message-de-bienvenue-au-d%C3%A9marrage)
+  - [8.4. Supervision en temps réel](#84-supervision-en-temps-r%C3%A9el)
+  - [8.5. Validation avec un terminal série](#85-validation-avec-un-terminal-s%C3%A9rie)
 - [9. — Scénario 5 — Gestion intelligente de la fenêtre](#9--sc%C3%A9nario-5--gestion-intelligente-de-la-fen%C3%AAtre)
   - [9.1. Commande du servomoteur (TIM1 PWM)](#91-commande-du-servomoteur-tim1-pwm)
   - [9.2. Bouton fenêtre et anti-rebond](#92-bouton-fen%C3%AAtre-et-anti-rebond)
@@ -663,12 +732,22 @@ Nous avons identifié le bug au Scénario 5, au moment d'ajouter le capteur de p
 
 ### 7.3. Tests du capteur et seuil
 
+#### Tension d'alimentation et de mesure de l'ADC
+
 Le capteur MQ-2 génère une tension proportionnelle à la concentration de gaz détécté entre 0 et 5V d'après la datasheet du capteur. L'ADC1 avec sa résolution 12 bits produit une valeur entre 0 et $2^{12}-1 = 4095$, sur une plage de 0 à Vref+ d'après la datasheet de la nucléo : 
 
 <img src="media/Nucleo_datasheet_ADC_supply.png"> 
 
-Mais en cherchant (Ctrl+F) "Vref+" sur les deux datasheets (HAL et STM32) nous n'avons pas trouvé de valeur en Volts. Cependant, comme nous avions imprudemment testé le capteur en suivant les 5v indiqués dans sa datasheet, et que l'ADC semblait bien fonctionner, et aussi que M.ROY a lui-même connecté le 5V aux broches analogiques avec nous pour des tests, nous en avons conclu que Vref+ = 5v.
-Nous voulions poser la question mais nous avons oublié entre temps.
+Il se trouve qu'en cherchant mieux, sur la [documentation de la carte nucleo](https://www.st.com/resource/en/user_manual/um1724-stm32-nucleo64-boards-mb1136-stmicroelectronics.pdf) nous avons trouvé que sur la carte Nucleo, VREF+ est connecté à VDDA = VDD = 3V3.
+
+<img src="media/broche_vref_vdd.png"> 
+
+Cependant, comme nous avions imprudemment testé le capteur en suivant les 5V indiqués dans sa datasheet, et que l'ADC semblait bien fonctionner, et aussi que M.ROY a lui-même connecté le 5V aux broches analogiques avec nous pour des tests.
+Nous voulions poser la question mais nous avons oublié entre temps.  
+
+Donc à moins que le capteur ne renvoie explicitement 3V3 maximum sur A0, nous sommes probablement en train d'abimer des diodes de protection ou de griller la carte à chaque mise sous tension ...
+
+#### Seuil de détection
 
 Nous avons surveillé la valeur en temps réel sur le moniteur série pour définir le seuil de détection de gaz :
 - **En air ambiant** : la valeur ADC se stabilise aux alentours de **500–800** quand le capteur a bien chauffé.
@@ -687,20 +766,109 @@ La variable globale `alarme_gaz` est positionnée à `true` dans `evaluer_gaz()`
 
 ## 8. — Scénario 4 — Supervision UART
 
+### 8.1. Configuration de l'UART avec ST-LINK
 
-### 8.1. Configuration de l'USART2
+<img src="media/usart2_datasheet.png">
 
-> _Expliquer que l'USART2 (PA2 TX, PA3 RX) est la liaison série reliée au ST-LINK sur la Nucleo, permettant la communication avec un terminal PC via USB. Mentionner la vitesse par défaut (115200 baud)._
+La carte NUCLEO-F411RE embarque un convertisseur USB-UART intégré au ST-LINK, qui expose sur le PC un port COM. En 
 
-### 8.2. Redirection de printf
+Aucun câblage externe n'est donc nécessaire pour la liaison PC : le câble USB de débogage suffit à la fois pour programmer, débogguer et superviser.
 
-> _Justifier le choix de rediriger `printf` via `__io_putchar()` qui appelle `HAL_UART_Transmit()`. Mentionner l'avantage : utilisation facile de `printf` et `snprintf` dans tout le code pour le debug et la supervision._
+Dans CubeMX, nous avons activé l'USART2 en mode Asynchronous avec les paramètres par défaut :
 
-### 8.3. Informations transmises
+<img src="media/stm32cubeide_usart2.png">
 
-> _Lister les informations transmises via UART : message de bienvenue au démarrage (seuils configurés, fréquences), valeurs des capteurs à chaque cycle (GAZ, PLUIE, TEMP), événements (changement de mode, ouverture/fermeture fenêtre, alarmes intrusion/gaz)._
+### 8.2. Redirection de printf vers l'UART
+
+Pour transmettre des messages formatés sans avoir à manipuler `HAL_UART_Transmit()` à chaque appel, nous avons redirigé la fonction standard `printf` vers l'USART2 en redéfinissant la fonction `__io_putchar()`, utilisée par la bibliothèque C standard pour l'envoi caractère par caractère :
+
+```c
+// main.c — USER CODE BEGIN 4
+// Redirection du printf vers USART2
+int __io_putchar(int ch) {
+    HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+    return ch;
+}
+```
+
+La fonction `__io_putchar` prend en paramètre :
+- `&huart2` : un pointeur sur la structure de l'UART2.
+- `(uint8_t *)&ch` : un pointeur sur le caractère à transmettre.
+- `1` : le nombre de caractères à transmettre.
+- `HAL_MAX_DELAY` : le temps maximum d'attente avant de considérer la transmission comme échouée.
+
+`printf` découpe la chaîne en caractères, et `__io_putchar()` les transmet un à un via `HAL_UART_Transmit()` en mode bloquant (`HAL_MAX_DELAY`), ce qui est acceptable ici car les transmissions sont courtes et relativement rares, toutes les 2 secondes en moyenne.
+
+> Nous avons bien inclus `#include <stdio.h>` pour utiliser `printf` et `snprintf`.
+
+### 8.3. Message de bienvenue au démarrage
+
+Au démarrage du système (juste après l'initialisation de tous les composants), un message de bienvenue est transmis sur l'UART pour confirmer que la liaison fonctionne et indiquer la configuration qu'on a choisie :
+
+```c
+// main.c — USER CODE BEGIN 2 (après les initialisations)
+printf("\r\n--- Demarrage Systeme STM32 ---\r\n\n");
+printf("Seuil gaz configure: %d\r\n", SEUIL_GAZ);
+printf("Frequence clignotement alarme gaz: %d Hz\r\n", FREQ_BLINK_ALARME_GAZ);
+printf("Frequence clignotement alarme intrusion: %d Hz\r\n", FREQ_BLINK_ALARME_INTRUSION);
+printf("Periode echantillonnage capteurs: %d s\r\n", (int)(1/FREQ_CYCLE_CAPTEURS));
+printf("Periode debounce bouton: %d ms\r\n", (int)(1000/FREQ_CYCLE_DEBOUNCE));
+```
+
+### 8.4. Supervision en temps réel
+
+La liaison UART est utilisée tout au long du fonctionnement pour transmettre trois types d'informations :
+
+#### Mesures périodiques (toutes les 2 s)
+
+À chaque cycle d'échantillonnage, les valeurs brutes des trois capteurs sont transmises :
+
+```c
+// Dans evaluer_gaz() — main.c
+printf("                                      GAZ   = %d\r\n", gaz_valeur);
+
+// Dans evaluer_pluie() — main.c
+printf("                                      PLUIE = %d\r\n", pluie_valeur);
+
+// Dans evaluer_temperature() — main.c
+printf("                                      TEMP  = %s°C\r\n",
+       TMP102_temperature_to_string(temperature_valeur, 2));
+```
+
+Comme nous envoyons systématiquement toutes les 2 secondes ls valeurs de ces 3 capteurs, nous avons préféré mettre une grosse indentation pour les différentier des messages occasionnels liés à la situation de la maison ou aux actions utilsateurs.
+
+> Pour la température, nous avons une fonction dédiée à la génération du String correspondant à un float comme détaillé là [Affichage de la température de type float](#affichage-de-la-température-de-type-float)
+
+#### Événements d'état (asynchrones)
+
+Tout changement d'état du système est signalé immédiatement :
+
+| Événement | Message transmis |
+| :--- | :--- |
+| Passage HOME → AWAY | `Je sors de la maison` |
+| Passage AWAY → HOME | `Je rentre à la maison` |
+| Ouverture fenêtre | `J'ouvre la fenetre` |
+| Fermeture fenêtre | `Je ferme la fenetre` |
+| Détection d'intrusion | `Intrusion detectee !` |
+| Détection de gaz | `Gaz detecte !` |
+| Détection de pluie | `Pluie detecte !` |
+| TMP102 initialisé | `Capteur TMP102 configuré` |
+
+#### Erreurs
+
+Les erreurs de communication I²C avec le TMP102 sont également signalées :
+
+```c
+printf("Erreur d'initialisation du capteur TMP102\r\n");
+printf("Erreur lors du demarrage de la mesure TMP102 en mode One-Shot\r\n");
+```
+
+### 8.5. Validation avec un terminal série
+
+Pour valider la liaison, nous avons utilisé le moniteur série intégré à STM32CubeIDE (ShellCode) configuré à **115200 bauds** sur le bon port COM.
 
 ---
+
 
 ## 9. — Scénario 5 — Gestion intelligente de la fenêtre
 
@@ -837,10 +1005,10 @@ void evaluer_pluie() {
 
 #### Tests du capteur de pluie et seuil
 
-Le capteur de pluie génère une tension proportionnelle à la quantité d'humidité à sa surface entre 0 et 5V.  
-L'ADC1 avec sa résolution 12 bits produit une valeur entre 0 et $2^{12}-1 = 4095$. Pour la plage de tension de référence de l'ADC, Cf [7.3. Tests du capteur et seuil](#73-tests-du-capteur-et-seuil).  
+Le capteur de pluie génère une tension proportionnelle à la quantité d'humidité à sa surface.  
+L'ADC1 avec sa résolution 12 bits produit une valeur entre 0 et $2^{12}-1 = 4095$. Pour la plage de tension de référence de l'ADC, nous avons expliqué la situation ici [Tension d'alimentation et de mesure de l'ADC](#tension-dalimentation-et-de-mesure-de-ladc).  
 
-Nous avons mesuré que la valeur ADC reste sous 1000 si le capteur est sec et monte directement à son maximum 4095 en présence ne serait-ce que d'un doigt. Nous avons donc retenu `SEUIL_PLUIE = 4000` pour éviter les faux positifs.
+Nous avons mesuré que la valeur ADC reste sous 1000 quand le capteur est sec et monte directement à son maximum 4095 en présence ne serait-ce que d'un doigt. Nous avons donc retenu `SEUIL_PLUIE = 4000` pour éviter les faux positifs.
 
 ### 9.4. Logique de décision de la fenêtre
 

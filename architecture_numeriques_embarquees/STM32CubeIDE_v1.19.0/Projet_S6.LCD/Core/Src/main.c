@@ -606,66 +606,92 @@ int main(void)
     /* USER CODE BEGIN 3 */
 
     // Machine à état avec HOME et AWAY
-    switch(mode) {
-    case  HOME: 
+    switch(mode) 
     {
-      if      (bouton_home_appuye) 
+      case  HOME: 
       {
-        bouton_home_appuye = false;
-        mode = AWAY;
-        fenetre = FERMEE;
-        printf("Je sors de la maison\r\n");
-        afficher_mode_ecran();
-      }
-      else if (pluie_detectee)
-      {
-        fenetre = FERMEE;
-    	  bouton_fenetre_appuye = false;
-      } 
-      else 
-      {
-        alarme_intrusion = false;
-        if (bouton_fenetre_appuye) 
+        // Transitions
+        if      (bouton_home_appuye) 
         {
-          bouton_fenetre_appuye = false;
-          switch(fenetre){
-          case OUVERTE: 
+          bouton_home_appuye = false;
+          mode = AWAY;
+          fenetre = FERMEE;
+          printf("Je sors de la maison\r\n");
+          afficher_mode_ecran();
+        }
+        else 
+        {
+          // Actions
+          presence_detectee = false;
+          alarme_intrusion = false;
+
+          if (pluie_detectee)
           {
             fenetre = FERMEE;
-            printf("Je ferme la fenetre\r\n");
-            break;
+      	    bouton_fenetre_appuye = false;
           } 
-          case FERMEE: 
+          else 
           {
-            fenetre = OUVERTE;
-            printf("J'ouvre la fenetre\r\n");
-            break;
+            // Sous-Machine à état fenêtre
+            switch(fenetre)
+            {
+              case OUVERTE: 
+              {
+                // Transitions
+                if (bouton_fenetre_appuye) 
+                {
+                  bouton_fenetre_appuye = false;
+                  fenetre = FERMEE;
+                  printf("Je ferme la fenetre\r\n");
+                  break;
+                }
+                // Aucune action
+                break;
+              } 
+              case FERMEE: 
+              {
+                // Transitions
+                if (bouton_fenetre_appuye) 
+                {
+                  bouton_fenetre_appuye = false;
+                  fenetre = OUVERTE;
+                  printf("J'ouvre la fenetre\r\n");
+                  break;
+                }
+                // Aucune action
+                break;
+              }
+              case INIT:
+                // pris en charge au premier appel de commande_fenetre()
+                break;
+            }
           }
-          case INIT:
-            // pris en charge au premier appel de commande_fenetre()
-            break;
         }
+        break;
       }
-    }
-    break;
-    }
-    case AWAY:
-    {
-    	bouton_fenetre_appuye = false;
-      if      (bouton_home_appuye) 
+      case AWAY:
       {
-        bouton_home_appuye = false;
-        mode = HOME;
-        printf("Je rentre à la maison\r\n");
-        afficher_mode_ecran();
-      } 
-      else if (presence_detectee) 
-      {
-        alarme_intrusion = true;
-        presence_detectee = false;
-        printf("Intrusion detectee !\r\n");
-      }
-      break;
+        // Transitions
+        if      (bouton_home_appuye) 
+        {
+          bouton_home_appuye = false;
+          mode = HOME;
+          printf("Je rentre à la maison\r\n");
+          afficher_mode_ecran();
+        } 
+        else 
+        {
+          // Actions
+          bouton_fenetre_appuye = false;
+          
+          if (presence_detectee) 
+          {
+            alarme_intrusion = true;
+            presence_detectee = false;
+            printf("Intrusion detectee !\r\n");
+          }
+        }
+        break;
       }
     }
 

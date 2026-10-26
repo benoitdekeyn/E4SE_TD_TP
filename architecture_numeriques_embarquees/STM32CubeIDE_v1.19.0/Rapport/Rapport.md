@@ -29,10 +29,12 @@
   - [5.3. Validation expérimentale](#53-validation-exp%C3%A9rimentale)
   - [5.4. Ancienne méthode](#54-ancienne-m%C3%A9thode)
 - [6. — Scénario 2 — Sécurité : HOME/AWAY et détection d'intrusion](#6--sc%C3%A9nario-2--s%C3%A9curit%C3%A9--homeaway-et-d%C3%A9tection-dintrusion)
-  - [6.1. Bouton MODE et anti-rebond](#61-bouton-mode-et-anti-rebond)
-  - [6.2. Machine à états HOME / AWAY](#62-machine-%C3%A0-%C3%A9tats-home--away)
-  - [6.3. Capteur PIR et alarme intrusion](#63-capteur-pir-et-alarme-intrusion)
-  - [6.4. Gestion non bloquante des alarmes](#64-gestion-non-bloquante-des-alarmes)
+  - [6.1. Configuration du bouton MODE](#61-configuration-du-bouton-mode)
+  - [6.2. Gestion de l'anti-rebond](#62-gestion-de-lanti-rebond)
+  - [6.3. Machine à états HOME / AWAY](#63-machine-%C3%A0-%C3%A9tats-home--away)
+  - [6.4. Capteur PIR et alarme intrusion](#64-capteur-pir-et-alarme-intrusion)
+  - [6.5. Comportement selon le mode (AWAY vs HOME)](#65-comportement-selon-le-mode-away-vs-home)
+  - [6.6. Gestion non bloquante des alarmes](#66-gestion-non-bloquante-des-alarmes)
 - [7. — Scénario 3 — Détection de gaz](#7--sc%C3%A9nario-3--d%C3%A9tection-de-gaz)
   - [7.1. Déclenchement de l'ADC par le Timer 2](#71-d%C3%A9clenchement-de-ladc-par-le-timer-2)
   - [7.2. Lecture de la valeur ADC au Scénario 3 et problème rencontré](#72-lecture-de-la-valeur-adc-au-sc%C3%A9nario-3-et-probl%C3%A8me-rencontr%C3%A9)
@@ -389,25 +391,26 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 ## 6. — Scénario 2 — Sécurité : HOME/AWAY et détection d'intrusion
 
-### 6.1. Bouton MODE et anti-rebond
+### 6.1. Configuration du bouton MODE
 
-Le bouton MODE est connecté à PA6 et configuré en EXTI sur front descendant (_L'interruption est déclenchée au moment précis où l'utilisateur appuie sur le bouton, lorsque le signal passe de haut à bas_) avec pull-up interne (_le bouton étant configuré pour renvoyer en 0 si pressé et 1 sinon, le signal est maintenu à l'état haut par défaut_)
+Le bouton MODE est configuré en EXTI sur front descendant (_L'interruption est déclenchée au moment précis où l'utilisateur appuie sur le bouton, lorsque le signal passe de haut à bas_) avec pull-up interne (_le bouton étant configuré pour renvoyer en 0 si pressé et 1 sinon, le signal est maintenu à l'état haut par défaut_)
 Cela permet de détecter les appuis sur le bouton tout en évitant les faux déclenchements dus au bruit. 
 
-#### Mécanisme d'anti-rebond non bloquant via TIM5
-Pour s'assurer que l'appui sur le bouton est correctement détecté sans être perturbé par les rebonds mécaniques, nous avons mis en place un mécanisme anti-rebond via TIM5.
+### 6.2. Gestion de l'anti-rebond
 
- ##### Prescaler
- (`PSC = 10000-1`) : Nous avons gardé la meme résolution que pour le TIM3 soit une résolution exacte de $0{,}1\text{ ms}$ par tic.
- ##### Period 
-( `ARR = 500-1`) Nous cherchons une période de $\frac{500}{10\,000} = 50\text{ ms}$, soit une fréquence de 20Hz, largement satisfaisante pour couvrir largement la fenêtre de rebonds mécaniques du bouton.
+Pour s'assurer que l'appui sur le bouton est correctement détecté sans être perturbé par les rebonds mécaniques, nous avons mis en place un mécanisme anti-rebond grâce au Timer 5.
 
-Lors de l'appui sur le bouton MODE, l'interruption EXTI sur PA6 est déclenchée. Dans le gestionnaire d'interruption, le flag `debouncing_bouton_home` est levé et le compteur de TIM5 est remis à zéro. 
+#### Prescaler du Timer 5
+(`PSC = 10000-1`) : Nous avons gardé la meme résolution que pour le TIM2 soit une résolution exacte de $0{,}1\text{ ms}$ par tic.
+
+#### Période du Timer 5
+( `ARR = 500-1`) Nous cherchons une période de $\frac{500}{10\,000} = 50\text{ ms}$ (fréquence de 20Hz), largement satisfaisante pour couvrir la fenêtre temporelle de rebonds mécaniques du bouton.
+
+#### Routine d'interruption du GPIO et du Timer
+Lors de l'appui sur le bouton MODE, l'interruption EXTI 6 est déclenchée.  
+Dans la routine d'interruption, le flag `debouncing_bouton_home` est levé et le Timer 5 est remis à zéro pour attendre pile 50 ms : 
+
 ```c
-// Définition utilisé pour l'anti-rebond
-#define BTN_HOME_Pin GPIO_PIN_6
-#define BTN_HOME_GPIO_Port GPIOA
-
 // Flag utilisé pour l'anti-rebond
 volatile bool   timer_debounce_flag         = false;
 volatile bool   debouncing_bouton_home      = false;
@@ -435,7 +438,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   ...
 }
 ```
-À chaque tic, la fonction `debounce_filter()` vérifie si le bouton est toujours relâché. Si l'état est stable, l'appui est validé et le flag `debouncing_bouton_home` est réinitialisé. Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrairement à un simple délai qui stopperait l'exécution du programme.
+
+#### Détection d'appui
+Ensuite dans la boucle while(1) du main, on vérifie si le flag `timer_debounce_flag` est levé puis si le bouton est bien appuyé :
+
 ```c
 // dans USER CODE 0
 void debounce_filter() 
@@ -444,22 +450,28 @@ void debounce_filter()
 		debouncing_bouton_home = false;
 		bouton_home_appuye = true;
 	}
-
-	if (debouncing_bouton_fenetre && !HAL_GPIO_ReadPin(BTN_FENTR_GPIO_Port, BTN_FENTR_Pin)) {
-		debouncing_bouton_fenetre = false;
-		bouton_fenetre_appuye = true;
-	}
+  ...
 }
-```
 
-#### Pourquoi cette méthode dépasse le simple délai bloquant ?
+// dans la boucle while(1) du main
+if (timer_debounce_flag)
+{
+  timer_debounce_flag = false;
+  debounce_filter();
+  ...
+}
+```  
+La fonction `debounce_filter()` est appelée à chaque fin de période du timer, soit toutes les 50 ms.  
+Si le flag `debouncing_bouton_home` est levé ET que le bouton est toujours à false, cela signifie que l'appui est bien resté stable 50ms après la detection du front descendant lors du dernier appui.  
+La variable `bouton_home_appuye` est alors validée et le flag `debouncing_bouton_home` est réinitialisé.  
+Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrairement à un simple délai qui stopperait l'exécution du programme.
 
-L'utilisation de TIM5 pour gérer l'anti-rebond permet au microcontrôleur de continuer à exécuter d'autres tâches pendant la période de stabilisation du bouton. Contrairement à un simple délai bloquant qui stopperait l'exécution du programme, cette méthode non bloquante assure que le système reste réactif et que d'autres événements (comme la détection PIR ou le clignotement LED) peuvent être traités simultanément.
+### 6.3. Machine à états HOME / AWAY
 
+#### Description de la machine à états
 
-### 6.2. Machine à états HOME / AWAY
-
-Nous avons défini une première machine à états pour gérer les différents modes de la maison : `HOME`, `AWAY`.  . (_Note : la machine à états complète est détaillée dans_)
+Nous avons défini une première machine à états pour gérer les différents modes de la maison : `HOME`, `AWAY`.
+> La machine à états complète est accessible plus loin dans les scénarios [Machine à états avec alarme intrusion](#machine-à-états-avec-alarme-intrusion)
 
 ````mermaid
 stateDiagram
@@ -467,111 +479,113 @@ stateDiagram
 [*] --> HOME
   AWAY:AWAY
   HOME:HOME
-  HOME --> AWAY:Bouton MODE appuyé /<br> signaler AWAY sur LCD et UART
-  AWAY --> HOME:Bouton MODE appuyé /<br> signaler HOME sur LCD et UART
+  HOME --> AWAY:Bouton MODE appuyé
+  AWAY --> HOME:Bouton MODE appuyé
 ````
-```c
-//Exemple de code pour la première machine à états HOME / AWAY
-switch (mode) {
-    case HOME:
-{
-    if (bouton_mode_appuye) 
-    {
-        bouton_mode_appuye = false;
-        mode = AWAY;
-        printf("Je sors de la maison\n");
-        afficher_mode_ecran();    
-    }
-}
-        break;
-    case AWAY:
-    {
-        bouton_fenetre_appuye = false;
-        if (bouton_home_appuye)
-        {
-            bouton_home_appuye = false;
-            mode = HOME;
-            printf("Je rentre à la maison\r\n");
-            afficher_mode_ecran();
-        }
-    }
-        break;
-}
-```
+#### Gestion des modes
 
-
-### 6.3. Capteur PIR et alarme intrusion
-
-#### 6.3.1 Configuration matérielle et logicielle 
-##### Capteur de Mouvement
-Le capteur de présence PIR est raccordé sur la broche PC7 et configurée en interruption externe. 
-
-```c
-#define PIR_MVMT_Pin GPIO_PIN_7
-#define PIR_MVMT_GPIO_Port GPIOC
-#define PIR_MVMT_EXTI_IRQn EXTI9_5_IRQn
-```
-On la configure de manière à ce qu'elle se déclenche sur le front montant (rising edge) et avec une résistance de tirage pull-down interne, de manière à garantir un signal stable en l'absence de mouvement.
-
-##### Alarme intrusion 
-L'alarme intrusion est contrôlée par les variables `alarme_intrusion` et `presence_detectee`.
-```c
-// dans CODE PV
-volatile bool presence_detectee = false;
-bool alarme_intrusion = false;
-```
-##### Configuration led et buzzer
-Dans le scénario d'intrusion, deux composant s'active pour signaler l'alarme : 
-- une led jaune qui clignote en cas d'intrusion
-```c
-//DANS USER CODE PV 
-// configuration led 
-LED_t           led_alarme_intrusion        = {LED_JAUNE_GPIO_Port, LED_JAUNE_Pin, false};
-```
-- un buzzer qui émet un son continu de 384 Hz en cas d'intrusion . (la configuation du buzzer est expliqué plus tard en TODO), manipulé par le boléen `buzzer`
-```c
-// dans CODE PV
-bool buzzer = false;
-```   
-la commande de ces composants est réalisé via les fonctions `commande_led()` et `commande_buzzer()` qui vérifie les actions à réalier a chaque boucle while(1).
-
-### 6.3.2 Comportement selon le mode (AWAY vs HOME)
-
- ##### Machine à états avec alarme intrusion
-Nous avons donc ajouté la gestion de l'alarme intrusion en fonction du mode de la maison. L'alarme se déclenche en mode `AWAY` uniquement à l'activation du detecteur à mouvement (cf [2.2. Description du fonctionnement](#22-description-du-fonctionnement)).
-```mermaid
-stateDiagram
-  direction TB
-  [*] --> HOME
-  HOME --> AWAY:Bouton MODE appuyé /<br> signaler AWAY sur LCD et UART
-  AWAY --> HOME:Bouton MODE appuyé/<br>signaler HOME sur LCD et UART
-  AWAY --> ALARME_AWAY:PIR détecte un mouvement / déclencher l'alarme
-  ALARME_AWAY --> HOME:Bouton MODE appuyé / signaler HOME sur LCD et UART
-  ALARME_AWAY --> ALARME_AWAY:maintenir l'alarme
-  HOME:<b>HOME :</b>
-HOME:Alarme intrusion désactivée<br>message d'accueil<br>
-
-  AWAY:<b>AWAY</b>
-AWAY:Alarme intrusion active<br>message de sortie<br>
-ALARME_AWAY:<b>ALARME_AWAY<b>
-ALARME_AWAY:Alarme intrusion effective<br>Signal sonore et visuel activé<br>message d'alerte intrusion</b>
-
-```
-##### Description logicielle
 Afin de manipuler plus facilement les états de la maison, nous avons définit une énumération `maison_mode_t` qui représente les différents modes possibles : `HOME` et `AWAY`.
+
 ```c
-//dans CODE PTD
+// dans la section USER CODE PTD
 typedef enum {
     HOME,
     AWAY
 } maison_mode_t;
 
-// dans CODE PV
+// dans la section USER CODE PV
 maison_mode_t mode = HOME;
-
 ```
-Lorsqu'un front montant est détecté, la routine d'interruption (`HAL_GPIO_EXTI_Callback`) est exécutée et adapte son action en fonction de l'état du système
+> Au début nous avions utilisé de simples variables boolean pour gérer les modes de la maison. L'avantage de l'enum est qu'on peut voir le texte associé au mode dans les live expressions.
 
+#### Implémentation de la machine à états
+
+Première version de la machine à états :
+```c
+// Dans la boucle while(1) de la main()
+switch (mode) 
+{
+  case HOME:
+    if (bouton_mode_appuye) 
+    {
+      bouton_mode_appuye = false;
+      mode = AWAY;   
+    }
+    break;
+
+  case AWAY:
+    if (bouton_home_appuye)
+    {
+      bouton_home_appuye = false;
+      mode = HOME;
+    }
+    break;
+}
+```
+
+### 6.4. Capteur PIR et alarme intrusion
+
+#### Configuration du capteur de mouvement
+Le capteur de présence PIR est raccordé sur la broche PC7 et configurée en interruption externe déclenchée sur le front montant, avec une résistance de tirage interne (pull-down), afin de garantir un signal stable en l'absence de mouvement.
+
+#### Alarme intrusion 
+L'alarme intrusion est gérée par les variables `alarme_intrusion` et `presence_detectee`.
+Ces variables sont lues en parrallèle pour commander les signaux de LED et de buzzer en fonction.
+Voir [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes).
+
+```c
+// dans CODE PV
+volatile bool presence_detectee = false;
+bool alarme_intrusion = false;
+```
+Comme l'interruption du capteur de mouvement modifie la variable globale `presence_detectee`, nous l'avons déclarée volatile.
+
+#### Configuration led et buzzer
+Dans le scénario d'intrusion, deux composant s'active pour signaler l'alarme : 
+- une led jaune qui clignote   
+- un buzzer qui émet un son continu de 384 Hz  
+
+Voir [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes).
+
+### 6.5. Comportement selon le mode (AWAY vs HOME)
+
+#### Machine à états avec alarme intrusion
+
+// TODO 
+
+Nous avons donc ajouté la gestion de l'alarme intrusion en fonction du mode de la maison. L'alarme se déclenche en mode `AWAY` uniquement à l'activation du detecteur à mouvement (cf [2.2. Description du fonctionnement](#22-description-du-fonctionnement)).
+```mermaid
+stateDiagram
+  direction TB
+  [*] --> HOME
+  HOME --> AWAY:Bouton MODE appuyé
+  AWAY --> HOME:Bouton MODE appuyé
+  HOME:<b>HOME :</b>
+HOME:Alarme intrusion désactivée<br>
+  AWAY:<b>AWAY</b>
+AWAY:Organigramme alarme intrusion<br>
+```
+> mermaid organigrame alarme intrusion
+
+// Fin TODO
+
+_**NB** : Les textes **[entre crochets]** indiquent qu'il s'agit d'une action réalisée lors de la transition d'état._
+
+#### Impplémentation de la détection
+
+Lorsqu'un front montant est détecté, la routine d'interruption (`HAL_GPIO_EXTI_Callback`) active le flag global `presence_detectee`.
+
+```c
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	if (GPIO_Pin == PIR_MVMT_Pin)
+  {
+    if (mode == AWAY){
+      presence_detectee = true;
+		}
+	}
+}
+```
 ##### En mode AWAY: 
 Le système de surveillance est activé. A la détection d'un mouvement, le front montant passe immédiatement le flag global `presence_detectee` à `true`.
 ```c
@@ -642,7 +656,7 @@ case AWAY:
       break;
     }
 ```
-### 6.4. Gestion non bloquante des alarmes
+### 6.6. Gestion non bloquante des alarmes
 
 Nous avons donc décidé de mettre en place une gestion non bloquante des alarmes 
 

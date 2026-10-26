@@ -334,10 +334,19 @@ led_capteurs.state = !led_capteurs.state;
 ### 5.1. Configuration du Timer
 
 Comme justifié dans la partie [3.1. Branchement des composants](#31-branchement-des-composants), nous avons choisi le Timer 2 pour cadencer la prise de mesure de nos capteurs.
-Nous avons utilisé un timer avec interruptions pour éviter l'utilisation de boucles bloquantes, garantissant ainsi un échantillonnage régulier. L'horloge source du timer étant de 100 MHz, nous avons configuré les registres PSC et ARR pour obtenir une période d'échantillonnage de 2s (soit une période complète de 4 s) : 
+Nous avons utilisé un timer avec interruptions pour éviter l'utilisation de boucles bloquantes, garantissant ainsi un échantillonnage régulier. L'horloge source du timer étant de 100 MHz, nous avons configuré les registres PSC et ARR pour obtenir une période d'échantillonnage de 2s.
 
-#### Objectif de départ
-Notre objectif est de mesurer une période d'échantillonnage de 4 secondes avec un timer 16 bits, en évitant tout risque de saturation du registre. La fréquence maximale de comptage ne doit donc pas dépasser $f = {2^{16}}\times\frac{1}{10\text{ s}} =16\,384\text{ Hz}$ 
+#### Contraintes de départ
+- ARR et PSC font 16 bits.
+- On veut garder un temps par tic qui soit une puissance de 10 (ex : 1 ms, 10 µs, 1 µs, ...) pour simplifier la correspondance entre ARR et période souhaitée.
+- La période souhaitée est de 2s.
+
+Nous avons choisi la basse résolution temporelle par tics pour pouvoir compter un maximum de temps avec l'ARR :
+
+$$Prescaler_{max} = 2^{16} - 1 = 65 535$$
+
+Pour diviser 100MHz en 
+
 
 #### Calcul du Prescaler
 En choisisant `PSC = 10 000 - 1`, nous fixons une fréquence de comptage de $f = \frac{100\text{ MHz}}{10\,000}$ = 10 kHz. Chaque tic du timer dure ainsi 0,1 ms, soit 10 000 tics par seconde. A cette fréquence, la période maximale  est de $65\,535 \times 0,1\text{ ms} = 6,55\text{ s}$. On respecte donc les conditions énoncé précedemments. 
@@ -659,6 +668,7 @@ case AWAY:
 ### 6.6. Gestion non bloquante des alarmes
 
 Nous avons donc décidé de mettre en place une gestion non bloquante des alarmes afin de ne pas bloquer la boucle principale avec des temporisations ou des boucles d'attente.
+
 ---
 
 ## 7. — Scénario 3 — Détection de gaz
@@ -967,7 +977,7 @@ void angle_servo(int angle)
 
 La formule creprend celle expliqée plus haut pour la conversion d'un angle cible vers une impulsion en ticss.
 Le registre de comparaison CCR est mis à jour avec la valeur de `pulse_tics` via `__HAL_TIM_SET_COMPARE()`.
- Lors du montage de la maison nous avons réglé le servo à 0° avant de visser la fenêtre en position fermée. Ensuite, nous avons testé de manière empirique quel angle permettait d'ouvrir parfaitement la fenêtre. On a trouvé 120° : en deça, la fenêtre n'est pas complétement ouverte, au delà, la fenêtre dépasse contre le mur (surchauffe car physiquement c'est impossible).
+> Lors du montage de la maison nous avons réglé le servo à 0° avant de visser la fenêtre en position fermée. Ensuite, nous avons testé de manière empirique quel angle permettait d'ouvrir parfaitement la fenêtre. On a trouvé 120° : en deça, la fenêtre n'est pas complétement ouverte, au delà, la fenêtre dépasse contre le mur (surchauffe car physiquement c'est impossible).
 
 // TODO
 #### Machine à états du servo fenêtre
@@ -1223,7 +1233,8 @@ case  HOME:
       } 
     }
 ```
-La fenêtre étant automatiquement fermée en mode `AWAY` et lorsque l'utilisateur rentre dans la maison, la vérification de la detection de pluie hors `HOME` est triviale, la fenêtre reste fermée.
+La fenêtre étant automatiquement fermée en mode AWAY et lorsque l'utilisateur rentre dans la maison, la vérification de la detection de pluie hors HOME est triviale, la fenêtre reste fermée.
+
 ---
 
 ## 10. — Scénario 6 — Mesure de température (TMP102)

@@ -1,6 +1,6 @@
 # Rapport de Projet - Maison Intelligente STM32
 
-**ECUE :** Architecture Numériques Embarquées  
+**ECUE :** Architectures Numériques Embarquées  
 **Binôme :** Thibault AGUEH, Benoît DE KEYN   
 **Date :** 26/10/2026  
 **Carte cible :** NUCLEO-F411RE (STM32F411RET6)
@@ -19,9 +19,9 @@
   - [3.1. Branchement des composants](#31-branchement-des-composants)
   - [3.2. Arbre d'horloge et fréquences](#32-arbre-dhorloge-et-fr%C3%A9quences)
   - [3.3. Organisation logicielle](#33-organisation-logicielle)
-- [4. Define et types personalisés](#4-define-et-types-personalis%C3%A9s)
+- [4. Defines et types personnalisés](#4-defines-et-types-personnalis%C3%A9s)
   - [4.1. Pas de Hardcoding](#41-pas-de-hardcoding)
-  - [4.2. Define matériels](#42-define-mat%C3%A9riels)
+  - [4.2. Defines matériels](#42-defines-mat%C3%A9riels)
   - [4.3. Structure pour les LEDs](#43-structure-pour-les-leds)
 - [5. — Scénario 1 — Base temporelle pour l'échantillonnage](#5--sc%C3%A9nario-1--base-temporelle-pour-l%C3%A9chantillonnage)
   - [5.1. Configuration du Timer](#51-configuration-du-timer)
@@ -93,31 +93,31 @@
 <img src="media/photo_maison_1.jpg" width="500">
 <img src="media/photo_maison_2.jpg" width="500">
 
-Pour simplifier le cablage notamment pour les premiers scénarios, nous avons soudé des boutons, des LED (une RGB, une jaune et une bleue), et collé une breadboard sur un shield Arduino vierge. Voici à quoi ressemble notre montage :
+Pour simplifier le câblage, notamment pour les premiers scénarios, nous avons soudé des boutons, des LEDs (une RGB, une jaune et une bleue), et collé une breadboard sur un shield Arduino vierge. Voici à quoi ressemble notre montage :
 
 <img src="media/breadboard.jpg" width="500">
 
 ### 2.2. Description du fonctionnement
 
-Toutes les fonctionnalités respectent le cahier des charges du projet et, lorsque le sujet nous en laissait la liberté, une approche axée sur l'expérience utilisateur à été privilégié.
+Toutes les fonctionnalités respectent le cahier des charges du projet et, lorsque le sujet nous en laissait la liberté, une approche axée sur l'expérience utilisateur a été privilégiée.
 
-L'entrée et la sortie de la maison se font avec le bouton HOME.
-Une fois sorti, la fenêtre reste fermée ou se ferme automatiquement, et l'alarme intrusion devient active et se déclenche automatiquement si une présence est détectée. Elle continue de sonner tant qu'on n'est pas rentré à nouveau dans la maison.
+L'entrée et la sortie de la maison s'effectuent via le bouton HOME.
+Une fois l'utilisateur sorti, la fenêtre reste fermée (ou se ferme automatiquement), et l'alarme intrusion s'arme et se déclenche automatiquement si une présence est détectée. Elle continue de retentir tant que l'on n'est pas rentré à nouveau dans la maison.
 
 Dans la maison, on peut ouvrir et fermer la fenêtre avec le bouton fenêtre.
-Si il commence à pleuvoir, la fenêtre se ferme automatiquement et force la fermeture tant qu'il pleut.
-Le controle de la fenêtre suis également la température : si il fait trop chaud, la fenêtre s'ouvre automatiquement une fois (sans maintenir forcée l'ouverture) et vice versa s'il fait trop froid, la fenêtre se ferme une fois (sans maintenir forcée la fermeture).
+S'il commence à pleuvoir, la fenêtre se ferme automatiquement et reste verrouillée en fermeture tant qu'il pleut.
+Le contrôle de la fenêtre suit également la température : s'il fait trop chaud, la fenêtre s'ouvre automatiquement une fois (sans maintenir l'ouverture forcée) et, inversement, s'il fait trop froid, la fenêtre se ferme une fois (sans maintenir la fermeture forcée).
 
 L'alarme de gaz peut se déclencher à tout moment, quel que soit l'état de la maison.
 
-Des logs sur le monieteur série permettent de suivre la valeur des capteurs et les différentes situations.
+Des logs sur le moniteur série permettent de suivre la valeur des capteurs et les différentes situations.
 
 L'écran LCD indique la température, le niveau de gaz, le niveau de pluie et si on est sorti ou non.
 
 Les 4 LEDs NeoPixel indiquent : 
 - l'alarme intrusion en jaune clignotant
 - l'alarme gaz en rouge clignotant
-- la mise à jour de la valeur des capteurs, en bleu par un toogle.
+- la mise à jour de la valeur des capteurs, en bleu par un toggle
 - la tranche de température : 
    - bleu si trop froid
    - vert si tempéré
@@ -130,8 +130,8 @@ Les 4 LEDs NeoPixel indiquent :
 
 #### Contraintes de brochage
 Nous avons voulu rester sur l'**Arduino Header** de la Nucleo pour simplifier le câblage avec la breadboard notamment. 
-A partir du scenario 6, il a fallu réorganiser le brochage arbitraire qu'on faisait au début pour tout faire rentrer sur le header Arduino.
-Nous avons donc listé tous les composants et leur fonctions pour leur assigner des broches du plus contraignant au moins contraignant.
+À partir du scénario 6, il a fallu réorganiser le brochage arbitraire que nous avions adopté au début pour tout faire rentrer sur le header Arduino.
+Nous avons donc listé tous les composants et leurs fonctions pour leur assigner des broches, de la plus contraignante à la moins contraignante.
 
 Si on reprend le pinout fourni sur BlackBoard : 
 
@@ -145,13 +145,13 @@ Nous sommes partis de cette base :
 
 - **PA2 & PA3** → USART2 TX/RX, reliés physiquement au ST-LINK sur la Nucleo pour la liaison série USB.
 - **PA5 (D13)** → LED built-in, inutilisée pour pouvoir déporter les LEDs (avant d'implémenter les NeoPixels).
-- **PB10 (D6)** → LED bleue que nous avons soudé sur le shield.
+- **PB10 (D6)** → LED bleue que nous avons soudée sur le shield.
 
 ---
 
 **Priorité 2 — I²C**
 
-Le header Arduino n'avait qu'une paire de broches SDA & SCL disponibles, donc nous les avons réservée directement :
+Le header Arduino n'avait qu'une seule paire de broches SDA & SCL disponible, nous les avons donc réservées directement :
 
 Le module **I2C3** est disponible avec :
 - SCL sur **PA8 (D7)**
@@ -167,23 +167,23 @@ Nous avions besoin de 4 timers :
 - PWM de la bande de 4 LEDs NeoPixel
 - Timer pour l'échantillonnage
 
-n'Nous avons que 4 timers disponibles sur le header Arduino.
-Or pour l'échantillonnage nous voulions que l'ADC soit déclenché par un TGO event du timer d'échantillonnage, or il y a que les timers 2 et 3 qui permettent ça.
-Nous avons donc choisit arbitrairement le timer 2 pour l'échantillonnage.
-Pour le reste, nous avons choisi arbitrairement quel composant allait sur quel timer, sachant que APB1 et APB2 sont tous les deux à 100Mhz donc pas de différence sur ce point.
+Nous n'avons que 4 timers disponibles sur le header Arduino.
+Or, pour l'échantillonnage, nous voulions que l'ADC soit déclenché par un événement TRGO du timer d'échantillonnage, et seuls les timers 2 et 3 le permettent.
+Nous avons donc choisi arbitrairement le Timer 2 pour l'échantillonnage.
+Pour le reste, nous avons choisi arbitrairement quel composant affecter à quel timer, sachant qu'APB1 et APB2 sont tous les deux à 100 MHz, donc sans différence sur ce point.
 
 Résultat :
-- Timer 1 → Servomoteur sur le channel 3 : PA9 (D8)
-- Timer 2 → Echantillonnage
-- Timer 3 → Buzzer sur le channel 2 : PB5 (D4)
-- Timer 4 → LEDs NeoPixel sur le channel 1 : PB6 (D10)
+- Timer 1 → Servomoteur sur le canal 2 (CH2) : PA9 (D8)
+- Timer 2 → Échantillonnage
+- Timer 3 → Buzzer sur le canal 2 (CH2) : PB5 (D4)
+- Timer 4 → LEDs NeoPixel sur le canal 1 (CH1) : PB6 (D10)
 
 ---
 
 **Priorité 4 — Voies analogiques**
 
 Deux mesures analogiques sont nécessaires (gaz MQ-2 et capteur de pluie). 
-L'ADC1 est le seul ADC de la carte. mais on a plusieurs entrées sur les broches analogiques notemment qui sont traditionnellement reservées aux mesures analogiques. On arbitrairement choisi parmi les AX restantes : 
+L'ADC1 est le seul ADC de la carte, mais on dispose de plusieurs entrées sur les broches analogiques notamment, qui sont traditionnellement réservées aux mesures analogiques. Nous avons arbitrairement choisi parmi les broches Ax restantes : 
 
 - **A2 (PA4)** → ADC1 canal 4 → capteur de gaz MQ-2
 - **A3 (PB0)** → ADC1 canal 8 → capteur de pluie
@@ -197,7 +197,7 @@ Nous avions besoin de 3 interruptions externes (EXTI) :
 - **Bouton FENÊTRE** (commande manuelle de la fenêtre)
 - **Capteur PIR** (détection de mouvement)
 
-La contrainte importante est que deux broches de **même numéro** sur des ports différents partagent la même ligne EXTI. Il fallait choisir des broches qui aient un numéro différent. Nous avons choisi :
+La contrainte importante est que deux broches de **même numéro** sur des ports différents partagent la même ligne EXTI. Il fallait donc choisir des broches ayant un numéro différent. Nous avons choisi :
 
 - **PA6 (D12)** → EXTI 6   → Bouton HOME
 - **PA10 (D2)** → EXTI 10  → Bouton FENÊTRE
@@ -211,9 +211,9 @@ Nous avions besoin de 3 sorties GPIO pour les LEDs indicatrices. Nous avons choi
 
 - **PB3 (D3)** → LED jaune du shield : Alarme intrusion
 - **PA7 (D11)** → LED RGB couleur rouge du shield : Alarme gaz
-- **PB10 (D6)** → LED bleue (imposé par la soudure) : cycle capteurs
+- **PB10 (D6)** → LED bleue (imposée par la soudure) : cycle capteurs
 
-PS : C'est seulement à la fin que nous avons décidé d'ajouter les 4 LEDs NeoPixels WS2812B en bonus. Mais nous l'avions déjà prise en compte au moment du refacto des pins. Finalement nous avons gardé les 2 systèmes de LED ensemble.
+*NB : C'est seulement à la fin que nous avons décidé d'ajouter les 4 LEDs NeoPixel WS2812B en bonus, mais nous les avions déjà prises en compte au moment du refactoring des broches. Finalement, nous avons conservé les deux systèmes de LEDs en parallèle.*
 
 ---
 
@@ -238,41 +238,41 @@ PS : C'est seulement à la fin que nous avons décidé d'ajouter les 4 LEDs NeoP
 
 ### 3.2. Arbre d'horloge et fréquences
 
-Pour le réglage des horloge, nous avons simplement gardé la configuration que nous avions faite au premier TD, donc en gardant la plus haute fréquence possible pour le sysclk, l'APB1 et l'APB2 des timers, soit 100 MHz.
+Pour le réglage des horloges, nous avons simplement conservé la configuration effectuée lors du premier TD, en gardant la plus haute fréquence possible pour SYSCLK, l'APB1 et l'APB2 des timers, soit 100 MHz.
 
 ![Arbre d'horloge](media/clock_tree.png)
 
 ### 3.3. Organisation logicielle
 
 #### Boucle principale et gestion des interruptions
-Tout le code que nous avons écrit n'utilise jamais de delay ou de boucle while bloquante. Toutes les fonctions appelées dans la boucle while(1) sont des actions "instantanées" qui n'attendent pas un évènement pour se terminer.
-Pour chaque routine d'interruption, nous avons préféré réduire au maximum le temps passé à l'intérieur en se contentant de lever un flag indiquant que l'évènement correspondant s'est produit. Le traitement est délocalisé dans des fonctions appelées à chaque passage de la boucle while(1) qui vérifient ces flags.
+Tout le code que nous avons écrit n'utilise jamais de délai bloquant (HAL_Delay) ni de boucle while bloquante. Toutes les fonctions appelées dans la boucle while(1) sont des actions « instantanées » qui n'attendent pas un événement pour se terminer.
+Pour chaque routine d'interruption, nous avons veillé à réduire au maximum le temps passé à l'intérieur en nous contentant de lever un flag indiquant que l'événement correspondant s'est produit. Le traitement est déporté dans des fonctions appelées à chaque passage de la boucle while(1) qui vérifient ces flags.
 
 #### Organisation en bibliothèques
 Pour l'écran LCD, le capteur de température et les 4 NeoPixels, nous avons créé des bibliothèques séparées comme demandé.
 En revanche, au lieu de les placer à la racine du projet, comme nous en créions un nouveau pour chaque scénario, nous les avons regroupées dans un dossier `Bibliotheques`.  
 
-Nous avons donc créé des liens symboliques, ajouté les chemins des header au compilateur, et inclus les dossiers symboliques au build pour qu'elles soient bien lues et compilées.
+Nous avons donc créé des liens symboliques, ajouté les chemins des headers au compilateur, et inclus les dossiers symboliques au build pour qu'elles soient bien prises en compte et compilées.
 
 Dossiers symboliques  
 <img src="media/stm32cubeide_liens_symboliques.png" alt="Dossiers symboliques" width="200">
 
-Décochage de "Exclude from Build" dans les propriété des dossiers symboliques
+Décochage de « Exclude from Build » dans les propriétés des dossiers symboliques
 ![Exclude from build dans project settings](media/stm32cubeide_exclude_from_build_project_settings.png)
 
 Include path dans les project settings 
 ![Include path dans project settings](media/stm32cubeide_include_path_project_settings.png)  
 
-## 4. Define et types personalisés
+## 4. Defines et types personnalisés
 
 
 ### 4.1. Pas de Hardcoding
 
-Pour éviter les erreurs de recopie, faciliter la compréhension du code et surtout permettre de reconfigurer facilement des valeurs ou des changements de brochage, nous avons défini des macros (`#define`) pour chaque valeur ou objet HAL utilisés dans notre code.
+Pour éviter les erreurs de recopie, faciliter la compréhension du code et surtout permettre de reconfigurer facilement des valeurs ou des changements de brochage, nous avons défini des macros (`#define`) pour chaque valeur ou objet HAL utilisé dans notre code.
 
-### 4.2. Define matériels
+### 4.2. Defines matériels
 
-Voici les `#define`s matérielles définies dans le main.c qui permettent de pointer vers les différents périphériques sans avoir à changer toutes les occurences en cas de changement dans le .ioc :
+Voici les `#define`s matériels définis dans le main.c qui permettent de pointer vers les différents périphériques sans avoir à changer toutes les occurrences en cas de changement dans le .ioc :
 ```c
 #define ADC_CAPTEURS    (&hadc1)
 #define BUS_I2C         (&hi2c3)
@@ -288,9 +288,9 @@ Voici les `#define`s matérielles définies dans le main.c qui permettent de poi
 
 ### 4.3. Structure pour les LEDs
 
-Nous avons défini un type structure `LED_t` pour représenter une LED et son état. Les avantages de cette approches sont multiples : 
+Nous avons défini un type structure `LED_t` pour représenter une LED et son état. Les avantages de cette approche sont multiples : 
 
-- Une seule variable de type `LED_t` suffit pour représenter une LED au lieu d'avoir un port et un pin à spécifier à chaque changement d'état.
+- Une seule variable de type `LED_t` suffit pour représenter une LED au lieu d'avoir un port et une broche (pin) à spécifier à chaque changement d'état.
 - On peut mémoriser l'état de la LED dans la variable `state` de la structure, et le modifier sans avoir à utiliser les lourdes fonctions HAL.
 - On peut associer un nom fonctionnel à un label matériel (ex : ```led_capteurs``` est redirigée vers ```LED_BLEUE```), ce qui donne plus de sens au code sans insérer des choix logiciels dans la configuration du ```.ioc```.
 
@@ -308,9 +308,9 @@ Voici un exemple de déclaration de LED dans le ```main.c``` :
 LED_t led_capteurs = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pin, false};
 ...
 ```
-*NB : Les `#define`s associées aux Port et Pin des broches sont générée automatiquement par le .ioc dans le fichier ```main.h```.*
+*NB : Les `#define`s associés aux ports et pins des broches sont générés automatiquement par le .ioc dans le fichier ```main.h```.*
 
-Dans la boucle while(1) de la fonction main, nous appelons à chaque exécution la fonction de commande des LED, qui va modifier l'état des LED en fonction de leur état mémorisé :
+Dans la boucle while(1) de la fonction main, nous appelons à chaque itération la fonction de commande des LEDs, qui va modifier l'état des LEDs en fonction de leur état mémorisé :
 
 ```c
 void commande_led()
@@ -338,20 +338,20 @@ led_capteurs.state = !led_capteurs.state;
 ### 5.1. Configuration du Timer
 
 Comme justifié dans la partie [3.1. Branchement des composants](#31-branchement-des-composants), nous avons choisi le Timer 2 pour cadencer la prise de mesure de nos capteurs.
-Nous avons utilisé un timer avec interruptions pour éviter l'utilisation de boucles bloquantes, garantissant ainsi un échantillonnage régulier. L'horloge source du timer étant de 100 MHz, nous avons configuré les registres PSC et ARR pour obtenir une période d'échantillonnage de 2s.
+Nous avons utilisé un timer avec interruptions pour éviter l'utilisation de boucles bloquantes, garantissant ainsi un échantillonnage régulier. L'horloge source du timer étant de 100 MHz, nous avons configuré les registres PSC et ARR pour obtenir une période d'échantillonnage de 2 s.
 
 #### Contraintes de départ
 - PSC fait 16 bits.
 - On veut garder un temps par tic qui soit une puissance de 10 (ex : 1 ms, 10 µs, 1 µs, ...) pour simplifier la correspondance entre ARR et période souhaitée.
-- La période souhaitée est de 2s.
+- La période souhaitée est de 2 s.
 
 #### Calcul du Prescaler
-Nous avons choisi la résolution temporelle par tics la plus basse possible pour pouvoir un le ratio le plus faible possible entre le nombre de tics dans ARR et la durée de la période en secondes.
+Nous avons choisi la résolution temporelle par tic la plus fine possible afin d'obtenir un ratio simple entre le nombre de tics dans ARR et la durée de la période en secondes.
 
 $$Prescaler < 2^{16} - 1$$
 $$Prescaler < 65 535$$
 
-La plus grande puissance de 10 permettant de diviser 100MHz sans dépasser la valeur maximale du prescaler est 10 000. On choisit donc 
+La plus grande puissance de 10 permettant de diviser 100 MHz sans dépasser la valeur maximale du prescaler est 10 000. On choisit donc :
 $$PSC = 10 000 - 1 = 9 999$$
 $$\implies f_{PSC} = \frac{100\text{ MHz}}{10 000} = 10\text{ kHz}$$
 $$\implies T_{PSC} = \frac{1}{10\text{ kHz}} = 0,1\text{ ms}$$
@@ -393,7 +393,7 @@ Dans la boucle while(1) de la fonction main, nous vérifions le flag à chaque i
 
 ### 5.3. Validation expérimentale
 
-En observant la LED à l'oscilloscope, nous avions pu vérifier que la période du signal correspond bien à exactement 4s, confirmant ainsi une période de 2s entre chaque inversion. Cela montre que le timer fonctionne comme prévu et que TIM2 est correctement configuré pour fournir la base temporelle souhaitée.
+En observant la LED à l'oscilloscope, nous avons pu vérifier que la période du signal correspond bien exactement à 4 s, confirmant ainsi une période de 2 s entre chaque inversion. Cela montre que le timer fonctionne comme prévu et que TIM2 est correctement configuré pour fournir la base temporelle souhaitée.
 
 ### 5.4. Ancienne méthode
 
@@ -411,7 +411,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 ### 6.1. Configuration du bouton MODE
 
-Le bouton MODE est configuré en EXTI sur front descendant (_L'interruption est déclenchée au moment précis où l'utilisateur appuie sur le bouton, lorsque le signal passe de haut à bas_) avec pull-up interne (_le bouton étant configuré pour renvoyer en 0 si pressé et 1 sinon, le signal est maintenu à l'état haut par défaut_)
+Le bouton MODE est configuré en EXTI sur front descendant (*l'interruption est déclenchée au moment précis où l'utilisateur appuie sur le bouton, lorsque le signal passe du niveau haut au niveau bas*) avec pull-up interne (*le bouton étant configuré pour renvoyer un 0 si pressé et 1 sinon, le signal est maintenu à l'état haut par défaut*).
 Cela permet de détecter les appuis sur le bouton tout en évitant les faux déclenchements dus au bruit. 
 
 ### 6.2. Gestion de l'anti-rebond
@@ -419,14 +419,14 @@ Cela permet de détecter les appuis sur le bouton tout en évitant les faux déc
 Pour s'assurer que l'appui sur le bouton est correctement détecté sans être perturbé par les rebonds mécaniques, nous avons mis en place un mécanisme anti-rebond grâce au Timer 5.
 
 #### Prescaler du Timer 5
-(`PSC = 10000-1`) : Nous avons gardé la meme résolution que pour le TIM2 soit une résolution exacte de $0{,}1\text{ ms}$ par tic.
+(`PSC = 10000 - 1`) : Nous avons gardé la même résolution que pour TIM2, soit une résolution exacte de $0{,}1\text{ ms}$ par tic.
 
 #### Période du Timer 5
-( `ARR = 500-1`) Nous cherchons une période de $\frac{500}{10\,000} = 50\text{ ms}$ (fréquence de 20Hz), largement satisfaisante pour couvrir la fenêtre temporelle de rebonds mécaniques du bouton.
+(`ARR = 500 - 1`) : Nous cherchons une période de $\frac{500}{10\,000} = 50\text{ ms}$ (fréquence de 20 Hz), largement satisfaisante pour couvrir la fenêtre temporelle des rebonds mécaniques du bouton.
 
 #### Routine d'interruption du GPIO et du Timer
 Lors de l'appui sur le bouton MODE, l'interruption EXTI 6 est déclenchée.  
-Dans la routine d'interruption, le flag `debouncing_bouton_home` est levé et le Timer 5 est remis à zéro pour attendre pile 50 ms : 
+Dans la routine d'interruption, le flag `debouncing_bouton_home` est levé et le Timer 5 est remis à zéro pour attendre exactement 50 ms : 
 
 ```c
 // Flag utilisé pour l'anti-rebond
@@ -458,7 +458,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 ```
 
 #### Détection d'appui
-Ensuite dans la boucle while(1) du main, on vérifie si le flag `timer_debounce_flag` est levé puis si le bouton est bien appuyé :
+Ensuite, dans la boucle while(1) du main, on vérifie si le flag `timer_debounce_flag` est levé puis si le bouton est toujours enfoncé :
 
 ```c
 // dans USER CODE 0
@@ -480,9 +480,9 @@ if (timer_debounce_flag)
 }
 ```  
 La fonction `debounce_filter()` est appelée à chaque fin de période du timer, soit toutes les 50 ms.  
-Si le flag `debouncing_bouton_home` est levé ET que le bouton est toujours à false, cela signifie que l'appui est bien resté stable 50ms après la detection du front descendant lors du dernier appui.  
+Si le flag `debouncing_bouton_home` est levé ET que le bouton est toujours au niveau bas (actif à 0), cela signifie que l'appui est bien resté stable 50 ms après la détection du front descendant.  
 La variable `bouton_home_appuye` est alors validée et le flag `debouncing_bouton_home` est réinitialisé.  
-Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrairement à un simple délai qui stopperait l'exécution du programme.
+Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrairement à un simple délai qui bloquerait l'exécution du programme.
 
 ### 6.3. Machine à états HOME / AWAY
 
@@ -490,13 +490,13 @@ Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrair
 
 Nous avons défini une première machine à états pour gérer les différents modes de la maison : `HOME`, `AWAY`.
 
-> La verison complétée avec l'alarme intrusion est décrite plus bas : [Machine à états avec alarme intrusion](#machine-à-états-avec-alarme-intrusion)
+> La version complétée avec l'alarme intrusion est décrite plus bas : [Machine à états avec alarme intrusion](#machine-à-états-avec-alarme-intrusion)
 
 <img src="media/mermaid_home_away_basique.png" width = 500>
 
 #### Gestion des modes
 
-Afin de manipuler plus facilement les états de la maison, nous avons définit une énumération `maison_mode_t` qui représente les différents modes possibles : `HOME` et `AWAY`.
+Afin de manipuler plus facilement les états de la maison, nous avons défini une énumération `maison_mode_t` qui représente les différents modes possibles : `HOME` et `AWAY`.
 
 ```c
 // dans la section USER CODE PTD
@@ -508,7 +508,7 @@ typedef enum {
 // dans la section USER CODE PV
 maison_mode_t mode = HOME;
 ```
-> Au début nous avions utilisé de simples variables boolean pour gérer les modes de la maison. L'avantage de l'enum est qu'on peut voir le texte associé au mode dans les live expressions.
+> Au début, nous avions utilisé de simples variables booléennes pour gérer les modes de la maison. L'avantage de l'enum est que l'on peut voir le nom associé au mode dans les Live Expressions en mode Debugger.
 
 #### Implémentation de la machine à états
 
@@ -539,12 +539,12 @@ switch (mode)
 ### 6.4. Capteur PIR et alarme intrusion
 
 #### Configuration du capteur de mouvement
-Le capteur de présence PIR est raccordé sur la broche PC7 et configurée en interruption externe déclenchée sur le front montant, avec une résistance de tirage interne (pull-down), afin de garantir un signal stable en l'absence de mouvement.
+Le capteur de présence PIR est raccordé sur la broche PC7 et configuré en interruption externe déclenchée sur front montant, avec une résistance de tirage interne (pull-down), afin de garantir un signal stable en l'absence de mouvement.
 
 
 #### Lecture du capteur PIR
 
-À tout moment, la détection d'un mouvement déclenche l'interruption du capteur. On met alors le flag `presence_detectee` à `true` :
+À tout moment, la détection d'un mouvement déclenche l'interruption du capteur. On positionne alors le flag `presence_detectee` à `true` :
 
 ```c
 // Dans USERCODE PV
@@ -561,15 +561,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 }
 ```
 
-> La variable `presence_detectee` est déclarée volatile car elle est modifiée par une interruption et lue dans la boucle principale.
+> La variable `presence_detectee` est déclarée volatile car elle est modifiée dans une routine d'interruption et lue dans la boucle principale.
 
 ### 6.5. Comportement selon le mode (AWAY vs HOME)
 
 #### Machine à états avec alarme intrusion
 
-Nous avons donc ajouté la gestion de l'alarme intrusion en fonction du mode de la maison. L'alarme se déclenche uniquement si le mode est AWAY et que la présence est détectée.
+Nous avons donc ajouté la gestion de l'alarme intrusion en fonction du mode de la maison. L'alarme se déclenche uniquement si le mode est AWAY et qu'une présence est détectée.
 
-**Machine à état HOM/AWAY complétée**
+**Machine à états HOME/AWAY complétée**
 <img src="media/mermaid_home_away_intrusion.png" width = 500>
 
 **Organigramme de l'alarme intrusion du mode AWAY :**
@@ -620,7 +620,7 @@ Nous avons donc ajouté la gestion de l'alarme intrusion en fonction du mode de 
     }
 ```
 
-> Dans le mode HOME, on réinitialise toujours `presence_detectee` et `alarme_intrusion` à `false` pour empêcher le déclenchement au moment de la transistion si une détection a lieu dans ce mode.
+> En mode HOME, on réinitialise toujours `presence_detectee` et `alarme_intrusion` à `false` pour empêcher tout déclenchement au moment de la transition si une détection a eu lieu dans ce mode.
 
 #### Alarme intrusion
 
@@ -645,15 +645,15 @@ Le seul paramètre spécifique modifié dans le scénario 3 est l'activation du 
 
 <img src="media/stm32cubeide_Timer2_TRGO.png"/>
 
-À chaque fin de période (toutes les 2 secondes), le Timer 2 émet automatiquement un signal TRGO matériel vers le trigger de l'ADC1, qui lance une séquence de conversion sans avoir à coder quoi que ce soit.
+À chaque fin de période (toutes les 2 secondes), le Timer 2 émet automatiquement un signal matériel TRGO vers le trigger de l'ADC1, qui déclenche une séquence de conversion sans avoir à coder quoi que ce soit.
 
 Dans CubeMX, nous avons donc défini l'ADC1 comme ceci :
 
 <img src="media/stm32cubeide_ADC_Scenario_3.png"/>
 
 Nous avons globalement laissé les paramètres par défaut, à part :
-- le TRGO sur l'Update du Timer 2.
-- les 480 cycles d'échantillonnage pour être sûr que la valeur soit stable.
+- le TRGO sur l'Update du Timer 2 ;
+- les 480 cycles d'échantillonnage pour s'assurer que la valeur soit bien stable.
 
 ### 7.2. Lecture de la valeur ADC au Scénario 3 et problème rencontré
 
@@ -681,40 +681,40 @@ void update_mesure_gaz() {
 }
 ```
 
-`HAL_ADC_GetValue()` lisait le registre contenant le résultat de l'ADC en même temps de déclencher une autre mesure, sans vérifier si une conversion est terminée.  
-Le problème c'est que la conversion prend un certain temps (d'autant plus que nous avions paramétré l'ADC à 480 cycles d'échantillonnage).  
-Donc en lisant directement dans l'ISR du TIM2 au moment du déclenchement, on récupérait en réalité la valeur de la conversion précédente, c'est-à-dire celle qui a été lancée 2 secondes plus tôt. La valeur affichée avait donc systématiquement un cycle de retard.
+`HAL_ADC_GetValue()` lisait le registre contenant le résultat de l'ADC sans vérifier si la conversion était terminée.  
+Le problème est que la conversion prend un certain temps (d'autant plus que nous avions paramétré l'ADC à 480 cycles d'échantillonnage).  
+Ainsi, en lisant directement dans l'ISR de TIM2 au moment du déclenchement, on récupérait en réalité la valeur de la conversion précédente, c'est-à-dire celle qui avait été lancée 2 secondes plus tôt. La valeur affichée était donc systématiquement une mesure prise entre 2 et 4 secondes plus tôt.
 
-Nous avons identifié le bug au Scénario 5, au moment d'ajouter le capteur de pluie. C'est à ce moment-là que nous avons entièrement revu l'architecture de la chaîne ADC pour passer à une implémentation multi-canaux avec DMA.
+Nous avons identifié le problème au Scénario 5, au moment d'ajouter le capteur de pluie. C'est à ce moment-là que nous avons entièrement revu l'architecture de la chaîne ADC pour passer à une implémentation multi-canaux avec DMA.
 
-> _La version finale de l'ADC (mode Scan, 2 canaux, DMA circulaire, callback de fin de conversion) est expliquée là [9.3. Détection de pluie avec ADC DMA multi-canaux](#93-détection-de-pluie-avec-adc-dma-multi-canaux)._
+> _La version finale de l'ADC (mode Scan, 2 canaux, DMA circulaire, callback de fin de conversion) est détaillée en [9.4. Détection de pluie avec ADC DMA multi-canaux](#94-détection-de-pluie-avec-adc-dma-multi-canaux)._
 
 ### 7.3. Tests du capteur et seuil
 
 #### Tension d'alimentation et de mesure de l'ADC
 
-Le capteur MQ-2 génère une tension proportionnelle à la concentration de gaz détécté entre 0 et 5V d'après la datasheet du capteur. L'ADC1 avec sa résolution 12 bits produit une valeur entre 0 et $2^{12}-1 = 4095$, sur une plage de 0 à Vref+ d'après la datasheet de la nucléo : 
+Le capteur MQ-2 génère une tension proportionnelle à la concentration de gaz détecté entre 0 et 5 V d'après la datasheet du capteur. L'ADC1, avec sa résolution de 12 bits, produit une valeur entre 0 et $2^{12}-1 = 4095$, sur une plage de 0 à VREF+ d'après la documentation de la Nucleo : 
 
 <img src="media/Nucleo_datasheet_ADC_supply.png"> 
 
-Il se trouve qu'en cherchant mieux, sur la [documentation de la carte nucleo](https://www.st.com/resource/en/user_manual/um1724-stm32-nucleo64-boards-mb1136-stmicroelectronics.pdf) nous avons trouvé que sur la carte Nucleo, VREF+ est connecté à VDDA = VDD = 3V3.
+Il se trouve qu'en cherchant plus précisément dans la [documentation de la carte Nucleo](https://www.st.com/resource/en/user_manual/um1724-stm32-nucleo64-boards-mb1136-stmicroelectronics.pdf), nous avons constaté que sur la carte Nucleo, VREF+ est relié à VDDA = VDD = 3,3 V.
 
 <img src="media/broche_vref_vdd.png"> 
 
-Cependant, comme nous avions imprudemment testé le capteur en suivant les 5V indiqués dans sa datasheet, et que l'ADC semblait bien fonctionner, et aussi que M.ROY a lui-même connecté le 5V aux broches analogiques avec nous pour des tests.
-Nous voulions poser la question mais nous avons oublié entre temps.  
+Cependant, nous avions initialement alimenté et testé le capteur en 5 V comme indiqué dans sa datasheet. Comme l'ADC semblait bien réagir et que M. ROY avait lui-même raccordé le 5 V aux broches analogiques lors de tests, nous n'avions pas relevé cette incohérence sur le moment.
+Nous souhaitions poser la question, mais avons oublié entre-temps.  
 
-Donc à moins que le capteur ne renvoie explicitement 3V3 maximum sur A0, nous sommes probablement en train d'abimer des diodes de protection ou de griller la carte à chaque mise sous tension ...
+Donc à moins que le capteur ne renvoie explicitement 3V3 maximum sur sa broche analogique, nous sommes probablement en train d'abimer des diodes de protection ou de griller la carte à chaque mise sous tension ...
 
 #### Seuil de détection
 
 Nous avons surveillé la valeur en temps réel sur le moniteur série pour définir le seuil de détection de gaz :
-- **En air ambiant** : la valeur ADC se stabilise aux alentours de **500–800** quand le capteur a bien chauffé.
-- **En présence de vapeurs** : la valeur monte à plus de 3000.
+- **Àl'air libre** : la valeur ADC se stabilise aux alentours de 800 (500 quand le capteur a bien chauffé).
+- **En présence de vapeurs** : la valeur monte au-delà de 3000.
 
 Nous avons donc retenu `SEUIL_GAZ = 2500` comme compromis entre sensibilité et faux positifs.
 
-> Le capteur a besoin de préchauffer sa résistance interne donc juste après sa mise sous tension, il fallait attendre environ 2 minutes que la tension descende progressivement au fur et mesure de l'échauffement, avant de pouvoir utiliser le capteur avec un seuil bas quand on le testait avec notre souffle hors des TPs.
+> Le capteur ayant besoin de préchauffer sa résistance interne, il fallait attendre environ 2 minutes après sa mise sous tension que la tension analogique descende au fur et à mesure de la chauffe, avant de pouvoir l'utiliser avec un seuil bas lors de nos tests avec notre souffle (faible différence avec l'air ambiant) hors des séances de TP.
 
 ### 7.4. Alarme gaz
 
@@ -732,9 +732,9 @@ La gestion de l'alarme de gaz est déportée dans une fonction non bloquante `up
 
 <img src="media/usart2_datasheet.png">
 
-La carte NUCLEO-F411RE embarque un convertisseur USB-UART intégré au ST-LINK, qui expose sur le PC un port COM. En 
+La carte NUCLEO-F411RE embarque un convertisseur USB-UART intégré au ST-LINK, qui expose un port COM virtuel sur le PC.
 
-Aucun câblage externe n'est donc nécessaire pour la liaison PC : le câble USB de débogage suffit à la fois pour programmer, débogguer et superviser.
+Aucun câblage externe n'est donc nécessaire pour la liaison PC : le câble USB de débogage suffit à la fois pour programmer, déboguer et superviser.
 
 Dans CubeMX, nous avons activé l'USART2 en mode Asynchronous avec les paramètres par défaut :
 
@@ -754,18 +754,18 @@ int __io_putchar(int ch) {
 ```
 
 La fonction `__io_putchar` prend en paramètre :
-- `&huart2` : un pointeur sur la structure de l'UART2.
-- `(uint8_t *)&ch` : un pointeur sur le caractère à transmettre.
-- `1` : le nombre de caractères à transmettre.
+- `&huart2` : un pointeur sur la structure de l'UART2 ;
+- `(uint8_t *)&ch` : un pointeur sur le caractère à transmettre ;
+- `1` : le nombre de caractères à transmettre ;
 - `HAL_MAX_DELAY` : le temps maximum d'attente avant de considérer la transmission comme échouée.
 
-`printf` découpe la chaîne en caractères, et `__io_putchar()` les transmet un à un via `HAL_UART_Transmit()` en mode bloquant (`HAL_MAX_DELAY`), ce qui est acceptable ici car les transmissions sont courtes et relativement rares, toutes les 2 secondes en moyenne.
+`printf` découpe la chaîne en caractères, et `__io_putchar()` les transmet un à un via `HAL_UART_Transmit()` en mode bloquant (`HAL_MAX_DELAY`), ce qui est acceptable ici car les transmissions sont courtes et espacées (toutes les 2 secondes en moyenne).
 
 > Nous avons bien inclus `#include <stdio.h>` pour utiliser `printf` et `snprintf`.
 
 ### 8.3. Message de bienvenue au démarrage
 
-Au démarrage du système (juste après l'initialisation de tous les composants), un message de bienvenue est transmis sur l'UART pour confirmer que la liaison fonctionne et indiquer la configuration qu'on a choisie :
+Au démarrage du système (juste après l'initialisation de tous les composants), un message de bienvenue est transmis sur l'UART pour confirmer que la liaison fonctionne et afficher la configuration choisie :
 
 ```c
 // main.c — USER CODE BEGIN 2 (après les initialisations)
@@ -797,9 +797,9 @@ printf("                                      TEMP  = %s°C\r\n",
        TMP102_temperature_to_string(temperature_valeur, 2));
 ```
 
-Comme nous envoyons systématiquement toutes les 2 secondes ls valeurs de ces 3 capteurs, nous avons préféré mettre une grosse indentation pour les différentier des messages occasionnels liés à la situation de la maison ou aux actions utilsateurs.
+Comme nous envoyons systématiquement toutes les 2 secondes les valeurs de ces trois capteurs, nous avons préféré ajouter une indentation importante pour les différencier des messages occasionnels liés à la situation de la maison ou aux actions utilisateurs.
 
-> Pour la température, nous avons une fonction dédiée à la génération du String correspondant à un float comme détaillé là [Affichage de la température de type float](#affichage-de-la-température-de-type-float)
+> Pour la température, nous avons une fonction dédiée à la génération de la chaîne correspondant à un float, comme détaillé au paragraphe [10.8. Affichage de la température de type float](#affichage-de-la-température-de-type-float).
 
 #### Événements d'état (asynchrones)
 
@@ -813,7 +813,7 @@ Seules ces 8 actions provoquent un message sur l'UART en plus des mesures pério
 | Fermeture fenêtre | `Je ferme la fenetre` |
 | Détection d'intrusion | `Intrusion detectee !` |
 | Détection de gaz | `Gaz detecte !` |
-| Détection de pluie | `Pluie detecte !` |
+| Détection de pluie | `Pluie detectee !` |
 | TMP102 initialisé | `Capteur TMP102 configuré` |
 
 #### Erreurs
@@ -843,11 +843,11 @@ Pour valider la liaison, nous avons utilisé le moniteur série intégré à STM
 
 <img src="media/datasheet_servo_pinout.png" width="500"/>
 
-Le servomoteur est alimenté en 5V et le signal de commande PWM (broche orange) est connecté sur PA9 (D8), correspondant au TIM1 CH2.
+Le servomoteur est alimenté en 5V et le signal de commande PWM (broche orange) est connecté sur PA9 (D8), correspondant au canal TIM1 CH2.
 
 #### Protocole PWM du servo
 
-Comme c'est un servomoteur à position analogique, il se commande par un signal PWM à 50 Hz (période de 20 ms). La position angulaire est encodée via la largeur de l'impulsion haute comme décrit ci-dessous :
+Comme c'est un servomoteur à commande analogique, il se pilote par un signal PWM à 50 Hz (période de 20 ms). La position angulaire est encodée via la largeur de l'impulsion à l'état haut, comme décrit ci-dessous :
 
 *Extrait de la datasheet du servomoteur :*
 <img src="media/datasheet_servo_pwm.png"/>
@@ -861,15 +861,15 @@ Exemple :
 
 #### Configuration du Timer 1 dans CubeMX
 
-Le Timer 1 est branché sur l'horloge APB2 Timer à 100 MHz. Nous devons générer une PWM à 50 Hz. Aussi, nous avons décidé d'obtenir la meilleure résolution possible sur la largeur d'impulsion.
+Le Timer 1 prend en entrée l'horloge APB2 à 100 MHz. Nous devons générer un signal PWM à 50 Hz. Nous avons cherché à obtenir la meilleure résolution possible sur la largeur d'impulsion.
 
-Les contraintes pour le calculs sont : 
-- La période de la PWM est de 50 Hz, donc 20 ms.
-- Là fréquence de l'horloge source est de 100 MHz.
-- Le prescaler est sur 16 bits.
-- Le ARR est sur 16 bits.
+Les contraintes de calcul sont : 
+- La fréquence de la PWM est de 50 Hz.
+- La fréquence de l'horloge source est de 100 MHz.
+- Le prescaler est codé sur 16 bits.
+- Le registre ARR est codé sur 16 bits.
 
-On peut d'abord résoudre la fréquence de comptage maximum qui nous permet de compter sur ARR pour obtenir une fréquence PWM de 50Hz :
+On peut d'abord déterminer la fréquence de comptage maximale permettant de compter sur ARR pour obtenir une fréquence PWM de 50 Hz :
 
 $$ARR = \frac{f_{timer}}{50\, \text{Hz}}$$
 Or $$ARR \leq 2^{16}-1 $$ 
@@ -877,7 +877,7 @@ $$ARR \leq 65 535$$
 Donc $$\frac{f_{timer}}{50\, \text{Hz}} \leq 65 535$$
 $$f_{timer} \leq 3,276 \text{ MHz}$$
 
-On cherche certes la fréquence de comptage la plus élevée possible mais qui soit quand même un diviseur entier de 100 MHz et qui donne un ARR entier à 50 Hz. On prend donc 
+On cherche la fréquence de comptage la plus élevée possible qui soit un diviseur entier de 100 MHz et qui donne une valeur entière pour ARR à 50 Hz. On choisit donc :
 
 $$f_{timer} = 2{,}5\, \text{ MHz}$$
 $$\implies \text{PSC} = \frac{100\, \text{MHz}}{2{,}5\, \text{MHz}} - 1 = 40 - 1 = 39$$
@@ -888,18 +888,17 @@ On obtient ainsi une fréquence PWM exactement égale à 50 Hz, avec une résolu
 
 $$T_{tic} = \frac{1}{2{,}5\, \text{MHz}} = 0{,}4\, \mu\text{s par tic}$$
 
-Ce qui donne ceci dans Cube MX :
+Ce qui donne la configuration suivante dans CubeMX :
 
 <img src="media/stm32cubeide_Timer_1.png"/>
 
 #### Calcul de la résolution angulaire
 
-Le mapping angle → impulsion est linéaire entre 0° et 180° :
-La formule pour convertir un angle en impulsion est donc : 
+La correspondance angle → impulsion est linéaire entre 0° et 180°. La formule de conversion d'un angle cible en durée d'impulsion est la suivante : 
 
 $$\text{Impulsion}_{cible} = \frac{\text{Angle}_{cible}}{180°} \times (\text{Impulsion}_{180°} - \text{Impulsion}_{0°}) + \text{Impulsion}_{0°}$$
 
-Si on ne reprend que les constantes de la datasheet et configurées dans cubeMX, la formule donne : 
+En appliquant les constantes issues de la datasheet et configurées dans CubeMX, la formule donne : 
 
 $$\text{Impulsion}_{cible} = \frac{\text{Angle}_{cible}}{180°} \times (2{,}5\, \text{ms} - 0{,}5\, \text{ms}) + 0{,}5\, \text{ms}$$
 
@@ -915,7 +914,7 @@ $$\frac{5000\, \text{tics}}{180°} \approx 27{,}8\, \text{tics/degré}$$
 
 Ce qui donne une résolution angulaire théorique de $\approx 0{,}036°$ par tic, largement suffisante pour commander une fenêtre !
 
-#### Fonction `angle_servo()`
+#### Appliquer un angle au servomoteur
 
 Nous avons implémenté une fonction pour la conversion d'un angle vers la valeur de CCR à encoder en s'appuyant uniquement sur les macros définies en tête de `main.c` :
 
@@ -941,15 +940,15 @@ void angle_servo(int angle)
 }
 ```
 
-La formule creprend celle expliqée plus haut pour la conversion d'un angle cible vers une impulsion en ticss.
+La formule reprend celle expliquée plus haut pour la conversion d'un angle cible vers une impulsion en tics.
 Le registre de comparaison CCR est mis à jour avec la valeur de `pulse_tics` via `__HAL_TIM_SET_COMPARE()`.
 
 ### 9.2. Gestion de la fenêtre
 
 #### États de la fenêtre
-Le servo de la fenêtre est commandé par une variable globale `fenetre` avec trois états possibles : `INIT`, `FERMEE` et `OUVERTE`. L'état `INIT` correspond à l'initialisation du système, `FERMEE` à la fenêtre fermée et `OUVERTE` à la fenêtre ouverte. La transition entre ces états est d'abord déclenchée par les commandes de l'utilisateur via le bouton fenêtre puis plus tard, par les conditions environnementales (cf TODO redirection temparature et pluie).
+Le servomoteur de la fenêtre est commandé par une variable globale `fenetre` prenant trois états possibles : `INIT`, `FERMEE` et `OUVERTE`. L'état `INIT` correspond à l'initialisation du système, `FERMEE` à la fenêtre fermée et `OUVERTE` à la fenêtre ouverte. La transition entre ces états est déclenchée par les commandes de l'utilisateur via le bouton de fenêtre, ainsi que par les conditions environnementales (cf. [9.4. Détection de pluie avec ADC DMA multi-canaux](#94-détection-de-pluie-avec-adc-dma-multi-canaux) et [10.12. Gestion automatique de la fenêtre par la température](#1012-gestion-automatique-de-la-fenêtre-par-la-température)).
 
-#### Fonction `commande_fenetre()` — envoi uniquement sur changement d'état
+#### Application de l'etat de la fenêtre
 
 Pour éviter d'envoyer continuellement la même commande PWM au servo à chaque tour de boucle principale, `commande_fenetre()` n'agit que lorsque l'état `fenetre` change :
 
@@ -975,28 +974,27 @@ void commande_fenetre()
 
 La variable `etat_precedent` est déclarée `static` : elle est initialisée une seule fois à `INIT` et conserve sa valeur entre les appels. Au premier passage dans le `main()`, `fenetre = OUVERTE` (valeur par défaut) ≠ `INIT`, donc le servo est immédiatement positionné à 0° à l'initialisation.
 
-> Lors du montage de la maison nous avons réglé le servo à 0° avant de visser la fenêtre en position fermée. Ensuite, nous avons testé de manière empirique quel angle permettait d'ouvrir parfaitement la fenêtre. On a trouvé 120° : en deça, la fenêtre n'est pas complétement ouverte, au delà, la fenêtre dépasse contre le mur (surchauffe car physiquement c'est impossible).
+> Lors du montage de la maison, nous avons réglé le servomoteur à 0° avant de visser la fenêtre en position fermée. Ensuite, nous avons testé de manière empirique l'angle permettant d'ouvrir au mieux la fenêtre. Nous avons retenu 120° : en deçà, la fenêtre n'est pas complètement ouverte ; au-delà, elle vient buter contre le mur (ce qui faisait surchauffer le servomoteur).
 
 ### 9.3. Bouton fenêtre et anti-rebond
 
 #### Implémentation et anti-rebond
-Le bouton de fenêtre est physiquement identique à celui du mode Home/Away.
-Les seules différences dans l'implémentation de la lecture par rapport au bouton mode sont : 
+Le bouton de fenêtre est physiquement identique à celui du mode HOME/AWAY.
+Les seules différences d'implémentation de sa lecture par rapport au bouton de mode sont : 
 
 1. Sa broche de connexion : PA10 (D2) qui lève l'EXTI 10.
 2. Le nom du flag levé par l'interruption EXTI : `debouncing_bouton_fenetre`
 3. Le nom de la variable globale qui indique si le bouton a été appuyé : `bouton_fenetre_appuye`
 
-Pour un rappel sur la méthode d'implémentation, voir les parties successives :  
-[6.1. Configuration du bouton mode](#61-configuration-du-bouton-mode)  
-[6.2. Gestion de l'anti-rebond](#62-anti-rebond-des-boutons)  
+Pour un rappel sur la méthode d'implémentation, voir les sections dédiées :  
+- [6.1. Configuration du bouton MODE](#61-configuration-du-bouton-mode)  
+- [6.2. Gestion de l'anti-rebond](#62-gestion-de-lanti-rebond)  
 
 #### Comportement et priorités selon le mode (HOME vs AWAY)
 La prise en compte de l'appui sur le bouton de la fenêtre dépend directement du mode de la maison et des conditions environnementales :
 
-- En mode HOME : L'utilisateur a le contrôle de l'ouverture et de la fermeture de la fenêtre, sauf en cas d'intempérie. Si la pluie est détectée, elle prend une priorité absolue et force la fermeture. Sinon, chaque appui validé bascule l'état de la fenêtre :
-
-- En mode AWAY : L'utilisateur n'a pas le contrôle de la fenêtre.
+- **En mode HOME :** L'utilisateur a le contrôle de l'ouverture et de la fermeture de la fenêtre, sauf en cas d'intempérie. Si la pluie est détectée, elle prend une priorité absolue et force la fermeture. Sinon, chaque appui validé bascule l'état de la fenêtre.
+- **En mode AWAY :** L'utilisateur n'a pas le contrôle de la fenêtre, celle-ci devant rester impérativement fermée.
 
 ```c
 // boucle principale while(1) — Machine à états, case HOME
@@ -1043,11 +1041,11 @@ case AWAY:
 }
 ```
 
-En mode `AWAY`, le flag `bouton_fenetre_appuye` est immédiatement effacé sans traitement : la fenêtre se ferme automatiquement et l'utilisateur ne peut pas l'ouvrir tant que le mode reste `AWAY` même en appuyant sur le bouton.
+En mode `AWAY`, le flag `bouton_fenetre_appuye` est immédiatement effacé sans traitement : la fenêtre reste fermée et l'utilisateur ne peut pas l'ouvrir tant que le mode reste `AWAY`, même en appuyant sur le bouton.
 
 ### 9.4. Détection de pluie avec ADC DMA multi-canaux
 
-C'est au moment d'ajouter le capteur de pluie au Scénario 5 que nous avons entièrement revu l'architecture ADC pour passer à une solution multi-canaux et avec interruption de fin de conversion.
+C'est au moment d'ajouter le capteur de pluie au Scénario 5 que nous avons entièrement revu l'architecture de l'ADC pour passer à une solution multi-canaux avec DMA et interruption de fin de conversion.
 
 #### Déclenchement des mesures
 
@@ -1072,7 +1070,7 @@ Par rapport à la configuration du Scénario 3, les paramètres suivants ont ét
 
 <img src="media/stm32cubeide_ADC_2_channels.png"/>
 
-Dans le scénario 3 nous avions choisi 480 cycles d'échantillonnage, ce qui donnait environ 19,7 µs par canal pour bien stabiliser la mesure, mais en essayant de résuire au maximum la latence entre déclenchement et mesure, nous avons testé avec 3 cycles, et la valeur était tout à fait cohérente et stable.
+Dans le Scénario 3, nous avions choisi 480 cycles d'échantillonnage, ce qui donnait environ 19,7 µs par canal pour stabiliser la mesure. Mais en cherchant à réduire au maximum la latence entre déclenchement et mesure, nous avons testé avec 3 cycles, et les valeurs obtenues étaient cohérentes et stables.
 
 **Détail du calcul :**
 
@@ -1092,7 +1090,7 @@ Dans le scénario 3 nous avions choisi 480 cycles d'échantillonnage, ce qui don
 > Total cycles $= 12 + 3 = 15$  
 > Latence $= 15 \times 40\, \text{ns} = 600\, \text{ns}$ 
 
-Il s'avère qu'on reste bien en desous de la période de 100 µs du Timer 2 qui tourne à 10 kHz, ce qui laisse une bonne marge pour déclencher les mesures. Mais nous avons tout de même préféré garder l'ADC à 3 cycles d'échantillonnage.  
+On reste ainsi bien en dessous de la période de 100 µs du Timer 2 cadencé à 10 kHz, ce qui laisse une large marge pour déclencher les mesures. Nous avons donc conservé l'ADC à 3 cycles d'échantillonnage.  
 
 #### Configuration DMA
 
@@ -1136,7 +1134,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 }
 ```
 
-Ce callback est déclenché par le DMA quand il a finit sa séquence de mesures. C'est à ce moment et pas avant, qu'on lit le buffer qui vient d'être rempli par le DMA :
+Ce callback est déclenché par le DMA lorsqu'il a fini sa séquence de mesures. C'est à ce moment précis, et pas avant, qu'on lit le buffer fraîchement rempli par le DMA :
 
 #### Lecture et évaluation des capteurs
 
@@ -1170,16 +1168,16 @@ void evaluer_pluie() {
 #### Tests du capteur de pluie et seuil
 
 Le capteur de pluie génère une tension proportionnelle à la quantité d'humidité à sa surface.  
-L'ADC1 avec sa résolution 12 bits produit une valeur entre 0 et $2^{12}-1 = 4095$. Pour la plage de tension de référence de l'ADC, nous avons expliqué la situation ici [Tension d'alimentation et de mesure de l'ADC](#tension-dalimentation-et-de-mesure-de-ladc).  
+L'ADC1, avec sa résolution de 12 bits, produit une valeur comprise entre 0 et $2^{12}-1 = 4095$. Pour la plage de tension de référence de l'ADC, c'est la même histoire que pour le capteur de gaz : [7.3. Tension d'alimentation et de mesure de l'ADC](#tension-dalimentation-et-de-mesure-de-ladc).  
 
 Nous avons mesuré que la valeur ADC reste sous 1000 quand le capteur est sec et monte directement à son maximum 4095 en présence ne serait-ce que d'un doigt. Nous avons donc retenu `SEUIL_PLUIE = 4000` pour éviter les faux positifs.
 
 ### 9.5. Logique de décision de la fenêtre
-On ajoute à notre logique précédente la prise en compte de la pluie pour la commande de la fenêtre(cf [9.2. Gestion de la fenêtre](#92-gestion-de-la-fenêtre)).  
+On ajoute à notre logique précédente la prise en compte de la pluie pour la commande de la fenêtre (cf. [9.2. Gestion de la fenêtre](#92-gestion-de-la-fenêtre)).  
 La commande de la fenêtre suit l'ordre de priorité suivant :
 
 - Mode `AWAY` : la fenêtre doit être fermée et les appuis sur le bouton fenêtre sont ignorés.
--  `Pluie détectée` : la fermeture est forcée, quel que soit l'état précédent de la fenêtre.
+- `Pluie détectée` : la fermeture est forcée, quel que soit l'état précédent de la fenêtre.
 - Commande manuelle : en mode `HOME` et sans pluie, un appui sur le bouton fenêtre inverse l'état (`OUVERTE` ou `FERMEE`).
 
 De la même manière que l'on bloque la fenêtre en mode `AWAY`, lorsque la pluie est détectée, la valeur de `bouton_fenetre_appuye` est directement effacée.
@@ -1189,7 +1187,7 @@ De la même manière que l'on bloque la fenêtre en mode `AWAY`, lorsque la plui
 case  HOME: 
     {
       ...
-      // Si vérification échéance de la température ou autre conditions
+      // Si vérification de la température ou d'autres conditions
       else if (pluie_detectee)
       {
         fenetre = FERMEE;
@@ -1197,7 +1195,7 @@ case  HOME:
       } 
     }
 ```
-La fenêtre étant automatiquement fermée en mode AWAY et lorsque l'utilisateur rentre dans la maison, la vérification de la detection de pluie hors HOME est triviale, la fenêtre reste fermée.
+La fenêtre étant automatiquement fermée en mode AWAY ainsi que lors de l'entrée dans la maison, la gestion de la détection de pluie hors du mode HOME est triviale : la fenêtre reste impérativement fermée.
 
 ---
 
@@ -1206,7 +1204,7 @@ La fenêtre étant automatiquement fermée en mode AWAY et lorsque l'utilisateur
 
 ### 10.1. Branchement et configuration CubeMX
 
-Pour configurer et brnacher le capteurnous avons d'abord considéré ceci :
+Pour configurer et brancher le capteur, nous avons d'abord considéré les éléments suivants :
 
 *Extrait de la datasheet du TMP102 :*  
 
@@ -1221,7 +1219,7 @@ Nous avons alimenté le capteur avec la broche 3.3V de la carte Nucleo.
 | GND | GND |
 
 #### Bus I²C (SDA/SCL)
-Pour tous les composants I²C (à savoir le TMP102 et l'écran LCD) nous avons utilisé le bus I2C3 en suivant le branchement suivant : 
+Pour tous les composants I²C (à savoir le TMP102 et l'écran LCD), nous avons utilisé le bus I2C3 selon le câblage suivant : 
 
 | Signal | Broche | Arduino |
 | :--- | :--- | :--- |
@@ -1241,10 +1239,10 @@ Cependant il est possible de la choisir en fonction du branchement de la broche 
 *Extrait de la datasheet du capteur TMP102 :*  
 <img src="media/TMP102_datasheet_adresses.png" width="400"/>
 
-Pour lever toute ambiguité, nous avons simplement mis la broche ADDR0 à la masse, ce qui correspond à l'adresse 0x48 (1001000).
+Pour lever toute ambiguïté, nous avons simplement relié la broche ADDR0 à la masse, ce qui correspond à l'adresse 0x48 (1001000).
 
 #### Broche (ALT)
-Comme expliqué ci-dessous, nous n'avons pas eu besoin d'utiliser les alertes du capteurs, nous avons donc laissé la broche ALERT déconnectée.
+Comme expliqué ci-dessous, nous n'avons pas eu besoin d'utiliser les alertes du capteur, nous avons donc laissé la broche ALERT non connectée.
 
 ### 10.2. Analyse de la datasheet
 
@@ -1264,18 +1262,18 @@ La conversion se fait selon une série d'étapes détaillées ici :
 #### Registre de configuration
 Le registre de configuration (adresse 0x01) permet de régler plusieurs paramètres du capteur :
 
-* La résolution de la mesure (12bits ou 13 bits en "Extended mode")
-* Le mode de mesure : Shutdown avec One-Shot ou Continous
-* La fréquence d'actualisation du registre de température en mode "Continous" (1, 2, 4 ou 8 Hz)
-* Le fonctionnement des alertes de dépassement de seuil haut/bas (polarité, interruption, stabilisation, ...)
+* La résolution de la mesure (12 bits ou 13 bits en « Extended mode »)
+* Le mode de mesure : Shutdown avec One-Shot ou Continuous
+* La fréquence d'actualisation du registre de température en mode « Continuous » (1, 2, 4 ou 8 Hz)
+* Le fonctionnement des alertes de dépassement de seuils haut/bas (polarité, interruption, stabilisation, etc.)
 
-Nous avons préféré écrire une bibliothèque complète qui permette d'utiliser l'ensemble des fonctionnalités du capteur.  
-Cependant nous n'avons pas utilisé ni la résolution sur 13 bits (car une maison n'a pas besoin de mesurer plus de 128°C), ni les alertes car il était demandé explicitement de mesurer la température périodiquement toutes les 2-5 secondes.  
+Nous avons choisi d'écrire une bibliothèque complète permettant d'exploiter l'ensemble des fonctionnalités du capteur.  
+Cependant, nous n'avons utilisé ni la résolution sur 13 bits (inutile pour mesurer des températures ambiantes inférieures à 128 °C), ni les alertes, car le cahier des charges demandait explicitement un échantillonnage périodique toutes les 2 à 5 secondes.  
 
 #### Registres T_LOW et T_HIGH
 
-Nous n'avons pas utilisé ces 2 registres qui permettent de définir un seuil haut et bas en encodant une température limite pour les déclenchement de l'alerte, selon le même encodage que pour le registre de température.
-Nous avons néamoins laissé la possibilité de les modifier de manière fonctionnelle dans la bibliothèque.
+Nous n'avons pas utilisé ces deux registres, qui permettent de fixer des seuils haut et bas pour le déclenchement de l'alerte matérielle selon le même encodage que le registre de température.
+Nous avons néanmoins implémenté leur gestion dans la bibliothèque par souci d'exhaustivité.
 
 ### 10.3. Communication I²C avec le capteur
 
@@ -1309,7 +1307,7 @@ Si nous avions voulu réinventer la roue sans utiliser `HAL_I2C_Mem_*`, nous avi
 
 * **2. Fonctions séquentielles asynchrones (`HAL_I2C_Master_Seq_*_IT` ou DMA)** :
   * Elles permettent de gérer le Repeated Start (via les drapeaux `I2C_FIRST_FRAME` et `I2C_LAST_FRAME`).
-  * En revanche, elles imposent d'activer les interruptions I²C dans le NVIC, de créer une machine à états et d'enchaîner deux callbacks (`MasterTxCpltCallback` puis `MasterRxCpltCallback`) ou sinon d'utiliser des DMA, pour seulement 2 octets,toutes les 2 secondes.
+  * En revanche, elles imposent d'activer les interruptions I²C dans le NVIC, de créer une machine à états et d'enchaîner deux callbacks (`MasterTxCpltCallback` puis `MasterRxCpltCallback`), ou d'utiliser le DMA, pour seulement 2 octets toutes les 2 secondes.
 
 Finalement, `HAL_I2C_Mem_Read/Write` était donc le choix le plus simple à coder, rapide à exécuter et fiable.
 
@@ -1317,12 +1315,12 @@ Finalement, `HAL_I2C_Mem_Read/Write` était donc le choix le plus simple à code
 
 #### Vue d'ensemble
 
-La bibliothèque est organisée autour de deux fichiers : [`tmp102.h`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/architecture_numeriques_embarquees/STM32CubeIDE_v1.19.0/Bibliotheques/TMP102/Inc/tmp102.h) pour les définitions et l'API publique, et [`tmp102.c`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/architecture_numeriques_embarquees/STM32CubeIDE_v1.19.0/Bibliotheques/TMP102/Src/tmp102.c) pour l'implémentation. Les fonctions internes (accès registres, encodage/décodage) sont déclarées `static` pour ne pas polluer l'espace de noms global et clarifier le header : seules les 5 fonctions utilisables hors de la bibliothèque sont exposées dans le header.
+La bibliothèque est organisée autour de deux fichiers : `tmp102.h` pour les définitions et l'API publique, et `tmp102.c` pour l'implémentation. Les fonctions internes (accès registres, encodage/décodage) sont déclarées `static` pour ne pas polluer l'espace de noms global et clarifier le header : seules les 5 fonctions utilisables hors de la bibliothèque sont exposées dans le header.
 
 
 #### Les structures `TMP102_Config_t` et `TMP102_t`
 
-Plutôt que de manipuler directement des octets bruts pour configurer le capteur, nous avons défini une structure `TMP102_Config_t` qui contient une varibale pour chaque champ du registre de configuration :
+Plutôt que de manipuler directement des octets bruts pour configurer le capteur, nous avons défini une structure `TMP102_Config_t` qui contient un champ dédié pour chaque réglage du registre de configuration :
 
 ```c
 typedef struct 
@@ -1360,7 +1358,7 @@ Cette approche présente plusieurs avantages : on peut instancier plusieurs capt
    
 #### Define
 
-Pour ne jamais rien hardcoder, nous avons utilisé une `#define` pour chaque valeur constante issue de la datsheet pour les mêmes raison que mentionnées ici :
+Pour ne jamais rien harcoder, nous avons utilisé des `#define` pour chaque valeur constante issue de la datasheet, pour les mêmes raisons que mentionnées précédemment :
 
 *Extraits de `Bibliotheques/TMP102/Inc/tmp102.h`:*  
 
@@ -1400,7 +1398,7 @@ Pour ne jamais rien hardcoder, nous avons utilisé une `#define` pour chaque val
 
 Le registre de configuration du TMP102 est un registre de 16 bits dont les champs ne sont pas alignés sur des octets entiers. Pour éviter de dupliquer la logique de masquage (une fois pour l'écriture, une fois pour la lecture), et pour définir de manière claire et unique les champs du registre, nous avons conçu un système de mapping générique.
 
-La structure `TMP102_FieldMap_t` décrit la position, la taille et l'emplacement d'un champ du registre de configuration du TMP102:
+La structure `TMP102_FieldMap_t` décrit la position, la taille et l'emplacement d'un champ du registre de configuration du TMP102 :
 
 ```c
 typedef struct 
@@ -1412,8 +1410,8 @@ typedef struct
 } TMP102_FieldMap_t;
 ```
 
-la fonction statique `TMP102_SyncConfigBuffer()`, via un tableau de TMP102_FieldMap_t, encode ou décode tous les champs.
-Lorsque l'on veut mettre à jour l'objet TMP102 de la bibliothèque à partir du contenu du registre de configuration du capteur (```is_write = false```), ou à l'inverse, mettre à jour le registre de configuration du capteur à partir de l'objet TMP102 de la bibliothèque (```is_write = true```), il suffit de passer en paramètre l'objet TMP102, le buffer et le flag is_write :
+La fonction statique `TMP102_SyncConfigBuffer()`, via un tableau de `TMP102_FieldMap_t`, encode ou décode l'ensemble des champs.
+Lorsque l'on veut mettre à jour l'objet TMP102 de la bibliothèque à partir du contenu du registre de configuration du capteur (```is_write = false```) ou, à l'inverse, préparer le buffer d'écriture à partir de l'objet TMP102 (```is_write = true```), il suffit de fournir en paramètre l'instance du capteur, le buffer et le booléen `is_write` :
 
 ```c
 static void TMP102_SyncConfigBuffer(TMP102_t *tmp102, uint8_t *buffer, bool is_write) 
@@ -1439,7 +1437,7 @@ static void TMP102_SyncConfigBuffer(TMP102_t *tmp102, uint8_t *buffer, bool is_w
 }
 ``` 
 
-Les valeurs du pseudo tableau ci-dessus sont données ici par:
+Les positions et tailles des champs sont issues de la table des registres de la datasheet :
 
 *Extrait de la datasheet du TMP102 :*
 <img src="media/TMP102_datasheet_register_map.png"></img>
@@ -1481,7 +1479,7 @@ On génère un masque adapté à la largeur de chaque champ.
 > `(1 << 2) = 0100` → `0100 - 1 = 0011`  
 > On obtient bien un masque de 2 bits : `0011`
 
-*NB : 1U force l'entier 1 à être interprété comme un entier non signé, évitant ainsi un warning du compilateur lors du décalage vers la gauche du bit de signe qui disparaîtrait si on utilisait simplement 1.* 
+*NB : 1U force l'entier 1 à être interprété comme un entier non signé, évitant un avertissement du compilateur lors du décalage à gauche du bit de signe.* 
 
 2. **Encodage : Structure $\rightarrow$ Buffer (`is_write == true`)**
 ```c
@@ -1491,7 +1489,7 @@ On génère un masque adapté à la largeur de chaque champ.
 ```
 * On masque la valeur pointée dans l'objet TMP102 (`*fields[i].value_ptr & mask`) pour éliminer tout bit parasite dépassant de la taille du champ.
 * On décale les bits vers la gauche du nombre de sa `position` pour les positionner au bon endroit dans l'octet du buffer (`<< fields[i].position`)
-* On utilise un OU binaire (`|=`) pour fusionner ce champ avec les bits des autres champs partageant le même octet dans le buffer. Si il y a un `0` à un certain index dans la valeur masquée et décalée, le bit du buffer à cet index restera inchangé.
+* On utilise un OU binaire (`|=`) pour fusionner ce champ avec les bits des autres champs partageant le même octet dans le buffer. S'il y a un `0` à un certain index dans la valeur masquée et décalée, le bit correspondant dans le buffer restera inchangé.
 
 *NB : le buffer doit être initialisé à 0 avant l'appel de la fonction, car chaque champ est fusionné avec les bits des autres champs partageant le même octet dans le buffer.*
 
@@ -1576,8 +1574,7 @@ uint8_t write_buffer[TMP102_NBR_CONFIG_REG_BYTES];
 ```c
    TMP102_SyncConfigBuffer(tmp102, write_buffer, WRITE);
 ```
-La fonction `TMP102_SyncConfigBuffer()` est détaillée ici
--> [10.5.4 Synchronization entre la configuration interne et le registre de configuration](#1054-synchronisation-entre-la-configuration-interne-et-le-registre-de-configuration)
+La fonction `TMP102_SyncConfigBuffer()` est détaillée ci-dessus en [10.4. Synchronisation entre le registre de configuration et l'objet TMP102](#synchronisation-entre-le-registre-de-configuration-et-lobjet-tmp102).
 
 3. **Envoi du buffer vers le registre de configuration du capteur**
 
@@ -1622,8 +1619,7 @@ uint8_t t_high_reg_bytes[TMP102_NBR_REG_TEMP_BYTES];
 TMP102_celsius_to_register(tmp102->T_Low, t_low_reg_bytes, tmp102->config.ExtendedMode);
 TMP102_celsius_to_register(tmp102->T_High, t_high_reg_bytes, tmp102->config.ExtendedMode);
 ```
-La fonction `TMP102_celsius_to_register()` est expliquée plus bas   
--> [10.8 Température en °C → Registre brut](#temp%C3%A9rature-en-c--registre-brut)
+La fonction `TMP102_celsius_to_register()` est expliquée ci-après en [10.8. Température en °C → Registre brut](#température-en-c--registre-brut).
 
 3. **Envoi des buffers vers le capteur en I²C**
 
@@ -1666,8 +1662,8 @@ Pour manipuler le capteur avec la bibliothèque, il suffit d'instancier une vari
 #### 2. Valeurs par défaut
 
 Avant de configurer quoi que ce soit, on initialise la structure avec des valeurs sûres via `TMP102_init_default()`.  
-Sinon les champs de la structure peuvent contenir des valeurs indéterminées (variables locales non initialisées en C).  
-La fonction fixe également les champs en lecture seule à leur valeur correcte pour ne pas avoir à les lire pour les initialiser :    
+Sans cela, les champs de la structure contiendraient des valeurs indéterminées en mémoire.  
+La fonction fixe également les champs en lecture seule à leur valeur par défaut :    
 
 ```c
 void TMP102_init_default(TMP102_t *tmp102) 
@@ -1714,7 +1710,7 @@ static bool TMP102_read_temperature_register(TMP102_t *tmp102, float *Temperatur
 ```c
     uint8_t buffer_temp_reg[TMP102_NBR_REG_TEMP_BYTES] = {0};
 ```
-Le buffer est un tableau de 2 octets correpsondant au registre de température du TMP102.
+Le buffer est un tableau de 2 octets correspondant au registre de température du TMP102.
 
 2. **Lecture de registre en I²C**  
 ```c
@@ -1736,7 +1732,7 @@ Pour la fonction HAL on spécifie :
 - la taille du buffer en octets
 - le timeout de la transaction
 
-3. **Si la communication I²C a échouée**
+3. **Si la communication I²C a échoué**
 ```c
 if (!i2c_ok) 
 {
@@ -1753,8 +1749,8 @@ TMP102_register_to_celsius(buffer_temp_reg, Temperature);
 
 #### Appel externe
 
-Cette fonction est statique car elle n'est pas destinée à être appelée directement depuis l'extérieur de la bibliothèque mais par la fonction non static `TMP102_get_temperature()` pour découpler l'appel externe de la résolution interne, même si il n'y a finalement plus d'autres fonctions de la bibliothèque qui ont besoin de lire la température.  
-Pour lire la temperature en mode "Continous" par exemple, depuis le `main.c` il faudrait utiliser cette fonction non static :  
+Cette fonction est statique car elle n'est pas destinée à être appelée directement depuis l'extérieur de la bibliothèque, mais par la fonction externe `TMP102_get_temperature()`. Cela permet de découpler l'appel applicatif de la lecture matérielle.  
+Pour lire la température (par exemple en mode Continuous) depuis le `main.c`, on appelle :  
 ```c
 bool TMP102_get_temperature(TMP102_t *tmp102, float *Temperature) 
 {
@@ -1766,7 +1762,7 @@ bool TMP102_get_temperature(TMP102_t *tmp102, float *Temperature)
 
 #### Registre brut → température en °C
 
-Nous allons expliquer la fonction de conversion du registre de température en valeur en °C
+Voici les explications de notre fonction de conversion du registre de température en valeur en °C :
 ```c
 static void TMP102_register_to_celsius(uint8_t *reg_value, float *temperature);
 ```
@@ -1811,8 +1807,8 @@ static void TMP102_celsius_to_register(uint8_t *reg_value, float *temperature, b
 Cette fois, le mode étendu n'est plus défini dans le registre de température mais en paramètre de la fonction.
 ```c
 uint8_t temp_length = (extended_mode) 
-                      ? TMP102_EXT_BIT_LEN 
-                      : TMP102_NORM_BIT_LEN;
+                       ? TMP102_EXT_BIT_LEN 
+                       : TMP102_NORM_BIT_LEN;
 ```
 
 Puis on effectue les mêmes étapes mais en sens inverse :  
@@ -1838,7 +1834,7 @@ reg_value[1] = (uint8_t)(raw_reg & 0xFF);
 
 #### Affichage de la température de type float
 
-L'affichage de la température sur le LCD et dans les logs UART nécessite de formater un `float` en chaîne de caractères. Or, `printf("%f", ...)` ne fonctionnait pas dans STM32CubeIDE, nous avons donc implémenté une fonction de conversion de `float` en `String` en mettant en paramètre la précision souhaitée.
+L'affichage de la température sur le LCD et dans les logs UART nécessite de formater un `float` en chaîne de caractères. Par défaut, la prise en charge des flottants dans `printf` ne fonctionnait pas dans STM32CubeIDE, nous avons donc écrit une fonction dédiée de conversion de `float` en chaîne de caractères avec choix de la précision :
 
 ```c
 char* TMP102_temperature_to_string(float temperature, uint8_t precision);
@@ -1851,13 +1847,13 @@ Voici les étapes de la conversion de `float` en `String` :
     static char buffer[16];
 ```
 
-2. **On précalcule les puissance de 10**
+2. **On précalcule les puissances de 10**
 
 ```c
     static const int multi_table[] = {1, 10, 100, 1000, 10000};
 ```
 
-Le tableau `multi_table` sert à multiplier la partie décimale de la température par la puissance de 10 correspondante à la précision souhaitée.
+Le tableau `multi_table` sert à multiplier la partie décimale de la température par la puissance de 10 correspondant à la précision souhaitée.
 
 NB : On aurait pu utiliser la fonction `pow`, mais il aurait fallu utiliser une bibliothèque mathématique, ce qui aurait augmenté la taille du code pour une seule utilisation ridicule dans tout le TP.
 
@@ -1867,7 +1863,7 @@ NB : On aurait pu utiliser la fonction `pow`, mais il aurait fallu utiliser une 
     if(precision > 4) precision = 4;
 ```
 
-La précision de 4 est excessive par rapport à la précision de l'encodage du capteur avec une résolution de 0.0625 °C, et par rapport à sa précision absolue de maximum 2°C, mais comme en soi chaque changement dans le registre de température modifie jusqu'à 4 chiffres après la virgule, nous avons pris large.
+Une précision de 4 décimales est largement suffisante : la résolution du capteur étant de 0,0625 °C (soit 4 chiffres après la virgule) et sa précision absolue de ±2 °C.
 
 <img src="media/TMP102_datasheet_accuracy.png">
 
@@ -1903,10 +1899,10 @@ Nous avons également pensé à inclure la bibliothèque `<stdio>` dans le heade
 ### 10.9. Mesure One-Shot en mode Shutdown
 
 #### Mode Continous vs Shutdown
-Comme il était indiqué dans le TP de coder une fonction pour lancer une mesure, et pour configurer le capteur (sachant que par défaut, le capteur est en mode "Continous"), et par souci d'optimisation des resources, nous avons choisi de mettre le capteur en mode "Shutdown" et de lancer une mesure avant de lire le registre de température à chaque cycle du timer d'échantillonage.
+Comme le sujet demandait d'implémenter le déclenchement d'une mesure et la configuration du capteur (sachant que par défaut le capteur est en mode « Continuous »), et par souci d'économie d'énergie, nous avons choisi de configurer le capteur en mode « Shutdown » et de déclencher une mesure One-Shot avant de lire le registre de température à chaque cycle d'échantillonnage.
 
-Le capteur est donc en veille pendant 2 secondes et se réveille pendant ~10 ms le temps de la mesure, puis se remet en veille automatiquement à la fin de sa mesure. En veille il consomme moins de 0,15µA contre 2,6µA pendant le temps d'attente entre 2 mesures du mode "Continous".  
-D'autant plus que le choix de la fréquence en mode "Continous" étant limmité, il aurait fallu déclencher une mesure 2 fois plus souvent (à 1Hz) sachant qu'une mesure consomme 55µA pendant ~10ms.
+Le capteur reste ainsi en veille pendant 2 secondes et ne se réveille que pendant ~10 ms pour effectuer sa conversion, avant de repasser automatiquement en veille. En veille, il consomme moins de 0,15 µA (contre 2,6 µA en mode Continuous au repos).  
+De plus, les fréquences de rafraîchissement disponibles en mode Continuous étant restreintes, il aurait fallu échantillonner à 1 Hz au minimum, alors qu'une conversion consomme 55 µA pendant 10 ms.
 
 *Extraits de la datasheet du capteur TMP102 :*
 
@@ -1918,8 +1914,8 @@ D'autant plus que le choix de la fréquence en mode "Continous" étant limmité,
 
 En mode Shutdown, le capteur ne mesure rien tout seul. Pour déclencher une mesure, il faut écrire le bit `OS` (One-Shot) à 1 dans le registre de configuration. Le capteur effectue alors une unique mesure, met le résultat dans le registre de température, et repasse automatiquement en veille. On peut savoir si la mesure est terminée en relisant le registre de configuration : le bit `OS` repasse à 0 pendant la mesure et revient à 1 une fois terminé.
 
-Dans la fonction pour démarrer une mesure, on vérifie d'abord si le capteur est en mode Shutdown, puis on met le flag `is_measuring_one_shot` à `true` pour débloquer la fonction `TMP102_is_measure_ready`, puis on écrit `1` sur le bit `OS` du registre de configuration du capteur pour lancer une mesure.  
-*NB : Le bit OS est censé déjà à 1 au moment de l'écriture, mais le capteur détecte l'écriture quand-même*
+Dans la fonction de démarrage d'une mesure, on vérifie d'abord que le capteur est bien en mode Shutdown, puis on positionne le drapeau `is_measuring_one_shot` à `true` pour autoriser les tests de fin de conversion via `TMP102_is_measure_ready()`. Enfin, on écrit `1` sur le bit `OS` du registre de configuration pour déclencher la conversion.  
+*NB : Le bit OS valant déjà 1 au repos en mode Shutdown, le capteur déclenche la conversion sur l'événement d'écriture du registre.*
 
 ```c
 bool TMP102_start_measure(TMP102_t *tmp102) 
@@ -1935,8 +1931,8 @@ bool TMP102_start_measure(TMP102_t *tmp102)
 #### Attendre la fin de la mesure
 
 Une fois que la mesure est déclenchée, cette fonction de polling non bloquante doit être appelée en boucle pour savoir si la mesure est terminée.
-Elle vérifie d'abord si on a bien lancé une mesure et si on est bien en mode Shutdown, puis à chaque appel, elle lit le registre de configuration du capteur et vérifie si le bit `OS` est toujours à 0 (ce qui signifie que le capteur est en train de mesurer).
-Si ces 4 tests sont passés, cela veut dire que la mesure est terminée et que le flag interne `is_measuring_one_shot` est remis à `false` pour une prochaine mesure one-shot. Le capteur bascule lui-même en mode veille automatiquement à la fin de la mesure quand il remet le bit `OS` à `1`.
+Elle vérifie d'abord qu'une mesure a bien été demandée et que le capteur est en mode Shutdown. À chaque appel, elle lit le registre de configuration et contrôle l'état du bit `OS` (0 indiquant qu'une conversion est toujours en cours).  
+Dès que le bit `OS` repasse à 1, la conversion est achevée : le flag interne `is_measuring_one_shot` est remis à `false` et la fonction renvoie `true`. Le capteur repasse de lui-même en veille automatiquement.
 
 ```c
 bool TMP102_is_measure_ready(TMP102_t *tmp102) 
@@ -1949,7 +1945,7 @@ bool TMP102_is_measure_ready(TMP102_t *tmp102)
         return false; // Erreur I2C
     if (tmp102->config.OneShot == TMP102_OS_MEASURING) 
         return false; // La mesure est en cours
-
+ 
     tmp102->is_measuring_one_shot = false;
     return true;
 }
@@ -1957,7 +1953,7 @@ bool TMP102_is_measure_ready(TMP102_t *tmp102)
 
 #### Lire la température actualisée
 
-Une fois la mesure effectuée, il suffit simplement de lire le registre de température du capteur comme indiqué précédemment 
+Une fois la mesure achevée, il suffit de lire le registre de température du capteur comme décrit au paragraphe [10.7. Lecture du registre de température](#107-lecture-du-registre-de-température).
 
 ### 10.10. Utilisation de la bibliothèque dans le code
 
@@ -1991,7 +1987,7 @@ void initialiser_thermometre()
 }
 ```
 
-On commence par appeler `TMP102_init_default()` pour partir d'un état connu, puis on modifie uniquement les champs qui diffèrent des valeurs par défaut. Ici, on change le `Mode` (passe de `CONTINUOUS` à `SHUTDOWN`) et l'on confirme explicitement `ExtendedMode` à OFF. Tous les autres champs (polarité d'alerte, FaultQueue, etc.) gardent leurs valeurs par défaut définies dans `TMP102_init_default()` car nous ne les utilisont pas.
+On commence par appeler `TMP102_init_default()` pour partir d'un état connu, puis on modifie uniquement les champs qui diffèrent des valeurs par défaut. Ici, on bascule le `Mode` de `CONTINUOUS` à `SHUTDOWN` et l'on maintient explicitement `ExtendedMode` à OFF. Tous les autres champs (polarité d'alerte, FaultQueue, etc.) conservent leurs valeurs par défaut, car nous ne les utilisons pas.
 
 #### Cycle de mesure dans la boucle principale
 
@@ -2071,9 +2067,9 @@ La plage tempérée (24–26°C) crée une hystérésis naturelle : une fois dé
 <img src="media/mermaid_hysteresis.png">
 
 #### Logique de décision de la fenêtre
-Dans notre focntion `evaluer_température()` nous avons ajouté l'ouverture de la fenêtre sur la transition vers les états `CHAUD` et `FROID` en mode `HOME` et en l'absence de pluie :
-En dehors de ce scénario, la fenêtre reste sous le contrôle manuel de l'utilisateur ou est forcée par la détection de pluie.
- La logique devient asymétrique : une transition déclenche une action unique sur la fenêtre (sans la maintenir forcée).
+Dans notre fonction `evaluer_temperature()`, nous avons ajouté l'actionnement de la fenêtre lors des transitions vers les états `CHAUD` et `FROID`, lorsque le système est en mode `HOME` et en l'absence de pluie :  
+En dehors de ces transitions, la fenêtre reste sous le contrôle manuel de l'utilisateur ou est forcée par la détection de pluie.  
+La logique est volontairement asymétrique : une transition déclenche une action ponctuelle sur la fenêtre (sans la bloquer dans cette position).
 
 ```c
 void evaluer_temperature() 
@@ -2129,7 +2125,7 @@ void evaluer_temperature()
 
 La transition de `CHAUD` ou `FROID` vers `TEMPEREE` ne déclenche aucune action sur la fenêtre : on revient simplement à un état neutre, et l'utilisateur reprend le contrôle manuel. Les conditions `mode == HOME` et `!pluie_detectee` garantissent que la fenêtre ne s'ouvre jamais s'il pleut ou si la maison est inoccupée.
 
-#### Résumé des comportements global de la fenêtre
+#### Résumé du comportement global de la fenêtre
 
 <img src="media/mermaid_fenetre_global.png" width = 700>
 
@@ -2140,17 +2136,17 @@ La transition de `CHAUD` ou `FROID` vers `TEMPEREE` ne déclenche aucune action 
 ### 11.1. Configuration Bus I²C
 
 #### Branchement et configuration CubeMX
-Commun au capteur TMP102
-→ [Bus I²C (SDA/SCL)](#bus-ic-sdascl).
+Identique à la configuration du capteur TMP102 :  
+→ Cf. [10.1. Bus I²C (SDA/SCL)](#bus-ic-sdascl).
 
 #### Adresse I²C
-Nous n'avons pas changé l'adresse par défaut de l'écran car nous avons seulement deux composants aux adresses compatibles.  
-Nous utilisons donc l'adresse 0x27 (toujours décalée de 1 bit).
+Nous n'avons pas modifié l'adresse par défaut de l'écran car les deux composants sur le bus possèdent des adresses distinctes et compatibles.  
+Nous utilisons donc l'adresse `0x27`.
 
 ### 11.2. Intégration de la bibliothèque LCD I²C
 
 #### Modification de l'initialisation
-Comme nous avons défini l'objet I2C3 de l'HAL en `#define`, nous avons modifié la fonction d'initialisation de la biibliothèque pour stocker le pointeur vers un objet I2C de la HAL dans une variable globale interne au code source de la bibliothèque :
+Comme nous avons défini l'instance `I2C3` de la HAL via une macro (`#define BUS_I2C (&hi2c3)`), nous avons adapté la fonction d'initialisation de la bibliothèque afin d'enregistrer le pointeur du bus I²C dans une variable statique interne au fichier source :
 
 *Extrait de Bibliotheques/Ecran_LCD/Src/i2c-lcd.c :*
 ```c
@@ -2165,10 +2161,10 @@ void lcd_init (I2C_HandleTypeDef *bus_i2c)
 
 ### 11.3. Affichage des données en 16x2
 
-L'écran LCD 16x2 n'a pas beaucoup d'espace d'affichage (32 caractères au total). Nous avons donc optimisé la disposition des informations pour afficher le statut de la maison et l'état des trois capteurs :
+L'écran LCD 16×2 n'a pas beaucoup d'espace d'affichage (32 caractères au total). Nous avons donc optimisé la disposition des informations pour afficher le statut de la maison et l'état des trois capteurs :
 
-* **Ligne 1 :** Mode courant à gauche (`HOME` ou `AWAY`) et température à droite (ex: ` 18,38°C`).
-* **Ligne 2 :** Valeurs analogiques des capteurs de pluie et de gaz (ex: `Hu 1234  Ga 1234`).
+* **Ligne 1 :** Mode courant à gauche (`HOME` ou `AWAY`) et température à droite (ex. : ` 18,38°C`).
+* **Ligne 2 :** Valeurs analogiques des capteurs de pluie et de gaz (ex. : `Hu 1234  Ga 1234`).
 
 #### Initialisation
 
@@ -2185,17 +2181,16 @@ void initialiser_ecran()
 }
 ```
 
-1. **Configuration matérielle**   
-D'abord on appelle `lcd_init(BUS_I2C)` en lui passant le bus `I2C3` (défini par le `#define BUS_I2C (&hi2c3)`)  
-→ Cf. [Modification de l'initialisation](#modification-de-linitialisation)
-2. **Affichage du mode initial** : `afficher_mode_ecran()` écrit immédiatement le mode par défaut (`HOME`) en haut à gauche dès le début.
-3. **Message d'accueil**  
-On affiche un message de bienvenue personnalisé sur la ligne 2. Il reste visible pendant les 2 premières secondes, jusqu'à l'arrivée de la première mesure des capteurs qui viendra écraser cette seconde ligne.
+1. **Configuration matérielle** :  
+Appel de `lcd_init(BUS_I2C)` en passant le bus `I2C3` (défini par `#define BUS_I2C (&hi2c3)`).  
+→ Cf. [11.2. Modification de l'initialisation](#modification-de-linitialisation).
+2. **Affichage du mode initial** : `afficher_mode_ecran()` écrit immédiatement le mode par défaut (`HOME`) en haut à gauche dès le démarrage.
+3. **Message d'accueil** :  
+Un message de bienvenue personnalisé est affiché sur la ligne 2. Il reste visible pendant les 2 premières secondes, jusqu'à l'arrivée de la première mesure des capteurs qui vient écraser cette seconde ligne.
 
 #### HOME / AWAY
 
-L'affichage du mode est volontairement dissocié du rafraîchissement des mesures capteurs car on veut que le mode soit affiché dès le début et s'actualise uniquement lors d'un appui sur le bouton HOME.
-Tandis que les mesures capteurs sont actualisées toutes les 2 secondes.
+L'affichage du mode est volontairement dissocié du rafraîchissement des capteurs : le mode doit être affiché dès le démarrage et réagir instantanément lors d'un appui sur le bouton HOME, tandis que les mesures des capteurs sont actualisées toutes les 2 secondes.
 
 *Extrait de la section `USER CODE 0` du fichier `main.c` :*  
 ```c
@@ -2210,10 +2205,10 @@ void afficher_mode_ecran()
 }
 ```
 
-1. **Chaîne de caractères** : On utilise `snprintf` de la bibliothèque standard `<stdio>` pour formater la chaîne de manière à ce qu'elle fasse toujours exactement 4 caractères (`%4s`), remplaçant proprement `HOME` par `AWAY` (et inversement) sans toucher au reste de la ligne (la température).
+1. **Chaîne de caractères** : on utilise `snprintf` de la bibliothèque standard `<stdio.h>` pour formater la chaîne de manière à ce qu'elle fasse toujours exactement 4 caractères (`%4s`), remplaçant proprement `HOME` par `AWAY` (et inversement) sans altérer le reste de la ligne (la température).
 2. **Curseur** : le curseur est placé au début de la première ligne (`lcd_put_cur(0, 0)`).
 
-*NB : Cette fonction n'est appelée que sur la transition d'un MODE à l'autre de la machine à états et non pas en continu.*
+*Remarque : Cette fonction n'est appelée que lors des transitions de la machine à états du mode, et non en continu dans la boucle principale.*
 
 #### Valeurs capteurs
 
@@ -2248,11 +2243,11 @@ Cette fonction applique plusieurs choix de conception :
 1. **Préservation du mode** : la température est écrite à partir de la colonne 8 (`lcd_put_cur(0, 8)`). Les 8 premières colonnes de la ligne 1 restent ainsi totalement intactes, ce qui permet de conserver le texte `HOME` ou `AWAY`.
 
 2. **Formatage à largeur fixe** :
-* La température est cadrée sur 5 caractères grâce à `TMP102_temperature_to_string()` (ex: `"18,38"`).
+* La température est cadrée sur 5 caractères grâce à `TMP102_temperature_to_string()` (ex. : `"18,38"`).
 * Les valeurs ADC de pluie (`Hu` pour humidité) et de gaz (`Ga`) sont formatées avec `%4d`. Cela force l'affichage sur 4 chiffres, évitant que les chiffres d'une mesure précédente ne restent affichés si la valeur passe par exemple de 1024 à 95.
 
-3. **Synchronisation avec la dernière mesure prête** : dans la boucle `while(1)`, `afficher_capteurs_ecran()` n'est appelée que lorsque `TMP102_is_measure_ready(&thermometre)` devient vrai. Comme la mesure du TMP102 prend ~26 ms alors que les conversions ADC en DMA sont quasi instantanées, la température est toujours la dernière donnée disponible. L'affichage est donc rafraîchi une seule fois par cycle de 2 s avec des valeurs parfaitement synchronisées.
-Cf. [Cycle de mesure dans la boucle principale](#cycle-de-mesure-dans-la-boucle-principale)
+3. **Synchronisation avec la dernière mesure prête** : dans la boucle `while(1)`, `afficher_capteurs_ecran()` n'est appelée que lorsque `TMP102_is_measure_ready(&thermometre)` devient vrai. Comme la mesure du TMP102 prend ~10 ms alors que les conversions ADC en DMA sont quasi instantanées, la température est toujours la dernière donnée disponible. L'affichage est donc rafraîchi une seule fois par cycle de 2 s avec des valeurs parfaitement synchronisées.  
+→ Cf. [10.11. Cycle de mesure dans la boucle principale](#1011-cycle-de-mesure-dans-la-boucle-principale).
    
 4. **Caractère degré personnalisé (`\xDF`)** : la table ASCII standard ne contient pas le symbole degré `°`. Dans la mémoire ROM du contrôleur I²C de l'écran il y a une table de caractères où le caractère `°` est situé à l'adresse hexadécimale `1101 1111` en binaire soit `0xDF` en hexadécimal :  
 <img src="media/ecran_LCD_CGROM_ASCII_degre.jpg" alt="CGROM ASCII degre" width="500"></img>  
@@ -2261,39 +2256,39 @@ Cf. [Cycle de mesure dans la boucle principale](#cycle-de-mesure-dans-la-boucle-
 
 ## 12. — Bonus — Bibliothèque Bande LED RGB (WS2812B)
 
-Pour afficher l'état de la maison de manière visuelle, nous avons ajouté en bonus un module de 4 LED NeoPixel (WS2812B) chaînées. Contrairement aux LED classiques de la maison, chaque NeoPixel contient un circuit intégré qui pilote lui-même ses 3 LED (rouge, verte, bleue) via une PWM sur 8 bits (256 niveaux par couleur).
+Pour afficher l'état de la maison de manière visuelle, nous avons ajouté en bonus un module de 4 LEDs NeoPixel (WS2812B) chaînées. Contrairement aux LEDs classiques de la maison, chaque NeoPixel contient un circuit intégré qui pilote lui-même ses 3 puces LED (rouge, verte, bleue) via une PWM sur 8 bits (256 niveaux par couleur).
 
 ### 12.1. Analyse de la datasheet (protocole one-wire)
 
-*Extrait de la documentation sur les LED WS2812B (Fonctionnement LED NeoPixel WS2812B) :*
+*Extrait de la documentation sur les LEDs WS2812B (Fonctionnement LED NeoPixel WS2812B) :*
 
 <img src="media/mode_operatoire_datasheet_neopixel.png"/>
 
-Les LED n'ont qu'une seule broche d'entrée de données (DI) et une broche de sortie (DO) reliée à l'entrée de la LED suivante. Il n'y a pas de signal d'horloge séparé : la LED se synchronise sur les fronts du signal de données lui-même. Chaque bit occupe donc une période fixe de $1{,}25\, \mu\text{s}$ (soit une fréquence de $800\, \text{kHz}$), et c'est la durée de l'état haut au sein de cette période qui encode la valeur du bit :
+Les LEDs n'ont qu'une seule broche d'entrée de données (DI) et une broche de sortie (DO) reliée à l'entrée de la LED suivante. Il n'y a pas de signal d'horloge séparé : la LED se synchronise sur les fronts du signal de données lui-même. Chaque bit occupe donc une période fixe de $1{,}25\, \mu\text{s}$ (soit une fréquence de $800\, \text{kHz}$), et c'est la durée de l'état haut au sein de cette période qui encode la valeur du bit :
 
-| Bit | Etat haut | Etat bas | Total |
+| Bit | État haut | État bas | Total |
 | :--- | :--- | :--- | :--- |
 | 0 | 400 ns | 850 ns | 1,25 µs |
 | 1 | 800 ns | 450 ns | 1,25 µs |
 
-*Extrait de la documentation sur les LED WS2812B (Fonctionnement LED NeoPixel WS2812B) :*
+*Extrait de la documentation sur les LEDs WS2812B (Fonctionnement LED NeoPixel WS2812B) :*
 
 <img src="media/programmation_neopixel_datasheet.png"/>
 
-Le microcontrôleur n'est connecté qu'à la première LED de la chaîne et envoie à la suite **24 bits par LED** (8 bits par couleur, dans l'ordre Vert, Rouge, Bleu, bit de poids fort en premier. Chaque LED garde pour elle les 24 premiers bits qu'elle reçoit et retransmet les suivants à la LED suivante. Pour notre bande de 4 LED, une trame fait donc $4 \times 24 = 96$ bits.
+Le microcontrôleur n'est connecté qu'à la première LED de la chaîne et envoie à la suite **24 bits par LED** (8 bits par couleur, dans l'ordre Vert, Rouge, Bleu, bit de poids fort en premier). Chaque LED garde pour elle les 24 premiers bits qu'elle reçoit et retransmet les suivants à la LED suivante. Pour notre bande de 4 LEDs, une trame comporte donc $4 \times 24 = 96$ bits.
 
 Pour que chaque LED enregistre sa couleur, la trame doit être suivie d'un état bas d'au moins 50 µs (« reset ») : c'est ce temps de silence qui réinitialise le mécanisme de transmission, afin que la trame suivante soit de nouveau lue depuis la première LED.
 
-Durée d'une trame complète pour 4 LED :
+Durée d'une trame complète pour 4 LEDs :
 
 $$T_{trame} = 96 \times 1{,}25\, \mu\text{s} = 120\, \mu\text{s} \qquad T_{trame+reset} \approx 120\, \mu\text{s} + 50\, \mu\text{s} = 170\, \mu\text{s}$$
 
 ### 12.2. Principe d'implémentation : PWM + DMA
 
-Le protocole impose un signal dont les fronts doivent être précis à quelques dizaines de nanosecondes près. A 100 MHz, une période de bit de 1,25 µs ne représente que 125 cycles d'horloge, ce qui exclut les approches logicielles :
+Le protocole impose un signal dont les fronts doivent être précis à quelques dizaines de nanosecondes près. À 100 MHz, une période de bit de 1,25 µs ne représente que 125 cycles d'horloge, ce qui exclut les approches logicielles :
 
-**3. PWM de timer + DMA** :
-* Chaque bit est une période de PWM. Le rapport cyclique de la période encode la valeur du bit : un état haut court pour un 0 et un état haut long pour un 1.
+**Solution retenue : PWM de timer + DMA** :
+* Chaque bit est une période de PWM. Le rapport cyclique de la période encode la valeur du bit : un état haut court pour un bit 0 et un état haut long pour un bit 1.
 * Le DMA recopie, à chaque période, la valeur suivante dans le registre de comparaison `CCR1` du timer, depuis un tableau en mémoire. Le CPU ne fait que remplir le tableau, puis lance le transfert : il n'intervient plus pendant les 120 µs de la trame.
 
 Le signal est donc généré entièrement par le matériel, avec la précision du timer.
@@ -2302,17 +2297,17 @@ Le signal est donc généré entièrement par le matériel, avec la précision d
 
 #### Branchement
 
-La bande est alimentée en 3V3 et son entrée de données DI est connectée à PB6 (D10), qui correspond à TIM4 CH1 (cf. [Tableau de brochage final](#tableau-de-brochage-final)).
+La bande est alimentée en 3,3 V et son entrée de données DI est connectée à PB6 (D10), qui correspond à TIM4 CH1 (cf. [3.1. Tableau de brochage final](#31-tableau-de-brochage-final)).
 
 | Signal | Broche |
 | :--- | :--- |
-| VCC | 3V3 |
+| VCC | 3,3 V |
 | GND | GND |
 | DI | PB6 (D10) — TIM4 CH1 |
 
 #### Calcul des paramètres du Timer 4
 
-Comme pour les autres timers, le Timer 4 est sur l'horloge à 100 MHz.
+Comme pour les autres timers, le Timer 4 est alimenté par l'horloge à 100 MHz.
 
 Les contraintes pour le calcul sont :
 - La période d'un bit est de $1{,}25\, \mu\text{s}$, soit une fréquence PWM de $800\, \text{kHz}$.
@@ -2341,11 +2336,11 @@ Les durées à l'état bas sont donc : $(125 - 40) \times 10\, \text{ns} = 850\,
 | :--- | :--- | :--- |
 | Mode | PWM Generation CH1 | Signal de sortie sur PB6 |
 | Prescaler | 0 | Résolution maximale de 10 ns |
-| Counter Period (ARR) | 125-1 | Période de 1,25 µs (800 kHz) |
+| Counter Period (ARR) | 125 - 1 | Période de 1,25 µs (800 kHz) |
 | PWM Mode | PWM mode 1 | Sortie à l'état haut tant que le compteur est inférieur à `CCR1` |
 | Output compare preload | Enable | Voir ci-dessous |
 
-L'Output compare preload est activé car le DMA écrit la prochaine valeur de `CCR1` pendant que la période en cours n'est pas terminée. Avec le preload, la nouvelle valeur est mise en attente et n'est appliquée qu'au début de la période suivante : la largeur d'impulsion d'un bit n'est donc jamais modifiée en cours de route.
+L'*Output compare preload* est activé car le DMA écrit la prochaine valeur de `CCR1` pendant que la période en cours n'est pas terminée. Avec le preload, la nouvelle valeur est mise en attente et n'est appliquée qu'au début de la période suivante : la largeur d'impulsion d'un bit n'est donc jamais modifiée en cours de route.
 
 #### Configuration du DMA
 
@@ -2367,28 +2362,28 @@ Le mode Normal (et non Circular comme pour l'ADC) est choisi car une trame doit 
 
 <img src="media/stm32cubeide_timer_4_NVIC.png"/>
 
-- DMA1 stream0 global interrupt : activée par défaut
+- DMA1 Stream 0 global interrupt : activée par défaut
 - TIM4 global interrupt : désactivée. Aucune interruption du timer n'est utile.
 
 ### 12.4. Structure de la bibliothèque
 
 #### Vue d'ensemble
 
-La bibliothèque est organisée autour de deux fichiers : [`bande-led.h`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/architecture_numeriques_embarquees/STM32CubeIDE_v1.19.0/Bibliotheques/Bande_LED/Inc/bande-led.h) pour les définitions et l'accès externe, et [`bande-led.c`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/architecture_numeriques_embarquees/STM32CubeIDE_v1.19.0/Bibliotheques/Bande_LED/Src/bande-led.c) pour l'implémentation. Comme pour le TMP102, la bibliothèque ne dépend d'aucun timer ou canal en particulier : ils sont passés en paramètre à l'initialisation, et le `main.c` reste le seul endroit où ils sont choisis.
+La bibliothèque est organisée autour de deux fichiers : `bande-led.h` pour les définitions et l'accès externe, et `bande-led.c` pour l'implémentation. Comme pour le TMP102, la bibliothèque ne dépend d'aucun timer ou canal en particulier : ils sont passés en paramètre à l'initialisation, et le `main.c` reste le seul endroit où ils sont choisis.
 
 Les fonctions publiques sont :
 
 | Fonction | Rôle |
 | :--- | :--- |
 | `BandeLED_Init()` | Alloue et initialise l'objet bande |
-| `BandeLED_show()` | Encode l'état de toutes les LED et lance l'envoi par DMA |
+| `BandeLED_show()` | Encode l'état de toutes les LEDs et lance l'envoi par DMA |
 | `BandeLED_allumer()` / `BandeLED_eteindre()` | Allume / éteint toute la bande |
 | `BandeLED_set_led_state()` | Allume / éteint une LED |
 | `BandeLED_set_led_hexa()` / `BandeLED_set_led_rgb()` | Fixe la couleur d'une LED |
 | `BandeLED_set_led_luminosity()` | Fixe la luminosité d'une LED |
 | `BandeLED_demo()` | Démonstration non bloquante |
 
-Nous avons fait générer par IA la fonction `Roue_Chromatique()` et `Bande_LED_demo()`.
+Nous avons fait générer par IA les fonctions `Roue_Chromatique()` et `Bande_LED_demo()`.
 Comme `Roue_Chromatique()` est utilisée uniquement par la démonstration, elle est déclarée `static` pour ne pas être exposée.
 
 #### Les structures `BL_RGB_t` et `BandeLED_t`
@@ -2412,8 +2407,8 @@ L'objet `BandeLED_t` regroupe l'ensemble de la bande :
 ```c
 typedef struct {
     bool                power;            // Interrupteur général de la bande
-    int                 nb_leds;          // Nombre de LED de la chaîne
-    BL_RGB_t*           leds;             // Tableau des LED
+    int                 nb_leds;          // Nombre de LEDs de la chaîne
+    BL_RGB_t*           leds;             // Tableau des LEDs
     TIM_HandleTypeDef*  PWM_timer;        // Timer utilisé (htim4)
     uint32_t            PWM_channel;      // Canal du timer (TIM_CHANNEL_1)
     uint32_t*           dma_buffer;       // Tableau de valeurs de CCR1 à envoyer
@@ -2426,7 +2421,7 @@ Le timer est stocké dans la structure, comme `busI2C` pour le TMP102, pour ne r
 
 #### Define
 
-Pour ne jamais rien hardcoder, nous avons utilisé une `#define` pour chaque valeur issue de la datasheet, ainsi que pour les couleurs courantes :
+Pour ne jamais rien hardcoder, nous avons utilisé des `#define` pour chaque valeur issue de la datasheet, ainsi que pour les couleurs courantes :
 
 *Extraits de `Bibliotheques/Bande_LED/Inc/bande-led.h`:*
 
@@ -2449,7 +2444,7 @@ Pour ne jamais rien hardcoder, nous avons utilisé une `#define` pour chaque val
 ...
 ```
 
-- Les durées sont exprimées en nanosecondes comme dans la datasheet : elles sont converties en tics du timer par la bibliothèque (cf. [12.6](#126-encodage-et-envoi-de-la-trame)). Si on change la fréquence du timer, rien ne change dans la bibliothèque.
+- Les durées sont exprimées en nanosecondes comme dans la datasheet : elles sont converties en tics du timer par la bibliothèque (cf. [12.6. Encodage et envoi de la trame](#126-encodage-et-envoi-de-la-trame)). Si on change la fréquence du timer, rien ne change dans la bibliothèque.
 - Les trois `BL_*_SEQ_RANG` donnent l'ordre d'envoi des couleurs (Vert, Rouge, Bleu). Si on utilisait une bande avec un autre ordre (par exemple RVB), il suffirait de modifier ces trois valeurs.
 - Les couleurs sont au format `0xRRGGBB` pour pouvoir les écrire naturellement, comme en HTML/CSS.
 
@@ -2467,25 +2462,25 @@ Les étapes sont les suivantes :
 ```c
 bande_led->cycles_delai_maj = (BL_DELAI_MAJ_nS / (BL_NSEC_IN_1_SEC / BL_FREQ_CYCLE_PWM)) + 1;
 ```
-La trame doit être suivie d'au moins 50 µs d'état bas. Comme une période de bit dure $\frac{100\text{MHz}}{800\,000} = 1250\, \text{ns}$, il faut $\frac{50\,000}{1250} = 40$ périodes à zéro. Le `+ 1` garantit que le délai est toujours **supérieur** à 50 µs, même si la division entière arrondissait à l'inférieur avec d'autres paramètres. On obtient donc **41 périodes**, soit $41 \times 1{,}25\, \mu\text{s} = 51{,}25\, \mu\text{s}$.
+La trame doit être suivie d'au moins 50 µs d'état bas. Comme une période de bit dure $\frac{100\,\text{MHz}}{800\,000} = 1250\, \text{ns}$, il faut $\frac{50\,000}{1250} = 40$ périodes à zéro. Le `+ 1` garantit que le délai est toujours **supérieur** à 50 µs, même si la division entière arrondissait à l'inférieur avec d'autres paramètres. On obtient donc **41 périodes**, soit $41 \times 1{,}25\, \mu\text{s} = 51{,}25\, \mu\text{s}$.
 
-2. **Enregistrement du matériel :** le timer, le canal, la fréquence de comptage du timer et le nombre de LED sont mémorisés dans l'objet.
+2. **Enregistrement du matériel :** le timer, le canal, la fréquence de comptage du timer et le nombre de LEDs sont mémorisés dans l'objet.
 
 3. **Allocation du tableau pour le DMA :**
 ```c
 bande_led->dma_buffer = malloc((nb_leds * 3 * 8 + bande_led->cycles_delai_maj) * sizeof(uint32_t));
 ```
-Il faut une case par bit à envoyer ($3 \times 8 = 24$ bits par LED) plus une case par période de reset. Chaque case est un `uint32_t` pour correspondre à la largeur Word configurée dans le DMA. Pour nos 4 LED :
+Il faut une case par bit à envoyer ($3 \times 8 = 24$ bits par LED) plus une case par période de reset. Chaque case est un `uint32_t` pour correspondre à la largeur Word configurée dans le DMA. Pour nos 4 LEDs :
 $$(4 \times 24 + 41) \times 4\, \text{octets} = 137 \times 4 = 548\, \text{octets}$$
 L'allocation dynamique permet à la bibliothèque de s'adapter à **n'importe quelle longueur de bande** simplement en changeant `NB_LEDS_BANDE_RGB` dans le `main.c`, sans modifier la bibliothèque. Le tableau `leds` est alloué de la même manière.
 
-4. **Valeurs par défaut :** chaque LED est initialisée à noir (0, 0, 0), avec une luminosité maximale (`alpha = 255`) et allumée (`power = true`). On part ainsi d'un état connu, comme pour `TMP102_init_default()`.
+4. **Valeurs par défaut :** chaque LED est initialisée en noir (0, 0, 0), avec une luminosité maximale (`alpha = 255`) et allumée (`power = true`). On part ainsi d'un état connu, comme pour `TMP102_init_default()`.
 
-5. **Envoi de la première trame** : `BandeLED_show()` puis `BandeLED_allumer()` envoient l'état initial (noir) pour que les LED soient dans un état défini dès le démarrage plutôt que dans un état aléatoire à la mise sous tension.
+5. **Envoi de la première trame** : `BandeLED_show()` puis `BandeLED_allumer()` envoient l'état initial (noir) pour que les LEDs soient dans un état défini dès le démarrage plutôt que dans un état aléatoire à la mise sous tension.
 
 ### 12.6. Encodage et envoi de la trame
 
-La fonction `BandeLED_show()` convertit l'état de toutes les LED en tableau de valeurs de `CCR1`, puis lance son envoi par DMA.
+La fonction `BandeLED_show()` convertit l'état de toutes les LEDs en tableau de valeurs de `CCR1`, puis lance son envoi par DMA.
 
 1. **Conversion des durées en tics du timer :**
 ```c
@@ -2495,7 +2490,7 @@ int pulse_bit_1_tics = BL_PULSE_BIT_1_nS / nS_per_timer_tic;
 ```
 Avec `freq_timer = 100 000 000` Hz : $\frac{10^9}{10^8} = 10\, \text{ns par tic}$, donc $\frac{400}{10} = 40$ tics pour un 0 et $\frac{800}{10} = 80$ tics pour un 1. On retrouve les valeurs calculées dans la configuration du timer.
 
-2. **Parcours des LED et de leurs trois composantes :** pour chaque LED, une boucle sur le rang de la composante (1 à 3) sélectionne la couleur à envoyer selon l'ordre de la datasheet :
+2. **Parcours des LEDs et de leurs trois composantes :** pour chaque LED, une boucle sur le rang de la composante (1 à 3) sélectionne la couleur à envoyer selon l'ordre de la datasheet :
 ```c
 switch (composante)
 {
@@ -2557,7 +2552,7 @@ __HAL_TIM_SET_COUNTER(bande_led->PWM_timer, 0);
 bool status = (HAL_TIM_PWM_Start_DMA(bande_led->PWM_timer, bande_led->PWM_channel, bande_led->dma_buffer, dma_index) == HAL_OK);
 return status;
 ```
-On arrête d'abord proprement un éventuel transfert précédent, car la HAL refuse de démarrer un nouveau transfert si le canal est déjà occupé. Le compteur est ensuite remis à 0 pour que la première période commence au début. Enfin `HAL_TIM_PWM_Start_DMA()` reçoit le tableau et sa longueur en nombre de cases (ici $137$ pour 4 LED) : le DMA envoie alors les 96 bits suivis des 41 périodes de reset, soit une durée de :
+On arrête d'abord proprement un éventuel transfert précédent, car la HAL refuse de démarrer un nouveau transfert si le canal est déjà occupé. Le compteur est ensuite remis à 0 pour que la première période commence au début. Enfin `HAL_TIM_PWM_Start_DMA()` reçoit le tableau et sa longueur en nombre de cases (ici $137$ pour 4 LEDs) : le DMA envoie alors les 96 bits suivis des 41 périodes de reset, soit une durée de :
 
 $$137 \times 1{,}25\, \mu\text{s} \approx 171\, \mu\text{s}$$
 
@@ -2567,7 +2562,7 @@ La fonction retourne `true` si le DMA a bien démarré, et **ne bloque pas** : l
 
 Les fonctions `BandeLED_set_led_*` ne font que **modifier la mémoire** : aucune ne lance de transmission. L'envoi n'a lieu que lors de l'appel de `BandeLED_show()`.
 
-Cette séparation est volontaire : une seule trame contient l'état de toutes les LED. On peut ainsi modifier autant de LED que nécessaire, puis envoyer **une seule trame** au lieu d'une par modification.
+Cette séparation est volontaire : une seule trame contient l'état de toutes les LEDs. On peut ainsi modifier autant de LEDs que nécessaire, puis envoyer **une seule trame** au lieu d'une par modification.
 
 Toutes les fonctions vérifient que l'indice de LED est valide avant d'écrire, pour ne jamais écrire en dehors du tableau :
 ```c
@@ -2588,7 +2583,7 @@ bande_led->leds[led_id].bleu  = hexa & 0xFF;
 
 #### Fonction de démonstration
 
-La bibliothèque contient aussi `BandeLED_demo()`, non utilisée dans le `main.c` final, qui permet de tester rapidement la bande. Elle est conçue pour être appelée à 20 Hz sans bloquer : un compteur statique incrémenté à chaque appel fait défiler deux LED sur la roue chromatique à des vitesses différentes (fonction `Roue_Chromatique()` qui convertit une position de 0 à 255 en couleur RGB), et fait clignoter deux autres LED en blanc à des fréquences différentes, puis envoie la trame avec `BandeLED_show()`.
+La bibliothèque contient aussi `BandeLED_demo()`, non utilisée dans le `main.c` final, qui permet de tester rapidement la bande. Elle est conçue pour être appelée à 20 Hz sans bloquer : un compteur statique incrémenté à chaque appel fait défiler deux LEDs sur la roue chromatique à des vitesses différentes (fonction `Roue_Chromatique()` qui convertit une position de 0 à 255 en couleur RGB), et fait clignoter deux autres LEDs en blanc à des fréquences différentes, puis envoie la trame avec `BandeLED_show()`.
 
 ### 12.8. Utilisation dans le code : tableau de bord LED
 
@@ -2624,7 +2619,7 @@ Les paramètres matériels et d'affichage sont définis par des `#define` en tê
 ```
 
 - `FREQ_TIMER_BANDE_LED` vaut 100 MHz car c'est la fréquence de comptage du Timer 4 avec `PSC = 0`. Cette valeur doit correspondre à la configuration CubeMX, car la bibliothèque s'en sert pour convertir les durées de la datasheet en tics.
-- Les quatre `LED_*` associent un **nom fonctionnel** à la **position physique** de la LED dans la chaîne (indice 0 = première LED reliée au microcontrôleur), de la même manière que `LED_t` associe un nom à un label matériel ([4.3](#43-structure-pour-les-leds)).
+- Les quatre `LED_*` associent un **nom fonctionnel** à la **position physique** de la LED dans la chaîne (indice 0 = première LED reliée au microcontrôleur), de la même manière que `LED_t` associe un nom à un label matériel ([4.3. Structure pour les LEDs](#43-structure-pour-les-leds)).
 - La luminosité est volontairement limitée à $\frac{10}{255} \approx 4\,\%$ : les NeoPixels sont très lumineux à pleine puissance, et cette valeur suffit à les voir clairement tout en limitant la consommation de la bande.
 
 L'initialisation est regroupée dans la fonction `initialiser_bande_led()`, appelée une seule fois au début du `main()` :
@@ -2654,9 +2649,9 @@ void initialiser_bande_led()
 ```
 
 1. `BandeLED_Init()` crée l'objet avec les paramètres matériels.
-2. La luminosité de base est appliquée à toutes les LED.
-3. **Les couleurs des trois LED qui n'ont qu'une seule signification sont affectées une seule fois ici** (alarme gaz, alarme intrusion, capteurs). Comme la couleur est mémorisée indépendamment de l'état `power`, il suffira ensuite de les allumer et de les éteindre sans jamais les recalculer. La LED de température est la seule dont la couleur varie, elle est donc gérée dans la boucle.
-4. Toutes les LED sont éteintes (`power = false`) pour démarrer proprement, puis `BandeLED_show()` envoie cet état.
+2. La luminosité de base est appliquée à toutes les LEDs.
+3. **Les couleurs des trois LEDs qui n'ont qu'une seule signification sont affectées une seule fois ici** (alarme gaz, alarme intrusion, capteurs). Comme la couleur est mémorisée indépendamment de l'état `power`, il suffira ensuite de les allumer et de les éteindre sans jamais les recalculer. La LED de température est la seule dont la couleur varie, elle est donc gérée dans la boucle.
+4. Toutes les LEDs sont éteintes (`power = false`) pour démarrer proprement, puis `BandeLED_show()` envoie cet état.
 
 #### Le tableau de bord
 
@@ -2669,7 +2664,7 @@ Les 4 NeoPixels affichent l'état de la maison :
 | `LED_BAS_DROITE` (0) | Alarme intrusion | Orange | Clignote à 2 Hz pendant l'alarme |
 | `LED_BAS_GAUCHE` (3) | Tranche de température | Bleu / Vert / Orange | Froid / tempérée / chaude |
 
-Les trois premières LED **recopient l'état des LED discrètes déjà gérées** : `led_capteurs`, `led_alarme_gaz` et `led_alarme_intrusion` ([4.3](#43-structure-pour-les-leds)). Les clignotements restent donc calculés à un seul endroit par le compteur partagé ([13.1](#131-clignotement-non-bloquant-par-compteur-partagé)), et les NeoPixels n'ont pas leur propre logique de temporisation : ils affichent simplement le même état que les LED soudées.
+Les trois premières LEDs **recopient l'état des LEDs discrètes déjà gérées** : `led_capteurs`, `led_alarme_gaz` et `led_alarme_intrusion` ([4.3. Structure pour les LEDs](#43-structure-pour-les-leds)). Les clignotements restent donc calculés à un seul endroit par le compteur partagé ([13.1. Clignotement non bloquant par compteur partagé](#131-clignotement-non-bloquant-par-compteur-partagé)), et les NeoPixels n'ont pas leur propre logique de temporisation : ils affichent simplement le même état que les LEDs soudées.
 
 #### Mise à jour périodique
 
@@ -2703,9 +2698,9 @@ void update_bande_led()
 }
 ```
 
-1. **Recopie des états :** les états `state` des trois LED discrètes sont copiés dans le `power` des LED correspondantes. Si l'état n'a pas changé, la valeur écrite est identique.
-2. **Tranche de température :** la LED est toujours allumée, et c'est sa couleur qui change selon la variable `temperature` calculée par `evaluer_temperature()` ([10.12](#1012-gestion-automatique-de-la-fenêtre-par-la-température)). Le `default` éteint la LED si la valeur n'est pas reconnue.
-3. **Envoi d'une seule trame** avec `BandeLED_show()` après toutes les modifications ([12.7](#127-modification-de-létat-des-leds)).
+1. **Recopie des états :** les états `state` des trois LEDs discrètes sont copiés dans le `power` des LEDs correspondantes. Si l'état n'a pas changé, la valeur écrite est identique.
+2. **Tranche de température :** la LED est toujours allumée, et c'est sa couleur qui change selon la variable `temperature` calculée par `evaluer_temperature()` ([10.12. Gestion automatique de la fenêtre selon la température](#1012-gestion-automatique-de-la-fenêtre-selon-la-température)). Le `default` éteint la LED si la valeur n'est pas reconnue.
+3. **Envoi d'une seule trame** avec `BandeLED_show()` après toutes les modifications ([12.7. Modification de l'état des LEDs](#127-modification-de-létat-des-leds)).
 
 Cette fonction est appelée dans la boucle `while(1)` **à la cadence de 20 Hz** du Timer 5, c'est-à-dire sur le même flag que le filtre anti-rebond et le cycle des alarmes :
 
@@ -2719,7 +2714,7 @@ if (timer_debounce_flag) {
 ```
 
 Cette cadence est justifiée de deux manières :
-- **Cohérence avec les alarmes :** l'alarme gaz clignote à 10 Hz, donc sa LED change d'état toutes les 50 ms ([13.1](#131-clignotement-non-bloquant-par-compteur-partagé)). `update_cycle_alarmes()` et `update_bande_led()` étant appelées à la suite sur le même tic de 20 Hz, chaque changement d'état est envoyé aux NeoPixels dans le même tic, sans retard ni état manqué.
+- **Cohérence avec les alarmes :** l'alarme gaz clignote à 10 Hz, donc sa LED change d'état toutes les 50 ms ([13.1. Clignotement non bloquant par compteur partagé](#131-clignotement-non-bloquant-par-compteur-partagé)). `update_cycle_alarmes()` et `update_bande_led()` étant appelées à la suite sur le même tic de 20 Hz, chaque changement d'état est envoyé aux NeoPixels dans le même tic, sans retard ni état manqué.
 - **Temps de transmission :** une trame dure $\approx 171\, \mu\text{s}$, soit environ 300 fois moins que les 50 ms qui séparent deux mises à jour : la transmission d'une trame est toujours terminée bien avant la suivante.
 
 #### Respect de la règle « pas de blocage »
@@ -2733,12 +2728,12 @@ Dans le prolongement de la règle de [3.3. Organisation logicielle](#33-organisa
 
 ### 13.1. Clignotement non bloquant par compteur partagé
 
-Pour gérer les différentes alarmes sans interrompre l'exécution du programme, nous avons exploité le Timer 5, configuré à 20 Hz (soit une interruption toutes les 50 ms). À chaque itération de ce timer, un compteur `global blink_counter_alarm` est incrémenté.
-Le clignotement de chaque LED est déterminé en déterminant le nombre de périodes du Timer de 20Hz qui doivent s'écouler pour atteindre la demi-période de la fréquence de clignotement correspondant à l'inversion de l'état de la LED.  
-- L'alarme gaz est définie pour clignoter à 10 Hz. Ainsi, sa demi-période est atteinte à 20Hz, ce qui correspond à la fréquence du Timer 5. La LED s'inverse donc à chaque tic du Timer 5. 
-- L'alarme intrusion clignote à 2 Hz. Ainsi, sa demi-période est atteinte à 4Hz, ce qui correspond exactement à 1/5eme de la fréquence du Timer 5. La LED s'inverse donc tous les 5 tics du Timer 5.
+Pour gérer les différentes alarmes sans interrompre l'exécution du programme, nous avons exploité le Timer 5, configuré à 20 Hz (soit une interruption toutes les 50 ms). À chaque itération de ce timer, un compteur global `blink_counter_alarm` est incrémenté.
+Le clignotement de chaque LED est obtenu en calculant le nombre de périodes du Timer à 20 Hz qui doivent s'écouler pour atteindre la demi-période de la fréquence de clignotement cible, moment où l'état de la LED s'inverse :  
+- L'alarme gaz est définie pour clignoter à 10 Hz. Ainsi, sa demi-période est atteinte à 20 Hz, ce qui correspond à la fréquence du Timer 5. La LED s'inverse donc à chaque tic du Timer 5. 
+- L'alarme intrusion clignote à 2 Hz. Ainsi, sa demi-période est atteinte à 4 Hz, ce qui correspond exactement à un cinquième ($5$ tics) de la fréquence du Timer 5. La LED s'inverse donc tous les 5 tics du Timer 5.
 
-Ce mécanisme est fondamentalement non bloquant : au lieu d'utiliser des délais logiciels d'attente (`HAL_Delay`), le microcontrôleur évalue instantanément une simple condition mathématique (avec un modulo sur le compteur de tics du timer 5) à chaque fin de periode, afin de déterminer s'il faut inverser ou non l'état de la broche. Une fois l'évaluation terminée, il poursuit immédiatement l'exécution de la boucle principale.
+Ce mécanisme est fondamentalement non bloquant : au lieu d'utiliser des délais logiciels d'attente (`HAL_Delay`), le microcontrôleur évalue instantanément une simple condition mathématique (avec un modulo sur le compteur de tics du Timer 5) à chaque fin de période, afin de déterminer s'il faut inverser ou non l'état de la broche. Une fois l'évaluation terminée, il poursuit immédiatement l'exécution de la boucle principale.
 
 ### 13.2. Gestion du buzzer avec fréquences distinctes
 
@@ -2760,7 +2755,7 @@ On sélectionne une fréquence de comptage de **$25\text{ MHz}$**, qui est un di
 
 $$\implies \text{PSC} = \frac{100\, \text{MHz}}{25\, \text{MHz}} - 1 = 4 - 1$$
 
-À partir de cette fréquence de base de $25\text{ MHz}$, nous calculons la période (`ARR`) et l'impulsion (`CCR`) pour chaque alarme qui correspond à la moitié de la période de la fréquence souhaitée. On divise par 2 pour obtenir un rapport cyclique de 50% (onde carrée) pour le buzzer :
+À partir de cette fréquence de base de $25\text{ MHz}$, nous calculons la période (`ARR`) et l'impulsion (`CCR`) pour chaque alarme. La valeur de comparaison `CCR` est fixée à la moitié de la période afin d'obtenir un rapport cyclique de 50 % (onde carrée) pour le buzzer :
 
 - Alarme Gaz (440 Hz) :
   $$ARR_{440\text{Hz}} = \frac{25\,000\,000}{440} - 1 = 56\,818 - 1$$
@@ -2776,7 +2771,7 @@ $$\implies \text{PSC} = \frac{100\, \text{MHz}}{25\, \text{MHz}} - 1 = 4 - 1$$
 
 #### Fréquences distinctes pour chaque alarme  
 
-Pour permettre à l'utilisateur de différencier les alerte à l'oreille, la fréquence du signal est ajustée de manière dynamique via la fonction `frequence_buzzer()`. Cette fonction recalcule et met à jour en temps réel la période (registre `ARR`) et l'impulsion (registre `CCR`) du Timer 3.
+Pour permettre à l'utilisateur de différencier les alertes à l'oreille, la fréquence du signal est ajustée de manière dynamique via la fonction `frequence_buzzer()`. Cette fonction recalcule et met à jour en temps réel la période (registre `ARR`) et l'impulsion (registre `CCR`) du Timer 3.
 ```c
 void frequence_buzzer(int frequence) 
 {
@@ -2786,18 +2781,19 @@ void frequence_buzzer(int frequence)
 	__HAL_TIM_SET_COMPARE(TIMER_BUZZER, CANAL_BUZZER, pulse_tics);
 }
 ```
- Nous avons donc choisit des fréquences distinctes pour chaque alarme :
+Nous avons donc choisi des fréquences distinctes pour chaque alarme :
 - Alarme gaz : 440 Hz (note La4 fondamentale), produisant un son plus aigu avec un rythme rapide.
 - Alarme intrusion : 384 Hz, produisant un son légèrement plus grave.
 
-De plus, l'activation du buzzer est synchronisée avec le retour visuel : le signal PWM du buzzer est activé uniquement lorsque la LED de l'alarme correspondante est à l'état haut et le buzzer se tait lorsque la LED séteint, calquant ainsi exactement le rythme visuel de la LED. On obtient donc deux signatures distinctes pour chaque alarme.
+De plus, l'activation du buzzer est synchronisée avec le retour visuel : le signal PWM du buzzer est activé uniquement lorsque la LED de l'alarme correspondante est à l'état haut et le buzzer se tait lorsque la LED s'éteint, suivant ainsi le rythme visuel de la LED. On obtient donc deux signatures distinctes pour chaque alarme.
 
 ### 13.3. Cas simultané : alternance gaz / intrusion
 
-Lorsque les deux alarmes sont actives simultanément, les deux LED continuent de clignoter indépendamment selon leur propre fréquence : la LED rouge du gaz à 10 Hz (demi-période de 50 ms) et la LED jaune de l'intrusion à 2 Hz (demi-période de 250 ms).
+Lorsque les deux alarmes sont actives simultanément, les deux LEDs continuent de clignoter indépendamment selon leur propre fréquence : la LED rouge du gaz à 10 Hz (demi-période de 50 ms) et la LED jaune de l'intrusion à 2 Hz (demi-période de 250 ms).
 
 Le buzzer ne peut produire qu'une seule fréquence à la fois. Il alterne donc entre les deux signatures sonores par phases de 250 ms : d'abord 384 Hz pour l'intrusion, puis 440 Hz pour le gaz. Pendant la phase gaz, le buzzer suit le clignotement rapide de la LED rouge et se tait lorsque celle-ci est éteinte. Ce cycle de 500 ms se répète tant que les deux alarmes restent actives.
 
 ![one_note_cycle_alarmes](media/onenote_cycle_alarmes.png "Cycle des alarmes gaz et intrusion") 
 
-Cette alternance permet de distinguer auditivement les deux alarmes sans empêcher leur signalisation visuelle simultanée : chaque LED conserve son propre rythme, même pendant la phase sonore de l'autre alarme.
+Cette alternance permet de distinguer auditivement les deux alarmes sans empêcher leur signalisation visuelle simultanée : chaque LED conserve son rythme propre, même pendant la phase sonore de l'autre alarme.
+

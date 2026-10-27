@@ -962,6 +962,7 @@ Le registre de comparaison CCR est mis à jour avec la valeur de `pulse_tics` vi
 
 ### 9.2. Gestion de la fenêtre
 
+#### États de la fenêtre
 Le servo de la fenêtre est commandé par une variable globale `fenetre` avec trois états possibles : `INIT`, `FERMEE` et `OUVERTE`. L'état `INIT` correspond à l'initialisation du système, `FERMEE` à la fenêtre fermée et `OUVERTE` à la fenêtre ouverte. La transition entre ces états est d'abord déclenchée par les commandes de l'utilisateur via le bouton fenêtre puis plus tard, par les conditions environnementales (cf TODO redirection temparature et pluie).
 
 #### Fonction `commande_fenetre()` — envoi uniquement sur changement d'état

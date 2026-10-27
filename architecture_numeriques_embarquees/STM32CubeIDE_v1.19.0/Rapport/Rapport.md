@@ -62,8 +62,8 @@
   - [10.8. Conversion et affichage de la température](#108-conversion-et-affichage-de-la-temp%C3%A9rature)
   - [10.9. Mesure One-Shot en mode Shutdown](#109-mesure-one-shot-en-mode-shutdown)
   - [10.10. Utilisation de la bibliothèque dans le code](#1010-utilisation-de-la-biblioth%C3%A8que-dans-le-code)
-  - [10.11. Gestion automatique de la fenêtre par la température](#1011-gestion-automatique-de-la-fen%C3%AAtre-par-la-temp%C3%A9rature)
-  - [10.12. Analyse des trames I²C](#1012-analyse-des-trames-ic)
+  - [10.11. Analyse des trames I²C](#1011-analyse-des-trames-ic)
+  - [10.12. Gestion automatique de la fenêtre par la température](#1012-gestion-automatique-de-la-fen%C3%AAtre-par-la-temp%C3%A9rature)
 - [11. — Scénario 7 — Intégration et affichage LCD](#11--sc%C3%A9nario-7--int%C3%A9gration-et-affichage-lcd)
   - [11.1. Configuration Bus I²C](#111-configuration-bus-ic)
   - [11.2. Intégration de la bibliothèque LCD I²C](#112-int%C3%A9gration-de-la-biblioth%C3%A8que-lcd-ic)
@@ -1012,36 +1012,28 @@ La prise en compte de l'appui sur le bouton de la fenêtre dépend directement d
           // Actions
           presence_detectee = false;
           alarme_intrusion = false;
-
-          if (pluie_detectee)
+          
+          // Gestion du bouton de fenêtre
+          if (bouton_fenetre_appuye) 
           {
-            fenetre = FERMEE;
-      	    bouton_fenetre_appuye = false;
-          } 
-          else 
-          {
-            // Gestion du bouton de fenêtre
-            if (bouton_fenetre_appuye) 
+            bouton_fenetre_appuye = false;
+            switch(fenetre)
             {
-              bouton_fenetre_appuye = false;
-              switch(fenetre)
+              case OUVERTE: 
               {
-                case OUVERTE: 
-                {
-                  fenetre = FERMEE;
-                  printf("Je ferme la fenetre\r\n");
-                  break;
-                }
-                case FERMEE: 
-                {
-                  fenetre = OUVERTE;
-                  printf("J'ouvre la fenetre\r\n");
-                  break;
-                }
-                case INIT:
-                  // pris en charge au premier appel de commande_fenetre()
-                  break;
+                fenetre = FERMEE;
+                printf("Je ferme la fenetre\r\n");
+                break;
               }
+              case FERMEE: 
+              {
+                fenetre = OUVERTE;
+                printf("J'ouvre la fenetre\r\n");
+                break;
+              }
+              case INIT:
+                // pris en charge au premier appel de commande_fenetre()
+                break;
             }
           }
         }
@@ -1187,13 +1179,12 @@ L'ADC1 avec sa résolution 12 bits produit une valeur entre 0 et $2^{12}-1 = 409
 Nous avons mesuré que la valeur ADC reste sous 1000 quand le capteur est sec et monte directement à son maximum 4095 en présence ne serait-ce que d'un doigt. Nous avons donc retenu `SEUIL_PLUIE = 4000` pour éviter les faux positifs.
 
 ### 9.5. Logique de décision de la fenêtre
-On ajoute à notre logique précédente la prise en compte de la pluie pour la commande de la fenêtre(cf [9.1. Commande du servomoteur](#91-commande-du-servomoteur))
+On ajoute à notre logique précédente la prise en compte de la pluie pour la commande de la fenêtre(cf [9.2. Gestion de la fenêtre](#92-gestion-de-la-fenêtre)).  
 La commande de la fenêtre suit l'ordre de priorité suivant :
 
 - Mode `AWAY` : la fenêtre doit être fermée et les appuis sur le bouton fenêtre sont ignorés.
 -  `Pluie détectée` : la fermeture est forcée, quel que soit l'état précédent de la fenêtre.
 - Commande manuelle : en mode `HOME` et sans pluie, un appui sur le bouton fenêtre inverse l'état (`OUVERTE` ou `FERMEE`).
-
 
 De la même manière que l'on bloque la fenêtre en mode `AWAY`, lorsque la pluie est détectée, la valeur de `bouton_fenetre_appuye` est directement effacée.
 
@@ -2047,8 +2038,13 @@ void evaluer_temperature()
   }
 }
 ```
+  
+### 10.11. Analyse des trames I²C
 
-### 10.11. Gestion automatique de la fenêtre par la température
+Nous avons oublié de faire l'analyse des trames I²C le jour de la démo, quand nous sommes arrivé avec le Scénario 6 enfin terminé. 
+Cependant nous sommes capable de décrire à quoi cela devrait ressembler en théorie.
+
+### 10.12. Gestion automatique de la fenêtre par la température
 
 #### Seuils et états de température
 
@@ -2159,11 +2155,6 @@ stateDiagram
         
     }
 ```
-
-### 10.12. Analyse des trames I²C
-
-Nous avons oublié de faire l'analyse des trames I²C le jour de la démo, quand nous sommes arrivé avec le Scénario 6 enfin terminé. 
-Cependant nous sommes capable de décrire à quoi cela devrait ressembler en théorie.
 
 ---
 

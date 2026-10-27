@@ -90,12 +90,12 @@
 
 ### 2.1. Photos de la maison
 
-![Face 1](media/photo_maison_1.jpg)
-![Face 2](media/photo_maison_2.jpg)
+<img src="media/photo_maison_1.jpg" width="500">
+<img src="media/photo_maison_2.jpg" width="500">
 
 Pour simplifier le cablage notamment pour les premiers scénarios, nous avons soudé des boutons, des LED (une RGB, une jaune et une bleue), et collé une breadboard sur un shield Arduino vierge. Voici à quoi ressemble notre montage :
 
-![Shield Arduino](media/breadboard.jpg)
+<img src="media/breadboard.jpg" width="500">
 
 ### 2.2. Description du fonctionnement
 
@@ -492,15 +492,8 @@ Nous avons défini une première machine à états pour gérer les différents m
 
 > La verison complétée avec l'alarme intrusion est décrite plus bas : [Machine à états avec alarme intrusion](#machine-à-états-avec-alarme-intrusion)
 
-````mermaid
-stateDiagram
-  direction TB
-[*] --> HOME
-  AWAY:AWAY
-  HOME:HOME
-  HOME --> AWAY:Bouton MODE appuyé
-  AWAY --> HOME:Bouton MODE appuyé
-````
+<img src="media/mermaid_home_away_basique.png" width = 500>
+
 #### Gestion des modes
 
 Afin de manipuler plus facilement les états de la maison, nous avons définit une énumération `maison_mode_t` qui représente les différents modes possibles : `HOME` et `AWAY`.
@@ -577,25 +570,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 Nous avons donc ajouté la gestion de l'alarme intrusion en fonction du mode de la maison. L'alarme se déclenche uniquement si le mode est AWAY et que la présence est détectée.
 
 **Machine à état HOM/AWAY complétée**
-```mermaid
-stateDiagram
-  direction TB
-  [*] --> HOME
-  HOME --> AWAY:Bouton MODE appuyé
-  AWAY --> HOME:Bouton MODE appuyé
-  HOME:<b>HOME :</b>
-HOME:Alarme intrusion désactivée<br>
-  AWAY:<b>AWAY</b>
-AWAY:Surveillance alarme intrusion<br>
-```
+<img src="media/mermaid_home_away_intrusion.png" width = 500>
+
 **Organigramme de l'alarme intrusion du mode AWAY :**
-```mermaid
-flowchart TD
-    Surveillance([Système de surveillance en mode AWAY]) --> Condition_Mv{Présence détectée ?}
-    Condition_Mv -- "true" --> Alarme[Déclenchement de\nl'alarme intrusion]
-    Condition_Mv -- "false" --> Ignorer[On ne fait rien et on continue de vérifier]
-    Ignorer --> Surveillance
-```
+<img src="media/mermaid_organigramme_intrusion.png" width = 500>
+
 
 #### Implémentation dans la while(1)
 
@@ -862,7 +841,7 @@ Pour valider la liaison, nous avons utilisé le moniteur série intégré à STM
 
 *Extrait de la datasheet du servomoteur :*
 
-<img src="media/datasheet_servo_pinout.png"/>
+<img src="media/datasheet_servo_pinout.png" width="500"/>
 
 Le servomoteur est alimenté en 5V et le signal de commande PWM (broche orange) est connecté sur PA9 (D8), correspondant au TIM1 CH2.
 
@@ -2089,14 +2068,8 @@ temperature_t temperature = TEMPEREE;
 ```
 La plage tempérée (24–26°C) crée une hystérésis naturelle : une fois détecté comme `CHAUD`, le capteur ne revient à `TEMPEREE` que si la température descend en dessous de `SEUIL_CHALEUR`. Cela évite les oscillations rapides de la fenêtre autour du seuil. On suit donc la température selon la machine à états suivante.
 
-```mermaid
-stateDiagram-v2
-    [*] --> TEMPEREE
-    TEMPEREE --> CHAUD : Temperature >= SEUIL_CHALEUR
-    TEMPEREE --> FROID : Temperature <= SEUIL_FROID
-    CHAUD --> TEMPEREE : Temperature < SEUIL_CHALEUR
-    FROID --> TEMPEREE : Temperature > SEUIL_FROID
-```
+<img src="media/mermaid_hysteresis.png">
+
 #### Logique de décision de la fenêtre
 Dans notre focntion `evaluer_température()` nous avons ajouté l'ouverture de la fenêtre sur la transition vers les états `CHAUD` et `FROID` en mode `HOME` et en l'absence de pluie :
 En dehors de ce scénario, la fenêtre reste sous le contrôle manuel de l'utilisateur ou est forcée par la détection de pluie.
@@ -2158,20 +2131,7 @@ La transition de `CHAUD` ou `FROID` vers `TEMPEREE` ne déclenche aucune action 
 
 ##### Résumé des comportements global de la fenêtre
 
-```mermaid
-stateDiagram
-    state "HOME et Pluie non détectée" as HOME {
-        state "fenêtre" as fenetre{
-        state "OUVERTE" as OUVERTE
-        state "FERMEE" as FERMEE
-        OUVERTE --> FERMEE: Appui bouton fenêtre
-        FERMEE --> OUVERTE: Appui bouton fenêtre  
-        OUVERTE --> FERMEE: Température < Seuil de Chaleur
-        FERMEE --> OUVERTE: Température > Seuil de Froid
-        }
-        
-    }
-```
+<img src="media/mermaid_fenetre_global.png" width = 700>
 
 ---
 
@@ -2295,7 +2255,7 @@ Cette fonction applique plusieurs choix de conception :
 Cf. [Cycle de mesure dans la boucle principale](#cycle-de-mesure-dans-la-boucle-principale)
    
 4. **Caractère degré personnalisé (`\xDF`)** : la table ASCII standard ne contient pas le symbole degré `°`. Dans la mémoire ROM du contrôleur I²C de l'écran il y a une table de caractères où le caractère `°` est situé à l'adresse hexadécimale `1101 1111` en binaire soit `0xDF` en hexadécimal :  
-<img src="media/ecran_LCD_CGROM_ASCII_degre.jpg" alt="CGROM ASCII degre"></img>  
+<img src="media/ecran_LCD_CGROM_ASCII_degre.jpg" alt="CGROM ASCII degre" width="500"></img>  
 
 ---
 

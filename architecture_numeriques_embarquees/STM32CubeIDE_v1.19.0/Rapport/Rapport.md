@@ -484,6 +484,9 @@ Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrair
 #### Description de la machine à états
 
 Nous avons défini une première machine à états pour gérer les différents modes de la maison : `HOME`, `AWAY`.
+
+> La verison complétée avec l'alarme intrusion est décrite plus bas : [Machine à états avec alarme intrusion](#machine-à-états-avec-alarme-intrusion)
+
 ````mermaid
 stateDiagram
   direction TB
@@ -512,6 +515,7 @@ maison_mode_t mode = HOME;
 #### Implémentation de la machine à états
 
 Première version de la machine à états :
+
 ```c
 // Dans la boucle while(1) de la main()
 switch (mode) 
@@ -539,32 +543,35 @@ switch (mode)
 #### Configuration du capteur de mouvement
 Le capteur de présence PIR est raccordé sur la broche PC7 et configurée en interruption externe déclenchée sur le front montant, avec une résistance de tirage interne (pull-down), afin de garantir un signal stable en l'absence de mouvement.
 
-#### Alarme intrusion 
-L'alarme intrusion est gérée par les variables `alarme_intrusion` et `presence_detectee`.
-Ces variables sont lues en parrallèle pour commander les signaux de LED et de buzzer en fonction.
-Voir [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes).
+
+#### Lecture du capteur PIR
+
+À tout moment, la détection d'un mouvement déclenche l'interruption du capteur. On met alors le flag `presence_detectee` à `true` :
 
 ```c
-// dans CODE PV
+// Dans USERCODE PV
 volatile bool presence_detectee = false;
-bool alarme_intrusion = false;
+
+// Dans USER CODE 4 : Interruption EXTI
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    if (GPIO_Pin == PIR_MVMT_Pin)
+    {
+        presence_detectee = true;
+    }
+    ...
+}
 ```
-Comme l'interruption du capteur de mouvement modifie la variable globale `presence_detectee`, nous l'avons déclarée volatile.
 
-#### Configuration led et buzzer
-Dans le scénario d'intrusion, deux composant s'active pour signaler l'alarme : 
-- une led jaune qui clignote   
-- un buzzer qui émet un son continu de 384 Hz  
-
-Voir [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes).
+> La variable `presence_detectee` est déclarée volatile car elle est modifiée par une interruption et lue dans la boucle principale.
 
 ### 6.5. Comportement selon le mode (AWAY vs HOME)
 
 #### Machine à états avec alarme intrusion
 
-// TODO 
+Nous avons donc ajouté la gestion de l'alarme intrusion en fonction du mode de la maison. L'alarme se déclenche uniquement si le mode est AWAY et que la présence est détectée.
 
-Nous avons donc ajouté la gestion de l'alarme intrusion en fonction du mode de la maison. L'alarme se déclenche en mode `AWAY` uniquement à l'activation du detecteur à mouvement (cf [2.2. Description du fonctionnement](#22-description-du-fonctionnement)).
+**Machine à état HOM/AWAY complétée**
 ```mermaid
 stateDiagram
   direction TB
@@ -574,92 +581,28 @@ stateDiagram
   HOME:<b>HOME :</b>
 HOME:Alarme intrusion désactivée<br>
   AWAY:<b>AWAY</b>
-AWAY:Organigramme alarme intrusion<br>
+AWAY:Surveillance alarme intrusion<br>
 ```
-
+**Organigramme de l'alarme intrusion du mode AWAY :**
 ```mermaid
 flowchart TD
-    Surveillance([Système de surveillance en mode AWAY]) --> Condition_Mv{Mouvement détecté ?}
-    Condition_Mv -- "Oui" --> Alarme[Déclenchement de\nl'alarme intrusion]
-    Condition_Mv -- "Non" --> Ignorer[Aucune détection\nLa surveillance reste active]
+    Surveillance([Système de surveillance en mode AWAY]) --> Condition_Mv{Présence détectée ?}
+    Condition_Mv -- "true" --> Alarme[Déclenchement de\nl'alarme intrusion]
+    Condition_Mv -- "false" --> Ignorer[On ne fait rien et on continue de vérifier]
     Ignorer --> Surveillance
 ```
-// Fin TODO
 
-#### Impplémentation de la détection
+#### Alarme intrusion
 
-##### En mode AWAY: 
-Le système de surveillance est activé. A la détection d'un mouvement, le front montant passe immédiatement le flag global `presence_detectee` à `true`.
-```c
-// Dans USER CODE 4 : Interruption EXTI
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-    if (GPIO_Pin == PIR_MVMT_Pin)
-    {
-        presence_detectee = true;
-    }
-    // ... gestion des autres boutons
-}
-```
- La boucle principale (`while(1)`) capture ce changement d'état et active le scénario d'alarme intrusion (clignotement de la Led et Buzzer).le flag `presence_detectee` redescend à `false`, évitant ainsi tout déclenchement intempestif.
-
-TODO : redirection comamnd eled et buzzer.
+L'alarme intrusion est gérée par la variable `alarme_intrusion` :
 
 ```c
-// Gestion du mode AWAY dans la boucle principale
-case AWAY:
-{
-    // ...
-    else 
-    {
-        bouton_fenetre_appuye = false;
-        
-        if (presence_detectee) 
-        {
-            alarme_intrusion = true;
-            presence_detectee = false;
-            printf("Intrusion detectee !\r\n");
-        }
-    }
-    break;
-}
-...
-    void commande_led(){
-      //commande des autres Led
-      ...
-      if (led_alarme_intrusion.state) {
-    HAL_GPIO_WritePin(led_alarme_intrusion.port, led_alarme_intrusion.pin, 1);
-  } else {
-    HAL_GPIO_WritePin(led_alarme_intrusion.port, led_alarme_intrusion.pin, 0);
-  }
-    }
+// dans CODE PV
+bool alarme_intrusion = false;
+```
 
-    void commande_buzzer() 
-{
-	if (buzzer) {
-	  HAL_TIM_PWM_Start(TIMER_BUZZER, CANAL_BUZZER);
-	} else {
-	  HAL_TIM_PWM_Stop(TIMER_BUZZER, CANAL_BUZZER);
-	}
-}
-```
-##### En mode HOME :
- Le système est désarmé en entrant dans la maison et `alarme_intrusion` retourne à `false`. L'interruption PIR est ignorée dans la logique applicative.
-```c
- case  HOME: 
-    {
-     //Gestion des événements en mode HOME
-     ...
-      else 
-      {
-        presence_detectee = false;
-        alarme_intrusion = false;
-        ..
-      }
-      break;
-    }
-```
----
+L'application de l'alarme intrusion est déportée dans une fonction non bloquante `update_cycle_alarmes()` qui lit la variable globale `alarme_intrusion`.  
+→ [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes).
 
 ## 7. — Scénario 3 — Détection de gaz
 
@@ -746,7 +689,10 @@ Nous avons donc retenu `SEUIL_GAZ = 2500` comme compromis entre sensibilité et 
 ### 7.4. Alarme gaz
 
 La détection de gaz est permanente et indépendante du mode HOME/AWAY comme demandé dans le TP, car une fuite de gaz reste dangereuse, que l'on soit présent ou absent.  
-La variable globale `alarme_gaz` est positionnée à `true` dans `evaluer_gaz()` dès que la valeur dépasse le seuil. Le déclenchement effectif du buzzer et de la LED est géré par la fonction non bloquante `update_cycle_alarmes()`, qui est décrite dans la partie [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes).
+La variable globale `alarme_gaz` est positionnée à `true` dans `evaluer_gaz()` dès que la valeur dépasse le seuil.  
+
+La gestion de l'alarme de gaz est déportée dans une fonction non bloquante `update_cycle_alarmes()` qui lit la variable globale `alarme_gaz`.  
+→ [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes).
 
 ---
 

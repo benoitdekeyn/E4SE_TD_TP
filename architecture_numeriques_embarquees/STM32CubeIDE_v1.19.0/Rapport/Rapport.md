@@ -2308,7 +2308,18 @@ Ce mécanisme est fondamentalement non bloquant : au lieu d'utiliser des délais
 
 > _Expliquer que le buzzer passif (PB5, TIM3 CH2) est piloté en PWM avec un duty cycle de 50 %. La fréquence du buzzer est ajustée dynamiquement via `frequence_buzzer()` qui modifie l'auto-reload et le compare de TIM3. L'alarme gaz sonne à 440 Hz (La4), l'alarme intrusion à 384 Hz. Le buzzer est synchronisé avec l'état de la LED correspondante (il sonne quand la LED est allumée)._
 
+Le signal sonore est généré par un buzzer passif connecté sur la broche PB5, associé au canal 2 du Timer 3 en mode PWM avec un duty cycle à 50 %, pour un son clair.
+
+Pour permettre à l'utilisateur de différencier les alerte à l'oreille, la fréquence du signal est ajustée de manière dynamique via la fonction `frequence_buzzer()`. Cette fonction reclacule est met à jour en temps réel la période (registre `ARR`) et l'impulsion (registre `CCR`) du TIM3. Nous avons donc choisit des fréquences distinctes pour chaque alarme :
+- Alarme gaz : 440 Hz (note La4 fondamentale), produisant un son plus aigu avec un rythme rapide.
+- Alarme intrusion : 384 Hz, produisant un son légèrement plus grave.
+
+De plus, l'activation du buzzer est synchronisée avec le retour visuel : le signal PWM du buzzer est activé uniquement lorsque la LED de l'alarme correspondante est à l'état haut et le buzzer se tait lorsque la LED séteint, calquant ainsi exactement le rythme visuel de la LED. On obtient donc deux signatures distinctes pour chaque alarme.
 
 ### 13.3. Cas simultané : alternance gaz / intrusion
 
-> _Décrire la stratégie quand les deux alarmes sont actives simultanément : le buzzer alterne entre les deux fréquences (intrusion puis gaz) par demi-périodes, tandis que chaque LED clignote indépendamment à sa propre fréquence. Justifier ce choix pour permettre d'identifier les deux alarmes même quand elles sont concomitantes._
+Lorsque les deux alarmes sont actives simultanément, les deux LED continuent de clignoter indépendamment selon leur propre fréquence : la LED rouge du gaz à **10 Hz** (demi-période de 50 ms) et la LED jaune de l'intrusion à **2 Hz** (demi-période de 250 ms).
+
+Le buzzer ne peut produire qu'une seule fréquence à la fois. Il alterne donc entre les deux signatures sonores par phases de 250 ms : d'abord **384 Hz** pour l'intrusion, puis **440 Hz** pour le gaz. Pendant la phase gaz, le buzzer suit le clignotement rapide de la LED rouge et se tait lorsque celle-ci est éteinte. Ce cycle de 500 ms se répète tant que les deux alarmes restent actives.
+
+Cette alternance permet de distinguer auditivement les deux alarmes sans empêcher leur signalisation visuelle simultanée : chaque LED conserve son propre rythme, même pendant la phase sonore de l'autre alarme.

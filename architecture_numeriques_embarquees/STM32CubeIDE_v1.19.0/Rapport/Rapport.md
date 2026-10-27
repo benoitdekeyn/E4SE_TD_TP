@@ -2280,29 +2280,15 @@ Cf. [Cycle de mesure dans la boucle principale](#cycle-de-mesure-dans-la-boucle-
 ### 13.1. Clignotement non bloquant par compteur partagé
 
 Pour gérer les différentes alarmes sans interrompre l'exécution du programme, nous avons exploité le Timer 5, configuré à 20 Hz (soit une interruption toutes les 50 ms). À chaque itération de ce timer, un compteur `global blink_counter_alarm` est incrémenté.
-Le clignotement de chaque LED est déterminé en calculant une demi-période exprimée en nombre de "ticks" de ce timer: 
-- L'alarme gaz est définie pour clignoter à 10 Hz. Sa demi-période correspond donc à 1 tick (50 ms). La LED rouge associée change d'état à chaque tick.
-- L'alarme intrusion clignote à 2 Hz. Sa demi-période correspond à 5 ticks (250 ms). L'état de la LED jaune associée est donc inversé tous les 5 ticks.
+Le clignotement de chaque LED est déterminé en déterminant le nombre de périodes du Timer de 20Hz qui doivent s'écouler pour atteindre la demi-période de la fréquence de clignotement correspondant à l'inversion de l'état de la LED.  
+- L'alarme gaz est définie pour clignoter à 10 Hz. Ainsi, sa demi-période est atteinte à 20Hz, ce qui correspond à la fréquence du Timer 5. La LED s'inverse donc à chaque tic du Timer 5. 
+- L'alarme intrusion clignote à 2 Hz. Ainsi, sa demi-période est atteinte à 4Hz, ce qui correspond exactement à 1/5eme de la fréquence du Timer 5. La LED s'inverse donc tous les 5 tics du Timer 5.
 
-Ce mécanisme est fondamentalement non bloquant : au lieu d'utiliser des délais logiciels d'attente (`HAL_Delay`), le microcontrôleur évalue instantanément une simple condition mathématique (avec u modulo sur le competur global) pour inverser ou non l'état de la broche. Une fois l'évaluation terminée, il poursuit immédiatement l'exécution de la boucle principale.
+Ce mécanisme est fondamentalement non bloquant : au lieu d'utiliser des délais logiciels d'attente (`HAL_Delay`), le microcontrôleur évalue instantanément une simple condition mathématique (avec un modulo sur le compteur de tics du timer 5) à chaque fin de periode, afin de déterminer s'il faut inverser ou non l'état de la broche. Une fois l'évaluation terminée, il poursuit immédiatement l'exécution de la boucle principale.
 
 ### 13.2. Gestion du buzzer avec fréquences distinctes
 
-Pour permettre à l'utilisateur de différencier les alerte à l'oreille, la fréquence du signal est ajustée de manière dynamique via la fonction `frequence_buzzer()`. Cette fonction reclacule est met à jour en temps réel la période (registre `ARR`) et l'impulsion (registre `CCR`) du TIM3.
-```c
-void frequence_buzzer(int frequence) 
-{
-	int periode_tics = (double)FREQ_TIMER_BUZZER/frequence;
-	int pulse_tics   = periode_tics/2;
-	__HAL_TIM_SET_AUTORELOAD(TIMER_BUZZER, periode_tics);
-	__HAL_TIM_SET_COMPARE(TIMER_BUZZER, CANAL_BUZZER, pulse_tics);
-}
-```
- Nous avons donc choisit des fréquences distinctes pour chaque alarme :
-- Alarme gaz : 440 Hz (note La4 fondamentale), produisant un son plus aigu avec un rythme rapide.
-- Alarme intrusion : 384 Hz, produisant un son légèrement plus grave.
-
-#### Calcul de la fréquence de comptage et des registres du Timer 3
+#### Configuration du Timer PWM
 
 Pour générer nos signaux PWM destinés au buzzer, nous cherchons à maximiser la précision de comptage du Timer 3 tout en respectant sa contrainte matérielle de 16 bits (capacité maximale du registre ARR : $2^{16} - 1 = 65\,535$).
 
@@ -2318,23 +2304,39 @@ $$f \leq 384 \times 65\,535 \approx 25{,}16\, \text{MHz}$$
 
 On sélectionne une fréquence de comptage de **$25\text{ MHz}$**, qui est un diviseur entier de l'horloge source de $100\text{ MHz}$ :
 
-$$\implies \text{PSC} = \frac{100\, \text{MHz}}{25\, \text{MHz}} = 4 $$
-Soit ``PSC = 4 - 1``
+$$\implies \text{PSC} = \frac{100\, \text{MHz}}{25\, \text{MHz}} - 1 = 4 - 1$$
 
-À partir de cette fréquence de base de $25\text{ MHz}$, nous calculons la période (`ARR`) et l'impulsion (`CCR`) pour chaque alarme:
+À partir de cette fréquence de base de $25\text{ MHz}$, nous calculons la période (`ARR`) et l'impulsion (`CCR`) pour chaque alarme qui correspond à la moitié de la période de la fréquence souhaitée. On divise par 2 pour obtenir un rapport cyclique de 50% (onde carrée) pour le buzzer :
 
 - Alarme Gaz (440 Hz) :
-  $$ARR_{440\text{Hz}} = \frac{25\,000\,000}{440} - 1 = 56\,818 - 1 = \mathbf{56\,817}$$
-  $$CCR_{440\text{Hz}} = \frac{56\,818}{2} = \mathbf{28\,409}$$
+  $$ARR_{440\text{Hz}} = \frac{25\,000\,000}{440} - 1 = 56\,818 - 1$$
+  $$CCR_{440\text{Hz}} = \frac{ARR_{440\text{Hz}} + 1}{2} = \mathbf{28\,409}$$
 
 - Alarme Intrusion (384 Hz) :
-  $$ARR_{384\text{Hz}} = \frac{25\,000\,000}{384} - 1 = 65\,104 - 1 = \mathbf{65\,103}$$
-  $$CCR_{384\text{Hz}} = \frac{65\,104}{2} = \mathbf{32\,552}$$
+  $$ARR_{384\text{Hz}} = \frac{25\,000\,000}{384} - 1 = 65\,104 - 1$$
+  $$CCR_{384\text{Hz}} = \frac{ARR_{384\text{Hz}} + 1}{2} = \mathbf{32\,552}$$
+   
+#### Configuration sur CubeMX
 
+<img src="media/stm32cubeide_Timer_3.png">
+
+#### Fréquences distinctes pour chaque alarme  
+
+Pour permettre à l'utilisateur de différencier les alerte à l'oreille, la fréquence du signal est ajustée de manière dynamique via la fonction `frequence_buzzer()`. Cette fonction recalcule et met à jour en temps réel la période (registre `ARR`) et l'impulsion (registre `CCR`) du Timer 3.
+```c
+void frequence_buzzer(int frequence) 
+{
+	int periode_tics = (double)FREQ_TIMER_BUZZER/frequence;
+	int pulse_tics   = periode_tics/2;
+	__HAL_TIM_SET_AUTORELOAD(TIMER_BUZZER, periode_tics);
+	__HAL_TIM_SET_COMPARE(TIMER_BUZZER, CANAL_BUZZER, pulse_tics);
+}
+```
+ Nous avons donc choisit des fréquences distinctes pour chaque alarme :
+- Alarme gaz : 440 Hz (note La4 fondamentale), produisant un son plus aigu avec un rythme rapide.
+- Alarme intrusion : 384 Hz, produisant un son légèrement plus grave.
 
 De plus, l'activation du buzzer est synchronisée avec le retour visuel : le signal PWM du buzzer est activé uniquement lorsque la LED de l'alarme correspondante est à l'état haut et le buzzer se tait lorsque la LED séteint, calquant ainsi exactement le rythme visuel de la LED. On obtient donc deux signatures distinctes pour chaque alarme.
-
-
 
 ### 13.3. Cas simultané : alternance gaz / intrusion
 

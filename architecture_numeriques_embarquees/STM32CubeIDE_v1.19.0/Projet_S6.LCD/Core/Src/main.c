@@ -776,9 +776,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	if (GPIO_Pin == PIR_MVMT_Pin)
   {
-    if (mode == AWAY){
-      presence_detectee = true;
-		}
+    presence_detectee = true;
 	}
   if (GPIO_Pin == BTN_HOME_Pin)
   {

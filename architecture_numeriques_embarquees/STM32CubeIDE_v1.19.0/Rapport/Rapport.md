@@ -2129,7 +2129,7 @@ void evaluer_temperature()
 
 La transition de `CHAUD` ou `FROID` vers `TEMPEREE` ne déclenche aucune action sur la fenêtre : on revient simplement à un état neutre, et l'utilisateur reprend le contrôle manuel. Les conditions `mode == HOME` et `!pluie_detectee` garantissent que la fenêtre ne s'ouvre jamais s'il pleut ou si la maison est inoccupée.
 
-##### Résumé des comportements global de la fenêtre
+#### Résumé des comportements global de la fenêtre
 
 <img src="media/mermaid_fenetre_global.png" width = 700>
 

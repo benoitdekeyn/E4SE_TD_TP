@@ -340,21 +340,21 @@ Nous avons utilisé un timer avec interruptions pour éviter l'utilisation de bo
 - On veut garder un temps par tic qui soit une puissance de 10 (ex : 1 ms, 10 µs, 1 µs, ...) pour simplifier la correspondance entre ARR et période souhaitée.
 - La période souhaitée est de 2s.
 
+#### Contraintes de départ
+- ARR et PSC font 16 bits.
+- On veut garder un temps par tic qui soit une puissance de 10 (ex : 1 ms, 10 µs, 1 µs, ...) pour simplifier la correspondance entre ARR et période souhaitée.
+- La période souhaitée est de 2s.
+
+Nous avons choisi la basse résolution temporelle par tics pour pouvoir compter un maximum de temps avec l'ARR :
+
+$$Prescaler_{max} = 2^{16} - 1 = 65 535$$
+
 #### Calcul du Prescaler
-Nous avons choisi la résolution temporelle par tics la plus basse possible pour pouvoir un le ratio le plus faible possible entre le nombre de tics dans ARR et la durée de la période en secondes.
-
-$$Prescaler < 2^{16} - 1$$
-$$Prescaler < 65 535$$
-
-La plus grande puissance de 10 permettant de diviser 100MHz sans dépasser la valeur maximale du prescaler est 10 000. On choisit donc 
-$$PSC = 10 000 - 1 = 9 999$$
-$$\implies f_{PSC} = \frac{100\text{ MHz}}{10 000} = 10\text{ kHz}$$
-$$\implies T_{PSC} = \frac{1}{10\text{ kHz}} = 0,1\text{ ms}$$
+En choisisant `PSC = 10 000 - 1`, nous fixons une fréquence de comptage de $f = \frac{100\text{ MHz}}{10\,000}$ = 10 kHz. Chaque tic du timer dure ainsi 0,1 ms, soit 10 000 tics par seconde. A cette fréquence, la période maximale  est de $65\,535 \times 0,1\text{ ms} = 6,55\text{ s}$. On respecte donc les conditions énoncé précedemments. 
 
 #### Calcul de la Période
-Ainsi pour mesurer une durée de 2 secondes, le nombre de tics requis est de :
-$$N_{tics} = \frac{2\text{ s}}{0,1\text{ ms}} = 20 000$$
-On choisit donc `ARR = 20 000 - 1 = 19 999`.
+Ainsi pour mesurer une durée de 4 secondes, le nombre total de tics requis est de 40 000 (4 s × 10 000 tics/s),
+soit `ARR = 40 000 - 1`.Cette valeur restant inférieure à la limite de 65 535 ($2^{16} - 1$ bits), le réglage s'inscrit parfaitement sans risque de saturation du compteur.
 
 #### Dans CubeMX
 
@@ -2278,8 +2278,6 @@ Cf. [Cycle de mesure dans la boucle principale](#cycle-de-mesure-dans-la-boucle-
 
 ### 13.1. Clignotement non bloquant par compteur partagé
 
-> _Expliquer le mécanisme de clignotement non bloquant : un compteur `blink_counter_alarm` est incrémenté à chaque tick de TIM5 (20 Hz). Pour chaque alarme, une demi-période de clignotement est calculée en nombre de ticks (ex : alarme gaz à 10 Hz → demi-période = 1 tick ; alarme intrusion à 2 Hz → demi-période = 5 ticks). L'état de la LED est inversé à chaque fin de demi-période. Justifier que ce mécanisme est entièrement non bloquant._
-
 Pour gérer les différentes alarmes sans interrompre l'exécution du programme, nous avons exploité le Timer 5, configuré à 20 Hz (soit une interruption toutes les 50 ms). À chaque itération de ce timer, un compteur `global blink_counter_alarm` est incrémenté.
 Le clignotement de chaque LED est déterminé en calculant une demi-période exprimée en nombre de "ticks" de ce timer: 
 - L'alarme gaz est définie pour clignoter à 10 Hz. Sa demi-période correspond donc à 1 tick (50 ms). La LED rouge associée change d'état à chaque tick.
@@ -2289,20 +2287,60 @@ Ce mécanisme est fondamentalement non bloquant : au lieu d'utiliser des délais
 
 ### 13.2. Gestion du buzzer avec fréquences distinctes
 
-> _Expliquer que le buzzer passif (PB5, TIM3 CH2) est piloté en PWM avec un duty cycle de 50 %. La fréquence du buzzer est ajustée dynamiquement via `frequence_buzzer()` qui modifie l'auto-reload et le compare de TIM3. L'alarme gaz sonne à 440 Hz (La4), l'alarme intrusion à 384 Hz. Le buzzer est synchronisé avec l'état de la LED correspondante (il sonne quand la LED est allumée)._
-
-Le signal sonore est généré par un buzzer passif connecté sur la broche PB5, associé au canal 2 du Timer 3 en mode PWM avec un duty cycle à 50 %, pour un son clair.
-
-Pour permettre à l'utilisateur de différencier les alerte à l'oreille, la fréquence du signal est ajustée de manière dynamique via la fonction `frequence_buzzer()`. Cette fonction reclacule est met à jour en temps réel la période (registre `ARR`) et l'impulsion (registre `CCR`) du TIM3. Nous avons donc choisit des fréquences distinctes pour chaque alarme :
+Pour permettre à l'utilisateur de différencier les alerte à l'oreille, la fréquence du signal est ajustée de manière dynamique via la fonction `frequence_buzzer()`. Cette fonction reclacule est met à jour en temps réel la période (registre `ARR`) et l'impulsion (registre `CCR`) du TIM3.
+```c
+void frequence_buzzer(int frequence) 
+{
+	int periode_tics = (double)FREQ_TIMER_BUZZER/frequence;
+	int pulse_tics   = periode_tics/2;
+	__HAL_TIM_SET_AUTORELOAD(TIMER_BUZZER, periode_tics);
+	__HAL_TIM_SET_COMPARE(TIMER_BUZZER, CANAL_BUZZER, pulse_tics);
+}
+```
+ Nous avons donc choisit des fréquences distinctes pour chaque alarme :
 - Alarme gaz : 440 Hz (note La4 fondamentale), produisant un son plus aigu avec un rythme rapide.
 - Alarme intrusion : 384 Hz, produisant un son légèrement plus grave.
 
+#### Calcul de la fréquence de comptage et des registres du Timer 3
+
+Pour générer nos signaux PWM destinés au buzzer, nous cherchons à maximiser la précision de comptage du Timer 3 tout en respectant sa contrainte matérielle de 16 bits (capacité maximale du registre ARR : $2^{16} - 1 = 65\,535$).
+
+Les contraintes pour le calcul sont :
+- La fréquence minimale à générer est de $384\text{ Hz}$ (alarme intrusion).
+- Le registre ARR est codé sur 16 bits ($\le 65\,535$).
+- La fréquence d'horloge source du bus est de $100\text{ MHz}$.
+
+On cherche la fréquence de comptage maximale $f$ permettant d'obtenir le plus de précision et la note la plus basse sans saturer le registre ARR :
+
+$$ARR = \frac{f}{384\, \text{Hz}} \leq 65\,535$$
+$$f \leq 384 \times 65\,535 \approx 25{,}16\, \text{MHz}$$
+
+On sélectionne une fréquence de comptage de **$25\text{ MHz}$**, qui est un diviseur entier de l'horloge source de $100\text{ MHz}$ :
+
+$$\implies \text{PSC} = \frac{100\, \text{MHz}}{25\, \text{MHz}} = 4 $$
+Soit ``PSC = 4 - 1``
+
+À partir de cette fréquence de base de $25\text{ MHz}$, nous calculons la période (`ARR`) et l'impulsion (`CCR`) pour chaque alarme:
+
+- Alarme Gaz (440 Hz) :
+  $$ARR_{440\text{Hz}} = \frac{25\,000\,000}{440} - 1 = 56\,818 - 1 = \mathbf{56\,817}$$
+  $$CCR_{440\text{Hz}} = \frac{56\,818}{2} = \mathbf{28\,409}$$
+
+- Alarme Intrusion (384 Hz) :
+  $$ARR_{384\text{Hz}} = \frac{25\,000\,000}{384} - 1 = 65\,104 - 1 = \mathbf{65\,103}$$
+  $$CCR_{384\text{Hz}} = \frac{65\,104}{2} = \mathbf{32\,552}$$
+
+
 De plus, l'activation du buzzer est synchronisée avec le retour visuel : le signal PWM du buzzer est activé uniquement lorsque la LED de l'alarme correspondante est à l'état haut et le buzzer se tait lorsque la LED séteint, calquant ainsi exactement le rythme visuel de la LED. On obtient donc deux signatures distinctes pour chaque alarme.
+
+
 
 ### 13.3. Cas simultané : alternance gaz / intrusion
 
-Lorsque les deux alarmes sont actives simultanément, les deux LED continuent de clignoter indépendamment selon leur propre fréquence : la LED rouge du gaz à **10 Hz** (demi-période de 50 ms) et la LED jaune de l'intrusion à **2 Hz** (demi-période de 250 ms).
+Lorsque les deux alarmes sont actives simultanément, les deux LED continuent de clignoter indépendamment selon leur propre fréquence : la LED rouge du gaz à 10 Hz (demi-période de 50 ms) et la LED jaune de l'intrusion à 2 Hz (demi-période de 250 ms).
 
-Le buzzer ne peut produire qu'une seule fréquence à la fois. Il alterne donc entre les deux signatures sonores par phases de 250 ms : d'abord **384 Hz** pour l'intrusion, puis **440 Hz** pour le gaz. Pendant la phase gaz, le buzzer suit le clignotement rapide de la LED rouge et se tait lorsque celle-ci est éteinte. Ce cycle de 500 ms se répète tant que les deux alarmes restent actives.
+Le buzzer ne peut produire qu'une seule fréquence à la fois. Il alterne donc entre les deux signatures sonores par phases de 250 ms : d'abord 384 Hz pour l'intrusion, puis 440 Hz pour le gaz. Pendant la phase gaz, le buzzer suit le clignotement rapide de la LED rouge et se tait lorsque celle-ci est éteinte. Ce cycle de 500 ms se répète tant que les deux alarmes restent actives.
+
+![one_note_cycle_alarmes](media/onenote_cycle_alarmes.png "Cycle des alarmes gaz et intrusion") 
 
 Cette alternance permet de distinguer auditivement les deux alarmes sans empêcher leur signalisation visuelle simultanée : chaque LED conserve son propre rythme, même pendant la phase sonore de l'autre alarme.

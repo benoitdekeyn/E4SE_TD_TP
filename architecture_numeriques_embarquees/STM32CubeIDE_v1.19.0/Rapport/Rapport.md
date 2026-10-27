@@ -346,21 +346,21 @@ Nous avons utilisé un timer avec interruptions pour éviter l'utilisation de bo
 - On veut garder un temps par tic qui soit une puissance de 10 (ex : 1 ms, 10 µs, 1 µs, ...) pour simplifier la correspondance entre ARR et période souhaitée.
 - La période souhaitée est de 2s.
 
-#### Contraintes de départ
-- ARR et PSC font 16 bits.
-- On veut garder un temps par tic qui soit une puissance de 10 (ex : 1 ms, 10 µs, 1 µs, ...) pour simplifier la correspondance entre ARR et période souhaitée.
-- La période souhaitée est de 2s.
-
-Nous avons choisi la basse résolution temporelle par tics pour pouvoir compter un maximum de temps avec l'ARR :
-
-$$Prescaler_{max} = 2^{16} - 1 = 65 535$$
-
 #### Calcul du Prescaler
-En choisisant `PSC = 10 000 - 1`, nous fixons une fréquence de comptage de $f = \frac{100\text{ MHz}}{10\,000}$ = 10 kHz. Chaque tic du timer dure ainsi 0,1 ms, soit 10 000 tics par seconde. A cette fréquence, la période maximale  est de $65\,535 \times 0,1\text{ ms} = 6,55\text{ s}$. On respecte donc les conditions énoncé précedemments. 
+Nous avons choisi la résolution temporelle par tics la plus basse possible pour pouvoir un le ratio le plus faible possible entre le nombre de tics dans ARR et la durée de la période en secondes.
+
+$$Prescaler < 2^{16} - 1$$
+$$Prescaler < 65 535$$
+
+La plus grande puissance de 10 permettant de diviser 100MHz sans dépasser la valeur maximale du prescaler est 10 000. On choisit donc 
+$$PSC = 10 000 - 1 = 9 999$$
+$$\implies f_{PSC} = \frac{100\text{ MHz}}{10 000} = 10\text{ kHz}$$
+$$\implies T_{PSC} = \frac{1}{10\text{ kHz}} = 0,1\text{ ms}$$
 
 #### Calcul de la Période
-Ainsi pour mesurer une durée de 4 secondes, le nombre total de tics requis est de 40 000 (4 s × 10 000 tics/s),
-soit `ARR = 40 000 - 1`.Cette valeur restant inférieure à la limite de 65 535 ($2^{16} - 1$ bits), le réglage s'inscrit parfaitement sans risque de saturation du compteur.
+Ainsi pour mesurer une durée de 2 secondes, le nombre de tics requis est de :
+$$N_{tics} = \frac{2\text{ s}}{0,1\text{ ms}} = 20 000$$
+On choisit donc `ARR = 20 000 - 1 = 19 999`.
 
 #### Dans CubeMX
 

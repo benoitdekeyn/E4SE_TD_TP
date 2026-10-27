@@ -611,7 +611,7 @@ int main(void)
       case  HOME: 
       {
         // Transitions
-        if      (bouton_home_appuye) 
+        if (bouton_home_appuye) 
         {
           bouton_home_appuye = false;
           mode = AWAY;
@@ -662,7 +662,7 @@ int main(void)
       case AWAY:
       {
         // Transitions
-        if      (bouton_home_appuye) 
+        if (bouton_home_appuye) 
         {
           bouton_home_appuye = false;
           mode = HOME;
@@ -771,7 +771,7 @@ int __io_putchar(int ch) {
     return ch;
 }
 
-// INterruption des GPIO
+// Interruption des GPIO
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	if (GPIO_Pin == PIR_MVMT_Pin)

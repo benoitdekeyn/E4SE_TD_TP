@@ -47,9 +47,10 @@
   - [8.5. Validation avec un terminal série](#85-validation-avec-un-terminal-s%C3%A9rie)
 - [9. — Scénario 5 — Gestion intelligente de la fenêtre](#9--sc%C3%A9nario-5--gestion-intelligente-de-la-fen%C3%AAtre)
   - [9.1. Commande du servomoteur](#91-commande-du-servomoteur)
-  - [9.2. Bouton fenêtre et anti-rebond](#92-bouton-fen%C3%AAtre-et-anti-rebond)
-  - [9.3. Détection de pluie avec ADC DMA multi-canaux](#93-d%C3%A9tection-de-pluie-avec-adc-dma-multi-canaux)
-  - [9.4. Logique de décision de la fenêtre](#94-logique-de-d%C3%A9cision-de-la-fen%C3%AAtre)
+  - [9.2. Gestion de la fenêtre](#92-gestion-de-la-fen%C3%AAtre)
+  - [9.3. Bouton fenêtre et anti-rebond](#93-bouton-fen%C3%AAtre-et-anti-rebond)
+  - [9.4. Détection de pluie avec ADC DMA multi-canaux](#94-d%C3%A9tection-de-pluie-avec-adc-dma-multi-canaux)
+  - [9.5. Logique de décision de la fenêtre](#95-logique-de-d%C3%A9cision-de-la-fen%C3%AAtre)
 - [10. — Scénario 6 — Mesure de température (TMP102)](#10--sc%C3%A9nario-6--mesure-de-temp%C3%A9rature-tmp102)
   - [10.1. Branchement et configuration CubeMX](#101-branchement-et-configuration-cubemx)
   - [10.2. Analyse de la datasheet](#102-analyse-de-la-datasheet)
@@ -959,9 +960,9 @@ void angle_servo(int angle)
 La formule creprend celle expliqée plus haut pour la conversion d'un angle cible vers une impulsion en ticss.
 Le registre de comparaison CCR est mis à jour avec la valeur de `pulse_tics` via `__HAL_TIM_SET_COMPARE()`.
 
-#### Gestion de la fenêtre
+### 9.2. Gestion de la fenêtre
 
-Le servo de la fenêtre est commandé par une machine à états simple avec trois états possibles : `INIT`, `FERMEE` et `OUVERTE`. L'état `INIT` correspond à l'initialisation du système, `FERMEE` à la fenêtre fermée et `OUVERTE` à la fenêtre ouverte. La transition entre ces états est d'abord déclenchée par les commandes de l'utilisateur via le bouton fenêtre puis plus tard, par les conditions environnementales (cf TODO redirection temparature et pluie).
+Le servo de la fenêtre est commandé par une variable globale `fenetre` avec trois états possibles : `INIT`, `FERMEE` et `OUVERTE`. L'état `INIT` correspond à l'initialisation du système, `FERMEE` à la fenêtre fermée et `OUVERTE` à la fenêtre ouverte. La transition entre ces états est d'abord déclenchée par les commandes de l'utilisateur via le bouton fenêtre puis plus tard, par les conditions environnementales (cf TODO redirection temparature et pluie).
 
 #### Fonction `commande_fenetre()` — envoi uniquement sur changement d'état
 
@@ -990,7 +991,7 @@ La variable `etat_precedent` est déclarée `static` : elle est initialisée une
 
 > Lors du montage de la maison nous avons réglé le servo à 0° avant de visser la fenêtre en position fermée. Ensuite, nous avons testé de manière empirique quel angle permettait d'ouvrir parfaitement la fenêtre. On a trouvé 120° : en deça, la fenêtre n'est pas complétement ouverte, au delà, la fenêtre dépasse contre le mur (surchauffe car physiquement c'est impossible).
 
-### 9.2. Bouton fenêtre et anti-rebond
+### 9.3. Bouton fenêtre et anti-rebond
 
 Le bouton de fenêtre est physiquement identique à celui du mode Home/Away.
 Les seules différences dans l'implémentation de la lecture par rapport au bouton mode sont : 
@@ -1033,7 +1034,7 @@ case AWAY:
 
 // FIN TODO
 
-### 9.3. Détection de pluie avec ADC DMA multi-canaux
+### 9.4. Détection de pluie avec ADC DMA multi-canaux
 
 C'est au moment d'ajouter le capteur de pluie au Scénario 5 que nous avons entièrement revu l'architecture ADC pour passer à une solution multi-canaux et avec interruption de fin de conversion.
 
@@ -1162,7 +1163,7 @@ L'ADC1 avec sa résolution 12 bits produit une valeur entre 0 et $2^{12}-1 = 409
 
 Nous avons mesuré que la valeur ADC reste sous 1000 quand le capteur est sec et monte directement à son maximum 4095 en présence ne serait-ce que d'un doigt. Nous avons donc retenu `SEUIL_PLUIE = 4000` pour éviter les faux positifs.
 
-### 9.4. Logique de décision de la fenêtre
+### 9.5. Logique de décision de la fenêtre
 On ajoute à notre logique précédente la prise en compte de la pluie pour la commande de la fenêtre(cf [9.1. Commande du servomoteur](#91-commande-du-servomoteur))
 La commande de la fenêtre suit l'ordre de priorité suivant :
 

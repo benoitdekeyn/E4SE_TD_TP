@@ -1006,7 +1006,7 @@ Pour un rappel sur la méthode d'implémentation, voir les parties successives :
 [6.1. Configuration du bouton mode](#61-configuration-du-bouton-mode)  
 [6.2. Gestion de l'anti-rebond](#62-anti-rebond-des-boutons)  
 
-### Comportement et priorités selon le mode (HOME vs AWAY)
+#### Comportement et priorités selon le mode (HOME vs AWAY)
 La prise en compte de l'appui sur le bouton de la fenêtre dépend directement du mode de la maison et des conditions environnementales :
 
 - En mode HOME : L'utilisateur a le contrôle de l'ouverture et de la fermeture de la fenêtre, sauf en cas d'intempérie. Si la pluie est détectée, elle prend une priorité absolue et force la fermeture. Sinon, chaque appui validé bascule l'état de la fenêtre :

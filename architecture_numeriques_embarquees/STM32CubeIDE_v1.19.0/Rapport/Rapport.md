@@ -986,9 +986,10 @@ void angle_servo(int angle)
 
 La formule reprend celle expliqée plus haut pour la conversion d'un angle cible vers une impulsion en ticss.
 Le registre de comparaison CCR est mis à jour avec la valeur de `pulse_tics` via `__HAL_TIM_SET_COMPARE()`.
-> Lors du montage de la maison nous avons réglé le servo à 0° avant de visser la fenêtre en position fermée. Ensuite, nous avons testé de manière empirique quel angle permettait d'ouvrir parfaitement la fenêtre. On a trouvé 120° : en deça, la fenêtre n'est pas complétement ouverte, au delà, la fenêtre dépasse contre le mur (surchauffe car physiquement c'est impossible).
 
-#### Machine à états du servo fenêtre
+#### Ouverture et fermeture de la fenêtre
+
+// TODO : schématiser (ou non) le fait que AWAY, PLUIE et BTN peuvent faire bouger la fenetre
 
 Le servo de la fenêtre est commandé par une machine à états simple avec trois états possibles : `INIT`, `FERMEE` et `OUVERTE`. L'état `INIT` correspond à l'initialisation du système, `FERMEE` à la fenêtre fermée et `OUVERTE` à la fenêtre ouverte. La transition entre ces états est d'abord déclenchée par les commandes de l'utilisateur via le bouton fenêtre puis plus tard, par les conditions environnementales (cf TODO redirection temparature et pluie).
 
@@ -1015,13 +1016,15 @@ stateDiagram
 
 #### Application de l'état de la fenêtre
 
-Pour éviter d'envoyer continuellement la même commande PWM au servo à chaque tour de boucle principale, `commande_fenetre()` n'agit que lorsque l'état `fenetre` change :
+La fonction commande_fenetre() sert à appliquer en temps réel l'état actuel de la variable `fenetre_t` au servo.
+De plus, on evite d'envoyer continuellement la même commande PWM au servo à chaque tour de boucle principale en stockant l'état précedent de la variable `fenetre` dans `etat_precedent` et en ne mettant à jour le servo que si `fenetre` est différent de `etat_precedent`.
 
 ```c
-// main.c
-#define ANGLE_SERVO_OUVERT  120   // ATTENTION maximum 120° sinon ça casse
-#define ANGLE_SERVO_FERME   0
+// USERCODE PD
+#define ANGLE_SERVO_OUVERT  120 // °
+#define ANGLE_SERVO_FERME   0   // °
 
+// USERCODE 0 main.c
 void commande_fenetre()
 {
     static fenetre_t etat_precedent = INIT;
@@ -1036,7 +1039,10 @@ void commande_fenetre()
 }
 ```
 
-La variable `etat_precedent` est déclarée `static` : elle est initialisée une seule fois à `INIT` et conserve sa valeur entre les appels. Au premier passage dans le `main()`, `fenetre = OUVERTE` (valeur par défaut) ≠ `INIT`, donc le servo est immédiatement positionné à 0° à l'initialisation.
+La variable `etat_precedent` est déclarée `static` : elle est initialisée une seule fois à `INIT` et conserve sa valeur entre les appels.  
+L'état `INIT` ne sert qu'au premier appel, pour que la postion par défaut définie lors de l'initialisation de la variable globale `fenetre` soit appliquée au servo alors même qu'on ne sait pas encore quel est l'état actuel de la fenêtre.  
+
+> Lors du montage de la maison nous avons réglé le servo à 0° avant de visser la fenêtre en position fermée. Ensuite, nous avons testé de manière empirique quel angle permettait d'ouvrir parfaitement la fenêtre. On a trouvé 120° : en deça, la fenêtre n'est pas complétement ouverte, au delà, la fenêtre dépasse contre le mur (surchauffe car physiquement c'est impossible).
 
 ### 9.2. Bouton fenêtre et anti-rebond
 

@@ -591,6 +591,51 @@ flowchart TD
     Condition_Mv -- "false" --> Ignorer[On ne fait rien et on continue de vérifier]
     Ignorer --> Surveillance
 ```
+#### Implémentation dans la while(1)
+
+```c
+// Machine à état avec HOME et AWAY
+    switch(mode) 
+    {
+      case  HOME: 
+      {
+        // Transitions
+        if (bouton_home_appuye) 
+        {
+          bouton_home_appuye = false;
+          mode = AWAY;
+        }
+        else 
+        {
+          // Actions
+          presence_detectee = false;
+          alarme_intrusion = false;
+        }
+        break;
+      }
+      case AWAY:
+      {
+        // Transitions
+        if (bouton_home_appuye) 
+        {
+          bouton_home_appuye = false;
+          mode = HOME;
+        } 
+        else 
+        {
+          // Actions          
+          if (presence_detectee) 
+          {
+            alarme_intrusion = true;
+            presence_detectee = false;
+          }
+        }
+        break;
+      }
+    }
+```
+
+> Dans le mode HOME, on réinitialise toujours `presence_detectee` et `alarme_intrusion` à `false` pour empêcher le déclenchement au moment de la transistion si une détection a lieu dans ce mode.
 
 #### Alarme intrusion
 

@@ -34,7 +34,6 @@
   - [6.3. Machine à états HOME / AWAY](#63-machine-%C3%A0-%C3%A9tats-home--away)
   - [6.4. Capteur PIR et alarme intrusion](#64-capteur-pir-et-alarme-intrusion)
   - [6.5. Comportement selon le mode (AWAY vs HOME)](#65-comportement-selon-le-mode-away-vs-home)
-  - [6.6. Gestion non bloquante des alarmes](#66-gestion-non-bloquante-des-alarmes)
 - [7. — Scénario 3 — Détection de gaz](#7--sc%C3%A9nario-3--d%C3%A9tection-de-gaz)
   - [7.1. Déclenchement de l'ADC par le Timer 2](#71-d%C3%A9clenchement-de-ladc-par-le-timer-2)
   - [7.2. Lecture de la valeur ADC au Scénario 3 et problème rencontré](#72-lecture-de-la-valeur-adc-au-sc%C3%A9nario-3-et-probl%C3%A8me-rencontr%C3%A9)
@@ -337,24 +336,29 @@ Comme justifié dans la partie [3.1. Branchement des composants](#31-branchement
 Nous avons utilisé un timer avec interruptions pour éviter l'utilisation de boucles bloquantes, garantissant ainsi un échantillonnage régulier. L'horloge source du timer étant de 100 MHz, nous avons configuré les registres PSC et ARR pour obtenir une période d'échantillonnage de 2s.
 
 #### Contraintes de départ
-- ARR et PSC font 16 bits.
+- PSC fait 16 bits.
 - On veut garder un temps par tic qui soit une puissance de 10 (ex : 1 ms, 10 µs, 1 µs, ...) pour simplifier la correspondance entre ARR et période souhaitée.
 - La période souhaitée est de 2s.
 
-Nous avons choisi la basse résolution temporelle par tics pour pouvoir compter un maximum de temps avec l'ARR :
-
-$$Prescaler_{max} = 2^{16} - 1 = 65 535$$
-
-Pour diviser 100MHz en 
-
-
 #### Calcul du Prescaler
-En choisisant `PSC = 10 000 - 1`, nous fixons une fréquence de comptage de $f = \frac{100\text{ MHz}}{10\,000}$ = 10 kHz. Chaque tic du timer dure ainsi 0,1 ms, soit 10 000 tics par seconde. A cette fréquence, la période maximale  est de $65\,535 \times 0,1\text{ ms} = 6,55\text{ s}$. On respecte donc les conditions énoncé précedemments. 
+Nous avons choisi la résolution temporelle par tics la plus basse possible pour pouvoir un le ratio le plus faible possible entre le nombre de tics dans ARR et la durée de la période en secondes.
+
+$$Prescaler < 2^{16} - 1$$
+$$Prescaler < 65 535$$
+
+La plus grande puissance de 10 permettant de diviser 100MHz sans dépasser la valeur maximale du prescaler est 10 000. On choisit donc 
+$$PSC = 10 000 - 1 = 9 999$$
+$$\implies f_{PSC} = \frac{100\text{ MHz}}{10 000} = 10\text{ kHz}$$
+$$\implies T_{PSC} = \frac{1}{10\text{ kHz}} = 0,1\text{ ms}$$
 
 #### Calcul de la Période
-Ainsi pour mesurer une durée de 4 secondes, le nombre total de tics requis est de 40 000 (4 s × 10 000 tics/s),
-soit `ARR = 40 000 - 1`.Cette valeur restant inférieure à la limite de 65 535 ($2^{16} - 1$ bits), le réglage s'inscrit parfaitement sans risque de saturation du compteur.
+Ainsi pour mesurer une durée de 2 secondes, le nombre de tics requis est de :
+$$N_{tics} = \frac{2\text{ s}}{0,1\text{ ms}} = 20 000$$
+On choisit donc `ARR = 20 000 - 1 = 19 999`.
 
+#### Dans CubeMX
+
+<img src="media/stm32cubeide_timer_2_base.png">
 
 ### 5.2. Clignotement de la LED témoin
 
@@ -1018,18 +1022,27 @@ La variable `etat_precedent` est déclarée `static` : elle est initialisée une
 
 ### 9.2. Bouton fenêtre et anti-rebond
 
-Le bouton fenêtre est connecté sur PA10 (D2), configuré en EXTI sur front descendant avec une résistance de tirage interne Pull-up. Le bouton est donc actif bas : l'appui tire la broche à GND et génère un front descendant.
+Le bouton de fenêtre est physiquement identique à celui du mode Home/Away.
+Les seules différences dans l'implémentation de la lecture par rapport au bouton mode sont : 
 
-Ce bouton utilise exactement le même mécanisme d'anti-rebond que le bouton MODE, déjà décrit dans la [section 6.1](#61-bouton-mode-et-anti-rebond). La routine `HAL_GPIO_EXTI_Callback` arme le flag `debouncing_bouton_fenetre` et remet le compteur TIM5 à zéro pour déclencher la vérification 50 ms plus tard.
+1. Sa broche de connexion : PA10 (D2) qui lève l'EXTI 10.
+2. Le nom du flag levé par l'interruption EXTI : `debouncing_bouton_fenetre`
+3. Le nom de la variable globale qui indique si le bouton a été appuyé : `bouton_fenetre_appuye`
 
-Dans la machine à états du `main()`, le flag `bouton_fenetre_appuye` est consommé uniquement en mode HOME et hors condition de pluie :
+Pour un rappel sur la méthode d'implémentation, voir les parties successives :  
+[6.1. Configuration du bouton mode](#61-configuration-du-bouton-mode)  
+[6.2. Gestion de l'anti-rebond](#62-anti-rebond-des-boutons)  
 
 ```c
 // main.c — Machine à états, case HOME
-else {
-    if (bouton_fenetre_appuye) {
+else 
+{
+    // Gestion du bouton de fenêtre
+    if (bouton_fenetre_appuye) 
+    {
         bouton_fenetre_appuye = false;
-        switch(fenetre) {
+        switch(fenetre) 
+        {
             case OUVERTE: fenetre = FERMEE; printf("Je ferme la fenetre\r\n"); break;
             case FERMEE:  fenetre = OUVERTE; printf("J'ouvre la fenetre\r\n"); break;
             case INIT: break;
@@ -1042,10 +1055,10 @@ En mode `AWAY`, le flag `bouton_fenetre_appuye` est immédiatement effacé sans 
 ```c
 // main.c — Machine à états, case AWAY
 case AWAY:
-    {
-    	bouton_fenetre_appuye = false;
-        ...
-    }
+{
+    bouton_fenetre_appuye = false;
+    ...
+}
 ```
 
 // FIN TODO

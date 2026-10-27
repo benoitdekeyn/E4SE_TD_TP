@@ -1,0 +1,21 @@
+{
+  "name": "rapport",
+  "version": "3.0.0",
+  "description": "Rapport Markdown -> fichier HTML unique (sommaire, LaTeX, Mermaid, code coloré)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs --watch"
+  },
+  "dependencies": {
+    "@mermaid-js/layout-elk": "^1.0.1",
+    "esbuild": "^0.28.2",
+    "github-slugger": "^2.0.0",
+    "highlight.js": "^11.10.0",
+    "katex": "^0.16.11",
+    "markdown-it": "^14.1.0",
+    "markdown-it-texmath": "^1.0.0",
+    "mermaid": "^12.2.0"
+  }
+}

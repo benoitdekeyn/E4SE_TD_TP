@@ -1,0 +1,63 @@
+// Configuration du rapport (JSON avec commentaires autorisés).
+// Tous les chemins sont relatifs à ce dossier. Toute clé omise prend sa valeur par défaut.
+{
+  // Fichier Markdown à convertir
+  "source": "Rapport.md",
+
+  // Dossier(s) des images / fichiers référencés dans le Markdown.
+  // Ils servent à vérifier les liens au build et à servir la page en mode `npm run dev`.
+  "mediaDirs": ["media"],
+
+  // Dossier où écrire le fichier HTML (même nom que le .md, extension .html)
+  "outputDir": ".",
+
+  // true : les images sont incorporées dans le HTML (fichier autonome mais lourd).
+  // false : les images restent dans leur dossier, à côté du HTML (HTML léger).
+  "embedImages": false,
+
+  // Titre de l'onglet et du sommaire. null = premier titre de niveau 1 du Markdown
+  "title": null,
+  "language": "fr",
+
+  // "auto" (suit le système), "light" ou "dark". Un bouton permet de changer dans la page.
+  "theme": "auto",
+
+  "layout": {
+    "sidebarWidth": 320,         // largeur initiale du sommaire en px (glisser sa bordure pour ajuster)
+    "sidebarMinWidth": 200,
+    "sidebarMaxWidth": 700,
+    "contentWidthPercent": 90,   // part de la largeur restante occupée par le contenu
+    "tocLevels": [2, 4]          // niveaux de titres affichés dans le sommaire [min, max]
+  },
+
+  "style": {
+    "fontFamily": "-apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+    "codeFontFamily": "ui-monospace, 'Cascadia Code', Consolas, 'SFMono-Regular', monospace",
+    "fontSize": "16px",
+    "codeFontSize": "85%",
+
+    // Thème de coloration du code : nom d'une feuille de node_modules/highlight.js/styles
+    // (ex. "github", "github-dark", "vs", "vs2015", "atom-one-dark", "monokai", "nord", "idea"…)
+    "highlight": { "light": "github", "dark": "github-dark" },
+
+    // Thème des diagrammes Mermaid : "auto" (suit le thème de la page) ou default / dark / forest / neutral
+    "mermaidTheme": "auto",
+
+    // Valeurs par défaut des diagrammes Mermaid (modifiables par diagramme, voir ci-dessous).
+    //  layout    : "dagre" (= "hierarchical", défaut Mermaid) ou "elk" (= "adaptive", plus compact ; ajoute ~2,4 Mo au HTML)
+    //  direction : null (celle écrite dans le diagramme), "TB", "BT", "LR" ou "RL"
+    // Par diagramme, dans le .md, après ```mermaid :
+    //    ```mermaid layout=elk direction=LR
+    // Seuls flowchart/graph et stateDiagram acceptent « direction ».
+    "mermaid": { "layout": "elk", "direction": "TB" },
+
+    // Couleurs : bg, fg, muted, border, sidebarBg, accent, codeBg, quote
+    "colors": {
+      "light": {},
+      "dark": {}
+    },
+
+    // Fichier CSS supplémentaire appliqué en dernier (null = aucun)
+    "customCss": null
+  }
+}

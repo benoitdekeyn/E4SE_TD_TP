@@ -492,7 +492,15 @@ Nous avons défini une première machine à états pour gérer les différents m
 
 > La version complétée avec l'alarme intrusion est décrite plus bas : [Machine à états avec alarme intrusion](#machine-à-états-avec-alarme-intrusion)
 
-<img src="media/mermaid_home_away_basique.png" width = 500>
+```mermaid
+stateDiagram
+  direction TB
+[*] --> HOME
+  AWAY:AWAY
+  HOME:HOME
+  HOME --> AWAY:Bouton MODE appuyé
+  AWAY --> HOME:Bouton MODE appuyé
+```
 
 #### Gestion des modes
 
@@ -570,10 +578,26 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 Nous avons donc ajouté la gestion de l'alarme intrusion en fonction du mode de la maison. L'alarme se déclenche uniquement si le mode est AWAY et qu'une présence est détectée.
 
 **Machine à états HOME/AWAY complétée**
-<img src="media/mermaid_home_away_intrusion.png" width = 500>
+```mermaid
+stateDiagram
+  direction TB
+  [*] --> HOME
+  HOME --> AWAY:Bouton MODE appuyé
+  AWAY --> HOME:Bouton MODE appuyé
+  HOME:<b>HOME :</b>
+HOME:Alarme intrusion désactivée<br>
+  AWAY:<b>AWAY</b>
+AWAY:Surveillance alarme intrusion<br>
+```
 
 **Organigramme de l'alarme intrusion du mode AWAY :**
-<img src="media/mermaid_organigramme_intrusion.png" width = 500>
+```mermaid
+flowchart TD
+    Surveillance([Système de surveillance en mode AWAY]) --> Condition_Mv{Présence détectée ?}
+    Condition_Mv -- "true" --> Alarme[Déclenchement de\nl'alarme intrusion]
+    Condition_Mv -- "false" --> Ignorer[On ne fait rien et on continue de vérifier]
+    Ignorer --> Surveillance
+```
 
 
 #### Implémentation dans la while(1)
@@ -2064,7 +2088,14 @@ temperature_t temperature = TEMPEREE;
 ```
 La plage tempérée (24–26°C) crée une hystérésis naturelle : une fois détecté comme `CHAUD`, le capteur ne revient à `TEMPEREE` que si la température descend en dessous de `SEUIL_CHALEUR`. Cela évite les oscillations rapides de la fenêtre autour du seuil. On suit donc la température selon la machine à états suivante.
 
-<img src="media/mermaid_hysteresis.png">
+```mermaid
+stateDiagram-v2
+    [*] --> TEMPEREE
+    TEMPEREE --> CHAUD : Temperature >= SEUIL_CHALEUR
+    TEMPEREE --> FROID : Temperature <= SEUIL_FROID
+    CHAUD --> TEMPEREE : Temperature < SEUIL_CHALEUR
+    FROID --> TEMPEREE : Temperature > SEUIL_FROID
+```
 
 #### Logique de décision de la fenêtre
 Dans notre fonction `evaluer_temperature()`, nous avons ajouté l'actionnement de la fenêtre lors des transitions vers les états `CHAUD` et `FROID`, lorsque le système est en mode `HOME` et en l'absence de pluie :  
@@ -2127,7 +2158,20 @@ La transition de `CHAUD` ou `FROID` vers `TEMPEREE` ne déclenche aucune action 
 
 #### Résumé du comportement global de la fenêtre
 
-<img src="media/mermaid_fenetre_global.png" width = 700>
+```mermaid
+stateDiagram
+    state "HOME et Pluie non détectée" as HOME {
+        state "fenêtre" as fenetre{
+        state "OUVERTE" as OUVERTE
+        state "FERMEE" as FERMEE
+        OUVERTE --> FERMEE: Appui bouton fenêtre
+        FERMEE --> OUVERTE: Appui bouton fenêtre  
+        OUVERTE --> FERMEE: Température < Seuil de Chaleur
+        FERMEE --> OUVERTE: Température > Seuil de Froid
+        }
+        
+    }
+```
 
 ---
 
@@ -2247,7 +2291,7 @@ Cette fonction applique plusieurs choix de conception :
 * Les valeurs ADC de pluie (`Hu` pour humidité) et de gaz (`Ga`) sont formatées avec `%4d`. Cela force l'affichage sur 4 chiffres, évitant que les chiffres d'une mesure précédente ne restent affichés si la valeur passe par exemple de 1024 à 95.
 
 3. **Synchronisation avec la dernière mesure prête** : dans la boucle `while(1)`, `afficher_capteurs_ecran()` n'est appelée que lorsque `TMP102_is_measure_ready(&thermometre)` devient vrai. Comme la mesure du TMP102 prend ~10 ms alors que les conversions ADC en DMA sont quasi instantanées, la température est toujours la dernière donnée disponible. L'affichage est donc rafraîchi une seule fois par cycle de 2 s avec des valeurs parfaitement synchronisées.  
-→ Cf. [10.11. Cycle de mesure dans la boucle principale](#1011-cycle-de-mesure-dans-la-boucle-principale).
+→ Cf. [10.10. Cycle de mesure dans la boucle principale](#cycle-de-mesure-dans-la-boucle-principale).
    
 4. **Caractère degré personnalisé (`\xDF`)** : la table ASCII standard ne contient pas le symbole degré `°`. Dans la mémoire ROM du contrôleur I²C de l'écran il y a une table de caractères où le caractère `°` est situé à l'adresse hexadécimale `1101 1111` en binaire soit `0xDF` en hexadécimal :  
 <img src="media/ecran_LCD_CGROM_ASCII_degre.jpg" alt="CGROM ASCII degre" width="500"></img>  
@@ -2297,7 +2341,7 @@ Le signal est donc généré entièrement par le matériel, avec la précision d
 
 #### Branchement
 
-La bande est alimentée en 3,3 V et son entrée de données DI est connectée à PB6 (D10), qui correspond à TIM4 CH1 (cf. [3.1. Tableau de brochage final](#31-tableau-de-brochage-final)).
+La bande est alimentée en 3,3 V et son entrée de données DI est connectée à PB6 (D10), qui correspond à TIM4 CH1 (cf. [3.1. Tableau de brochage final](#tableau-de-brochage-final)).
 
 | Signal | Broche |
 | :--- | :--- |
@@ -2462,7 +2506,7 @@ Les étapes sont les suivantes :
 ```c
 bande_led->cycles_delai_maj = (BL_DELAI_MAJ_nS / (BL_NSEC_IN_1_SEC / BL_FREQ_CYCLE_PWM)) + 1;
 ```
-La trame doit être suivie d'au moins 50 µs d'état bas. Comme une période de bit dure $\frac{100\,\text{MHz}}{800\,000} = 1250\, \text{ns}$, il faut $\frac{50\,000}{1250} = 40$ périodes à zéro. Le `+ 1` garantit que le délai est toujours **supérieur** à 50 µs, même si la division entière arrondissait à l'inférieur avec d'autres paramètres. On obtient donc **41 périodes**, soit $41 \times 1{,}25\, \mu\text{s} = 51{,}25\, \mu\text{s}$.
+La trame doit être suivie d'au moins 50 µs d'état bas. Comme une période de bit dure $\frac{1\,\text{s}}{800\,\text{KHz}} = 1250\, \text{ns}$, il faut $\frac{50\,000}{1250} = 40$ périodes à zéro. Le `+ 1` garantit que le délai est toujours **supérieur** à 50 µs, même si la division entière arrondissait à l'inférieur avec d'autres paramètres. On obtient donc **41 périodes**, soit $41 \times 1{,}25\, \mu\text{s} = 51{,}25\, \mu\text{s}$.
 
 2. **Enregistrement du matériel :** le timer, le canal, la fréquence de comptage du timer et le nombre de LEDs sont mémorisés dans l'objet.
 
@@ -2699,7 +2743,7 @@ void update_bande_led()
 ```
 
 1. **Recopie des états :** les états `state` des trois LEDs discrètes sont copiés dans le `power` des LEDs correspondantes. Si l'état n'a pas changé, la valeur écrite est identique.
-2. **Tranche de température :** la LED est toujours allumée, et c'est sa couleur qui change selon la variable `temperature` calculée par `evaluer_temperature()` ([10.12. Gestion automatique de la fenêtre selon la température](#1012-gestion-automatique-de-la-fenêtre-selon-la-température)). Le `default` éteint la LED si la valeur n'est pas reconnue.
+2. **Tranche de température :** la LED est toujours allumée, et c'est sa couleur qui change selon la variable `temperature` calculée par `evaluer_temperature()` ([10.12. Gestion automatique de la fenêtre par la température](#1012-gestion-automatique-de-la-fenêtre-par-la-température)). Le `default` éteint la LED si la valeur n'est pas reconnue.
 3. **Envoi d'une seule trame** avec `BandeLED_show()` après toutes les modifications ([12.7. Modification de l'état des LEDs](#127-modification-de-létat-des-leds)).
 
 Cette fonction est appelée dans la boucle `while(1)` **à la cadence de 20 Hz** du Timer 5, c'est-à-dire sur le même flag que le filtre anti-rebond et le cycle des alarmes :
@@ -2791,9 +2835,8 @@ De plus, l'activation du buzzer est synchronisée avec le retour visuel : le sig
 
 Lorsque les deux alarmes sont actives simultanément, les deux LEDs continuent de clignoter indépendamment selon leur propre fréquence : la LED rouge du gaz à 10 Hz (demi-période de 50 ms) et la LED jaune de l'intrusion à 2 Hz (demi-période de 250 ms).
 
-Le buzzer ne peut produire qu'une seule fréquence à la fois. Il alterne donc entre les deux signatures sonores par phases de 250 ms : d'abord 384 Hz pour l'intrusion, puis 440 Hz pour le gaz. Pendant la phase gaz, le buzzer suit le clignotement rapide de la LED rouge et se tait lorsque celle-ci est éteinte. Ce cycle de 500 ms se répète tant que les deux alarmes restent actives.
-
 ![one_note_cycle_alarmes](media/onenote_cycle_alarmes.png "Cycle des alarmes gaz et intrusion") 
 
-Cette alternance permet de distinguer auditivement les deux alarmes sans empêcher leur signalisation visuelle simultanée : chaque LED conserve son rythme propre, même pendant la phase sonore de l'autre alarme.
+Le buzzer ne peut produire qu'une seule fréquence à la fois. Il alterne donc entre les deux signatures sonores par phases de 250 ms : d'abord 384 Hz pour l'intrusion, puis 440 Hz pour le gaz. Pendant la phase gaz, le buzzer suit le clignotement rapide de la LED rouge et se tait lorsque celle-ci est éteinte. Ce cycle de 500 ms se répète tant que les deux alarmes restent actives.
 
+Cette alternance permet de distinguer auditivement les deux alarmes sans empêcher leur signalisation visuelle simultanée : chaque LED conserve son rythme propre, même pendant la phase sonore de l'autre alarme.

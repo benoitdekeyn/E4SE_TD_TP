@@ -429,14 +429,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim == TIMER_DEBOUNCE)
   {
-	  timer_debounce_flag = true;
+    timer_debounce_flag = true;
   }
   ...
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-   ...
   if (GPIO_Pin == BTN_HOME_Pin)
   {
     if (!debouncing_bouton_home) {
@@ -538,8 +537,8 @@ switch (mode)
 Le capteur de présence PIR est raccordé sur la broche PC7 et configurée en interruption externe déclenchée sur le front montant, avec une résistance de tirage interne (pull-down), afin de garantir un signal stable en l'absence de mouvement.
 
 #### Alarme intrusion 
-L'alarme intrusion est gérée par les variables `alarme_intrusion` et `presence_detectee`.
-Ces variables sont lues en parrallèle pour commander les signaux de LED et de buzzer en fonction.
+L'alarme intrusion est gérée par les variables `alarme_intrusion` et `presence_detectee`.  
+Ces variables sont lues en parrallèle pour commander les signaux de LED et de buzzer en fonction.  
 Voir [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes).
 
 ```c
@@ -547,7 +546,7 @@ Voir [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale
 volatile bool presence_detectee = false;
 bool alarme_intrusion = false;
 ```
-Comme l'interruption du capteur de mouvement modifie la variable globale `presence_detectee`, nous l'avons déclarée volatile.
+Comme l'interruption du capteur de mouvement modifie la variable globale `presence_detectee`, nous l'avons déclarée en volatile.
 
 #### Configuration led et buzzer
 Dans le scénario d'intrusion, deux composant s'active pour signaler l'alarme : 
@@ -746,8 +745,8 @@ Donc à moins que le capteur ne renvoie explicitement 3V3 maximum sur A0, nous s
 #### Seuil de détection
 
 Nous avons surveillé la valeur en temps réel sur le moniteur série pour définir le seuil de détection de gaz :
-- **En air ambiant** : la valeur ADC se stabilise aux alentours de **500–800** quand le capteur a bien chauffé.
-- **En présence de vapeurs** : la valeur monte à plus de 3000.
+- À l'air libre : la valeur ADC se stabilise aux alentours de 800 (500 quand le capteur a bien chauffé).
+- En présence de l'alcool : la valeur monte à plus de 3000.
 
 Nous avons donc retenu `SEUIL_GAZ = 2500` comme compromis entre sensibilité et faux positifs.
 
@@ -755,8 +754,17 @@ Nous avons donc retenu `SEUIL_GAZ = 2500` comme compromis entre sensibilité et 
 
 ### 7.4. Alarme gaz
 
-La détection de gaz est permanente et indépendante du mode HOME/AWAY comme demandé dans le TP, car une fuite de gaz reste dangereuse, que l'on soit présent ou absent.  
-La variable globale `alarme_gaz` est positionnée à `true` dans `evaluer_gaz()` dès que la valeur dépasse le seuil. Le déclenchement effectif du buzzer et de la LED est géré par la fonction non bloquante `update_cycle_alarmes()`, qui est décrite dans la partie [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes).
+La détection de gaz est permanente et indépendante du mode HOME/AWAY comme demandé dans le TP, car une fuite de gaz reste dangereuse, que l'on soit présent ou absent.   
+La variable globale `alarme_gaz` est positionnée à `true` dans `evaluer_gaz()` dès que la valeur dépasse le seuil.  
+
+Lorsque l'alarme gaz est active :
+- la LED rouge clignote à 10 Hz
+- le buzzer aussi clignote en même temps, avec une fréquence de 440 Hz
+
+Le déclenchement effectif du buzzer et de la LED dans la fonction `update_cycle_alarmes()` est décrit là :  
+[13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes).  
+
+
 
 ---
 
@@ -766,7 +774,7 @@ La variable globale `alarme_gaz` est positionnée à `true` dans `evaluer_gaz()`
 
 <img src="media/usart2_datasheet.png">
 
-La carte NUCLEO-F411RE embarque un convertisseur USB-UART intégré au ST-LINK, qui expose sur le PC un port COM. En 
+La carte NUCLEO-F411RE embarque un convertisseur USB-UART intégré au ST-LINK, qui expose sur le PC un port COM.  
 
 Aucun câblage externe n'est donc nécessaire pour la liaison PC : le câble USB de débogage suffit à la fois pour programmer, débogguer et superviser.
 
@@ -861,7 +869,7 @@ printf("Erreur lors du demarrage de la mesure TMP102 en mode One-Shot\r\n");
 
 ### 8.5. Validation avec un terminal série
 
-Pour valider la liaison, nous avons utilisé le moniteur série intégré à STM32CubeIDE (ShellCode) configuré à **115200 bauds** sur le bon port COM.
+Pour valider la liaison, nous avons utilisé le moniteur série intégré à STM32CubeIDE (ShellCode) configuré à 115200 bauds sur le bon port COM.
 
 ---
 
@@ -954,11 +962,12 @@ Ce qui donne une résolution angulaire théorique de $\approx 0{,}036°$ par tic
 Nous avons implémenté une fonction pour la conversion d'un angle vers la valeur de CCR à encoder en s'appuyant uniquement sur les macros définies en tête de `main.c` :
 
 ```c
-// main.c
+// USER CODE PD
 #define FREQ_TIMER_SERVO  2500000   // 2.5 MHz
 #define SERVO_0_DEG_MS    0.5       // impulsion à 0°   (ms)
 #define SERVO_180_DEG_MS  2.5       // impulsion à 180° (ms)
 
+// USER CODE 0
 void angle_servo(int angle)
 {
     int pulse_tics =
@@ -975,11 +984,10 @@ void angle_servo(int angle)
 }
 ```
 
-La formule creprend celle expliqée plus haut pour la conversion d'un angle cible vers une impulsion en ticss.
+La formule reprend celle expliqée plus haut pour la conversion d'un angle cible vers une impulsion en ticss.
 Le registre de comparaison CCR est mis à jour avec la valeur de `pulse_tics` via `__HAL_TIM_SET_COMPARE()`.
 > Lors du montage de la maison nous avons réglé le servo à 0° avant de visser la fenêtre en position fermée. Ensuite, nous avons testé de manière empirique quel angle permettait d'ouvrir parfaitement la fenêtre. On a trouvé 120° : en deça, la fenêtre n'est pas complétement ouverte, au delà, la fenêtre dépasse contre le mur (surchauffe car physiquement c'est impossible).
 
-// TODO
 #### Machine à états du servo fenêtre
 
 Le servo de la fenêtre est commandé par une machine à états simple avec trois états possibles : `INIT`, `FERMEE` et `OUVERTE`. L'état `INIT` correspond à l'initialisation du système, `FERMEE` à la fenêtre fermée et `OUVERTE` à la fenêtre ouverte. La transition entre ces états est d'abord déclenchée par les commandes de l'utilisateur via le bouton fenêtre puis plus tard, par les conditions environnementales (cf TODO redirection temparature et pluie).
@@ -1005,7 +1013,7 @@ stateDiagram
   
 ```
 
-#### Fonction `commande_fenetre()` — envoi uniquement sur changement d'état
+#### Application de l'état de la fenêtre
 
 Pour éviter d'envoyer continuellement la même commande PWM au servo à chaque tour de boucle principale, `commande_fenetre()` n'agit que lorsque l'état `fenetre` change :
 

@@ -632,38 +632,28 @@ int main(void)
           } 
           else 
           {
-            // Sous-Machine à état fenêtre
-            switch(fenetre)
+            // Gestion du bouton de fenêtre
+            if (bouton_fenetre_appuye) 
             {
-              case OUVERTE: 
+              bouton_fenetre_appuye = false;
+              switch(fenetre)
               {
-                // Transitions
-                if (bouton_fenetre_appuye) 
+                case OUVERTE: 
                 {
-                  bouton_fenetre_appuye = false;
                   fenetre = FERMEE;
                   printf("Je ferme la fenetre\r\n");
                   break;
                 }
-                // Aucune action
-                break;
-              } 
-              case FERMEE: 
-              {
-                // Transitions
-                if (bouton_fenetre_appuye) 
+                case FERMEE: 
                 {
-                  bouton_fenetre_appuye = false;
                   fenetre = OUVERTE;
                   printf("J'ouvre la fenetre\r\n");
                   break;
                 }
-                // Aucune action
-                break;
+                case INIT:
+                  // pris en charge au premier appel de commande_fenetre()
+                  break;
               }
-              case INIT:
-                // pris en charge au premier appel de commande_fenetre()
-                break;
             }
           }
         }

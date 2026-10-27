@@ -572,26 +572,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 Nous avons donc ajouté la gestion de l'alarme intrusion en fonction du mode de la maison. L'alarme se déclenche uniquement si le mode est AWAY et que la présence est détectée.
 
-**Machine à état HOM/AWAY complétée**
-```mermaid
-stateDiagram
-  direction TB
-  [*] --> HOME
-  HOME --> AWAY:Bouton MODE appuyé
-  AWAY --> HOME:Bouton MODE appuyé
-  HOME:<b>HOME :</b>
-HOME:Alarme intrusion désactivée<br>
-  AWAY:<b>AWAY</b>
-AWAY:Surveillance alarme intrusion<br>
-```
-**Organigramme de l'alarme intrusion du mode AWAY :**
-```mermaid
-flowchart TD
-    Surveillance([Système de surveillance en mode AWAY]) --> Condition_Mv{Présence détectée ?}
-    Condition_Mv -- "true" --> Alarme[Déclenchement de\nl'alarme intrusion]
-    Condition_Mv -- "false" --> Ignorer[On ne fait rien et on continue de vérifier]
-    Ignorer --> Surveillance
-```
+![6.5](media/Statechart.png)
+![6.5.1](media/6.5.1.png)
+
 #### Implémentation dans la while(1)
 
 ```c

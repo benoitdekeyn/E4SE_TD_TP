@@ -429,13 +429,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim == TIMER_DEBOUNCE)
   {
-    timer_debounce_flag = true;
+	  timer_debounce_flag = true;
   }
   ...
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+   ...
   if (GPIO_Pin == BTN_HOME_Pin)
   {
     if (!debouncing_bouton_home) {
@@ -479,8 +480,6 @@ Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrair
 #### Description de la machine à états
 
 Nous avons défini une première machine à états pour gérer les différents modes de la maison : `HOME`, `AWAY`.
-> La machine à états complète est accessible plus loin dans les scénarios [Machine à états avec alarme intrusion](#machine-à-états-avec-alarme-intrusion)
-
 ````mermaid
 stateDiagram
   direction TB
@@ -537,8 +536,8 @@ switch (mode)
 Le capteur de présence PIR est raccordé sur la broche PC7 et configurée en interruption externe déclenchée sur le front montant, avec une résistance de tirage interne (pull-down), afin de garantir un signal stable en l'absence de mouvement.
 
 #### Alarme intrusion 
-L'alarme intrusion est gérée par les variables `alarme_intrusion` et `presence_detectee`.  
-Ces variables sont lues en parrallèle pour commander les signaux de LED et de buzzer en fonction.  
+L'alarme intrusion est gérée par les variables `alarme_intrusion` et `presence_detectee`.
+Ces variables sont lues en parrallèle pour commander les signaux de LED et de buzzer en fonction.
 Voir [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes).
 
 ```c
@@ -546,7 +545,7 @@ Voir [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale
 volatile bool presence_detectee = false;
 bool alarme_intrusion = false;
 ```
-Comme l'interruption du capteur de mouvement modifie la variable globale `presence_detectee`, nous l'avons déclarée en volatile.
+Comme l'interruption du capteur de mouvement modifie la variable globale `presence_detectee`, nous l'avons déclarée volatile.
 
 #### Configuration led et buzzer
 Dans le scénario d'intrusion, deux composant s'active pour signaler l'alarme : 
@@ -573,43 +572,29 @@ HOME:Alarme intrusion désactivée<br>
   AWAY:<b>AWAY</b>
 AWAY:Organigramme alarme intrusion<br>
 ```
-> mermaid organigrame alarme intrusion
 
+```mermaid
+flowchart TD
+    Surveillance([Système de surveillance en mode AWAY]) --> Condition_Mv{Mouvement détecté ?}
+    Condition_Mv -- "Oui" --> Alarme[Déclenchement de\nl'alarme intrusion]
+    Condition_Mv -- "Non" --> Ignorer[Aucune détection\nLa surveillance reste active]
+    Ignorer --> Surveillance
+```
 // Fin TODO
-
-_**NB** : Les textes **[entre crochets]** indiquent qu'il s'agit d'une action réalisée lors de la transition d'état._
 
 #### Impplémentation de la détection
 
-Lorsqu'un front montant est détecté, la routine d'interruption (`HAL_GPIO_EXTI_Callback`) active le flag global `presence_detectee`.
-
-```c
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-	if (GPIO_Pin == PIR_MVMT_Pin)
-  {
-    if (mode == AWAY){
-      presence_detectee = true;
-		}
-	}
-}
-```
 ##### En mode AWAY: 
 Le système de surveillance est activé. A la détection d'un mouvement, le front montant passe immédiatement le flag global `presence_detectee` à `true`.
 ```c
-//Dans USER CODE 4
+// Dans USER CODE 4 : Interruption EXTI
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-   // Autres traitements d'interruptions éventuels
-   ....
-   // Vérification du capteur PIR
-	if (GPIO_Pin == PIR_MVMT_Pin)
-  {
-    if (mode == AWAY){
-      presence_detectee = true;
-		}
-	}
-   ...
+    if (GPIO_Pin == PIR_MVMT_Pin)
+    {
+        presence_detectee = true;
+    }
+    // ... gestion des autres boutons
 }
 ```
  La boucle principale (`while(1)`) capture ce changement d'état et active le scénario d'alarme intrusion (clignotement de la Led et Buzzer).le flag `presence_detectee` redescend à `false`, évitant ainsi tout déclenchement intempestif.
@@ -619,16 +604,21 @@ TODO : redirection comamnd eled et buzzer.
 ```c
 // Gestion du mode AWAY dans la boucle principale
 case AWAY:
+{
+    // ...
+    else 
     {
-    	...
-      else if (presence_detectee) 
-      {
-        alarme_intrusion = true;
-        presence_detectee = false;
-        printf("Intrusion detectee !\r\n");
-      }
-      break;
+        bouton_fenetre_appuye = false;
+        
+        if (presence_detectee) 
+        {
+            alarme_intrusion = true;
+            presence_detectee = false;
+            printf("Intrusion detectee !\r\n");
+        }
     }
+    break;
+}
 ...
     void commande_led(){
       //commande des autres Led
@@ -658,16 +648,13 @@ case AWAY:
      ...
       else 
       {
+        presence_detectee = false;
         alarme_intrusion = false;
         ..
       }
       break;
     }
 ```
-### 6.6. Gestion non bloquante des alarmes
-
-Nous avons donc décidé de mettre en place une gestion non bloquante des alarmes afin de ne pas bloquer la boucle principale avec des temporisations ou des boucles d'attente.
-
 ---
 
 ## 7. — Scénario 3 — Détection de gaz
@@ -745,8 +732,8 @@ Donc à moins que le capteur ne renvoie explicitement 3V3 maximum sur A0, nous s
 #### Seuil de détection
 
 Nous avons surveillé la valeur en temps réel sur le moniteur série pour définir le seuil de détection de gaz :
-- À l'air libre : la valeur ADC se stabilise aux alentours de 800 (500 quand le capteur a bien chauffé).
-- En présence de l'alcool : la valeur monte à plus de 3000.
+- **En air ambiant** : la valeur ADC se stabilise aux alentours de **500–800** quand le capteur a bien chauffé.
+- **En présence de vapeurs** : la valeur monte à plus de 3000.
 
 Nous avons donc retenu `SEUIL_GAZ = 2500` comme compromis entre sensibilité et faux positifs.
 
@@ -754,17 +741,8 @@ Nous avons donc retenu `SEUIL_GAZ = 2500` comme compromis entre sensibilité et 
 
 ### 7.4. Alarme gaz
 
-La détection de gaz est permanente et indépendante du mode HOME/AWAY comme demandé dans le TP, car une fuite de gaz reste dangereuse, que l'on soit présent ou absent.   
-La variable globale `alarme_gaz` est positionnée à `true` dans `evaluer_gaz()` dès que la valeur dépasse le seuil.  
-
-Lorsque l'alarme gaz est active :
-- la LED rouge clignote à 10 Hz
-- le buzzer aussi clignote en même temps, avec une fréquence de 440 Hz
-
-Le déclenchement effectif du buzzer et de la LED dans la fonction `update_cycle_alarmes()` est décrit là :  
-[13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes).  
-
-
+La détection de gaz est permanente et indépendante du mode HOME/AWAY comme demandé dans le TP, car une fuite de gaz reste dangereuse, que l'on soit présent ou absent.  
+La variable globale `alarme_gaz` est positionnée à `true` dans `evaluer_gaz()` dès que la valeur dépasse le seuil. Le déclenchement effectif du buzzer et de la LED est géré par la fonction non bloquante `update_cycle_alarmes()`, qui est décrite dans la partie [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes).
 
 ---
 
@@ -774,7 +752,7 @@ Le déclenchement effectif du buzzer et de la LED dans la fonction `update_cycle
 
 <img src="media/usart2_datasheet.png">
 
-La carte NUCLEO-F411RE embarque un convertisseur USB-UART intégré au ST-LINK, qui expose sur le PC un port COM.  
+La carte NUCLEO-F411RE embarque un convertisseur USB-UART intégré au ST-LINK, qui expose sur le PC un port COM. En 
 
 Aucun câblage externe n'est donc nécessaire pour la liaison PC : le câble USB de débogage suffit à la fois pour programmer, débogguer et superviser.
 
@@ -869,7 +847,7 @@ printf("Erreur lors du demarrage de la mesure TMP102 en mode One-Shot\r\n");
 
 ### 8.5. Validation avec un terminal série
 
-Pour valider la liaison, nous avons utilisé le moniteur série intégré à STM32CubeIDE (ShellCode) configuré à 115200 bauds sur le bon port COM.
+Pour valider la liaison, nous avons utilisé le moniteur série intégré à STM32CubeIDE (ShellCode) configuré à **115200 bauds** sur le bon port COM.
 
 ---
 
@@ -962,12 +940,11 @@ Ce qui donne une résolution angulaire théorique de $\approx 0{,}036°$ par tic
 Nous avons implémenté une fonction pour la conversion d'un angle vers la valeur de CCR à encoder en s'appuyant uniquement sur les macros définies en tête de `main.c` :
 
 ```c
-// USER CODE PD
+// main.c
 #define FREQ_TIMER_SERVO  2500000   // 2.5 MHz
 #define SERVO_0_DEG_MS    0.5       // impulsion à 0°   (ms)
 #define SERVO_180_DEG_MS  2.5       // impulsion à 180° (ms)
 
-// USER CODE 0
 void angle_servo(int angle)
 {
     int pulse_tics =
@@ -984,12 +961,12 @@ void angle_servo(int angle)
 }
 ```
 
-La formule reprend celle expliqée plus haut pour la conversion d'un angle cible vers une impulsion en ticss.
+La formule creprend celle expliqée plus haut pour la conversion d'un angle cible vers une impulsion en ticss.
 Le registre de comparaison CCR est mis à jour avec la valeur de `pulse_tics` via `__HAL_TIM_SET_COMPARE()`.
+> Lors du montage de la maison nous avons réglé le servo à 0° avant de visser la fenêtre en position fermée. Ensuite, nous avons testé de manière empirique quel angle permettait d'ouvrir parfaitement la fenêtre. On a trouvé 120° : en deça, la fenêtre n'est pas complétement ouverte, au delà, la fenêtre dépasse contre le mur (surchauffe car physiquement c'est impossible).
 
-#### Ouverture et fermeture de la fenêtre
-
-// TODO : schématiser (ou non) le fait que AWAY, PLUIE et BTN peuvent faire bouger la fenetre
+// TODO
+#### Machine à états du servo fenêtre
 
 Le servo de la fenêtre est commandé par une machine à états simple avec trois états possibles : `INIT`, `FERMEE` et `OUVERTE`. L'état `INIT` correspond à l'initialisation du système, `FERMEE` à la fenêtre fermée et `OUVERTE` à la fenêtre ouverte. La transition entre ces états est d'abord déclenchée par les commandes de l'utilisateur via le bouton fenêtre puis plus tard, par les conditions environnementales (cf TODO redirection temparature et pluie).
 
@@ -1014,17 +991,15 @@ stateDiagram
   
 ```
 
-#### Application de l'état de la fenêtre
+#### Fonction `commande_fenetre()` — envoi uniquement sur changement d'état
 
-La fonction commande_fenetre() sert à appliquer en temps réel l'état actuel de la variable `fenetre_t` au servo.
-De plus, on evite d'envoyer continuellement la même commande PWM au servo à chaque tour de boucle principale en stockant l'état précedent de la variable `fenetre` dans `etat_precedent` et en ne mettant à jour le servo que si `fenetre` est différent de `etat_precedent`.
+Pour éviter d'envoyer continuellement la même commande PWM au servo à chaque tour de boucle principale, `commande_fenetre()` n'agit que lorsque l'état `fenetre` change :
 
 ```c
-// USERCODE PD
-#define ANGLE_SERVO_OUVERT  120 // °
-#define ANGLE_SERVO_FERME   0   // °
+// main.c
+#define ANGLE_SERVO_OUVERT  120   // ATTENTION maximum 120° sinon ça casse
+#define ANGLE_SERVO_FERME   0
 
-// USERCODE 0 main.c
 void commande_fenetre()
 {
     static fenetre_t etat_precedent = INIT;
@@ -1039,10 +1014,7 @@ void commande_fenetre()
 }
 ```
 
-La variable `etat_precedent` est déclarée `static` : elle est initialisée une seule fois à `INIT` et conserve sa valeur entre les appels.  
-L'état `INIT` ne sert qu'au premier appel, pour que la postion par défaut définie lors de l'initialisation de la variable globale `fenetre` soit appliquée au servo alors même qu'on ne sait pas encore quel est l'état actuel de la fenêtre.  
-
-> Lors du montage de la maison nous avons réglé le servo à 0° avant de visser la fenêtre en position fermée. Ensuite, nous avons testé de manière empirique quel angle permettait d'ouvrir parfaitement la fenêtre. On a trouvé 120° : en deça, la fenêtre n'est pas complétement ouverte, au delà, la fenêtre dépasse contre le mur (surchauffe car physiquement c'est impossible).
+La variable `etat_precedent` est déclarée `static` : elle est initialisée une seule fois à `INIT` et conserve sa valeur entre les appels. Au premier passage dans le `main()`, `fenetre = OUVERTE` (valeur par défaut) ≠ `INIT`, donc le servo est immédiatement positionné à 0° à l'initialisation.
 
 ### 9.2. Bouton fenêtre et anti-rebond
 
@@ -2325,9 +2297,17 @@ Cf. [Cycle de mesure dans la boucle principale](#cycle-de-mesure-dans-la-boucle-
 
 > _Expliquer le mécanisme de clignotement non bloquant : un compteur `blink_counter_alarm` est incrémenté à chaque tick de TIM5 (20 Hz). Pour chaque alarme, une demi-période de clignotement est calculée en nombre de ticks (ex : alarme gaz à 10 Hz → demi-période = 1 tick ; alarme intrusion à 2 Hz → demi-période = 5 ticks). L'état de la LED est inversé à chaque fin de demi-période. Justifier que ce mécanisme est entièrement non bloquant._
 
+Pour gérer les différentes alarmes sans interrompre l'exécution du programme, nous avons exploité le Timer 5, configuré à 20 Hz (soit une interruption toutes les 50 ms). À chaque itération de ce timer, un compteur `global blink_counter_alarm` est incrémenté.
+Le clignotement de chaque LED est déterminé en calculant une demi-période exprimée en nombre de "ticks" de ce timer: 
+- L'alarme gaz est définie pour clignoter à 10 Hz. Sa demi-période correspond donc à 1 tick (50 ms). La LED rouge associée change d'état à chaque tick.
+- L'alarme intrusion clignote à 2 Hz. Sa demi-période correspond à 5 ticks (250 ms). L'état de la LED jaune associée est donc inversé tous les 5 ticks.
+
+Ce mécanisme est fondamentalement non bloquant : au lieu d'utiliser des délais logiciels d'attente (`HAL_Delay`), le microcontrôleur évalue instantanément une simple condition mathématique (avec u modulo sur le competur global) pour inverser ou non l'état de la broche. Une fois l'évaluation terminée, il poursuit immédiatement l'exécution de la boucle principale.
+
 ### 13.2. Gestion du buzzer avec fréquences distinctes
 
 > _Expliquer que le buzzer passif (PB5, TIM3 CH2) est piloté en PWM avec un duty cycle de 50 %. La fréquence du buzzer est ajustée dynamiquement via `frequence_buzzer()` qui modifie l'auto-reload et le compare de TIM3. L'alarme gaz sonne à 440 Hz (La4), l'alarme intrusion à 384 Hz. Le buzzer est synchronisé avec l'état de la LED correspondante (il sonne quand la LED est allumée)._
+
 
 ### 13.3. Cas simultané : alternance gaz / intrusion
 

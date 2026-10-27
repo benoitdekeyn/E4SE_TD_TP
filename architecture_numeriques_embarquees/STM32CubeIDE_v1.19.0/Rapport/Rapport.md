@@ -69,9 +69,14 @@
   - [11.2. Intégration de la bibliothèque LCD I²C](#112-int%C3%A9gration-de-la-biblioth%C3%A8que-lcd-ic)
   - [11.3. Affichage des données en 16x2](#113-affichage-des-donn%C3%A9es-en-16x2)
 - [12. — Bonus — Bibliothèque Bande LED RGB (WS2812B)](#12--bonus--biblioth%C3%A8que-bande-led-rgb-ws2812b)
-  - [12.1. Principe de communication (protocole one-wire)](#121-principe-de-communication-protocole-one-wire)
-  - [12.2. Implémentation PWM + DMA (TIM4)](#122-impl%C3%A9mentation-pwm--dma-tim4)
-  - [12.3. Tableau de bord LED](#123-tableau-de-bord-led)
+  - [12.1. Analyse de la datasheet (protocole one-wire)](#121-analyse-de-la-datasheet-protocole-one-wire)
+  - [12.2. Principe d'implémentation : PWM + DMA](#122-principe-dimpl%C3%A9mentation--pwm--dma)
+  - [12.3. Branchement et configuration CubeMX](#123-branchement-et-configuration-cubemx)
+  - [12.4. Structure de la bibliothèque](#124-structure-de-la-biblioth%C3%A8que)
+  - [12.5. Initialisation](#125-initialisation)
+  - [12.6. Encodage et envoi de la trame](#126-encodage-et-envoi-de-la-trame)
+  - [12.7. Modification de l'état des LEDs](#127-modification-de-l%C3%A9tat-des-leds)
+  - [12.8. Utilisation dans le code : tableau de bord LED](#128-utilisation-dans-le-code--tableau-de-bord-led)
 - [13. — Bonus — Gestion globale des alarmes](#13--bonus--gestion-globale-des-alarmes)
   - [13.1. Clignotement non bloquant par compteur partagé](#131-clignotement-non-bloquant-par-compteur-partag%C3%A9)
   - [13.2. Gestion du buzzer avec fréquences distinctes](#132-gestion-du-buzzer-avec-fr%C3%A9quences-distinctes)
@@ -171,7 +176,7 @@ Résultat :
 - Timer 1 → Servomoteur sur le channel 3 : PA9 (D8)
 - Timer 2 → Echantillonnage
 - Timer 3 → Buzzer sur le channel 2 : PB5 (D4)
-- Timer 4 → LEDs NeoPixel sur le channel 1 : PA6 (D11)
+- Timer 4 → LEDs NeoPixel sur le channel 1 : PB6 (D10)
 
 ---
 
@@ -221,7 +226,7 @@ PS : C'est seulement à la fin que nous avons décidé d'ajouter les 4 LEDs NeoP
 | TMP102 + LCD (SCL) | I2C_SCL | D7 | PA8 | I2C3 SCL | — | 5V |
 | Buzzer passif | BUZZER | D4 | PB5 | TIM3 CH2 – PWM | — | 3V3 |
 | Servomoteur fenêtre | SERVO | D8 | PA9 | TIM1 CH2 – PWM | — | 5V |
-| Bande LED NeoPixel | RGB_BANDE | D10 | PB6 | TIM4 CH1 – PWM + DMA | — | 5V |
+| Bande LED NeoPixel | RGB_BANDE | D10 | PB6 | TIM4 CH1 – PWM + DMA | — | 3V3 |
 | Capteur gaz MQ-2 | GAZ | A2 | PA4 | ADC1 CH4 | — | 5V |
 | Capteur de pluie | PLUIE | A3 | PB0 | ADC1 CH8 | — | 5V |
 | Capteur PIR | PIR_MVMT | D9 | PC7 | EXTI7 – Rising Edge | PULLDOWN | 3V3 |
@@ -2305,24 +2310,470 @@ Cf. [Cycle de mesure dans la boucle principale](#cycle-de-mesure-dans-la-boucle-
 
 ## 12. — Bonus — Bibliothèque Bande LED RGB (WS2812B)
 
+Pour afficher l'état de la maison de manière visuelle, nous avons ajouté en bonus un module de 4 LED NeoPixel (WS2812B) chaînées. Contrairement aux LED classiques de la maison, chaque NeoPixel contient un circuit intégré qui pilote lui-même ses 3 LED (rouge, verte, bleue) via une PWM sur 8 bits (256 niveaux par couleur).
 
-### 12.1. Principe de communication (protocole one-wire)
+### 12.1. Analyse de la datasheet (protocole one-wire)
 
-> _Décrire le protocole des LED WS2812B : signal one-wire à 800 kHz, chaque bit est codé par la durée de l'impulsion haute (400 ns pour un 0, 800 ns pour un 1) sur une période fixe. L'ordre des couleurs dans la trame est GRB. Un délai de reset (≥ 50 µs) termine la trame._
+*Extrait de la documentation sur les LED WS2812B (Fonctionnement LED NeoPixel WS2812B) :*
 
-### 12.2. Implémentation PWM + DMA (TIM4)
+<img src="media/mode_operatoire_datasheet_neopixel.png"/>
 
-> _Justifier le choix de TIM4 CH1 (PB6) en PWM + DMA pour générer le signal : chaque bit correspond à un cycle PWM dont le duty cycle est ajusté par une valeur dans le buffer DMA. Le timer est cadencé à 100 MHz, Period = 125-1 → fréquence PWM = 800 kHz. Le DMA (DMA1 Stream0, Memory to Peripheral) transfère automatiquement les valeurs de duty cycle pour chaque bit de chaque LED. Détailler la construction du buffer DMA dans `BandeLED_show()` : pour chaque LED, pour chaque composante (GRB), pour chaque bit (MSB first), la valeur de comparaison est soit `pulse_bit_0` soit `pulse_bit_1`. Les cycles de reset (duty = 0) sont ajoutés à la fin._
+Les LED n'ont qu'une seule broche d'entrée de données (DI) et une broche de sortie (DO) reliée à l'entrée de la LED suivante. Il n'y a pas de signal d'horloge séparé : la LED se synchronise sur les fronts du signal de données lui-même. Chaque bit occupe donc une période fixe de $1{,}25\, \mu\text{s}$ (soit une fréquence de $800\, \text{kHz}$), et c'est la durée de l'état haut au sein de cette période qui encode la valeur du bit :
 
-### 12.3. Tableau de bord LED
+| Bit | Etat haut | Etat bas | Total |
+| :--- | :--- | :--- | :--- |
+| 0 | 400 ns | 850 ns | 1,25 µs |
+| 1 | 800 ns | 450 ns | 1,25 µs |
 
-> _Expliquer l'utilisation de la bande de 4 LEDs RGB comme tableau de bord visuel :_
-> - _LED haut gauche (violet) : clignote à chaque cycle capteurs (témoin d'activité)_
-> - _LED haut droite (rouge) : état de l'alarme gaz (clignotante si alerte)_
-> - _LED bas droite (orange) : état de l'alarme intrusion (clignotante si alerte)_
-> - _LED bas gauche : indicateur de température (bleu = froid, vert = tempéré, orange = chaud)_
->
-> _Justifier le choix de la luminosité réduite (`LUMINOSITE_BASE = 10/255`) pour éviter l'éblouissement._
+*Extrait de la documentation sur les LED WS2812B (Fonctionnement LED NeoPixel WS2812B) :*
+
+<img src="media/programmation_neopixel_datasheet.png"/>
+
+Le microcontrôleur n'est connecté qu'à la première LED de la chaîne et envoie à la suite **24 bits par LED** (8 bits par couleur, dans l'ordre Vert, Rouge, Bleu, bit de poids fort en premier. Chaque LED garde pour elle les 24 premiers bits qu'elle reçoit et retransmet les suivants à la LED suivante. Pour notre bande de 4 LED, une trame fait donc $4 \times 24 = 96$ bits.
+
+Pour que chaque LED enregistre sa couleur, la trame doit être suivie d'un état bas d'au moins 50 µs (« reset ») : c'est ce temps de silence qui réinitialise le mécanisme de transmission, afin que la trame suivante soit de nouveau lue depuis la première LED.
+
+Durée d'une trame complète pour 4 LED :
+
+$$T_{trame} = 96 \times 1{,}25\, \mu\text{s} = 120\, \mu\text{s} \qquad T_{trame+reset} \approx 120\, \mu\text{s} + 50\, \mu\text{s} = 170\, \mu\text{s}$$
+
+### 12.2. Principe d'implémentation : PWM + DMA
+
+Le protocole impose un signal dont les fronts doivent être précis à quelques dizaines de nanosecondes près. A 100 MHz, une période de bit de 1,25 µs ne représente que 125 cycles d'horloge, ce qui exclut les approches logicielles :
+
+**3. PWM de timer + DMA** :
+* Chaque bit est une période de PWM. Le rapport cyclique de la période encode la valeur du bit : un état haut court pour un 0 et un état haut long pour un 1.
+* Le DMA recopie, à chaque période, la valeur suivante dans le registre de comparaison `CCR1` du timer, depuis un tableau en mémoire. Le CPU ne fait que remplir le tableau, puis lance le transfert : il n'intervient plus pendant les 120 µs de la trame.
+
+Le signal est donc généré entièrement par le matériel, avec la précision du timer.
+
+### 12.3. Branchement et configuration CubeMX
+
+#### Branchement
+
+La bande est alimentée en 3V3 et son entrée de données DI est connectée à PB6 (D10), qui correspond à TIM4 CH1 (cf. [Tableau de brochage final](#tableau-de-brochage-final)).
+
+| Signal | Broche |
+| :--- | :--- |
+| VCC | 3V3 |
+| GND | GND |
+| DI | PB6 (D10) — TIM4 CH1 |
+
+#### Calcul des paramètres du Timer 4
+
+Comme pour les autres timers, le Timer 4 est sur l'horloge à 100 MHz.
+
+Les contraintes pour le calcul sont :
+- La période d'un bit est de $1{,}25\, \mu\text{s}$, soit une fréquence PWM de $800\, \text{kHz}$.
+- La largeur d'impulsion doit pouvoir valoir $400\, \text{ns}$ et $800\, \text{ns}$, avec une tolérance de $\pm 150\, \text{ns}$.
+- La fréquence de l'horloge source est de $100\, \text{MHz}$.
+
+La période de 1,25 µs correspond à un petit nombre de tics, il n'y a donc pas besoin de diviser l'horloge : au contraire, on garde la résolution maximale avec `PSC = 0` :
+
+$$T_{tic} = \frac{1}{100\, \text{MHz}} = 10\, \text{ns}$$
+
+Cette résolution de 10 ns est très inférieure à la tolérance de 150 ns de la datasheet. On en déduit la période du timer :
+
+$$ARR = \frac{100\, \text{MHz}}{800\, \text{kHz}} - 1 = 125 - 1 = 124$$
+
+Et les valeurs de `CCR1` pour chaque valeur de bit :
+
+$$CCR_{bit\,0} = \frac{400\, \text{ns}}{10\, \text{ns}} = \mathbf{40} \quad (32\,\%) \qquad CCR_{bit\,1} = \frac{800\, \text{ns}}{10\, \text{ns}} = \mathbf{80} \quad (64\,\%)$$
+
+Les durées à l'état bas sont donc : $(125 - 40) \times 10\, \text{ns} = 850\, \text{ns}$ pour un 0 et $(125 - 80) \times 10\, \text{ns} = 450\, \text{ns}$ pour un 1.
+
+#### Configuration du Timer 4 dans CubeMX
+
+<img src="media/stm32cubeide_timer_4.png"/>
+
+| Paramètre | Valeur | Justification |
+| :--- | :--- | :--- |
+| Mode | PWM Generation CH1 | Signal de sortie sur PB6 |
+| Prescaler | 0 | Résolution maximale de 10 ns |
+| Counter Period (ARR) | 125-1 | Période de 1,25 µs (800 kHz) |
+| PWM Mode | PWM mode 1 | Sortie à l'état haut tant que le compteur est inférieur à `CCR1` |
+| Output compare preload | Enable | Voir ci-dessous |
+
+L'Output compare preload est activé car le DMA écrit la prochaine valeur de `CCR1` pendant que la période en cours n'est pas terminée. Avec le preload, la nouvelle valeur est mise en attente et n'est appliquée qu'au début de la période suivante : la largeur d'impulsion d'un bit n'est donc jamais modifiée en cours de route.
+
+#### Configuration du DMA
+
+<img src="media/stm32cubeide_timer_4_DMA.png"/>
+
+| Paramètre | Valeur | Justification |
+| :--- | :--- | :--- |
+| DMA Request | TIM4_CH1 | Requête générée à chaque comparaison sur le canal 1 du timer, soit une fois par bit |
+| Stream | DMA1 Stream 0 | Le seul flux qui peut servir la requête TIM4_CH1 (canal 2) |
+| Direction | Memory To Peripheral | On lit le tableau en mémoire pour écrire dans `CCR1` |
+| Mode | Normal | Le tableau est envoyé une seule fois puis le DMA s'arrête |
+| Increment Address (Peripheral) | Désactivé | On écrit toujours dans le même registre `CCR1` |
+| Increment Address (Memory) | Activé | On avance d'une case du tableau à chaque bit |
+| Data Width | Word / Word | Le tableau est de type `uint32_t`, la largeur est identique des deux côtés |
+
+Le mode Normal (et non Circular comme pour l'ADC) est choisi car une trame doit être envoyée une seule fois à chaque mise à jour. Une fois le tableau entièrement parcouru, le DMA s'arrête, et la dernière valeur de `CCR1` étant 0, la sortie reste à l'état bas : c'est l'état de repos exigé par la datasheet.
+
+#### Interruptions activées
+
+<img src="media/stm32cubeide_timer_4_NVIC.png"/>
+
+- DMA1 stream0 global interrupt : activée par défaut
+- TIM4 global interrupt : désactivée. Aucune interruption du timer n'est utile.
+
+### 12.4. Structure de la bibliothèque
+
+#### Vue d'ensemble
+
+La bibliothèque est organisée autour de deux fichiers : [`bande-led.h`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/architecture_numeriques_embarquees/STM32CubeIDE_v1.19.0/Bibliotheques/Bande_LED/Inc/bande-led.h) pour les définitions et l'accès externe, et [`bande-led.c`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/architecture_numeriques_embarquees/STM32CubeIDE_v1.19.0/Bibliotheques/Bande_LED/Src/bande-led.c) pour l'implémentation. Comme pour le TMP102, la bibliothèque ne dépend d'aucun timer ou canal en particulier : ils sont passés en paramètre à l'initialisation, et le `main.c` reste le seul endroit où ils sont choisis.
+
+Les fonctions publiques sont :
+
+| Fonction | Rôle |
+| :--- | :--- |
+| `BandeLED_Init()` | Alloue et initialise l'objet bande |
+| `BandeLED_show()` | Encode l'état de toutes les LED et lance l'envoi par DMA |
+| `BandeLED_allumer()` / `BandeLED_eteindre()` | Allume / éteint toute la bande |
+| `BandeLED_set_led_state()` | Allume / éteint une LED |
+| `BandeLED_set_led_hexa()` / `BandeLED_set_led_rgb()` | Fixe la couleur d'une LED |
+| `BandeLED_set_led_luminosity()` | Fixe la luminosité d'une LED |
+| `BandeLED_demo()` | Démonstration non bloquante |
+
+Nous avons fait générer par IA la fonction `Roue_Chromatique()` et `Bande_LED_demo()`.
+Comme `Roue_Chromatique()` est utilisée uniquement par la démonstration, elle est déclarée `static` pour ne pas être exposée.
+
+#### Les structures `BL_RGB_t` et `BandeLED_t`
+
+Comme pour le TMP102, la bande est représentée par un objet qui regroupe tout son contexte. Chaque LED est décrite par la structure `BL_RGB_t` :
+
+```c
+typedef struct {
+    uint8_t rouge;
+    uint8_t vert;
+    uint8_t bleu;
+    uint8_t alpha;  // Luminosité 0-255
+    bool    power;  // LED allumée ou éteinte
+} BL_RGB_t;
+```
+
+Nous avons séparé les champs `alpha` et `power` de la couleur pour que la couleur soit mémorisée indépendamment de l'état de la LED : éteindre une LED puis la rallumer, ou baisser sa luminosité, ne fait pas perdre sa couleur.
+
+L'objet `BandeLED_t` regroupe l'ensemble de la bande :
+
+```c
+typedef struct {
+    bool                power;            // Interrupteur général de la bande
+    int                 nb_leds;          // Nombre de LED de la chaîne
+    BL_RGB_t*           leds;             // Tableau des LED
+    TIM_HandleTypeDef*  PWM_timer;        // Timer utilisé (htim4)
+    uint32_t            PWM_channel;      // Canal du timer (TIM_CHANNEL_1)
+    uint32_t*           dma_buffer;       // Tableau de valeurs de CCR1 à envoyer
+    int                 freq_timer;       // Fréquence de comptage du timer (Hz)
+    int                 cycles_delai_maj; // Nombre de périodes pour le reset
+} BandeLED_t;
+```
+
+Le timer est stocké dans la structure, comme `busI2C` pour le TMP102, pour ne rien hardcoder dans la bibliothèque.
+
+#### Define
+
+Pour ne jamais rien hardcoder, nous avons utilisé une `#define` pour chaque valeur issue de la datasheet, ainsi que pour les couleurs courantes :
+
+*Extraits de `Bibliotheques/Bande_LED/Inc/bande-led.h`:*
+
+```c
+// Parametres datasheet bande led
+#define BL_FREQ_CYCLE_PWM 800000
+#define BL_PULSE_BIT_0_nS 400
+#define BL_PULSE_BIT_1_nS 800
+#define BL_DELAI_MAJ_nS   50000
+#define BL_NSEC_IN_1_SEC  1000000000
+#define BL_VERT_SEQ_RANG  1
+#define BL_ROUGE_SEQ_RANG 2
+#define BL_BLEU_SEQ_RANG  3
+
+// Couleurs predefinies
+#define BL_HEXA_BLANC  0xFFFFFF
+#define BL_HEXA_ROUGE  0xFF0000
+#define BL_HEXA_VERT   0x00FF00
+#define BL_HEXA_BLEU   0x0000FF
+...
+```
+
+- Les durées sont exprimées en nanosecondes comme dans la datasheet : elles sont converties en tics du timer par la bibliothèque (cf. [12.6](#126-encodage-et-envoi-de-la-trame)). Si on change la fréquence du timer, rien ne change dans la bibliothèque.
+- Les trois `BL_*_SEQ_RANG` donnent l'ordre d'envoi des couleurs (Vert, Rouge, Bleu). Si on utilisait une bande avec un autre ordre (par exemple RVB), il suffirait de modifier ces trois valeurs.
+- Les couleurs sont au format `0xRRGGBB` pour pouvoir les écrire naturellement, comme en HTML/CSS.
+
+### 12.5. Initialisation
+
+L'initialisation se fait avec une seule fonction :
+
+```c
+void BandeLED_Init(BandeLED_t* bande_led, TIM_HandleTypeDef *htim, uint32_t timer_channel, uint32_t freq_timer, uint8_t nb_leds)
+```
+
+Les étapes sont les suivantes :
+
+1. **Calcul du nombre de périodes de reset :**
+```c
+bande_led->cycles_delai_maj = (BL_DELAI_MAJ_nS / (BL_NSEC_IN_1_SEC / BL_FREQ_CYCLE_PWM)) + 1;
+```
+La trame doit être suivie d'au moins 50 µs d'état bas. Comme une période de bit dure $\frac{100\text{MHz}}{800\,000} = 1250\, \text{ns}$, il faut $\frac{50\,000}{1250} = 40$ périodes à zéro. Le `+ 1` garantit que le délai est toujours **supérieur** à 50 µs, même si la division entière arrondissait à l'inférieur avec d'autres paramètres. On obtient donc **41 périodes**, soit $41 \times 1{,}25\, \mu\text{s} = 51{,}25\, \mu\text{s}$.
+
+2. **Enregistrement du matériel :** le timer, le canal, la fréquence de comptage du timer et le nombre de LED sont mémorisés dans l'objet.
+
+3. **Allocation du tableau pour le DMA :**
+```c
+bande_led->dma_buffer = malloc((nb_leds * 3 * 8 + bande_led->cycles_delai_maj) * sizeof(uint32_t));
+```
+Il faut une case par bit à envoyer ($3 \times 8 = 24$ bits par LED) plus une case par période de reset. Chaque case est un `uint32_t` pour correspondre à la largeur Word configurée dans le DMA. Pour nos 4 LED :
+$$(4 \times 24 + 41) \times 4\, \text{octets} = 137 \times 4 = 548\, \text{octets}$$
+L'allocation dynamique permet à la bibliothèque de s'adapter à **n'importe quelle longueur de bande** simplement en changeant `NB_LEDS_BANDE_RGB` dans le `main.c`, sans modifier la bibliothèque. Le tableau `leds` est alloué de la même manière.
+
+4. **Valeurs par défaut :** chaque LED est initialisée à noir (0, 0, 0), avec une luminosité maximale (`alpha = 255`) et allumée (`power = true`). On part ainsi d'un état connu, comme pour `TMP102_init_default()`.
+
+5. **Envoi de la première trame** : `BandeLED_show()` puis `BandeLED_allumer()` envoient l'état initial (noir) pour que les LED soient dans un état défini dès le démarrage plutôt que dans un état aléatoire à la mise sous tension.
+
+### 12.6. Encodage et envoi de la trame
+
+La fonction `BandeLED_show()` convertit l'état de toutes les LED en tableau de valeurs de `CCR1`, puis lance son envoi par DMA.
+
+1. **Conversion des durées en tics du timer :**
+```c
+int nS_per_timer_tic = BL_NSEC_IN_1_SEC  / bande_led->freq_timer;
+int pulse_bit_0_tics = BL_PULSE_BIT_0_nS / nS_per_timer_tic;
+int pulse_bit_1_tics = BL_PULSE_BIT_1_nS / nS_per_timer_tic;
+```
+Avec `freq_timer = 100 000 000` Hz : $\frac{10^9}{10^8} = 10\, \text{ns par tic}$, donc $\frac{400}{10} = 40$ tics pour un 0 et $\frac{800}{10} = 80$ tics pour un 1. On retrouve les valeurs calculées dans la configuration du timer.
+
+2. **Parcours des LED et de leurs trois composantes :** pour chaque LED, une boucle sur le rang de la composante (1 à 3) sélectionne la couleur à envoyer selon l'ordre de la datasheet :
+```c
+switch (composante)
+{
+    case BL_ROUGE_SEQ_RANG :
+        valeur_composante = led_courante->rouge * led_courante->alpha / 255;
+        break;
+    case BL_VERT_SEQ_RANG :
+        valeur_composante = led_courante->vert * led_courante->alpha / 255;
+        break;
+    case BL_BLEU_SEQ_RANG :
+        valeur_composante = led_courante->bleu * led_courante->alpha / 255;
+        break;
+}
+```
+La boucle passe par les rangs 1, 2, 3 et c'est le `switch` qui détermine quelle couleur correspond à chaque rang : le Vert (rang 1) est donc émis en premier, puis le Rouge, puis le Bleu.
+
+3. **Application de la luminosité :** la composante est multipliée par `alpha / 255`. Avec `alpha = 255` la couleur est inchangée, avec `alpha = 0` elle est nulle, et entre les deux la luminosité est proportionnelle. Cela permet de régler la luminosité sans modifier la couleur mémorisée.
+
+4. **Application de l'interrupteur :**
+```c
+uint8_t valeur_a_envoyer = (bande_led->power && led_courante->power) ? valeur_composante : 0;
+```
+Pour qu'une LED soit éteinte, il ne suffit pas de ne plus lui envoyer de données : elle conserve la dernière couleur reçue jusqu'à la trame suivante. On lui envoie donc explicitement des 0. La LED s'allume si l'interrupteur général de la bande **et** celui de la LED sont actifs.
+
+5. **Encodage des 8 bits, poids fort en premier :**
+```c
+for (int bit = 8-1; bit >= 0; bit--)
+{
+    uint32_t valeur_pulse = (valeur_a_envoyer & (1 << bit)) ? pulse_bit_1_tics : pulse_bit_0_tics;
+    bande_led->dma_buffer[dma_index] = valeur_pulse;
+    dma_index++;
+}
+```
+Le masque `1 << bit` isole chaque bit, du bit 7 au bit 0, et on écrit dans le tableau 80 tics pour un 1 ou 40 tics pour un 0.
+
+*Exemple : LED violette (`0x8000FF`) à la luminosité de 10 :*
+
+| Composante | Valeur | Après luminosité ($\times\, 10 / 255$) | Bits envoyés |
+| :--- | :--- | :--- | :--- |
+| Vert | 0x00 = 0 | 0 | `00000000` |
+| Rouge | 0x80 = 128 | 5 | `00000101` |
+| Bleu | 0xFF = 255 | 10 | `00001010` |
+
+La trame de cette LED est donc `00000000 00000101 00001010`, soit 24 valeurs de 40 ou 80 dans le tableau.
+
+6. **Ajout du délai de reset :**
+```c
+for (int i = 0; i < bande_led->cycles_delai_maj; i++) {
+    bande_led->dma_buffer[dma_index] = 0;
+    dma_index++;
+}
+```
+Les 41 dernières cases valent 0 : avec `CCR1 = 0` la sortie reste à l'état bas pendant 41 périodes, ce qui forme le reset de 51 µs. Comme ces zéros sont envoyés par le même mécanisme que les bits, il n'y a pas besoin de timer supplémentaire ni d'attente active.
+
+7. **Lancement de l'envoi par DMA :**
+```c
+HAL_TIM_PWM_Stop_DMA(bande_led->PWM_timer, bande_led->PWM_channel);
+__HAL_TIM_SET_COUNTER(bande_led->PWM_timer, 0);
+bool status = (HAL_TIM_PWM_Start_DMA(bande_led->PWM_timer, bande_led->PWM_channel, bande_led->dma_buffer, dma_index) == HAL_OK);
+return status;
+```
+On arrête d'abord proprement un éventuel transfert précédent, car la HAL refuse de démarrer un nouveau transfert si le canal est déjà occupé. Le compteur est ensuite remis à 0 pour que la première période commence au début. Enfin `HAL_TIM_PWM_Start_DMA()` reçoit le tableau et sa longueur en nombre de cases (ici $137$ pour 4 LED) : le DMA envoie alors les 96 bits suivis des 41 périodes de reset, soit une durée de :
+
+$$137 \times 1{,}25\, \mu\text{s} \approx 171\, \mu\text{s}$$
+
+La fonction retourne `true` si le DMA a bien démarré, et **ne bloque pas** : la transmission se déroule en arrière-plan pendant que la boucle principale continue.
+
+### 12.7. Modification de l'état des LEDs
+
+Les fonctions `BandeLED_set_led_*` ne font que **modifier la mémoire** : aucune ne lance de transmission. L'envoi n'a lieu que lors de l'appel de `BandeLED_show()`.
+
+Cette séparation est volontaire : une seule trame contient l'état de toutes les LED. On peut ainsi modifier autant de LED que nécessaire, puis envoyer **une seule trame** au lieu d'une par modification.
+
+Toutes les fonctions vérifient que l'indice de LED est valide avant d'écrire, pour ne jamais écrire en dehors du tableau :
+```c
+if (led_id >= 0 && led_id < bande_led->nb_leds)
+```
+
+- **`BandeLED_set_led_hexa()`** extrait chaque composante d'une couleur au format `0xRRGGBB` par décalage et masquage :
+```c
+bande_led->leds[led_id].rouge = (hexa >> 16) & 0xFF;
+bande_led->leds[led_id].vert  = (hexa >> 8) & 0xFF;
+bande_led->leds[led_id].bleu  = hexa & 0xFF;
+```
+  Cela permet d'utiliser directement les couleurs prédéfinies comme `BL_HEXA_ROUGE`.
+- **`BandeLED_set_led_rgb()`** fait la même chose avec les trois composantes séparées, pour les couleurs calculées.
+- **`BandeLED_set_led_luminosity()`** modifie `alpha`.
+- **`BandeLED_set_led_state()`** modifie le `power` d'une LED.
+- **`BandeLED_allumer()` / `BandeLED_eteindre()`** modifient le `power` global de la bande puis appellent `BandeLED_show()` pour l'appliquer immédiatement.
+
+#### Fonction de démonstration
+
+La bibliothèque contient aussi `BandeLED_demo()`, non utilisée dans le `main.c` final, qui permet de tester rapidement la bande. Elle est conçue pour être appelée à 20 Hz sans bloquer : un compteur statique incrémenté à chaque appel fait défiler deux LED sur la roue chromatique à des vitesses différentes (fonction `Roue_Chromatique()` qui convertit une position de 0 à 255 en couleur RGB), et fait clignoter deux autres LED en blanc à des fréquences différentes, puis envoie la trame avec `BandeLED_show()`.
+
+### 12.8. Utilisation dans le code : tableau de bord LED
+
+#### Déclaration et initialisation
+
+La bande est représentée par une unique variable globale de type `BandeLED_t`.
+
+*Dans la section `USER CODE PV` du fichier `main.c`*
+```c
+BandeLED_t bande_led;
+```
+
+Les paramètres matériels et d'affichage sont définis par des `#define` en tête de `main.c` :
+
+```c
+#define TIMER_BANDE_LED      (&htim4)
+#define CANAL_BANDE_LED      TIM_CHANNEL_1
+#define FREQ_TIMER_BANDE_LED 100000000
+
+#define NB_LEDS_BANDE_RGB 4
+#define LED_BAS_DROITE    0
+#define LED_HAUT_DROITE   1
+#define LED_HAUT_GAUCHE   2
+#define LED_BAS_GAUCHE    3
+#define LUMINOSITE_BASE   10 // 0-255
+
+#define COULEUR_CAPTEURS         BL_HEXA_VIOLET
+#define COULEUR_ALARME_GAZ       BL_HEXA_ROUGE
+#define COULEUR_ALARME_INTRUSION BL_HEXA_ORANGE
+#define COULEUR_TEMP_FROID       BL_HEXA_BLEU
+#define COULEUR_TEMP_TEMPERE     BL_HEXA_VERT
+#define COULEUR_TEMP_CHAUD       BL_HEXA_ORANGE
+```
+
+- `FREQ_TIMER_BANDE_LED` vaut 100 MHz car c'est la fréquence de comptage du Timer 4 avec `PSC = 0`. Cette valeur doit correspondre à la configuration CubeMX, car la bibliothèque s'en sert pour convertir les durées de la datasheet en tics.
+- Les quatre `LED_*` associent un **nom fonctionnel** à la **position physique** de la LED dans la chaîne (indice 0 = première LED reliée au microcontrôleur), de la même manière que `LED_t` associe un nom à un label matériel ([4.3](#43-structure-pour-les-leds)).
+- La luminosité est volontairement limitée à $\frac{10}{255} \approx 4\,\%$ : les NeoPixels sont très lumineux à pleine puissance, et cette valeur suffit à les voir clairement tout en limitant la consommation de la bande.
+
+L'initialisation est regroupée dans la fonction `initialiser_bande_led()`, appelée une seule fois au début du `main()` :
+
+*Dans la section `USER CODE 0` du fichier `main.c`*
+```c
+void initialiser_bande_led()
+{
+  BandeLED_Init(&bande_led, TIMER_BANDE_LED, CANAL_BANDE_LED, FREQ_TIMER_BANDE_LED, NB_LEDS_BANDE_RGB);
+  for (int i = 0; i < NB_LEDS_BANDE_RGB; i++) {
+      BandeLED_set_led_luminosity(&bande_led, i, LUMINOSITE_BASE);
+  }
+
+  // Affectation des couleurs fixes une seule fois en mémoire
+  BandeLED_set_led_hexa(&bande_led, LED_HAUT_GAUCHE, COULEUR_CAPTEURS);
+  BandeLED_set_led_hexa(&bande_led, LED_HAUT_DROITE, COULEUR_ALARME_GAZ);
+  BandeLED_set_led_hexa(&bande_led, LED_BAS_DROITE, COULEUR_ALARME_INTRUSION);
+
+  // Extinction de toutes les LEDs pour commencer proprement
+  BandeLED_set_led_state(&bande_led, LED_HAUT_GAUCHE, false);
+  BandeLED_set_led_state(&bande_led, LED_HAUT_DROITE, false);
+  BandeLED_set_led_state(&bande_led, LED_BAS_DROITE, false);
+  BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, false);
+
+  BandeLED_show(&bande_led);
+}
+```
+
+1. `BandeLED_Init()` crée l'objet avec les paramètres matériels.
+2. La luminosité de base est appliquée à toutes les LED.
+3. **Les couleurs des trois LED qui n'ont qu'une seule signification sont affectées une seule fois ici** (alarme gaz, alarme intrusion, capteurs). Comme la couleur est mémorisée indépendamment de l'état `power`, il suffira ensuite de les allumer et de les éteindre sans jamais les recalculer. La LED de température est la seule dont la couleur varie, elle est donc gérée dans la boucle.
+4. Toutes les LED sont éteintes (`power = false`) pour démarrer proprement, puis `BandeLED_show()` envoie cet état.
+
+#### Le tableau de bord
+
+Les 4 NeoPixels affichent l'état de la maison :
+
+| LED (indice) | Information | Couleur | Comportement |
+| :--- | :--- | :--- | :--- |
+| `LED_HAUT_GAUCHE` (2) | Mise à jour des capteurs | Violet | Change d'état (toggle) toutes les 2 s à chaque cycle de mesure |
+| `LED_HAUT_DROITE` (1) | Alarme gaz | Rouge | Clignote à 10 Hz pendant l'alarme |
+| `LED_BAS_DROITE` (0) | Alarme intrusion | Orange | Clignote à 2 Hz pendant l'alarme |
+| `LED_BAS_GAUCHE` (3) | Tranche de température | Bleu / Vert / Orange | Froid / tempérée / chaude |
+
+Les trois premières LED **recopient l'état des LED discrètes déjà gérées** : `led_capteurs`, `led_alarme_gaz` et `led_alarme_intrusion` ([4.3](#43-structure-pour-les-leds)). Les clignotements restent donc calculés à un seul endroit par le compteur partagé ([13.1](#131-clignotement-non-bloquant-par-compteur-partagé)), et les NeoPixels n'ont pas leur propre logique de temporisation : ils affichent simplement le même état que les LED soudées.
+
+#### Mise à jour périodique
+
+*Dans la section `USER CODE 0` du fichier `main.c`*
+```c
+void update_bande_led()
+{
+    BandeLED_set_led_state(&bande_led, LED_HAUT_GAUCHE, led_capteurs.state);
+    BandeLED_set_led_state(&bande_led, LED_HAUT_DROITE, led_alarme_gaz.state);
+    BandeLED_set_led_state(&bande_led, LED_BAS_DROITE, led_alarme_intrusion.state);
+
+    switch (temperature) {
+        case FROID:
+            BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, true);
+            BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_TEMP_FROID);
+            break;
+        case TEMPEREE:
+            BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, true);
+            BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_TEMP_TEMPERE);
+            break;
+        case CHAUD:
+            BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, true);
+            BandeLED_set_led_hexa(&bande_led, LED_BAS_GAUCHE, COULEUR_TEMP_CHAUD);
+            break;
+        default:
+            BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, false);
+            break;
+    }
+
+    BandeLED_show(&bande_led);
+}
+```
+
+1. **Recopie des états :** les états `state` des trois LED discrètes sont copiés dans le `power` des LED correspondantes. Si l'état n'a pas changé, la valeur écrite est identique.
+2. **Tranche de température :** la LED est toujours allumée, et c'est sa couleur qui change selon la variable `temperature` calculée par `evaluer_temperature()` ([10.12](#1012-gestion-automatique-de-la-fenêtre-par-la-température)). Le `default` éteint la LED si la valeur n'est pas reconnue.
+3. **Envoi d'une seule trame** avec `BandeLED_show()` après toutes les modifications ([12.7](#127-modification-de-létat-des-leds)).
+
+Cette fonction est appelée dans la boucle `while(1)` **à la cadence de 20 Hz** du Timer 5, c'est-à-dire sur le même flag que le filtre anti-rebond et le cycle des alarmes :
+
+```c
+if (timer_debounce_flag) {
+    timer_debounce_flag = false;
+    debounce_filter();
+    update_cycle_alarmes();
+    update_bande_led();
+}
+```
+
+Cette cadence est justifiée de deux manières :
+- **Cohérence avec les alarmes :** l'alarme gaz clignote à 10 Hz, donc sa LED change d'état toutes les 50 ms ([13.1](#131-clignotement-non-bloquant-par-compteur-partagé)). `update_cycle_alarmes()` et `update_bande_led()` étant appelées à la suite sur le même tic de 20 Hz, chaque changement d'état est envoyé aux NeoPixels dans le même tic, sans retard ni état manqué.
+- **Temps de transmission :** une trame dure $\approx 171\, \mu\text{s}$, soit environ 300 fois moins que les 50 ms qui séparent deux mises à jour : la transmission d'une trame est toujours terminée bien avant la suivante.
+
+#### Respect de la règle « pas de blocage »
+
+Dans le prolongement de la règle de [3.3. Organisation logicielle](#33-organisation-logicielle), l'utilisation des NeoPixels ne bloque jamais le programme : le CPU n'écrit que quelques dizaines de valeurs dans un tableau et lance le DMA, qui génère ensuite les 137 périodes de PWM tout seul. La boucle principale continue de traiter les boutons, capteurs et alarmes pendant la transmission.
 
 ---
 

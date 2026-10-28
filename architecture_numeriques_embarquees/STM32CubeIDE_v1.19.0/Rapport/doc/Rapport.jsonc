@@ -1,0 +1,157 @@
+// Configuration du document doc/Rapport.md (JSON avec commentaires autorisés).
+// Ce fichier porte le même nom que le .md (Rapport.md ↔ Rapport.jsonc) ; un .md sans .jsonc est ignoré.
+// Les chemins éventuels (icon, logo, customCss) sont relatifs à ce dossier (doc/). Toute clé omise prend sa valeur par défaut.
+{
+  // Nom du fichier HTML généré (sans extension), dans web/<nom du .md>/. Défaut : "index" => web/Rapport/index.html
+  "htmlName": "index",
+
+  // true : les images sont incorporées dans le HTML (fichier autonome mais lourd, rien à copier).
+  // false : les images utilisées sont copiées dans web/<nom du .md>/ avec la même arborescence que dans doc/ (HTML léger).
+  "embedImages": false,
+
+  // Titre de l'onglet et du sommaire (null = nom du fichier .md)
+  "title": "Rapport de Projet - Maison Intelligente STM32",
+  // Icône de l'onglet (favicon) et logo affiché devant le titre du sommaire : chemin d'une image de doc/ (ex. "media/logo.png"), null = aucune
+  "icon": null,
+  "language": "fr",
+
+  // "auto" (suit le système), "light" ou "dark". Un bouton permet de changer dans la page.
+  "theme": "auto",
+
+  // ---- Outils d'édition du Markdown (ne touchent le .md que lorsque VOUS lancez la commande) ----
+  // `npm run edit:numbering` : numérote les titres selon "numbering"   (met aussi à jour les liens internes #ancre)
+  // `npm run edit:toc`       : (re)génère la table des matières selon "toc"
+  // `npm run edit:outline`   : les deux, dans cet ordre.   Option --dry : affiche sans écrire (ex. npm run edit:toc -- --dry)
+  // `npm run edit:numbering:guess` : détecte la numérotation DÉJÀ présente dans le .md et réécrit "levels" ci-dessous pour
+  //                                  la refléter (point de départ à adapter). Ne modifie pas le .md.
+  // `npm run edit:numbering:reset` : retire toute la numérotation des titres (liens internes mis à jour). Ne modifie pas la config.
+  // Changer de schéma : modifiez "levels" puis `npm run edit:numbering` ; l'ancienne numérotation est retirée automatiquement
+  // (schéma mémorisé dans scripts/state/<nom>.numbering.json, ou deviné depuis le document s'il est absent / si l'éditeur a perdu le fil).
+  "numbering": {
+    // Par niveau (1 = « # »…) : "style" =
+    //   ignore  : le niveau n'est jamais modifié (défaut des niveaux non numérotés) ;
+    //   none    : pas d'indice, mais le "separator" sert de symbole devant le titre ("▪" => "## ▪ Titre") ; sans separator, rien n'est écrit
+    //             (et une numérotation / un symbole précédent est retiré) ;
+    //   decimal (1, 2) | alpha (a, b) | ALPHA (A, B) | roman (i, ii) | ROMAN (I, II) : numérotation.
+    // "separator" = texte placé après CHAQUE indice (".", " ", "-", " - "…). "cumulative" : true => "2.1." (indices des parents inclus).
+    // Changer le style d'un niveau retire sa numérotation précédente ; "ignore" ne retire rien.
+    // Limite : un titre numéroté dont le texte commence lui-même par un nombre ("2024 bilan") peut perdre ce nombre.
+    "levels": {
+      "1": { "style": "ignore" },
+      "2": { "style": "none" },
+      "3": { "style": "decimal", "separator": "." },
+      "4": { "style": "decimal", "separator": ".", "cumulative": true },
+      "5": { "style": "ignore" },
+      "6": { "style": "ignore" }
+    }
+  },
+
+  // Table des matières écrite dans le .md entre <!-- TOC --> et <!-- /TOC --> (à la place si vous les déplacez).
+  // Sans repères, elle est insérée tout en haut du document (après d'éventuels commentaires de tête comme <!-- nohf -->).
+  // (À ne pas confondre avec style.toc, qui règle le sommaire latéral de la page HTML.)
+  "toc": {
+    "range": [2, 4],          // [niveau min, niveau max] listés. Un niveau exclu au-dessus disparaît : ses enfants sont listés à la suite.
+    "collapsible": true,     // true : toute la table est repliable (<details>), HTML/Markdown seulement (toujours dépliée dans le PDF)
+    "summary": "Table des matières",   // libellé affiché quand "collapsible" est true
+    "open": false,            // true : les blocs repliables sont ouverts par défaut
+    "collapsibleLevels": [3], // niveaux dont l'entrée est repliable sur ses sous-entrées, ex. [2] ou [2, 3] ([] = aucun). null = on lit "collapsible" de chaque niveau ci-dessous. Le tableau l'emporte.
+    "foldOffset": 2,          // compense la largeur de la flèche ▶ : retrait ajouté (demi-cadratins) aux entrées NON repliables pour les aligner avec les repliables. 0 = aucun
+    // Par niveau de titre. "symbol" : texte devant l'entrée ("" = aucun). "indent" : retrait en demi-cadratins (0, 2, 4…).
+    // "bold"/"italic" : mise en forme. "size" : taille en em (null = normale ; ignorée par GitHub, appliquée par ce générateur).
+    // "collapsible" : true => cette entrée se replie sur ses sous-entrées (blocs <details> imbriqués).
+    "levels": {
+      "1": { "symbol": "", "indent": 0,  "bold": true,  "italic": false, "size": null, "collapsible": false },
+      "2": { "symbol": "", "indent": 0,  "bold": true,  "italic": false, "size": null, "collapsible": false },
+      "3": { "symbol": "", "indent": 4,  "bold": false, "italic": false, "size": null, "collapsible": false },
+      "4": { "symbol": "", "indent": 8,  "bold": false, "italic": false, "size": null, "collapsible": false },
+      "5": { "symbol": "-", "indent": 12, "bold": false, "italic": false, "size": null, "collapsible": false },
+      "6": { "symbol": "-", "indent": 16, "bold": false, "italic": false, "size": null, "collapsible": false }
+    }
+  },
+
+  // Export PDF : `npm run build:pdf` (nécessite Chrome ou Edge installé).
+  // Le PDF reprend les styles de "style" (polices, couleurs, titres, Mermaid, code) dans le thème choisi ici.
+  // Sauts de page dans le Markdown (ignorés à l'écran) : une ligne `\newpage` ou, invisible sur GitHub, <!-- newpage -->
+  "pdf": {
+    "name": null,                // nom du fichier PDF dans pdf/, sans extension (null = nom du .md)
+    "theme": "light",            // "light" ou "dark" (fond sombre compris, marges incluses)
+    "format": "A4",              // A3, A4, A5, Letter, Legal, Tabloid
+    "landscape": false,
+    "zoom": 100,                 // en % (10 à 200) : 100 = taille normale
+    "margins": { "top": "20mm", "right": "18mm", "bottom": "20mm", "left": "18mm" },   // mm, cm, in, pt ou px
+    "pageBreakBefore": [1, 2],   // niveaux de titres qui commencent une nouvelle page (1 = « # », 2 = « ## »…) ; [] = aucun
+    "hideToc": false,            // true : retire du PDF la table des matières Markdown (entre <!-- TOC --> et <!-- /TOC -->) et son titre
+    "keepSectionsTogether": true, // une section (d'un titre au suivant, tous niveaux) qui tient sur une page n'est jamais coupée : elle passe en entier à la page suivante
+    "keepBlocksTogether": true,   // paragraphes, éléments de liste, blocs de code… ne sont jamais coupés entre deux pages (sauf s'ils dépassent une page)
+    "browser": null,             // chemin d'un chrome.exe / msedge.exe ; null = détection automatique
+
+    // En-tête et pied de page : null pour les désactiver. Trois zones (left / center / right), HTML autorisé.
+    // Variables : {page} {pages} {title} {date} {h1} … {h6}
+    //   {hN} = titre de niveau N qui commence sur la page, sinon celui en cours au début de la page.
+    // Image : <img src="media/logo.png" style="height:8mm"> (chemin relatif à ce fichier, donc à doc/).
+    // "style" : CSS de la barre (ex. "font-size:9pt;border-bottom:1px solid #999").
+    // Page sans en-tête ni pied (page de garde…) : écrire <!-- nohf --> (ou \nohf) en toute première ligne du .md pour la
+    // 1re page, ou juste après un saut de page (<!-- newpage -->) pour une autre. Ailleurs, il est ignoré avec un avertissement.
+    "header": { "left": "{title}", "right": "{h2}" },
+    "footer": { "center": "{page} / {pages}" }
+  },
+
+  "layout": {
+    "sidebarWidth": 320,         // largeur initiale du sommaire en px (glisser sa bordure pour ajuster)
+    "sidebarMinWidth": 200,
+    "sidebarMaxWidth": 700,
+    "contentWidthPercent": 90    // part de la largeur restante occupée par le contenu
+  },
+
+  "style": {
+    "fontFamily": "-apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+    "codeFontFamily": "ui-monospace, 'Cascadia Code', Consolas, 'SFMono-Regular', monospace",
+    "fontSize": "16px",
+    "codeFontSize": "85%",
+
+    // Thème de coloration du code : nom d'une feuille de node_modules/highlight.js/styles
+    // (ex. "github", "github-dark", "vs", "vs2015", "atom-one-dark", "monokai", "nord", "idea"…)
+    "highlight": { "light": "github", "dark": "github-dark" },
+
+    // Thème des diagrammes Mermaid : "auto" (suit le thème de la page) ou default / dark / forest / neutral
+    "mermaidTheme": "auto",
+
+    // Valeurs par défaut des diagrammes Mermaid (modifiables par diagramme, voir ci-dessous).
+    //  layout    : "dagre" (= "hierarchical", défaut Mermaid) ou "elk" (= "adaptive", plus compact ; ajoute ~2,4 Mo au HTML)
+    //  direction : null (celle écrite dans le diagramme), "TB", "BT", "LR" ou "RL"
+    // Par diagramme, dans le .md, après ```mermaid :
+    //    ```mermaid layout=elk direction=LR
+    // Seuls flowchart/graph et stateDiagram acceptent « direction ».
+    "mermaid": { "layout": "elk", "direction": "TB" },
+
+    // Titres du document (« # » = niveau 1 … « ###### » = niveau 6), unité : em (1 = taille du texte).
+    //  size   : taille       indent : retrait à gauche       color : null, "#c0392b" ou { "light": "...", "dark": "..." }
+    "headings": {
+      "1": { "size": 2,     "indent": 0, "color": null },
+      "2": { "size": 1.5,   "indent": 0, "color": null },
+      "3": { "size": 1.25,  "indent": 0, "color": null },
+      "4": { "size": 1,     "indent": 0, "color": null },
+      "5": { "size": 0.875, "indent": 0, "color": null },
+      "6": { "size": 0.85,  "indent": 0, "color": null }
+    },
+
+    // Liens du sommaire, par niveau de titre, même format (l'em vaut ici 14 px).
+    "toc": {
+      "1": { "size": 1.1,  "indent": 0,   "color": null },
+      "2": { "size": 1,    "indent": 0,   "color": null },
+      "3": { "size": 1,    "indent": 1.5, "color": null },
+      "4": { "size": 0.93, "indent": 2.5, "color": null },
+      "5": { "size": 0.93, "indent": 3.5, "color": null },
+      "6": { "size": 0.93, "indent": 4.5, "color": null }
+    },
+
+    // Couleurs : bg, fg, muted, border, sidebarBg, accent, codeBg, quote
+    "colors": {
+      "light": {},
+      "dark": {}
+    },
+
+    // Fichier CSS supplémentaire appliqué en dernier (null = aucun)
+    "customCss": null
+  }
+}

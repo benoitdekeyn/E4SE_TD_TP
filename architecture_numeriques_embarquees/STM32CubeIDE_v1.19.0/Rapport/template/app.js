@@ -49,12 +49,37 @@
     });
   });
 
-  // --- Sommaire : suivi de la section visible ---
+  // --- Sommaire : arbre repliable + suivi de la section visible ---
   const toc = $('#toc');
   const links = $$('a[data-id]', toc);
   const byId = new Map(links.map((a) => [a.dataset.id, a]));
   const headings = links.map((a) => document.getElementById(a.dataset.id)).filter(Boolean);
+  const tocNodes = $$('.toc-node', toc);
+  const kidsOf = (n) => $$(':scope > .toc-children > .toc-node', n);
+  const manual = new Set(); // dépliés par l'utilisateur
+  const closed = new Set(); // repliés par l'utilisateur alors qu'ils contiennent la section visible
+  let auto = new Set();     // ancêtres de la section visible
   let current = null;
+
+  function applyOpen() {
+    tocNodes.forEach((n) => n.classList.toggle('open', (manual.has(n) || auto.has(n)) && !closed.has(n)));
+  }
+  // Déplier n'ouvre que ce titre : ses sous-titres restent dans leur état.
+  function expand(n) { manual.add(n); closed.delete(n); applyOpen(); }
+  // Replier remet aussi à zéro tous les sous-titres : le prochain dépliage repart d'un arbre condensé.
+  function collapse(n) {
+    for (const d of [n, ...$$('.toc-node', n)]) { manual.delete(d); closed.delete(d); }
+    closed.add(n);
+    applyOpen();
+  }
+  toc.addEventListener('click', (e) => {
+    const caret = e.target.closest('button.toc-caret');
+    const a = e.target.closest('a[data-id]');
+    const node = (caret || a) && (caret || a).closest('.toc-node');
+    if (!node) return;
+    if (caret && node.classList.contains('open')) collapse(node);
+    else expand(node);
+  });
 
   // Le sommaire défile seul (jamais la page) et on ne le déplace pas pendant que l'utilisateur le manipule.
   let lastTocUse = 0;
@@ -71,13 +96,15 @@
     if (id === current) return;
     current = id;
     links.forEach((a) => a.classList.remove('active'));
-    $$('.toc-group.open', toc).forEach((g) => g.classList.remove('open'));
+    closed.clear();
+    auto = new Set();
     const a = byId.get(id);
-    if (!a) return;
-    a.classList.add('active');
-    const group = a.closest('.toc-group');
-    if (group) group.classList.add('open');
-    revealInToc(a);
+    if (a) {
+      a.classList.add('active');
+      for (let n = a.closest('.toc-node').parentElement.closest('.toc-node'); n; n = n.parentElement.closest('.toc-node')) auto.add(n);
+    }
+    applyOpen();
+    if (a) revealInToc(a);
   }
   function onScroll() {
     let active = headings[0];
@@ -95,18 +122,17 @@
   }, { passive: true });
 
   // --- Filtre du sommaire ---
+  function filterNode(n, q) {
+    const a = $(':scope > .toc-row a', n);
+    let any = !q || a.textContent.toLowerCase().includes(q);
+    for (const k of kidsOf(n)) any = filterNode(k, q) || any;
+    n.classList.toggle('hidden', !any);
+    return any;
+  }
   $('#toc-filter').addEventListener('input', (e) => {
     const q = e.target.value.trim().toLowerCase();
     toc.classList.toggle('filtering', !!q);
-    $$('.toc-group', toc).forEach((g) => {
-      let any = false;
-      $$('a', g).forEach((a) => {
-        const hit = !q || a.textContent.toLowerCase().includes(q);
-        a.classList.toggle('hidden', !hit);
-        any = any || hit;
-      });
-      g.classList.toggle('hidden', !any);
-    });
+    $$(':scope > .toc-node', toc).forEach((n) => filterNode(n, q));
   });
 
   $('#sidebar-toggle').addEventListener('click', () => document.body.classList.toggle('sidebar-open'));
@@ -155,6 +181,70 @@
   dm.addEventListener('change', () => { if (mode === 'auto') applyTheme(); });
 
   // --- Mermaid (re-rendu à chaque changement de thème, une seule exécution à la fois) ---
+  const ACTIONS = [
+    ['up', '▲', 'Haut', (p) => p.panBy({ x: 0, y: 60 })], ['in', '+', 'Zoom avant', (p) => p.zoomIn()],
+    ['left', '◀', 'Gauche', (p) => p.panBy({ x: 60, y: 0 })], ['reset', '⟲', 'Réinitialiser', (p) => { p.resize(); p.fit(); p.center(); }],
+    ['right', '▶', 'Droite', (p) => p.panBy({ x: -60, y: 0 })], ['down', '▼', 'Bas', (p) => p.panBy({ x: 0, y: -60 })],
+    ['out', '−', 'Zoom arrière', (p) => p.zoomOut()],
+  ];
+  const mkBtn = (cls, text, title) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = cls; b.textContent = text; b.title = title; b.setAttribute('aria-label', title);
+    return b;
+  };
+  function addControls(host, getPz) {
+    const c = document.createElement('div');
+    c.className = 'mm-controls mm-ui';
+    for (const [act, text, title, fn] of ACTIONS) {
+      const b = mkBtn('mm-btn', text, title);
+      b.dataset.act = act;
+      b.addEventListener('click', () => fn(getPz()));
+      c.appendChild(b);
+    }
+    host.appendChild(c);
+  }
+  function newPz(svg, wheel) {
+    return svgPanZoom(svg, { controlIconsEnabled: false, mouseWheelZoomEnabled: wheel, dblClickZoomEnabled: false, fit: true, center: true, minZoom: 0.2, maxZoom: 30, zoomScaleSensitivity: 0.3 });
+  }
+  function decorate(box) {
+    const svg = $('svg', box);
+    if (!svg || !window.svgPanZoom) return;
+    box._raw = svg.outerHTML;
+    svg.style.height = `${svg.getBoundingClientRect().height}px`; // hauteur figée : svg-pan-zoom en a besoin
+    box._pz = newPz(svg, false);
+    const exp = mkBtn('mm-btn mm-expand mm-ui', '⤢', 'Plein écran');
+    exp.addEventListener('click', () => openFull(box));
+    box.appendChild(exp);
+    addControls(box, () => box._pz);
+  }
+  function openFull(box) {
+    const ov = document.createElement('div');
+    ov.className = 'mm-overlay';
+    const stage = document.createElement('div');
+    stage.className = 'mm-stage';
+    stage.innerHTML = box._raw;
+    const svg = stage.firstElementChild;
+    svg.removeAttribute('width'); svg.removeAttribute('height'); svg.removeAttribute('style');
+    const close = mkBtn('mm-btn mm-expand', '✕', 'Fermer (Échap)');
+    ov.append(stage, close);
+    document.body.append(ov);
+    document.body.classList.add('mm-open');
+    let pz = newPz(svg, true);
+    addControls(ov, () => pz);
+    const onResize = () => { pz.resize(); pz.fit(); pz.center(); };
+    const end = () => {
+      pz.destroy();
+      window.removeEventListener('resize', onResize);
+      document.removeEventListener('keydown', onKey, true);
+      ov.remove();
+      document.body.classList.remove('mm-open');
+    };
+    const onKey = (e) => { if (e.key === 'Escape') end(); };
+    close.addEventListener('click', end);
+    window.addEventListener('resize', onResize);
+    document.addEventListener('keydown', onKey, true);
+  }
+
   $$('pre.mermaid').forEach((n) => { n.dataset.src = n.textContent; });
   let mermaidQueue = Promise.resolve();
   function renderMermaid() {
@@ -162,10 +252,19 @@
     mermaidQueue = mermaidQueue.then(async () => {
       const theme = CFG.mermaidTheme === 'auto' ? (root.dataset.theme === 'dark' ? 'dark' : 'default') : CFG.mermaidTheme;
       if (window.__elk && mermaid.registerLayoutLoaders) mermaid.registerLayoutLoaders(window.__elk.default);
-      mermaid.initialize({ startOnLoad: false, theme, securityLevel: 'strict' });
+      const dark = root.dataset.theme === 'dark';
+      const css = CFG.mermaidCss;
+      mermaid.initialize({ startOnLoad: false, theme, securityLevel: 'strict', themeCSS: `${css.common}\n${dark ? css.dark : css.light}` });
       const nodes = $$('pre.mermaid');
-      nodes.forEach((n) => { n.textContent = n.dataset.src; n.removeAttribute('data-processed'); });
+      nodes.forEach((n) => {
+        const box = n.parentElement;
+        if (box._pz) { try { box._pz.destroy(); } catch (_) {} box._pz = null; }
+        $$('.mm-ui', box).forEach((x) => x.remove());
+        n.textContent = n.dataset.src;
+        n.removeAttribute('data-processed');
+      });
       try { await mermaid.run({ nodes }); } catch (e) { console.error('Mermaid :', e); }
+      nodes.forEach((n) => decorate(n.parentElement));
     });
     return mermaidQueue;
   }

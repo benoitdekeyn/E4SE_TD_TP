@@ -14,206 +14,212 @@
 <!-- TOC -->
 
 <details><summary>Table des matières</summary>
-&ensp;&ensp;<b><a href="#table-des-mati%C3%A8res">Table des matières</a></b><br>
-&ensp;&ensp;<b><a href="#introduction">Introduction</a></b><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#1-photos-de-la-maison">1. Photos de la maison</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#2-description-du-fonctionnement">2. Description du fonctionnement</a><br>
-&ensp;&ensp;<b><a href="#architecture-globale-du-syst%C3%A8me">Architecture globale du système</a></b>
+<span class="fo">&ensp;&ensp;</span><b><a href="#table-des-mati%C3%A8res">Table des matières</a></b><br>
+<span class="fo">&ensp;&ensp;</span><b><a href="#introduction">Introduction</a></b><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#1-photos-de-la-maison">1. Photos de la maison</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#2-description-du-fonctionnement">2. Description du fonctionnement</a><br>
+<span class="fo">&ensp;&ensp;</span><b><a href="#architecture-globale-du-syst%C3%A8me">Architecture globale du système</a></b>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#1-branchement-des-composants">1. Branchement des composants</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#11-contraintes-de-brochage">1.1. Contraintes de brochage</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#12-tableau-de-brochage-final">1.2. Tableau de brochage final</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#11-contraintes-de-brochage">1.1. Contraintes de brochage</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#12-tableau-de-brochage-final">1.2. Tableau de brochage final</a>
 </details>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#2-arbre-dhorloge-et-fr%C3%A9quences">2. Arbre d'horloge et fréquences</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#2-arbre-dhorloge-et-fr%C3%A9quences">2. Arbre d'horloge et fréquences</a>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#3-organisation-logicielle">3. Organisation logicielle</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#31-boucle-principale-et-gestion-des-interruptions">3.1. Boucle principale et gestion des interruptions</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-organisation-en-biblioth%C3%A8ques">3.2. Organisation en bibliothèques</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#31-boucle-principale-et-gestion-des-interruptions">3.1. Boucle principale et gestion des interruptions</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-organisation-en-biblioth%C3%A8ques">3.2. Organisation en bibliothèques</a>
 </details>
-&ensp;&ensp;<b><a href="#defines-et-types-personnalis%C3%A9s">Defines et types personnalisés</a></b><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#1-pas-de-hardcoding">1. Pas de Hardcoding</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#2-defines-mat%C3%A9riels">2. Defines matériels</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#3-structure-pour-les-leds">3. Structure pour les LEDs</a><br>
-&ensp;&ensp;<b><a href="#sc%C3%A9nario-1--base-temporelle-pour-l%C3%A9chantillonnage">Scénario 1 — Base temporelle pour l'échantillonnage</a></b>
+<span class="fo">&ensp;&ensp;</span><b><a href="#defines-et-types-personnalis%C3%A9s">Defines et types personnalisés</a></b><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#1-pas-de-hardcoding">1. Pas de Hardcoding</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#2-defines-mat%C3%A9riels">2. Defines matériels</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#3-structure-pour-les-leds">3. Structure pour les LEDs</a><br>
+<span class="fo">&ensp;&ensp;</span><b><a href="#sc%C3%A9nario-1--base-temporelle-pour-l%C3%A9chantillonnage">Scénario 1 — Base temporelle pour l'échantillonnage</a></b>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#1-configuration-du-timer">1. Configuration du Timer</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#11-contraintes-de-d%C3%A9part">1.1. Contraintes de départ</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#12-calcul-du-prescaler">1.2. Calcul du Prescaler</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#13-calcul-de-la-p%C3%A9riode">1.3. Calcul de la Période</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#14-dans-cubemx">1.4. Dans CubeMX</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#11-contraintes-de-d%C3%A9part">1.1. Contraintes de départ</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#12-calcul-du-prescaler">1.2. Calcul du Prescaler</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#13-calcul-de-la-p%C3%A9riode">1.3. Calcul de la Période</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#14-dans-cubemx">1.4. Dans CubeMX</a>
 </details>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#2-clignotement-de-la-led-t%C3%A9moin">2. Clignotement de la LED témoin</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#3-validation-exp%C3%A9rimentale">3. Validation expérimentale</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#4-ancienne-m%C3%A9thode">4. Ancienne méthode</a><br>
-&ensp;&ensp;<b><a href="#sc%C3%A9nario-2--s%C3%A9curit%C3%A9--homeaway-et-d%C3%A9tection-dintrusion">Scénario 2 — Sécurité : HOME/AWAY et détection d'intrusion</a></b><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#1-configuration-du-bouton-mode">1. Configuration du bouton MODE</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#2-clignotement-de-la-led-t%C3%A9moin">2. Clignotement de la LED témoin</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#3-validation-exp%C3%A9rimentale">3. Validation expérimentale</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#4-ancienne-m%C3%A9thode">4. Ancienne méthode</a><br>
+\newpage
+<span class="fo">&ensp;&ensp;</span><b><a href="#sc%C3%A9nario-2--s%C3%A9curit%C3%A9--homeaway-et-d%C3%A9tection-dintrusion">Scénario 2 — Sécurité : HOME/AWAY et détection d'intrusion</a></b><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#1-configuration-du-bouton-mode">1. Configuration du bouton MODE</a>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#2-gestion-de-lanti-rebond">2. Gestion de l'anti-rebond</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#21-prescaler-du-timer-5">2.1. Prescaler du Timer 5</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#22-p%C3%A9riode-du-timer-5">2.2. Période du Timer 5</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#23-routine-dinterruption-du-gpio-et-du-timer">2.3. Routine d'interruption du GPIO et du Timer</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#24-d%C3%A9tection-dappui">2.4. Détection d'appui</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#21-prescaler-du-timer-5">2.1. Prescaler du Timer 5</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#22-p%C3%A9riode-du-timer-5">2.2. Période du Timer 5</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#23-routine-dinterruption-du-gpio-et-du-timer">2.3. Routine d'interruption du GPIO et du Timer</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#24-d%C3%A9tection-dappui">2.4. Détection d'appui</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#3-machine-%C3%A0-%C3%A9tats-home--away">3. Machine à états HOME / AWAY</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#31-description-de-la-machine-%C3%A0-%C3%A9tats">3.1. Description de la machine à états</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-gestion-des-modes">3.2. Gestion des modes</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#33-impl%C3%A9mentation-de-la-machine-%C3%A0-%C3%A9tats">3.3. Implémentation de la machine à états</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#31-description-de-la-machine-%C3%A0-%C3%A9tats">3.1. Description de la machine à états</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-gestion-des-modes">3.2. Gestion des modes</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#33-impl%C3%A9mentation-de-la-machine-%C3%A0-%C3%A9tats">3.3. Implémentation de la machine à états</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#4-capteur-pir-et-alarme-intrusion">4. Capteur PIR et alarme intrusion</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#41-configuration-du-capteur-de-mouvement">4.1. Configuration du capteur de mouvement</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#42-lecture-du-capteur-pir">4.2. Lecture du capteur PIR</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#41-configuration-du-capteur-de-mouvement">4.1. Configuration du capteur de mouvement</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#42-lecture-du-capteur-pir">4.2. Lecture du capteur PIR</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#5-comportement-selon-le-mode-away-vs-home">5. Comportement selon le mode (AWAY vs HOME)</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#51-machine-%C3%A0-%C3%A9tats-avec-alarme-intrusion">5.1. Machine à états avec alarme intrusion</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#52-impl%C3%A9mentation-dans-la-while1">5.2. Implémentation dans la while(1)</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#53-alarme-intrusion">5.3. Alarme intrusion</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#51-machine-%C3%A0-%C3%A9tats-avec-alarme-intrusion">5.1. Machine à états avec alarme intrusion</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#52-impl%C3%A9mentation-dans-la-while1">5.2. Implémentation dans la while(1)</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#53-alarme-intrusion">5.3. Alarme intrusion</a>
 </details>
-&ensp;&ensp;<b><a href="#sc%C3%A9nario-3--d%C3%A9tection-de-gaz">Scénario 3 — Détection de gaz</a></b><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#1-d%C3%A9clenchement-de-ladc-par-le-timer-2">1. Déclenchement de l'ADC par le Timer 2</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#2-lecture-de-la-valeur-adc-au-sc%C3%A9nario-3-et-probl%C3%A8me-rencontr%C3%A9">2. Lecture de la valeur ADC au Scénario 3 et problème rencontré</a>
+<span class="fo">&ensp;&ensp;</span><b><a href="#sc%C3%A9nario-3--d%C3%A9tection-de-gaz">Scénario 3 — Détection de gaz</a></b><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#1-d%C3%A9clenchement-de-ladc-par-le-timer-2">1. Déclenchement de l'ADC par le Timer 2</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#2-lecture-de-la-valeur-adc-au-sc%C3%A9nario-3-et-probl%C3%A8me-rencontr%C3%A9">2. Lecture de la valeur ADC au Scénario 3 et problème rencontré</a>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#3-tests-du-capteur-et-seuil">3. Tests du capteur et seuil</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#31-tension-dalimentation-et-de-mesure-de-ladc">3.1. Tension d'alimentation et de mesure de l'ADC</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-seuil-de-d%C3%A9tection">3.2. Seuil de détection</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#31-tension-dalimentation-et-de-mesure-de-ladc">3.1. Tension d'alimentation et de mesure de l'ADC</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-seuil-de-d%C3%A9tection">3.2. Seuil de détection</a>
 </details>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#4-alarme-gaz">4. Alarme gaz</a><br>
-&ensp;&ensp;<b><a href="#sc%C3%A9nario-4--supervision-uart">Scénario 4 — Supervision UART</a></b><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#1-configuration-de-luart-avec-st-link">1. Configuration de l'UART avec ST-LINK</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#2-redirection-de-printf-vers-luart">2. Redirection de printf vers l'UART</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#3-message-de-bienvenue-au-d%C3%A9marrage">3. Message de bienvenue au démarrage</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#4-alarme-gaz">4. Alarme gaz</a><br>
+\newpage
+<span class="fo">&ensp;&ensp;</span><b><a href="#sc%C3%A9nario-4--supervision-uart">Scénario 4 — Supervision UART</a></b><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#1-configuration-de-luart-avec-st-link">1. Configuration de l'UART avec ST-LINK</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#2-redirection-de-printf-vers-luart">2. Redirection de printf vers l'UART</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#3-message-de-bienvenue-au-d%C3%A9marrage">3. Message de bienvenue au démarrage</a>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#4-supervision-en-temps-r%C3%A9el">4. Supervision en temps réel</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#41-mesures-p%C3%A9riodiques-toutes-les-2-s">4.1. Mesures périodiques (toutes les 2 s)</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#42-%C3%A9v%C3%A9nements-d%C3%A9tat-asynchrones">4.2. Événements d'état (asynchrones)</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#43-erreurs">4.3. Erreurs</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#41-mesures-p%C3%A9riodiques-toutes-les-2-s">4.1. Mesures périodiques (toutes les 2 s)</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#42-%C3%A9v%C3%A9nements-d%C3%A9tat-asynchrones">4.2. Événements d'état (asynchrones)</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#43-erreurs">4.3. Erreurs</a>
 </details>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#5-validation-avec-un-terminal-s%C3%A9rie">5. Validation avec un terminal série</a><br>
-&ensp;&ensp;<b><a href="#sc%C3%A9nario-5--gestion-intelligente-de-la-fen%C3%AAtre">Scénario 5 — Gestion intelligente de la fenêtre</a></b>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#5-validation-avec-un-terminal-s%C3%A9rie">5. Validation avec un terminal série</a><br>
+<span class="fo">&ensp;&ensp;</span><b><a href="#sc%C3%A9nario-5--gestion-intelligente-de-la-fen%C3%AAtre">Scénario 5 — Gestion intelligente de la fenêtre</a></b>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#1-commande-du-servomoteur">1. Commande du servomoteur</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#11-brochage-et-alimentation">1.1. Brochage et alimentation</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#12-protocole-pwm-du-servo">1.2. Protocole PWM du servo</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#13-configuration-du-timer-1-dans-cubemx">1.3. Configuration du Timer 1 dans CubeMX</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#14-calcul-de-la-r%C3%A9solution-angulaire">1.4. Calcul de la résolution angulaire</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#15-appliquer-un-angle-au-servomoteur">1.5. Appliquer un angle au servomoteur</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#11-brochage-et-alimentation">1.1. Brochage et alimentation</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#12-protocole-pwm-du-servo">1.2. Protocole PWM du servo</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#13-configuration-du-timer-1-dans-cubemx">1.3. Configuration du Timer 1 dans CubeMX</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#14-calcul-de-la-r%C3%A9solution-angulaire">1.4. Calcul de la résolution angulaire</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#15-appliquer-un-angle-au-servomoteur">1.5. Appliquer un angle au servomoteur</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#2-gestion-de-la-fen%C3%AAtre">2. Gestion de la fenêtre</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#21-%C3%A9tats-de-la-fen%C3%AAtre">2.1. États de la fenêtre</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#22-application-de-letat-de-la-fen%C3%AAtre">2.2. Application de l'etat de la fenêtre</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#21-%C3%A9tats-de-la-fen%C3%AAtre">2.1. États de la fenêtre</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#22-application-de-letat-de-la-fen%C3%AAtre">2.2. Application de l'etat de la fenêtre</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#3-bouton-fen%C3%AAtre-et-anti-rebond">3. Bouton fenêtre et anti-rebond</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#31-impl%C3%A9mentation-et-anti-rebond">3.1. Implémentation et anti-rebond</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-comportement-et-priorit%C3%A9s-selon-le-mode-home-vs-away">3.2. Comportement et priorités selon le mode (HOME vs AWAY)</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#31-impl%C3%A9mentation-et-anti-rebond">3.1. Implémentation et anti-rebond</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-comportement-et-priorit%C3%A9s-selon-le-mode-home-vs-away">3.2. Comportement et priorités selon le mode (HOME vs AWAY)</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#4-d%C3%A9tection-de-pluie-avec-adc-dma-multi-canaux">4. Détection de pluie avec ADC DMA multi-canaux</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#41-d%C3%A9clenchement-des-mesures">4.1. Déclenchement des mesures</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#42-configuration-adc-en-mode-scan-multi-canaux">4.2. Configuration ADC en mode Scan multi-canaux</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#43-configuration-dma">4.3. Configuration DMA</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#44-interruptions-adc-et-dma-activ%C3%A9es">4.4. Interruptions ADC et DMA activées</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#45-lecture-et-%C3%A9valuation-des-capteurs">4.5. Lecture et évaluation des capteurs</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#46-tests-du-capteur-de-pluie-et-seuil">4.6. Tests du capteur de pluie et seuil</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#41-d%C3%A9clenchement-des-mesures">4.1. Déclenchement des mesures</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#42-configuration-adc-en-mode-scan-multi-canaux">4.2. Configuration ADC en mode Scan multi-canaux</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#43-configuration-dma">4.3. Configuration DMA</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#44-interruptions-adc-et-dma-activ%C3%A9es">4.4. Interruptions ADC et DMA activées</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#45-lecture-et-%C3%A9valuation-des-capteurs">4.5. Lecture et évaluation des capteurs</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#46-tests-du-capteur-de-pluie-et-seuil">4.6. Tests du capteur de pluie et seuil</a>
 </details>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#5-logique-de-d%C3%A9cision-de-la-fen%C3%AAtre">5. Logique de décision de la fenêtre</a><br>
-&ensp;&ensp;<b><a href="#sc%C3%A9nario-6--mesure-de-temp%C3%A9rature-tmp102">Scénario 6 — Mesure de température (TMP102)</a></b>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#5-logique-de-d%C3%A9cision-de-la-fen%C3%AAtre">5. Logique de décision de la fenêtre</a><br>
+<span class="fo">&ensp;&ensp;</span><b>
+\newpage
+<a href="#sc%C3%A9nario-6--mesure-de-temp%C3%A9rature-tmp102">Scénario 6 — Mesure de température (TMP102)</a></b>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#1-branchement-et-configuration-cubemx">1. Branchement et configuration CubeMX</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#11-alimentation-vccgnd">1.1. Alimentation (VCC/GND)</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#12-bus-ic-sdascl">1.2. Bus I²C (SDA/SCL)</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#13-adresse-ic-add0">1.3. Adresse I²C (ADD0)</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#14-broche-alt">1.4. Broche (ALT)</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#11-alimentation-vccgnd">1.1. Alimentation (VCC/GND)</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#12-bus-ic-sdascl">1.2. Bus I²C (SDA/SCL)</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#13-adresse-ic-add0">1.3. Adresse I²C (ADD0)</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#14-broche-alt">1.4. Broche (ALT)</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#2-analyse-de-la-datasheet">2. Analyse de la datasheet</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#21-registres-accessibles">2.1. Registres accessibles</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#22-registre-de-temp%C3%A9rature">2.2. Registre de température</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#23-registre-de-configuration">2.3. Registre de configuration</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#24-registres-t_low-et-t_high">2.4. Registres T_LOW et T_HIGH</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#21-registres-accessibles">2.1. Registres accessibles</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#22-registre-de-temp%C3%A9rature">2.2. Registre de température</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#23-registre-de-configuration">2.3. Registre de configuration</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#24-registres-t_low-et-t_high">2.4. Registres T_LOW et T_HIGH</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#3-communication-ic-avec-le-capteur">3. Communication I²C avec le capteur</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#31-protocole-ic-du-tmp102">3.1. Protocole I²C du TMP102</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-fonctions-hal-utilis%C3%A9es">3.2. Fonctions HAL utilisées</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#33-alternatives-hal-non-utilis%C3%A9es">3.3. Alternatives HAL non utilisées</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#31-protocole-ic-du-tmp102">3.1. Protocole I²C du TMP102</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-fonctions-hal-utilis%C3%A9es">3.2. Fonctions HAL utilisées</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#33-alternatives-hal-non-utilis%C3%A9es">3.3. Alternatives HAL non utilisées</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#4-structure-de-la-biblioth%C3%A8que">4. Structure de la bibliothèque</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#41-vue-densemble">4.1. Vue d'ensemble</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#42-les-structures-tmp102_config_t-et-tmp102_t">4.2. Les structures TMP102_Config_t et TMP102_t</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#43-define">4.3. Define</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#44-organisation-des-champs-du-registre-de-configuration">4.4. Organisation des champs du registre de configuration</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#45-synchronisation-entre-le-registre-de-configuration-et-lobjet-tmp102">4.5. Synchronisation entre le registre de configuration et l'objet TMP102</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#41-vue-densemble">4.1. Vue d'ensemble</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#42-les-structures-tmp102_config_t-et-tmp102_t">4.2. Les structures TMP102_Config_t et TMP102_t</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#43-define">4.3. Define</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#44-organisation-des-champs-du-registre-de-configuration">4.4. Organisation des champs du registre de configuration</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#45-synchronisation-entre-le-registre-de-configuration-et-lobjet-tmp102">4.5. Synchronisation entre le registre de configuration et l'objet TMP102</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#5-mise-%C3%A0-jour-des-registres-du-capteur">5. Mise à jour des registres du capteur</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#51-application-du-registre-de-configuration">5.1. Application du registre de configuration</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#52-application-des-registres-de-seuil-de-temp%C3%A9rature">5.2. Application des registres de seuil de température</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#51-application-du-registre-de-configuration">5.1. Application du registre de configuration</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#52-application-des-registres-de-seuil-de-temp%C3%A9rature">5.2. Application des registres de seuil de température</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#6-initialisation">6. Initialisation</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#61-instanciation">6.1. Instanciation</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#62-valeurs-par-d%C3%A9faut">6.2. Valeurs par défaut</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#63-personnalisation">6.3. Personnalisation</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#64-exemple-dans-notre-code">6.4. Exemple dans notre code</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#61-instanciation">6.1. Instanciation</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#62-valeurs-par-d%C3%A9faut">6.2. Valeurs par défaut</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#63-personnalisation">6.3. Personnalisation</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#64-exemple-dans-notre-code">6.4. Exemple dans notre code</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#7-lecture-du-registre-de-temp%C3%A9rature">7. Lecture du registre de température</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#71-fonction-de-lecture">7.1. Fonction de lecture</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#72-appel-externe">7.2. Appel externe</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#71-fonction-de-lecture">7.1. Fonction de lecture</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#72-appel-externe">7.2. Appel externe</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#8-conversion-et-affichage-de-la-temp%C3%A9rature">8. Conversion et affichage de la température</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#81-registre-brut--temp%C3%A9rature-en-c">8.1. Registre brut → température en °C</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#82-temp%C3%A9rature-en-c--registre-brut">8.2. Température en °C → Registre brut</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#83-affichage-de-la-temp%C3%A9rature-de-type-float">8.3. Affichage de la température de type float</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#81-registre-brut--temp%C3%A9rature-en-c">8.1. Registre brut → température en °C</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#82-temp%C3%A9rature-en-c--registre-brut">8.2. Température en °C → Registre brut</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#83-affichage-de-la-temp%C3%A9rature-de-type-float">8.3. Affichage de la température de type float</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#9-mesure-one-shot-en-mode-shutdown">9. Mesure One-Shot en mode Shutdown</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#91-mode-continous-vs-shutdown">9.1. Mode Continous vs Shutdown</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#92-d%C3%A9clencher-une-mesure-one-shot">9.2. Déclencher une mesure One-Shot</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#93-attendre-la-fin-de-la-mesure">9.3. Attendre la fin de la mesure</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#94-lire-la-temp%C3%A9rature-actualis%C3%A9e">9.4. Lire la température actualisée</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#91-mode-continous-vs-shutdown">9.1. Mode Continous vs Shutdown</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#92-d%C3%A9clencher-une-mesure-one-shot">9.2. Déclencher une mesure One-Shot</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#93-attendre-la-fin-de-la-mesure">9.3. Attendre la fin de la mesure</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#94-lire-la-temp%C3%A9rature-actualis%C3%A9e">9.4. Lire la température actualisée</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#10-utilisation-de-la-biblioth%C3%A8que-dans-le-code">10. Utilisation de la bibliothèque dans le code</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#101-d%C3%A9claration-et-initialisation">10.1. Déclaration et initialisation</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#102-cycle-de-mesure-dans-la-boucle-principale">10.2. Cycle de mesure dans la boucle principale</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#101-d%C3%A9claration-et-initialisation">10.1. Déclaration et initialisation</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#102-cycle-de-mesure-dans-la-boucle-principale">10.2. Cycle de mesure dans la boucle principale</a>
 </details>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#11-analyse-des-trames-ic">11. Analyse des trames I²C</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#11-analyse-des-trames-ic">11. Analyse des trames I²C</a>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#12-gestion-automatique-de-la-fen%C3%AAtre-par-la-temp%C3%A9rature">12. Gestion automatique de la fenêtre par la température</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#121-seuils-et-%C3%A9tats-de-temp%C3%A9rature">12.1. Seuils et états de température</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#122-logique-de-d%C3%A9cision-de-la-fen%C3%AAtre">12.2. Logique de décision de la fenêtre</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#123-r%C3%A9sum%C3%A9-du-comportement-global-de-la-fen%C3%AAtre">12.3. Résumé du comportement global de la fenêtre</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#121-seuils-et-%C3%A9tats-de-temp%C3%A9rature">12.1. Seuils et états de température</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#122-logique-de-d%C3%A9cision-de-la-fen%C3%AAtre">12.2. Logique de décision de la fenêtre</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#123-r%C3%A9sum%C3%A9-du-comportement-global-de-la-fen%C3%AAtre">12.3. Résumé du comportement global de la fenêtre</a>
 </details>
-&ensp;&ensp;<b><a href="#sc%C3%A9nario-7--int%C3%A9gration-et-affichage-lcd">Scénario 7 — Intégration et affichage LCD</a></b>
+<span class="fo">&ensp;&ensp;</span><b><a href="#sc%C3%A9nario-7--int%C3%A9gration-et-affichage-lcd">Scénario 7 — Intégration et affichage LCD</a></b>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#1-configuration-bus-ic">1. Configuration Bus I²C</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#11-branchement-et-configuration-cubemx">1.1. Branchement et configuration CubeMX</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#12-adresse-ic">1.2. Adresse I²C</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#11-branchement-et-configuration-cubemx">1.1. Branchement et configuration CubeMX</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#12-adresse-ic">1.2. Adresse I²C</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#2-int%C3%A9gration-de-la-biblioth%C3%A8que-lcd-ic">2. Intégration de la bibliothèque LCD I²C</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#21-modification-de-linitialisation">2.1. Modification de l'initialisation</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#21-modification-de-linitialisation">2.1. Modification de l'initialisation</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#3-affichage-des-donn%C3%A9es-en-16x2">3. Affichage des données en 16x2</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#31-initialisation">3.1. Initialisation</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-home--away">3.2. HOME / AWAY</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#33-valeurs-capteurs">3.3. Valeurs capteurs</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#31-initialisation">3.1. Initialisation</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-home--away">3.2. HOME / AWAY</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#33-valeurs-capteurs">3.3. Valeurs capteurs</a>
 </details>
-&ensp;&ensp;<b><a href="#bonus--biblioth%C3%A8que-bande-led-rgb-ws2812b">Bonus — Bibliothèque Bande LED RGB (WS2812B)</a></b><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#1-analyse-de-la-datasheet-protocole-one-wire">1. Analyse de la datasheet (protocole one-wire)</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#2-principe-dimpl%C3%A9mentation--pwm--dma">2. Principe d'implémentation : PWM + DMA</a>
+<span class="fo">&ensp;&ensp;</span><b>
+\newpage
+<a href="#bonus--biblioth%C3%A8que-bande-led-rgb-ws2812b">Bonus — Bibliothèque Bande LED RGB (WS2812B)</a></b><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#1-analyse-de-la-datasheet-protocole-one-wire">1. Analyse de la datasheet (protocole one-wire)</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#2-principe-dimpl%C3%A9mentation--pwm--dma">2. Principe d'implémentation : PWM + DMA</a>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#3-branchement-et-configuration-cubemx">3. Branchement et configuration CubeMX</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#31-branchement">3.1. Branchement</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-calcul-des-param%C3%A8tres-du-timer-4">3.2. Calcul des paramètres du Timer 4</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#33-configuration-du-timer-4-dans-cubemx">3.3. Configuration du Timer 4 dans CubeMX</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#34-configuration-du-dma">3.4. Configuration du DMA</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#35-interruptions-activ%C3%A9es">3.5. Interruptions activées</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#31-branchement">3.1. Branchement</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-calcul-des-param%C3%A8tres-du-timer-4">3.2. Calcul des paramètres du Timer 4</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#33-configuration-du-timer-4-dans-cubemx">3.3. Configuration du Timer 4 dans CubeMX</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#34-configuration-du-dma">3.4. Configuration du DMA</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#35-interruptions-activ%C3%A9es">3.5. Interruptions activées</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#4-structure-de-la-biblioth%C3%A8que-1">4. Structure de la bibliothèque</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#41-vue-densemble-1">4.1. Vue d'ensemble</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#42-les-structures-bl_rgb_t-et-bandeled_t">4.2. Les structures BL_RGB_t et BandeLED_t</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#43-define-1">4.3. Define</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#41-vue-densemble-1">4.1. Vue d'ensemble</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#42-les-structures-bl_rgb_t-et-bandeled_t">4.2. Les structures BL_RGB_t et BandeLED_t</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#43-define-1">4.3. Define</a>
 </details>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#5-initialisation">5. Initialisation</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#6-encodage-et-envoi-de-la-trame">6. Encodage et envoi de la trame</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#5-initialisation">5. Initialisation</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#6-encodage-et-envoi-de-la-trame">6. Encodage et envoi de la trame</a>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#7-modification-de-l%C3%A9tat-des-leds">7. Modification de l'état des LEDs</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#71-fonction-de-d%C3%A9monstration">7.1. Fonction de démonstration</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#71-fonction-de-d%C3%A9monstration">7.1. Fonction de démonstration</a>
 </details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#8-utilisation-dans-le-code--tableau-de-bord-led">8. Utilisation dans le code : tableau de bord LED</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#81-d%C3%A9claration-et-initialisation">8.1. Déclaration et initialisation</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#82-le-tableau-de-bord">8.2. Le tableau de bord</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#83-mise-%C3%A0-jour-p%C3%A9riodique">8.3. Mise à jour périodique</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#84-respect-de-la-r%C3%A8gle--pas-de-blocage-">8.4. Respect de la règle « pas de blocage »</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#81-d%C3%A9claration-et-initialisation">8.1. Déclaration et initialisation</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#82-le-tableau-de-bord">8.2. Le tableau de bord</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#83-mise-%C3%A0-jour-p%C3%A9riodique">8.3. Mise à jour périodique</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#84-respect-de-la-r%C3%A8gle--pas-de-blocage-">8.4. Respect de la règle « pas de blocage »</a>
 </details>
-&ensp;&ensp;<b><a href="#bonus--gestion-globale-des-alarmes">Bonus — Gestion globale des alarmes</a></b><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#1-clignotement-non-bloquant-par-compteur-partag%C3%A9">1. Clignotement non bloquant par compteur partagé</a>
+<span class="fo">&ensp;&ensp;</span><b><a href="#bonus--gestion-globale-des-alarmes">Bonus — Gestion globale des alarmes</a></b><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#1-clignotement-non-bloquant-par-compteur-partag%C3%A9">1. Clignotement non bloquant par compteur partagé</a>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#2-gestion-du-buzzer-avec-fr%C3%A9quences-distinctes">2. Gestion du buzzer avec fréquences distinctes</a></summary>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#21-configuration-du-timer-pwm">2.1. Configuration du Timer PWM</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#22-configuration-sur-cubemx">2.2. Configuration sur CubeMX</a><br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#23-fr%C3%A9quences-distinctes-pour-chaque-alarme">2.3. Fréquences distinctes pour chaque alarme</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#21-configuration-du-timer-pwm">2.1. Configuration du Timer PWM</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#22-configuration-sur-cubemx">2.2. Configuration sur CubeMX</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#23-fr%C3%A9quences-distinctes-pour-chaque-alarme">2.3. Fréquences distinctes pour chaque alarme</a>
 </details>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#3-cas-simultan%C3%A9--alternance-gaz--intrusion">3. Cas simultané : alternance gaz / intrusion</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#3-cas-simultan%C3%A9--alternance-gaz--intrusion">3. Cas simultané : alternance gaz / intrusion</a>
 </details>
 
 <!-- /TOC -->
@@ -329,6 +335,7 @@ L'ADC1 est le seul ADC de la carte, mais on dispose de plusieurs entrées sur le
 Nous avions besoin de 3 interruptions externes (EXTI) :
 - **Bouton HOME** (bascule mode HOME/AWAY)
 - **Bouton FENÊTRE** (commande manuelle de la fenêtre)
+\newpage
 - **Capteur PIR** (détection de mouvement)
 
 La contrainte importante est que deux broches de **même numéro** sur des ports différents partagent la même ligne EXTI. Il fallait donc choisir des broches ayant un numéro différent. Nous avons choisi :
@@ -363,6 +370,7 @@ Nous avions besoin de 3 sorties GPIO pour les LEDs indicatrices. Nous avons choi
 | Bande LED NeoPixel | RGB_BANDE | D10 | PB6 | TIM4 CH1 – PWM + DMA | — | 3V3 |
 | Capteur gaz MQ-2 | GAZ | A2 | PA4 | ADC1 CH4 | — | 5V |
 | Capteur de pluie | PLUIE | A3 | PB0 | ADC1 CH8 | — | 5V |
+\newpage
 | Capteur PIR | PIR_MVMT | D9 | PC7 | EXTI7 – Rising Edge | PULLDOWN | 3V3 |
 | Bouton HOME/AWAY | BTN_HOME | D12 | PA6 | EXTI6 – Falling Edge | PULLUP | 3V3 |
 | Bouton fenêtre | BTN_FENTR | D2 | PA10 | EXTI10 – Falling Edge | PULLUP | 3V3 |
@@ -391,11 +399,13 @@ Nous avons donc créé des liens symboliques, ajouté les chemins des headers au
 Dossiers symboliques  
 <img src="media/stm32cubeide_liens_symboliques.png" alt="Dossiers symboliques" width="200">
 
+\newpage
+
 Décochage de « Exclude from Build » dans les propriétés des dossiers symboliques
-![Exclude from build dans project settings](media/stm32cubeide_exclude_from_build_project_settings.png)
+<img src="media/stm32cubeide_exclude_from_build_project_settings.png" alt="Exclude from build dans project settings" width="600">
 
 Include path dans les project settings 
-![Include path dans project settings](media/stm32cubeide_include_path_project_settings.png)  
+<img src="media/stm32cubeide_include_path_project_settings.png" alt="Include path dans project settings" width="600">
 
 ## Defines et types personnalisés
 

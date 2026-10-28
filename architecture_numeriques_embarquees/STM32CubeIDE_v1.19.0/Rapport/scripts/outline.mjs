@@ -320,7 +320,7 @@ const escLabel = (s) => s.replace(/[\\`*_[\]<>&|~]/g, '\\$&');
 const escSymbol = (s) => s.replace(/[\\`*_{}[\]<>()#+\-.!|~&]/g, '\\$&');
 const escHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-function tocLine(n, t, html, extra = 0) {
+function tocLine(n, t, html, extra_ = 0) {
   const L = t.levels[n.level];
   const sym = L.symbol ? `${html ? escHtml(L.symbol) : escSymbol(L.symbol)} ` : '';
   const href = encodeURI(n.slug);
@@ -329,7 +329,8 @@ function tocLine(n, t, html, extra = 0) {
   if (L.bold) s = `<b>${s}</b>`;
   if (L.italic) s = `<i>${s}</i>`;
   if (L.size) s = `<span style="font-size:${L.size}em">${s}</span>`;
-  return '&ensp;'.repeat(L.indent + extra) + s;
+  const extra = extra_ ? `<span class="fo">${'&ensp;'.repeat(extra_)}</span>` : '';
+  return extra + '&ensp;'.repeat(L.indent) + s;
 }
 
 function renderToc(heads, t) {
@@ -406,6 +407,23 @@ export function applyToc(src, cfg) {
   const find = (re, from = 0) => { for (let i = from; i < lines.length; i++) if (re.test(lines[i].trim()) && !inFence(i)) return i; return -1; };
   const a = find(START);
   const b = a >= 0 ? find(END, a + 1) : find(END);
+  // Les sauts de page ajoutés à la main dans l'ancienne table sont conservés, devant l'entrée qui les suivait.
+  const keep = new Map();
+  if (a >= 0 && b > a) {
+    for (let i = a + 1; i < b; i++) {
+      if (!/^(\\(newpage|pagebreak|clearpage)|<!--\s*(newpage|pagebreak)\s*-->)$/i.test(lines[i].trim())) continue;
+      const next = lines.slice(i + 1, b).find((l) => /href="#[^"]+"|\]\(#[^)]+\)/.test(l));
+      const slug = next?.match(/href="#([^"]+)"|\]\(#([^)]+)\)/);
+      if (slug) keep.set(slug[1] || slug[2], lines[i].trim());
+    }
+  }
+  if (keep.size) {
+    for (let i = 0; i < block.length; i++) {
+      const m = block[i].match(/href="#([^"]+)"|\]\(#([^)]+)\)/);
+      const key = m && (m[1] || m[2]);
+      if (key && keep.has(key)) { block.splice(i, 0, keep.get(key)); keep.delete(key); i++; }
+    }
+  }
   let out;
   let inserted = false;
   if (a >= 0 && b > a) {

@@ -283,24 +283,58 @@ async function render(cfg, { pdf = false } = {}) {
     const t = state.tokens;
     const markers = (cmds) => cmds.map((c) => {
       const k = new state.Token('html_block', '', 0);
-      k.content = `<div class="${c === 'nohf' ? 'nohf' : 'pagebreak'}"></div>\n`;
+      k.content = `<div class="${c === 'nohf' ? 'nohf' : c === 'samepage' ? 'samepage' : 'pagebreak'}"></div>\n`;
       return k;
     });
-    const kind = (s) => (/^(nohf)$/i.test(s) ? 'nohf' : 'pagebreak');
+    const kind = (s) => (/^nohf$/i.test(s) ? 'nohf' : /^samepage$/i.test(s) ? 'samepage' : 'pagebreak');
+    // Ligne de tableau ne contenant que « \newpage » : elle est retirée et la ligne suivante commence une nouvelle page.
+    for (let i = 0; i < t.length; i++) {
+      if (t[i].type !== 'tr_open') continue;
+      let j = i + 1;
+      const cells = [];
+      while (t[j] && t[j].type !== 'tr_close') {
+        if (t[j].type === 'inline') cells.push(t[j].content.trim());
+        j++;
+      }
+      if (!cells.length || !/^\\(newpage|pagebreak|clearpage)$/i.test(cells[0]) || cells.slice(1).some(Boolean)) continue;
+      let next = j + 1;
+      while (t[next] && t[next].type !== 'tr_open' && t[next].type !== 'tbody_close') next++;
+      if (t[next]?.type === 'tr_open') t[next].attrJoin('class', 'pb');
+      t.splice(i, j - i + 1);
+      i--;
+    }
     for (let i = 0; i < t.length; i++) {
       if (t[i].type === 'html_block') {
-        const found = t[i].content.match(/<!--\s*(?:newpage|pagebreak|nohf)\s*-->/gi);
-        if (found && t[i].content.replace(/<!--\s*(?:newpage|pagebreak|nohf)\s*-->/gi, '').trim() === '') {
+        t[i].content = t[i].content.replace(/^[ \t]*\\(newpage|pagebreak|clearpage|nohf|samepage)[ \t]*$/gim, (_, c) => `<div class="${kind(c) === 'pagebreak' ? 'pagebreak' : kind(c)}"></div>`);
+        const found = t[i].content.match(/<!--\s*(?:newpage|pagebreak|nohf|samepage)\s*-->/gi);
+        if (found && t[i].content.replace(/<!--\s*(?:newpage|pagebreak|nohf|samepage)\s*-->/gi, '').trim() === '') {
           const ms = markers(found.map((f) => kind(f.replace(/<!--\s*|\s*-->/g, ''))));
           t.splice(i, 1, ...ms);
           i += ms.length - 1;
         }
       } else if (t[i].type === 'paragraph_open' && t[i + 1]?.type === 'inline' && t[i + 2]?.type === 'paragraph_close') {
-        const lines = t[i + 1].content.split('\n').map((l) => l.trim());
-        if (lines.every((l) => /^\\(newpage|pagebreak|clearpage|nohf)$/i.test(l))) {
-          const ms = markers(lines.map((l) => kind(l.slice(1))));
-          t.splice(i, 3, ...ms);
-          i += ms.length - 1;
+        const raw = t[i + 1].content.split('\n');
+        const isMarker = (l) => /^\\(newpage|pagebreak|clearpage|nohf|samepage)$/i.test(l.trim());
+        if (raw.some(isMarker)) {
+          // Un marqueur au milieu d'un paragraphe (ex. dans la table des matières) le coupe en plusieurs morceaux.
+          const out = [];
+          let buf = [];
+          const flushText = () => {
+            if (!buf.length) return;
+            const open = new state.Token('paragraph_open', 'p', 1);
+            const inl = new state.Token('inline', '', 0);
+            inl.content = buf.join('\n');
+            inl.children = [];
+            state.md.inline.parse(inl.content, state.md, state.env, inl.children);
+            out.push(open, inl, new state.Token('paragraph_close', 'p', -1));
+            buf = [];
+          };
+          for (const l of raw) {
+            if (isMarker(l)) { flushText(); out.push(...markers([kind(l.trim().slice(1))])); } else buf.push(l);
+          }
+          flushText();
+          t.splice(i, 3, ...out);
+          i += out.length - 1;
         }
       }
     }

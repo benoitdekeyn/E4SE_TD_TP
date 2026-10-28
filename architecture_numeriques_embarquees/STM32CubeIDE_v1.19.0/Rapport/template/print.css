@@ -1,7 +1,11 @@
 /* Impression (PDF et Ctrl+P). Les sauts de page \newpage / <!-- newpage --> sont invisibles à l'écran. */
-.pagebreak, .nohf { display: none; }
+.pagebreak, .nohf, .samepage { display: none; }
 
 @media print {
+  /* TOC Markdown : à l'impression tout est déplié, la flèche est masquée et sa compensation d'alignement retirée. */
+  .toc-block .fo { display: none; }
+  .toc-block summary { list-style: none; }
+  .toc-block summary::-webkit-details-marker { display: none; }
   @page { background: var(--bg); }
   html { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: var(--bg); }
   body { background: var(--bg); }

@@ -11,6 +11,15 @@
   // Sections dépliables (<details>) : ouvertes à l'impression, sinon leur contenu serait absent du PDF.
   $$('details', article).forEach((d) => { d.open = true; });
 
+  // Repère les éléments situés entre <!-- TOC --> et <!-- /TOC --> (pour le style d'impression de la TOC).
+  {
+    const kids = [...article.childNodes];
+    const isC = (n, v) => n.nodeType === 8 && n.data.trim().toLowerCase() === v;
+    const a = kids.findIndex((n) => isC(n, 'toc'));
+    const b = kids.findIndex((n) => isC(n, '/toc'));
+    if (a >= 0 && b > a) kids.slice(a, b).forEach((n) => n.nodeType === 1 && n.classList.add('toc-block'));
+  }
+
   // Table des matières Markdown (entre <!-- TOC --> et <!-- /TOC -->), avec son titre s'il la précède directement.
   if (P.hideToc) {
     const nodes = [...article.childNodes];
@@ -24,6 +33,14 @@
       if (isHeading(prev)) prev.remove();
     }
   }
+
+  // \samepage juste avant un titre : annule le saut de page imposé par pdf.pageBreakBefore pour ce titre.
+  $$('.samepage', article).forEach((m) => {
+    const next = m.nextElementSibling;
+    if (isHeading(next)) next.dataset.samepage = '1';
+    else errors.push('\\samepage ignoré : il doit être placé juste avant un titre');
+    m.remove();
+  });
 
   // Pages sans en-tête ni pied de page (\nohf) : uniquement en tout début de document ou juste après un saut de page.
   const noHF = { first: false, ids: [] };
@@ -54,14 +71,21 @@
   }
 
   // Sauts de page demandés dans le Markdown : le bloc qui suit commence une nouvelle page.
+  // Si le marqueur termine son conteneur (élément de liste, citation…), le saut s'applique à l'élément suivant du parent.
   $$('.pagebreak', article).forEach((m) => {
-    if (m.nextElementSibling) m.nextElementSibling.classList.add('pb');
-    m.remove();
+    let el = m;
+    while (el && el !== article && !el.nextElementSibling) el = el.parentElement;
+    const target = el && el !== article ? el.nextElementSibling : null;
+    // Un saut ne s'applique qu'à un bloc : devant un élément en ligne (<br>, <a>…), le marqueur devient lui-même un bloc de hauteur nulle.
+    const inline = target && getComputedStyle(target).display.startsWith('inline');
+    if (!target) m.remove();
+    else if (el === m && inline) { m.className = 'pb'; m.style.cssText = 'display:block;height:0;margin:0;padding:0'; }
+    else { target.classList.add('pb'); m.remove(); }
   });
   // Saut avant les niveaux de titres choisis (sauf en tout début de document, juste après un autre titre ou un saut déjà posé).
   $$('h1,h2,h3,h4,h5,h6', article).forEach((h) => {
     const prev = h.previousElementSibling;
-    if (P.breakLevels.includes(Number(h.tagName[1])) && prev && !isHeading(prev) && !prev.classList.contains('pb')) h.classList.add('pb');
+    if (P.breakLevels.includes(Number(h.tagName[1])) && !h.dataset.samepage && prev && !isHeading(prev) && !prev.classList.contains('pb')) h.classList.add('pb');
   });
 
   // Garde-fou : du texte directement sous <article> (hors bloc) serait écarté par le regroupement en sections et

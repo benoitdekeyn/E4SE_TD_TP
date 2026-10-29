@@ -404,7 +404,7 @@ Dossiers symboliques
 Décochage de « Exclude from Build » dans les propriétés des dossiers symboliques
 <img src="media/stm32cubeide_exclude_from_build_project_settings.png" alt="Exclude from build dans project settings" width="600">
 
-Include path dans les project settings 
+Include path dans les project settings   
 <img src="media/stm32cubeide_include_path_project_settings.png" alt="Include path dans project settings" width="600">
 
 ## Defines et types personnalisés

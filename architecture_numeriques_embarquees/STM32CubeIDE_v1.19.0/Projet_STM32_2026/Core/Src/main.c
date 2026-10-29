@@ -179,7 +179,7 @@ typedef enum {
 // cf rapport : 9.2. Gestion de la fenêtre
 // ==============================================================================
 #define ANGLE_SERVO_OUVERT  120     /**< Butée mécanique maximale d'ouverture (120°) */
-#define ANGLE_SERVO_FERME   0       /**< Position de fermeture étanche (0°) */
+#define ANGLE_SERVO_FERME   0       /**< Position de fermeture (0°) */
 
 /* USER CODE END PD */
 

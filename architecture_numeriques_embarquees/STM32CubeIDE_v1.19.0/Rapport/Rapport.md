@@ -1064,17 +1064,32 @@ Ce qui donne la configuration suivante dans CubeMX :
 
 La correspondance angle → impulsion est linéaire entre 0° et 180°. La formule de conversion d'un angle cible en durée d'impulsion est la suivante : 
 
-$$\text{Impulsion}_{cible} = \frac{\text{Angle}_{cible}}{180°} \times (\text{Impulsion}_{180°} - \text{Impulsion}_{0°}) + \text{Impulsion}_{0°}$$
+$$\text{Pulse}_{cible} = \left[\frac{\text{Angle}_{cible}}{180°} \times (\text{Pulse}_{180°} - \text{Pulse}_{0°})\right] + \text{Pulse}_{0°}$$
 
-En appliquant les constantes issues de la datasheet et configurées dans CubeMX, la formule donne : 
+Or si nous n'utilisons que les données issues de la datasheet et la fréquence du timer configuré, nous avons :
 
-$$\text{Impulsion}_{cible} = \frac{\text{Angle}_{cible}}{180°} \times (2{,}5\, \text{ms} - 0{,}5\, \text{ms}) + 0{,}5\, \text{ms}$$
+$$\text{Pulse}_{0°} = \frac{\text{T}_{0°}}{\text{T}_{tic}} = \text{T}_{0°} \times f_{timer}$$
+$$\text{Pulse}_{180°} = \frac{\text{T}_{180°}}{\text{T}_{tic}} = \text{T}_{180°} \times f_{timer}$$
+
+Ce qui donne comme formule finale : 
+
+$$\text{Pulse}_{cible} = \left[\frac{\text{Angle}_{cible}}{180°} \times (\text{T}_{180°} - \text{T}_{0°}) \times f_{timer}\right] + \text{T}_{0°} \times f_{timer}$$
+
+$$\Leftrightarrow \text{Pulse}_{cible} = \left[ \left[\frac{\text{Angle}_{cible}}{180°} \times (\text{T}_{180°} - \text{T}_{0°})\right] + \text{T}_{0°} \right] \times f_{timer}$$
+
+Où
+$$\begin{cases}
+\text{T}_{0°} = 0{,}5\, \text{ms},\\
+\text{T}_{180°} = 2{,}5\, \text{ms},\\
+f_{timer} = 2{,}5\, \text{MHz}
+\end{cases}$$
 
 Voici 3 valeurs types :   
-| Angle | Impulsion | Nombre de tics (÷ 0,4 µs) |
+| Angle | Impulsion | Pulse (tics) |
 | :--- | :--- | :--- |
-| 0° | 0,5 ms | $0{,}5\, \text{ms} \div 0{,}4\, \mu\text{s} = \mathbf{1250}$ tics |
-| 180° | 2,5 ms | $2{,}5\, \text{ms} \div 0{,}4\, \mu\text{s} = \mathbf{6250}$ tics |
+| 0° | 0,5 ms | $0{,}5\, \text{ms} \times 2,5\, \text{MHz} = \mathbf{1250}$ tics |
+| 90° | 1,5 ms | $1{,}5\, \text{ms} \times 2,5\, \text{MHz} = \mathbf{3750}$ tics |
+| 180° | 2,5 ms | $2{,}5\, \text{ms} \times 2,5\, \text{MHz} = \mathbf{6250}$ tics |
 
 Si on divise la plage de tics $(6250 - 1250 = 5000\, \text{tics})$ par la plage d'angle de 0° à 180°, on obtient :
 
@@ -1084,7 +1099,7 @@ Ce qui donne une résolution angulaire théorique de $\approx 0{,}036°$ par tic
 
 #### 1.5. Appliquer un angle au servomoteur
 
-Nous avons implémenté une fonction pour la conversion d'un angle vers la valeur de CCR à encoder en s'appuyant uniquement sur les macros définies en tête de `main.c` :
+Nous avons implémenté la formule que nous avons décrites plus haut dans une fonction pour la conversion d'un angle vers la valeur de Pulse (CCR) à encoder en s'appuyant uniquement sur les macros et l'angle cible :
 
 ```c
 // main.c
@@ -1107,9 +1122,9 @@ void angle_servo(int angle)
     __HAL_TIM_SET_COMPARE(TIMER_SERVO, CANAL_SERVO, pulse_tics);
 }
 ```
+> Ici `/ 1000.0` correspond à la conversion de millisecondes en secondes.
 
-La formule reprend celle expliquée plus haut pour la conversion d'un angle cible vers une impulsion en tics.
-Le registre de comparaison CCR est mis à jour avec la valeur de `pulse_tics` via `__HAL_TIM_SET_COMPARE()`.
+Le registre de comparaison CCR correspondant au Pulse, est mis à jour avec la valeur de `pulse_tics` via `__HAL_TIM_SET_COMPARE()`.
 
 ### 2. Gestion de la fenêtre
 

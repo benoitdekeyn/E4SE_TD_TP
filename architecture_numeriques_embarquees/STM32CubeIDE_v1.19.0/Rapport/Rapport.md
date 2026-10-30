@@ -2479,7 +2479,61 @@ Le clignotement de chaque LED est obtenu en calculant le nombre de périodes du 
 - L'alarme gaz est définie pour clignoter à 10 Hz. Ainsi, sa demi-période est atteinte à 20 Hz, ce qui correspond à la fréquence du Timer 5. La LED s'inverse donc à chaque tic du Timer 5. 
 - L'alarme intrusion clignote à 2 Hz. Ainsi, sa demi-période est atteinte à 4 Hz, ce qui correspond exactement à un cinquième ($5$ tics) de la fréquence du Timer 5. La LED s'inverse donc tous les 5 tics du Timer 5.
 
-Ce mécanisme est fondamentalement non bloquant : au lieu d'utiliser des délais logiciels d'attente (`HAL_Delay`), le microcontrôleur évalue instantanément une simple condition mathématique (avec un modulo sur le compteur de tics du Timer 5) à chaque fin de période, afin de déterminer s'il faut inverser ou non l'état de la broche. Une fois l'évaluation terminée, il poursuit immédiatement l'exécution de la boucle principale.
+Le compteur est incrémenté dans `update_cycle_alarmes()`, appelée à chaque tic de 50 ms. Il est remis à zéro quand il n'y a plus d'alarme, pour que chaque nouveau cycle recommence en phase 0 :
+
+```c
+void update_cycle_alarmes() 
+{
+  if (!alarme_gaz && !alarme_intrusion) {
+    blink_counter_alarm = 0;
+  } else {
+    blink_counter_alarm++;
+  }
+
+  update_cycle_alarmes_leds();
+  update_cycle_alarmes_buzzer();
+}
+```
+
+Dans `update_cycle_alarmes_leds()`, la demi-période est calculée à partir de la fréquence de base (`FREQ_CYCLE_ALARME`, 20 Hz) et de la fréquence de clignotement cible. Le modulo du compteur détermine les instants d'inversion :
+
+```c
+void update_cycle_alarmes_leds() 
+{
+  ...
+  if (alarme_gaz) {
+    int demi_periode_gaz = FREQ_CYCLE_ALARME / (2 * FREQ_BLINK_ALARME_GAZ);
+    if (blink_counter_alarm % demi_periode_gaz == 0) {
+      led_alarme_gaz.state = !led_alarme_gaz.state;
+    }
+  } else {
+    led_alarme_gaz.state = false;
+  }
+
+  ...
+  if (alarme_intrusion) {
+    int demi_periode_intrusion = FREQ_CYCLE_ALARME / (2 * FREQ_BLINK_ALARME_INTRUSION);
+    if (blink_counter_alarm % demi_periode_intrusion == 0) {
+      led_alarme_intrusion.state = !led_alarme_intrusion.state;
+    }
+  } else {
+    led_alarme_intrusion.state = false;
+  }
+}
+```
+
+Avec `FREQ_CYCLE_ALARME = 20`, on obtient `demi_periode_gaz = 1` (la LED bascule à chaque tic) et `demi_periode_intrusion = 5` (la LED bascule tous les 5 tics).
+
+Ce mécanisme est fondamentalement non bloquant : au lieu d'utiliser des délais logiciels d'attente (`HAL_Delay`), le microcontrôleur évalue instantanément une simple condition mathématique (avec un modulo sur le compteur de tics du Timer 5) à chaque fin de période, afin de déterminer s'il faut inverser ou non l'état de la broche. Une fois l'évaluation terminée, il poursuit immédiatement l'exécution de la boucle principale. Cette fonction est appelée depuis la boucle `while(1)` sur le flag du Timer 5 :
+
+```c
+if (timer_debounce_flag) {
+  timer_debounce_flag = false;
+  debounce_filter();
+  update_cycle_alarmes();
+  ...
+}
+```
 
 > Comme pour le debounce, ce délai est porté par un timer recyclé plutôt que par le compteur de millisecondes du SysTick. Le détail de ce choix est présenté dans [Architecture globale – 4. Recyclage des timers](#4-recyclage-des-timers).
 
@@ -2533,7 +2587,33 @@ Nous avons donc choisi des fréquences distinctes pour chaque alarme :
 - Alarme gaz : 440 Hz (note La4 fondamentale), produisant un son plus aigu avec un rythme rapide.
 - Alarme intrusion : 384 Hz, produisant un son légèrement plus grave.
 
-De plus, l'activation du buzzer est synchronisée avec le retour visuel : le signal PWM du buzzer est activé uniquement lorsque la LED de l'alarme correspondante est à l'état haut et le buzzer se tait lorsque la LED s'éteint, suivant ainsi le rythme visuel de la LED. On obtient donc deux signatures distinctes pour chaque alarme.
+Le choix de la fréquence est fait dans `update_cycle_alarmes_buzzer()`, qui est appelée à la suite des LEDs. Pour une alarme seule, elle règle la fréquence correspondante, et le buzzer suit l'état de la LED de cette alarme :
+
+```c
+void update_cycle_alarmes_buzzer() 
+{
+  if (!alarme_gaz && !alarme_intrusion) {
+    buzzer = false;
+    return;
+  }
+
+  // Cas 1 : Alarme Gaz seule
+  if (alarme_gaz && !alarme_intrusion) {
+    frequence_buzzer(FREQ_BUZZER_ALARME_GAZ);
+    buzzer = led_alarme_gaz.state;
+  }
+  // Cas 2 : Alarme Intrusion seule
+  else if (!alarme_gaz && alarme_intrusion) {
+    frequence_buzzer(FREQ_BUZZER_ALARME_INTRUSION);
+    buzzer = led_alarme_intrusion.state;
+  }
+  ...
+}
+```
+
+Ainsi, le signal PWM du buzzer n'est activé que lorsque la LED de l'alarme correspondante est à l'état haut, et il se tait quand la LED s'éteint. Le rythme sonore suit donc le rythme visuel de la LED, et chaque alarme a une signature distinctive.
+
+La variable `buzzer` est ensuite appliquée sur la sortie PWM par `commande_buzzer()`, appelée à chaque tour de la boucle principale.
 
 ### 3. Cas simultané : alternance gaz / intrusion
 
@@ -2542,6 +2622,33 @@ Lorsque les deux alarmes sont actives simultanément, les deux LEDs continuent d
 ![one_note_cycle_alarmes](media/onenote_cycle_alarmes.png "Cycle des alarmes gaz et intrusion") 
 
 Le buzzer ne peut produire qu'une seule fréquence à la fois. Il alterne donc entre les deux signatures sonores par phases de 250 ms : d'abord 384 Hz pour l'intrusion, puis 440 Hz pour le gaz. Pendant la phase gaz, le buzzer suit le clignotement rapide de la LED rouge et se tait lorsque celle-ci est éteinte. Ce cycle de 500 ms se répète tant que les deux alarmes restent actives.
+
+Cette alternance est codée dans le troisième cas de `update_cycle_alarmes_buzzer()` :
+
+```c
+void update_cycle_alarmes_buzzer() 
+{
+  ...
+  // Cas 3 : Alarme Gaz ET Alarme Intrusion simultanées
+  else if (alarme_gaz && alarme_intrusion) {
+    int full_period_alternance = FREQ_CYCLE_ALARME / FREQ_BLINK_ALARME_INTRUSION;
+    int half_period_alternance = full_period_alternance / 2;
+    int phase_actuelle = blink_counter_alarm % full_period_alternance;
+
+    if (phase_actuelle < half_period_alternance) {
+      // Phase 1 (0 à 250 ms) : Signature sonore Intrusion
+      frequence_buzzer(FREQ_BUZZER_ALARME_INTRUSION);
+      buzzer = true;
+    } else {
+      // Phase 2 (250 à 500 ms) : Signature sonore Gaz
+      frequence_buzzer(FREQ_BUZZER_ALARME_GAZ);
+      buzzer = led_alarme_gaz.state;
+    }
+  }
+}
+```
+
+La période complète du motif vaut `20 / 2 = 10` tics, soit 500 ms, et la demi-période vaut 5 tics (250 ms). Le même compteur `blink_counter_alarm` sert donc à la fois au clignotement des LEDs et au découpage de l'alternance sonore.
 
 Cette alternance permet de distinguer auditivement les deux alarmes sans empêcher leur signalisation visuelle simultanée : chaque LED conserve son rythme propre, même pendant la phase sonore de l'autre alarme.
 

@@ -427,7 +427,7 @@ Pour éviter les erreurs de recopie, faciliter la compréhension du code et surt
 
 #### 5.1. Defines matériels
 
-Voici les `#define`s matériels définis dans le main.c qui permettent de pointer vers les différents périphériques sans avoir à changer toutes les occurrences en cas de changement dans le .ioc :
+Voici les `#define`s matériels qui permettent de pointer vers les différents périphériques sans avoir à changer toutes les occurrences en cas de changement dans le .ioc :
 <!-- code:Core/Src/main.c -->
 ```c
 // Dans la section USER CODE PD
@@ -471,7 +471,7 @@ LED_t led_capteurs = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pin, false};
 ```
 *NB : Les `#define`s associés aux ports et pins des broches sont générés automatiquement par le .ioc dans le fichier ```main.h```.*
 
-Dans la boucle while(1) de la fonction main, nous appelons à chaque itération la fonction de commande des LEDs, qui va modifier l'état des LEDs en fonction de leur état mémorisé :
+À chaque itération, nous appelons la fonction de commande des LEDs, qui modifie l'état des LEDs en fonction de leur état mémorisé :
 
 <!-- code:Core/Src/main.c -->
 ```c
@@ -532,7 +532,6 @@ On choisit donc `ARR = 20 000 - 1 = 19 999`.
 
 Pour être informé de la mise à jour des capteurs par le timer TIM2, nous avons codé le changement d'état de la LED bleue à chaque interruption de fin de comptage générée par le TIM2 en passant par un flag :
 
-Dans la section `USER CODE 4` du `main.c` :
 <!-- code:Core/Src/main.c -->
 ```c
 // Dans la section USER CODE 4
@@ -546,7 +545,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 }
 ```
 
-Dans la boucle while(1) de la fonction main, nous vérifions le flag à chaque itération :
+Nous vérifions le flag à chaque itération de la boucle principale :
 
 <!-- code:Core/Src/main.c -->
 ```c
@@ -2227,8 +2226,9 @@ Nous mettons à jour l'affichage LCD après la lecture de température, qui est 
 
 3. **Lecture et traitement** : dès que la mesure est terminée, `evaluer_temperature()` appelle `TMP102_get_temperature()` qui lit le registre de température et décode la valeur en °C :
 
-*Dans la section `USER CODE 0` du fichier `main.c` :*
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 0
 void evaluer_temperature() 
 {
   if (TMP102_get_temperature(&thermometre, &temperature_valeur)) 
@@ -2258,8 +2258,9 @@ Deux seuils sont définis en haut du `main.c` :
 
 L'état de la température est représenté par une variable globale d'un type énuméré `temperature_t` que nous avons doté de trois valeurs :
 
-*Dans la section `USER CODE PTD` du fichier `main.c` :*
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE PTD
 typedef enum {
    FROID,
    CHAUD, 
@@ -2267,8 +2268,9 @@ typedef enum {
 } temperature_t;
 ```
 
-*Dans la section `USER CODE PV` du fichier `main.c` :*
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE PV
 temperature_t temperature = TEMPEREE;
 ```
 La plage tempérée (24–26°C) crée une hystérésis naturelle : une fois détecté comme `CHAUD`, le capteur ne revient à `TEMPEREE` que si la température descend en dessous de `SEUIL_CHALEUR`. Cela évite les oscillations rapides de la fenêtre autour du seuil. On suit donc la température selon la machine à états suivante.
@@ -2399,8 +2401,9 @@ L'écran LCD 16×2 n'a pas beaucoup d'espace d'affichage (32 caractères au tota
 
 L'initialisation de l'afficheur est regroupée dans la fonction `initialiser_ecran()`, appelée une seule fois au démarrage dans le `main()` :
 
-*Dans la section `USER CODE 0` du fichier `main.c` :*
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 0
 void initialiser_ecran()
 {
     lcd_init(BUS_I2C);

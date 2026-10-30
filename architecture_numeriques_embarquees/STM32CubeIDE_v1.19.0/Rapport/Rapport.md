@@ -892,11 +892,11 @@ Nous avons identifié le problème au Scénario 5, au moment d'ajouter le capteu
 
 #### 3.1. Tension d'alimentation et de mesure de l'ADC
 
-Le capteur MQ-2 génère une tension proportionnelle à la concentration de gaz détecté entre 0 et 5 V d'après la datasheet du capteur. L'ADC1, avec sa résolution de 12 bits, produit une valeur entre 0 et $2^{12}-1 = 4095$, sur une plage de 0 à VREF+ d'après la documentation de la Nucleo : 
+Le capteur MQ-2 génère une tension proportionnelle à la concentration de gaz détecté entre 0 et 5 V d'après la datasheet du capteur. L'ADC1, avec sa résolution de 12 bits, produit une valeur entre 0 et $2^{12}-1 = 4095$, sur une plage de 0 à VREF+ d'après la <a href="media/Stm32f411xc_datasheet_Reference%20manual.pdf" target="_blank">datasheet de la STM32</a> : 
 
 <img src="media/Nucleo_datasheet_ADC_supply.png"> 
 
-Il se trouve qu'en cherchant plus précisément dans la [documentation de la carte Nucleo](https://www.st.com/resource/en/user_manual/um1724-stm32-nucleo64-boards-mb1136-stmicroelectronics.pdf), nous avons constaté que sur la carte Nucleo, VREF+ est relié à VDDA = VDD = 3,3 V.
+Il se trouve qu'en cherchant plus précisément dans la <a href="media/um1724-stm32-nucleo64-boards-mb1136-stmicroelectronics.pdf" target="_blank">datasheet de la carte Nucleo</a>, nous avons constaté que sur la carte Nucleo, VREF+ est relié à VDDA = VDD = 3,3 V.
 
 <img src="media/broche_vref_vdd.png"> 
 
@@ -1296,8 +1296,9 @@ Par rapport à la configuration du Scénario 3, les paramètres suivants ont ét
 
 Dans le Scénario 3, nous avions choisi 480 cycles d'échantillonnage, ce qui donnait environ 19,7 µs par canal pour stabiliser la mesure. Mais en cherchant à réduire au maximum la latence entre déclenchement et mesure, nous avons testé avec 3 cycles, et les valeurs obtenues étaient cohérentes et stables.
 
-**Détail du calcul :**
+**Détail du calcul :**  
 
+*Extrait de la <a href="media/Stm32f411xc_datasheet_Reference%20manual.pdf" target="_blank">datasheet de la STM32</a> :*  
 <img src="media/Nucleo_datasheet_cycles_ADC.png"/>
 
 > Horloge $= 100\, \text{MHz}$   
@@ -2765,7 +2766,7 @@ Pour afficher l'état de la maison de manière visuelle, nous avons ajouté en b
 
 ### 1. Analyse de la datasheet (protocole one-wire)
 
-*Extrait de la documentation sur les LEDs WS2812B (Fonctionnement LED NeoPixel WS2812B) :*
+*Extrait de la <a href="media/Fonctionnement%20LED%20NeoPixel%20WS2812B.pdf" target="_blank">datasheet des NeoPixels</a> :*
 
 <img src="media/mode_operatoire_datasheet_neopixel.png"/>
 
@@ -2776,7 +2777,7 @@ Les LEDs n'ont qu'une seule broche d'entrée de données (DI) et une broche de s
 | 0 | 400 ns | 850 ns | 1,25 µs |
 | 1 | 800 ns | 450 ns | 1,25 µs |
 
-*Extrait de la documentation sur les LEDs WS2812B (Fonctionnement LED NeoPixel WS2812B) :*
+*Extrait de la <a href="media/Fonctionnement%20LED%20NeoPixel%20WS2812B.pdf" target="_blank">datasheet des NeoPixels</a> :*
 
 <img src="media/programmation_neopixel_datasheet.png"/>
 

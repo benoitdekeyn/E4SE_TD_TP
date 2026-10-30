@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "STM32CubeIDE_v1.19.0"
+		},
+		{
+			"path": "markdownable_rapport"
+		}
+	],
+	"settings": {}
+}

@@ -891,6 +891,10 @@ void update_cycle_alarmes()
 
 /* USER CODE END 0 */
 
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
 int main(void)
 {
 
@@ -1143,12 +1147,7 @@ int main(void)
 }
 
 /**
-  * @brief  Configure l'arbre d'horloge système du microcontrôleur STM32F411RE.
-  *         Active l'oscillateur externe HSE (quartz 8 MHz), configure la PLL principale
-  *         pour générer une horloge système SYSCLK de 100 MHz, fixe le bus AHB à 100 MHz,
-  *         le bus APB1 à 50 MHz (timers APB1 à 100 MHz) et le bus APB2 à 100 MHz.
-  *         // cf rapport : 3.2. Arbre d'horloge et fréquences
-  * @param  None
+  * @brief System Clock Configuration
   * @retval None
   */
 void SystemClock_Config(void)
@@ -1161,11 +1160,9 @@ void SystemClock_Config(void)
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-  /** Initialisation de la source HSE et de la PLL :
-   *  f_VCO = f_HSE * (PLLN / PLLM) = 8 MHz * (100 / 4) = 200 MHz
-   *  f_SYSCLK = f_VCO / PLLP = 200 MHz / 2 = 100 MHz
-   *  cf rapport : 3.2. Arbre d'horloge et fréquences
-   */
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -1179,13 +1176,8 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 
-  /** Configuration des diviseurs de bus et de la latence Flash :
-   *  HCLK = SYSCLK / 1 = 100 MHz
-   *  APB1 (PCLK1) = HCLK / 2 = 50 MHz (horloge des timers APB1 x2 = 100 MHz)
-   *  APB2 (PCLK2) = HCLK / 1 = 100 MHz (horloge des timers APB2 x1 = 100 MHz)
-   *  Flash Latency = 3 WS (Wait States) pour fonctionnement stable à 100 MHz sous 3.3V
-   *  cf rapport : 3.2. Arbre d'horloge et fréquences
-   */
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
@@ -1304,10 +1296,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 /* USER CODE END 4 */
 
 /**
-  * @brief  Gestionnaire de panne critique de la couche d'abstraction matérielle (HAL).
-  *         Désactive toutes les interruptions globales pour isoler le processeur
-  *         et fige l'exécution dans une boucle infinie de sécurité.
-  * @param  None
+  * @brief  This function is executed in case of error occurrence.
   * @retval None
   */
 void Error_Handler(void)
@@ -1320,12 +1309,12 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
-
 #ifdef USE_FULL_ASSERT
 /**
-  * @brief  Rapporte le nom du fichier source et le numéro de ligne où une assertion HAL a échoué.
-  * @param  file Pointeur vers la chaîne contenant le nom du fichier source.
-  * @param  line Numéro de la ligne source incriminée.
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)

@@ -3,23 +3,54 @@
 // Les chemins éventuels (icon, logo, customCss) sont relatifs à ce dossier (doc/). Toute clé omise prend sa valeur par défaut.
 // Référence complète de toutes les options : README.md à la racine du projet.
 {
-  // ---------------------------------------------------------------- Général
-  // Nom du fichier HTML généré (sans extension), dans output_html/Rapport/. Défaut : "index" => output_html/Rapport/index.html
-  "htmlName": "index",
+  // ---------------------------------------------------------------- Général (tous les formats : HTML, PDF)
+  // Titre de l'onglet / du sommaire HTML, de l'en-tête PDF ({title}) et des métadonnées du PDF (null = nom du fichier .md)
+  "global": {
+    "title": "Rapport de Projet - Maison Intelligente STM32",
+    // Icône de l'onglet (favicon) et logo affiché devant le titre du sommaire HTML : chemin d'une image de doc/ (ex. "media/logo.png"), null = aucune
+    "icon": null,
+    // Langue de la page et format de la date {date} du PDF
+    "language": "fr",
 
-  // Titre de l'onglet et du sommaire (null = nom du fichier .md)
-  "title": "Rapport de Projet - Maison Intelligente STM32",
-  // Icône de l'onglet (favicon) et logo affiché devant le titre du sommaire : chemin d'une image de doc/ (ex. "media/logo.png"), null = aucune
-  "icon": null,
-  "language": "fr",
+    // POLICES. Taille : pourcentage proportionnel appliqué à TOUTES les polices du document (texte, titres, code, sommaire, boutons).
+    // 100 = taille actuelle (16 px de base) ; 120 agrandit tout de 20 %. Entre 25 et 400.
+    "fontScale": 100,
+    // Zoom global en % (10 à 200) : agrandit / réduit tous les éléments (texte, images, marges…) par rapport à l'espace d'affichage
+    // (fenêtre en HTML, zone imprimable en PDF). Le HTML applique global ; le PDF applique global puis pdf (voir plus bas).
+    "zoom": 100,
+    // Police de chaque type de contenu : liste CSS « font-family » (ex. "Georgia, serif"). La police doit être installée sur l'appareil qui lit la page.
+    //   headings : titres (null = même police que body) ;  body : texte ;  code : code ;
+    //   math : formules LaTeX (null = polices KaTeX intégrées ; les grands symboles et délimiteurs gardent toujours les polices KaTeX).
+    "fonts": {
+      "headings": null,
+      "body": "-apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      "code": "ui-monospace, 'Cascadia Code', Consolas, 'SFMono-Regular', monospace",
+      "math": null
+    }
+  },
 
-  // MODE DE LA PAGE : "auto" suit le système, "light" reste clair, "dark" reste sombre.
-  // Le bouton de la page permet aussi de passer manuellement de Auto à Clair ou Sombre.
-  "theme": "auto",
+  // ---------------------------------------------------------------- Page HTML (`npm run build:html`, `npm run dev`)
+  "html": {
+    // Nom du fichier HTML généré (sans extension), dans output_html/Rapport/. Défaut : "index" => output_html/Rapport/index.html
+    "name": "index",
 
-  // true : les images sont incorporées dans le HTML (fichier autonome mais lourd, rien à copier).
-  // false : les images utilisées sont copiées dans output_html/Rapport/ avec la même arborescence que dans doc/ (HTML léger).
-  "embedImages": false,
+    // MODE DE LA PAGE : "auto" suit le système, "light" reste clair, "dark" reste sombre.
+    // Le bouton de la page permet aussi de passer manuellement de Auto à Clair ou Sombre.
+    "theme": "auto",
+
+    // true : les images sont incorporées dans le HTML (fichier autonome mais lourd, rien à copier).
+    // false : les images utilisées sont copiées dans output_html/Rapport/ avec la même arborescence que dans doc/ (HTML léger).
+    "embedImages": false,
+
+    // Sommaire latéral : jusqu'à quel niveau de titre il est déplié à l'ouverture de la page (1 à 6).
+    // 2 = les titres « # » et « ## » sont visibles, les « ### » restent repliés ; 6 = tout déplié.
+    "tocOpenLevel": 2,
+
+    "sidebarWidth": 450,         // largeur initiale du sommaire en px (glisser sa bordure pour ajuster)
+    "sidebarMinWidth": 200,      // bornes du redimensionnement, en px
+    "sidebarMaxWidth": 700,
+    "contentWidthPercent": 90    // part de la largeur restante occupée par le contenu
+  },
 
   // ---------------------------------------------------------------- Numérotation des titres
   // `npm run edit:numbering` applique ce schéma au .md ; `edit:numbering:guess` le déduit du .md ; `edit:numbering:reset` l'enlève.
@@ -42,17 +73,16 @@
   // ---------------------------------------------------------------- Table des matières (`npm run edit:toc`)
   // Écrite dans le .md entre <!-- TOC --> et <!-- /TOC --> ; insérée en haut du document la première fois.
   "toc": {
-    "range": [2, 4],          // [niveau min, niveau max] listés
+    "range": [2, 4],    // [niveau min, niveau max] listés
     "collapsible": true,      // true : table repliable (HTML / Markdown uniquement)
     "summary": "Table des matières",
     "open": false,
-    "collapsibleLevels": [3], // niveaux dont l'entrée se replie sur ses sous-entrées ([] = aucun)
-    "foldOffset": 2,          // retrait ajouté aux entrées non repliables pour les aligner avec les repliables
-    // Options avancées par niveau : symbol, indent, bold, italic, size, collapsible (voir README.md)
+    // Options par niveau (1 = « # »…) : symbol (texte devant), indent (demi-cadratins), bold, italic, size (em, null = taille du texte :
+    // suit donc global.fontScale), collapsible (repliable, équivalent de l'ancien collapsibleLevels). Valeurs par défaut ci-dessous.
     "levels": {
       "1": { "symbol": "", "indent": 0,  "bold": true,  "italic": false, "size": null, "collapsible": false },
       "2": { "symbol": "", "indent": 0,  "bold": true,  "italic": false, "size": null, "collapsible": false },
-      "3": { "symbol": "", "indent": 4,  "bold": false, "italic": false, "size": null, "collapsible": false },
+      "3": { "symbol": "", "indent": 4,  "bold": false, "italic": false, "size": null, "collapsible": true },
       "4": { "symbol": "", "indent": 8,  "bold": false, "italic": false, "size": null, "collapsible": false },
       "5": { "symbol": "-", "indent": 12, "bold": false, "italic": false, "size": null, "collapsible": false },
       "6": { "symbol": "-", "indent": 16, "bold": false, "italic": false, "size": null, "collapsible": false }
@@ -67,7 +97,11 @@
     "theme": "light",       // "light" ou "dark"
     "format": "A4",        // A3, A4, A5, Letter, Legal, Tabloid
     "landscape": false,
-    "zoom": 100,            // en % (10 à 200)
+    "zoom": 100,            // affinement du zoom en % (10 à 200), multiplié par global.zoom : 100 = identique au global, 90 = 10 % de moins que le global
+    // Affinement des polices pour le PDF seulement. fontScale : % multiplié par global.fontScale (100 = identique).
+    // fonts : null = reprend global.fonts ; une valeur la remplace pour le PDF (mêmes clés : headings, body, code, math).
+    "fontScale": 100,
+    "fonts": { "headings": null, "body": null, "code": null, "math": null },
     "margins": { "top": "20mm", "right": "18mm", "bottom": "20mm", "left": "18mm" },      // mm, cm, in, pt ou px
     "pageBreakBefore": [1, 2],   // niveaux de titres qui commencent une nouvelle page ; [] = aucun
     "hideToc": false,      // true : retire du PDF la table des matières du .md
@@ -81,14 +115,7 @@
     "footer": { "center": "{page} / {pages}" }
   },
 
-  // ---------------------------------------------------------------- Page HTML
-  "layout": {
-    "sidebarWidth": 320,         // largeur initiale du sommaire en px (glisser sa bordure pour ajuster)
-    "sidebarMinWidth": 200,
-    "sidebarMaxWidth": 700,
-    "contentWidthPercent": 90    // part de la largeur restante occupée par le contenu
-  },
-
+  // ---------------------------------------------------------------- Style (apparence HTML et PDF)
   "style": {
     // COULEURS DE LA PAGE : palette utilisée quand le mode de page est clair / sombre.
     // Valeurs intégrées : "default", "formal" (clair) et "neon" (sombre).

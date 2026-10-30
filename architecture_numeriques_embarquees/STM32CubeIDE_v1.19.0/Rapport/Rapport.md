@@ -563,10 +563,11 @@ En observant la LED à l'oscilloscope, nous avons pu vérifier que la période d
 
 ### 4. Ancienne méthode
 
-Au début, nous avions utilisé le Timer 3 de manière totalement arbitraire, sans `#define` personnalisé pour les objets HAL, sans structure pour les LED, et sans flag pour les routines d'interruption :
+Au début, nous avions utilisé le Timer 3 de manière totalement arbitraire (au lieu du Timer 5 actuellement), sans `#define` personnalisé pour les objets HAL, sans structure pour les LED, et sans flag pour les routines d'interruption :
 
 <!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 4
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     if (htim->Instance == TIM3) {
         HAL_GPIO_TogglePin(BLUE_GPIO_Port, BLUE_Pin);
@@ -595,21 +596,12 @@ Pour s'assurer que l'appui sur le bouton est correctement détecté sans être p
 Lors de l'appui sur le bouton MODE, l'interruption EXTI 6 est déclenchée.  
 Dans la routine d'interruption, le flag `debouncing_bouton_home` est levé et le Timer 5 est remis à zéro pour attendre exactement 50 ms : 
 
+<!-- code:Core/Src/main.c -->
 ```c
-// Flag utilisé pour l'anti-rebond
-volatile bool   timer_debounce_flag         = false;
-volatile bool   debouncing_bouton_home      = false;
+// Dans la section USER CODE PV
+volatile bool timer_debounce_flag = false;
 
-// dans USER CODE 4
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-  if (htim == TIMER_DEBOUNCE)
-  {
-	  timer_debounce_flag = true;
-  }
-  ...
-}
-
+// Dans la section USER CODE 4
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
    ...
@@ -622,13 +614,32 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   }
   ...
 }
-```
+```  
 
 #### 2.4. Détection d'appui
-Ensuite, dans la boucle while(1) du main, on vérifie si le flag `timer_debounce_flag` est levé puis si le bouton est toujours enfoncé :
 
+Ensuite, à chaque itération de la boucle while(1), on vérifie si le flag `timer_debounce_flag` est levé et on appelle ainsi la fonction `debounce_filter()` toutes les 50 ms pour traiter l'appui sur le bouton.
+
+<!-- code:Core/Src/main.c -->
 ```c
-// dans USER CODE 0
+// Dans la section USER CODE PV
+volatile bool  debouncing_bouton_home = false;
+
+// Dans la boucle principale while (1) de la fonction main()
+if (timer_debounce_flag)
+{
+  timer_debounce_flag = false;
+  debounce_filter();
+  ...
+}
+``` 
+
+Si alors le bouton est en cours de filtrage (`debouncing_bouton_home` est vrai), la fonction `debounce_filter()` vérifie si le bouton est toujours enfoncé (niveau bas) après la période de 50 ms qui garantit la stabilité de l'appui.
+Le cas échéant, le flag `debouncing_bouton_home` est réinitialisé et la variable `bouton_home_appuye` est validée pour indiquer qu'un appui sur le bouton HOME a bien été détecté :
+
+<!-- code:Core/Src/main.c -->
+```c
+// Dans la section USER CODE 0
 void debounce_filter() 
 {
 	if (debouncing_bouton_home && !HAL_GPIO_ReadPin(BTN_HOME_GPIO_Port, BTN_HOME_Pin)) {
@@ -637,19 +648,7 @@ void debounce_filter()
 	}
   ...
 }
-
-// dans la boucle while(1) du main
-if (timer_debounce_flag)
-{
-  timer_debounce_flag = false;
-  debounce_filter();
-  ...
-}
-```  
-La fonction `debounce_filter()` est appelée à chaque fin de période du timer, soit toutes les 50 ms.  
-Si le flag `debouncing_bouton_home` est levé ET que le bouton est toujours au niveau bas (actif à 0), cela signifie que l'appui est bien resté stable 50 ms après la détection du front descendant.  
-La variable `bouton_home_appuye` est alors validée et le flag `debouncing_bouton_home` est réinitialisé.  
-Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrairement à un simple délai qui bloquerait l'exécution du programme.
+``` 
 
 > Nous n'avons pas utilisé le compteur de millisecondes du SysTick (`HAL_GetTick()`) pour cette temporisation, mais un timer dédié. Ce choix et son contexte sont expliqués dans [Architecture globale – 4. Recyclage des timers](#4-recyclage-des-timers).
 
@@ -675,14 +674,15 @@ stateDiagram
 
 Afin de manipuler plus facilement les états de la maison, nous avons défini une énumération `maison_mode_t` qui représente les différents modes possibles : `HOME` et `AWAY`.
 
+<!-- code:Core/Src/main.c -->
 ```c
-// dans la section USER CODE PTD
+// Dans la section USER CODE PTD
 typedef enum {
     HOME,
     AWAY
 } maison_mode_t;
 
-// dans la section USER CODE PV
+// Dans la section USER CODE PV
 maison_mode_t mode = HOME;
 ```
 > Au début, nous avions utilisé de simples variables booléennes pour gérer les modes de la maison. L'avantage de l'enum est que l'on peut voir le nom associé au mode dans les Live Expressions en mode Debugger.
@@ -691,8 +691,9 @@ maison_mode_t mode = HOME;
 
 Première version de la machine à états :
 
+<!-- code:Core/Src/main.c -->
 ```c
-// Dans la boucle while(1) de la main()
+// Ancienne version (variables bouton_mode_appuye absentes du main.c actuel)
 switch (mode) 
 {
   case HOME:
@@ -723,11 +724,12 @@ Le capteur de présence PIR est raccordé sur la broche PC7 et configuré en int
 
 À tout moment, la détection d'un mouvement déclenche l'interruption du capteur. On positionne alors le flag `presence_detectee` à `true` :
 
+<!-- code:Core/Src/main.c -->
 ```c
-// Dans USERCODE PV
+// Dans la section USER CODE PV
 volatile bool presence_detectee = false;
 
-// Dans USER CODE 4 : Interruption EXTI
+// Dans la section USER CODE 4
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == PIR_MVMT_Pin)
@@ -771,7 +773,9 @@ flowchart TD
 
 #### 5.2. Implémentation dans la while(1)
 
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la boucle principale while (1) de la fonction main()
 // Machine à état avec HOME et AWAY
     switch(mode) 
     {
@@ -819,8 +823,9 @@ flowchart TD
 
 L'alarme intrusion est gérée par la variable `alarme_intrusion` :
 
+<!-- code:Core/Src/main.c -->
 ```c
-// dans CODE PV
+// Dans la section USER CODE PV
 bool alarme_intrusion = false;
 ```
 
@@ -852,8 +857,9 @@ Nous avons globalement laissé les paramètres par défaut, à part :
 
 Au moment du scénario 3, seul le capteur de gaz était connecté sur le Channel 4 (A2). L'ADC fonctionnait en conversion unique sur un canal, et nous lisions la valeur directement dans le callback du Timer 2, sans attendre la fin de la conversion.
 
+<!-- code:Core/Src/main.c -->
 ```c
-// Extrait du main.c — version Scénario 3
+// Dans la section USER CODE 4
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     // TIM2 -> PER = 2s pour l'échantillonnage des capteurs
@@ -937,8 +943,9 @@ Dans CubeMX, nous avons activé l'USART2 en mode Asynchronous avec les paramètr
 
 Pour transmettre des messages formatés sans avoir à manipuler `HAL_UART_Transmit()` à chaque appel, nous avons redirigé la fonction standard `printf` vers l'USART2 en redéfinissant la fonction `__io_putchar()`, utilisée par la bibliothèque C standard pour l'envoi caractère par caractère :
 
+<!-- code:Core/Src/main.c -->
 ```c
-// main.c — USER CODE BEGIN 4
+// Dans la section USER CODE 4
 // Redirection du printf vers USART2
 int __io_putchar(int ch) {
     HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
@@ -960,8 +967,9 @@ La fonction `__io_putchar` prend en paramètre :
 
 Au démarrage du système (juste après l'initialisation de tous les composants), un message de bienvenue est transmis sur l'UART pour confirmer que la liaison fonctionne et afficher la configuration choisie :
 
+<!-- code:Core/Src/main.c -->
 ```c
-// main.c — USER CODE BEGIN 2 (après les initialisations)
+// Au début de la fonction principale main()
 printf("\r\n--- Demarrage Systeme STM32 ---\r\n\n");
 printf("Seuil gaz configure: %d\r\n", SEUIL_GAZ);
 printf("Frequence clignotement alarme gaz: %d Hz\r\n", FREQ_BLINK_ALARME_GAZ);
@@ -978,14 +986,15 @@ La liaison UART est utilisée tout au long du fonctionnement pour transmettre tr
 
 À chaque cycle d'échantillonnage, les valeurs brutes des trois capteurs sont transmises :
 
+<!-- code:Core/Src/main.c -->
 ```c
-// Dans evaluer_gaz() — main.c
+// Dans la section USER CODE 0 (fonction evaluer_gaz)
 printf("                                      GAZ   = %d\r\n", gaz_valeur);
 
-// Dans evaluer_pluie() — main.c
+// Dans la section USER CODE 0 (fonction evaluer_pluie)
 printf("                                      PLUIE = %d\r\n", pluie_valeur);
 
-// Dans evaluer_temperature() — main.c
+// Dans la section USER CODE 0 (fonction evaluer_temperature)
 printf("                                      TEMP  = %s°C\r\n",
        TMP102_temperature_to_string(temperature_valeur, 2));
 ```
@@ -1013,7 +1022,9 @@ Seules ces 8 actions provoquent un message sur l'UART en plus des mesures pério
 
 Les erreurs de communication I²C avec le TMP102 sont également signalées :
 
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 0 (fonction initialiser_thermometre)
 printf("Erreur d'initialisation du capteur TMP102\r\n");
 printf("Erreur lors du demarrage de la mesure TMP102 en mode One-Shot\r\n");
 ```
@@ -1126,12 +1137,14 @@ Ce qui donne une résolution angulaire théorique de $\approx 0{,}036°$ par tic
 
 Nous avons implémenté la formule que nous avons décrites plus haut dans une fonction pour la conversion d'un angle vers la valeur de Pulse (CCR) à encoder en s'appuyant uniquement sur les macros et l'angle cible :
 
+<!-- code:Core/Src/main.c -->
 ```c
-// main.c
+// Dans la section USER CODE PD
 #define FREQ_TIMER_SERVO  2500000   // 2.5 MHz
 #define SERVO_0_DEG_MS    0.5       // impulsion à 0°   (ms)
 #define SERVO_180_DEG_MS  2.5       // impulsion à 180° (ms)
 
+// Dans la section USER CODE 0
 void angle_servo(int angle)
 {
     int pulse_tics =
@@ -1160,12 +1173,13 @@ Le servomoteur de la fenêtre est commandé par une variable globale `fenetre` p
 
 Pour éviter d'envoyer continuellement la même commande PWM au servo à chaque tour de boucle principale, `commande_fenetre()` n'agit que lorsque l'état `fenetre` change :
 
+<!-- code:Core/Src/main.c -->
 ```c
-// USER CODE PD
+// Dans la section USER CODE PD
 #define ANGLE_SERVO_OUVERT  120   // ATTENTION maximum 120° sinon ça casse
 #define ANGLE_SERVO_FERME   0
 
-//boucle principale while(1)
+// Dans la section USER CODE 0
 void commande_fenetre()
 {
     static fenetre_t etat_precedent = INIT;
@@ -1204,8 +1218,10 @@ La prise en compte de l'appui sur le bouton de la fenêtre dépend directement d
 - **En mode HOME :** L'utilisateur a le contrôle de l'ouverture et de la fermeture de la fenêtre, sauf en cas d'intempérie. Si la pluie est détectée, elle prend une priorité absolue et force la fermeture. Sinon, chaque appui validé bascule l'état de la fenêtre.
 - **En mode AWAY :** L'utilisateur n'a pas le contrôle de la fenêtre, celle-ci devant rester impérativement fermée.
 
+<!-- code:Core/Src/main.c -->
 ```c
-// boucle principale while(1) — Machine à états, case HOME
+// Dans la boucle principale while (1) de la fonction main()
+// Machine à états, case HOME
       case  HOME: 
       {
         //Transition
@@ -1310,15 +1326,17 @@ En mode circulaire, le DMA recommence automatiquement depuis le début du buffer
 
 Le buffer est déclaré `volatile` car il est modifié par le DMA, ce qui oblige le compilateur à le relire en mémoire à chaque accès plutôt que de se fier à une valeur en registre :
 
+<!-- code:Core/Src/main.c -->
 ```c
-// main.c — Variables globales
+// Dans la section USER CODE PV
 volatile uint16_t adc_valeurs[NBR_CAPTEURS_ADC];  // NBR_CAPTEURS_ADC = 2
 ```
 
 Le démarrage du DMA se fait une seule fois au début du `main()`. Ensuite le DMA et le TIM2 TRGO fonctionnent de façon autonome :
 
+<!-- code:Core/Src/main.c -->
 ```c
-// main.c — Initialisation (USER CODE BEGIN 2)
+// Au début de la fonction principale main()
 HAL_TIM_Base_Start_IT(TIMER_CAPTEURS);                              // TIM2 → TRGO + IRQ
 HAL_ADC_Start_DMA(ADC_CAPTEURS, (uint32_t*)adc_valeurs, NBR_CAPTEURS_ADC);
 ```
@@ -1331,8 +1349,9 @@ Deux interruptions sont activées dans le NVIC :
 - **ADC IRQ** (`ADC_IRQn`) : pour que le callback `HAL_ADC_ConvCpltCallback` soit appelé à la fin de la séquence de conversion.
 - **DMA2 Stream0 IRQ** (`DMA2_Stream0_IRQn`) par défaut.
 
+<!-- code:Core/Src/main.c -->
 ```c
-// main.c — Callback de fin de conversion ADC (USER CODE BEGIN 4)
+// Dans la section USER CODE 4
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
     if (hadc == ADC_CAPTEURS)
@@ -1348,8 +1367,9 @@ Ce callback est déclenché par le DMA lorsqu'il a fini sa séquence de mesures.
 
 Dans la boucle principale, dès que `fin_mesure_ADC_flag` est levé, les deux fonctions d'évaluation sont appelées :
 
+<!-- code:Core/Src/main.c -->
 ```c
-// main.c — Boucle principale
+// Dans la boucle principale while (1) de la fonction main()
 if (fin_mesure_ADC_flag) {
     fin_mesure_ADC_flag = false;
     evaluer_pluie();
@@ -1359,7 +1379,9 @@ if (fin_mesure_ADC_flag) {
 
 Chaque fonction lit la case correspondante du buffer DMA :
 
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 0
 void evaluer_gaz() {
     gaz_valeur = adc_valeurs[GAZ_ADC_RANK];    // GAZ_ADC_RANK = 0 → Rank 1
     alarme_gaz = (gaz_valeur >= SEUIL_GAZ);    // SEUIL_GAZ = 2500
@@ -1390,8 +1412,9 @@ La commande de la fenêtre suit l'ordre de priorité suivant :
 
 De la même manière que l'on bloque la fenêtre en mode `AWAY`, lorsque la pluie est détectée, la valeur de `bouton_fenetre_appuye` est directement effacée.
 
+<!-- code:Core/Src/main.c -->
 ```c
-//boucle principale while(1)
+// Dans la boucle principale while (1) de la fonction main()
 case  HOME: 
     {
       ...
@@ -1530,6 +1553,7 @@ La bibliothèque est organisée autour de deux fichiers : `tmp102.h` pour les d�
 
 Plutôt que de manipuler directement des octets bruts pour configurer le capteur, nous avons défini une structure `TMP102_Config_t` qui contient un champ dédié pour chaque réglage du registre de configuration :
 
+<!-- code:Bibliotheques/TMP102/Inc/tmp102.h -->
 ```c
 typedef struct 
 {
@@ -1548,6 +1572,7 @@ typedef struct
 
 Cette structure est elle-même embarquée dans `TMP102_t` qui regroupe tout ce dont on a besoin pour piloter une instance du capteur :
 
+<!-- code:Bibliotheques/TMP102/Inc/tmp102.h -->
 ```c
 typedef struct 
 {
@@ -1568,8 +1593,7 @@ Cette approche présente plusieurs avantages : on peut instancier plusieurs capt
 
 Pour ne jamais rien harcoder, nous avons utilisé des `#define` pour chaque valeur constante issue de la datasheet, pour les mêmes raisons que mentionnées précédemment :
 
-*Extraits de `Bibliotheques/TMP102/Inc/tmp102.h`:*  
-
+<!-- code:Bibliotheques/TMP102/Inc/tmp102.h -->
 ```c
 // TAILLES et TIMEOUTS 
 #define TMP102_NBR_CONFIG_REG_BYTES 2
@@ -1608,6 +1632,7 @@ Le registre de configuration du TMP102 est un registre de 16 bits dont les champ
 
 La structure `TMP102_FieldMap_t` décrit la position, la taille et l'emplacement d'un champ du registre de configuration du TMP102 :
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.h -->
 ```c
 typedef struct 
 {
@@ -1621,6 +1646,7 @@ typedef struct
 La fonction statique `TMP102_SyncConfigBuffer()`, via un tableau de `TMP102_FieldMap_t`, encode ou décode l'ensemble des champs.
 Lorsque l'on veut mettre à jour l'objet TMP102 de la bibliothèque à partir du contenu du registre de configuration du capteur (```is_write = false```) ou, à l'inverse, préparer le buffer d'écriture à partir de l'objet TMP102 (```is_write = true```), il suffit de fournir en paramètre l'instance du capteur, le buffer et le booléen `is_write` :
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 static void TMP102_SyncConfigBuffer(TMP102_t *tmp102, uint8_t *buffer, bool is_write) 
 {
@@ -1654,6 +1680,7 @@ Les positions et tailles des champs sont issues de la table des registres de la 
 
 Une fois le tableau de descripteurs défini, une boucle `for` parcourt l'ensemble des champs pour effectuer l'encodage ou le décodage bit à bit selon la valeur du flag `is_write` :
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 uint8_t num_fields = sizeof(fields) / sizeof(fields[0]);
 for (uint8_t i = 0; i < num_fields; i++) 
@@ -1679,6 +1706,7 @@ for (uint8_t i = 0; i < num_fields; i++)
 ```
 Le traitement repose sur trois étapes :
 1. **Calcul dynamique du masque de bits**
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 uint8_t mask = (1U << fields[i].length) - 1;
 ```
@@ -1690,6 +1718,7 @@ On génère un masque adapté à la largeur de chaque champ.
 *NB : 1U force l'entier 1 à être interprété comme un entier non signé, évitant un avertissement du compilateur lors du décalage à gauche du bit de signe.* 
 
 2. **Encodage : Structure $\rightarrow$ Buffer (`is_write == true`)**
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
    buffer[fields[i].byte_idx] 
    |=   (*fields[i].value_ptr & mask) 
@@ -1723,6 +1752,7 @@ On génère un masque adapté à la largeur de chaque champ.
 > → `buffer = 1010 1110`    
 
 3. **Décodage : Buffer $\rightarrow$ Structure (`is_write == false`)**
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
        *fields[i].value_ptr =
 (buffer[fields[i].byte_idx] 
@@ -1758,6 +1788,7 @@ On génère un masque adapté à la largeur de chaque champ.
 
 La fonction publique `TMP102_apply_registers()` envoie la configuration stockée dans l'objet TMP102 vers le capteur via I²C. Elle commence par le registre de configuration en appelant `TMP102_write_config_reg()`, puis écrit les registres de seuil de température T_LOW et T_HIGH avec la fonction `TMP102_write_T_LOW_T_HIGH_reg()`.  
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 bool TMP102_apply_registers(TMP102_t *tmp102) 
 {
@@ -1773,12 +1804,14 @@ Le retour `bool` permet de détecter un problème de communication I²C.
 La fonction `TMP102_write_config_reg()` met à jour le registre de configuration du TMP102 en appelant `TMP102_SyncConfigBuffer()` pour encoder la structure en buffer et en utilisant les fonctions HAL pour la lecture/écriture de registres en I²C :
 
 1. **Initialisation des variables**
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 uint8_t write_buffer[TMP102_NBR_CONFIG_REG_BYTES];
 ```
 
 2. **Encodage de la structure en buffer**
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
    TMP102_SyncConfigBuffer(tmp102, write_buffer, WRITE);
 ```
@@ -1786,6 +1819,7 @@ La fonction `TMP102_SyncConfigBuffer()` est détaillée ci-dessus en [Scénario 
 
 3. **Envoi du buffer vers le registre de configuration du capteur**
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 if (HAL_I2C_Mem_Write(tmp102->busI2C, tmp102->address,
                         TMP102_REG_CONFIG,
@@ -1810,12 +1844,14 @@ On spécifie à la fonction HAL :
 
 #### 5.2. Application des registres de seuil de température
 
+<!-- code:Bibliotheques/TMP102/Inc/tmp102.h -->
 ```cpp
 bool TMP102_write_T_LOW_T_HIGH_reg(TMP102_t *tmp102);
 ```
 La fonction met à jour les registres de seuil de température T_LOW et T_HIGH du TMP102 en appelant `TMP102_celsius_to_register()` pour convertir les températures en valeurs de registre et en utilisant les fonctions HAL pour l'écriture de registres en I²C :
 
 1. **Déclaration des buffers**
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 uint8_t t_low_reg_bytes[TMP102_NBR_REG_TEMP_BYTES];
 uint8_t t_high_reg_bytes[TMP102_NBR_REG_TEMP_BYTES];
@@ -1823,6 +1859,7 @@ uint8_t t_high_reg_bytes[TMP102_NBR_REG_TEMP_BYTES];
 
 2. **Conversion des températures en valeurs de registre**
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```cpp
 TMP102_celsius_to_register(tmp102->T_Low, t_low_reg_bytes, tmp102->config.ExtendedMode);
 TMP102_celsius_to_register(tmp102->T_High, t_high_reg_bytes, tmp102->config.ExtendedMode);
@@ -1831,6 +1868,7 @@ La fonction `TMP102_celsius_to_register()` est expliquée ci-après en [Scénari
 
 3. **Envoi des buffers vers le capteur en I²C**
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 // Registre T_LOW
 bool i2c_ok = (HAL_I2C_Mem_Write(tmp102->busI2C, tmp102->address,
@@ -1873,6 +1911,7 @@ Avant de configurer quoi que ce soit, on initialise la structure avec des valeur
 Sans cela, les champs de la structure contiendraient des valeurs indéterminées en mémoire.  
 La fonction fixe également les champs en lecture seule à leur valeur par défaut :    
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 void TMP102_init_default(TMP102_t *tmp102) 
 {
@@ -1911,16 +1950,19 @@ Une fois cette initialisation faite, pour modifier la configuration, il suffit d
 #### 7.1. Fonction de lecture
 La lecture de la température se fait avec la fonction suivante qui lit le registre de température du TMP102 en I²C :
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 static bool TMP102_read_temperature_register(TMP102_t *tmp102, float *Temperature) 
 ``` 
 1. **Initialisation des variables :**  
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     uint8_t buffer_temp_reg[TMP102_NBR_REG_TEMP_BYTES] = {0};
 ```
 Le buffer est un tableau de 2 octets correspondant au registre de température du TMP102.
 
 2. **Lecture de registre en I²C**  
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     bool i2c_ok = (HAL_I2C_Mem_Read(tmp102->busI2C, 
                                     tmp102->address, 
@@ -1941,6 +1983,7 @@ Pour la fonction HAL on spécifie :
 - le timeout de la transaction
 
 3. **Si la communication I²C a échoué**
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 if (!i2c_ok) 
 {
@@ -1951,6 +1994,7 @@ if (!i2c_ok)
 En cas de problème de communication, la température est mise à -999.0f pour rendre l'erreur plus visible encore, et la fonction retourne `false`.
 
 4. **Conversion du registre de température en température en °C :**  
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```cpp
 TMP102_register_to_celsius(buffer_temp_reg, Temperature);
 ```
@@ -1959,6 +2003,7 @@ TMP102_register_to_celsius(buffer_temp_reg, Temperature);
 
 Cette fonction est statique car elle n'est pas destinée à être appelée directement depuis l'extérieur de la bibliothèque, mais par la fonction externe `TMP102_get_temperature()`. Cela permet de découpler l'appel applicatif de la lecture matérielle.  
 Pour lire la température (par exemple en mode Continuous) depuis le `main.c`, on appelle :  
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 bool TMP102_get_temperature(TMP102_t *tmp102, float *Temperature) 
 {
@@ -1971,6 +2016,7 @@ bool TMP102_get_temperature(TMP102_t *tmp102, float *Temperature)
 #### 8.1. Registre brut → température en °C
 
 Voici les explications de notre fonction de conversion du registre de température en valeur en °C :
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 static void TMP102_register_to_celsius(uint8_t *reg_value, float *temperature);
 ```
@@ -1981,6 +2027,7 @@ Le registre de température est un entier signé en complément à 2, aligné à
 <img src="media/TMP102_datasheet_conversion.png">
 
 1. **On détecte le mode étendu**
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     bool extended_mode = (reg_value[1] & 0x01) != 0;
     uint8_t temp_length = extended_mode ? TMP102_EXT_BIT_LEN : TMP102_NORM_BIT_LEN;
@@ -1988,18 +2035,21 @@ Le registre de température est un entier signé en complément à 2, aligné à
 Cette ligne détecte si le mode étendu est activé en lisant le bit **D0** de l'octet 2 (index 1). Si le bit 0 est à 1, le mode étendu est activé et la longueur du registre est de 13 bits. Sinon, le mode normal est activé et la longueur du registre est de 12 bits.
 
 2. **On concatène les 2 octets**
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 uint16_t raw_reg = (uint16_t)((reg_value[0] << 8) | reg_value[1]);
 ```
 Cette ligne concatène les deux octets du registre de température pour former un entier non signé de 16 bits. On décale le premier octet de 8 bits vers la gauche pour le placer dans la partie haute du registre, puis on effectue un OU binaire avec le second octet qui reste donc dans la partie basse.   
 
 3. **On décale à droite avec extension du signe**
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 int16_t reg_val = (int16_t)raw_reg >> (16 - temp_length);
 ```
 Cette ligne décale le registre de température du nombre de bits de padding (**16 - temp_length**). Le cast en `int16_t` avant le décalage est essentiel car si l'entier est signé, le MSB de signe est propagé lors du décalage, ce qui permet de gérer les températures négatives.
 
 4. **On multiplie par la résolution**
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 *temperature = (float)reg_val * TMP102_TEMP_RESOLUTION;
 ```
@@ -2008,11 +2058,13 @@ Cette ligne multiplie la valeur entière du registre par la résolution du capte
 #### 8.2. Température en °C → Registre brut
 
 Pour écrire les seuils T_LOW et T_HIGH, nous avons également créé la fonction inverse
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 static void TMP102_celsius_to_register(uint8_t *reg_value, float *temperature, bool extended_mode);
 ```
 
 Cette fois, le mode étendu n'est plus défini dans le registre de température mais en paramètre de la fonction.
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 uint8_t temp_length = (extended_mode) 
                        ? TMP102_EXT_BIT_LEN 
@@ -2021,20 +2073,24 @@ uint8_t temp_length = (extended_mode)
 
 Puis on effectue les mêmes étapes mais en sens inverse :  
 1. **On divise la température par la résolution**
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 float reg_value_float = temperature / TMP102_TEMP_RESOLUTION;
 ```
 2. **On arrondit au nombre entier le plus proche**
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 int16_t reg_val = (int16_t)(reg_value_float >= 0.0f 
                             ? (reg_value_float + 0.5f)
                             : (reg_value_float - 0.5f));
 ```
 3. **On décale à gauche du nombre de bits de padding**
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 uint16_t raw_reg = (uint16_t)reg_val << (16 - temp_length);
 ```
 4. **On sépare les 2 octets dans le buffer**
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 reg_value[0] = (uint8_t)(raw_reg >> 8);
 reg_value[1] = (uint8_t)(raw_reg & 0xFF);
@@ -2044,6 +2100,7 @@ reg_value[1] = (uint8_t)(raw_reg & 0xFF);
 
 L'affichage de la température sur le LCD et dans les logs UART nécessite de formater un `float` en chaîne de caractères. Par défaut, la prise en charge des flottants dans `printf` ne fonctionnait pas dans STM32CubeIDE, nous avons donc écrit une fonction dédiée de conversion de `float` en chaîne de caractères avec choix de la précision :
 
+<!-- code:Bibliotheques/TMP102/Inc/tmp102.h -->
 ```c
 char* TMP102_temperature_to_string(float temperature, uint8_t precision);
 ```
@@ -2051,12 +2108,14 @@ Voici les étapes de la conversion de `float` en `String` :
 
 1. **On définit un buffer pour stocker la chaîne de caractères**
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     static char buffer[16];
 ```
 
 2. **On précalcule les puissances de 10**
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     static const int multi_table[] = {1, 10, 100, 1000, 10000};
 ```
@@ -2067,6 +2126,7 @@ NB : On aurait pu utiliser la fonction `pow`, mais il aurait fallu utiliser une 
 
 3. **On bride la précision à 4**
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     if(precision > 4) precision = 4;
 ```
@@ -2077,18 +2137,21 @@ Une précision de 4 décimales est largement suffisante : la résolution du capt
 
 4. **On détecte le signe et on prend la valeur absolue :**
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     bool negatif   = (temperature < 0.0f);
     float temp_abs = negatif ? -temperature : temperature;
 ```
 5. **On sépare la partie entière et la partie décimale :**
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     int partie_entiere  = (int)temp_abs;
     int partie_decimale = (int)((temp_abs - partie_entiere) * multi_table[precision] + 0.5f);
 ```
 6. **On propage la retenue si l'arrondi déborde (ex: 18,997 arrondi à 19,00)**
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     if (partie_decimale >= multi_table[precision]) {
         partie_entiere++;
@@ -2096,6 +2159,7 @@ Une précision de 4 décimales est largement suffisante : la résolution du capt
     }
 ```
 7. **On formate la chaîne de caractères en utilisant `snprintf`**
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     snprintf(buffer, sizeof(buffer), "%s%d,%0*d",
              negatif ? "-" : "", partie_entiere, precision, partie_decimale);
@@ -2125,6 +2189,7 @@ En mode Shutdown, le capteur ne mesure rien tout seul. Pour déclencher une mesu
 Dans la fonction de démarrage d'une mesure, on vérifie d'abord que le capteur est bien en mode Shutdown, puis on positionne le drapeau `is_measuring_one_shot` à `true` pour autoriser les tests de fin de conversion via `TMP102_is_measure_ready()`. Enfin, on écrit `1` sur le bit `OS` du registre de configuration pour déclencher la conversion.  
 *NB : Le bit OS valant déjà 1 au repos en mode Shutdown, le capteur déclenche la conversion sur l'événement d'écriture du registre.*
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 bool TMP102_start_measure(TMP102_t *tmp102) 
 {
@@ -2142,6 +2207,7 @@ Une fois que la mesure est déclenchée, cette fonction de polling non bloquante
 Elle vérifie d'abord qu'une mesure a bien été demandée et que le capteur est en mode Shutdown. À chaque appel, elle lit le registre de configuration et contrôle l'état du bit `OS` (0 indiquant qu'une conversion est toujours en cours).  
 Dès que le bit `OS` repasse à 1, la conversion est achevée : le flag interne `is_measuring_one_shot` est remis à `false` et la fonction renvoie `true`. Le capteur repasse de lui-même en veille automatiquement.
 
+<!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 bool TMP102_is_measure_ready(TMP102_t *tmp102) 
 {
@@ -2169,15 +2235,17 @@ Une fois la mesure achevée, il suffit de lire le registre de température du ca
 
 Le capteur est représenté par une unique variable globale de type `TMP102_t`.
 
-*Dans la section `USER CODE PV` du fichier `main.c`*
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE PV
 TMP102_t thermometre;
 ```
 
 Son initialisation est regroupée dans la fonction `initialiser_thermometre()` appelée une seule fois au début de la fonction `main()` :
 
-*Dans la section `USER CODE 0` du fichier `main.c`*
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 0
 void initialiser_thermometre() 
 {
     TMP102_init_default(&thermometre); // Valeurs par défaut
@@ -2202,7 +2270,9 @@ On commence par appeler `TMP102_init_default()` pour partir d'un état connu, pu
 Le cycle de mesure complet se déroule sur plusieurs itérations de la boucle `while(1)`, sans jamais bloquer. On peut décomposer la séquence :
 
 1. **Déclenchement** : au tick du `TIMER_CAPTEURS` (toutes les 2 s), `TMP102_start_measure()` est lancé :
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la boucle principale while (1) de la fonction main()
 if (timer_capteurs_flag) {
       timer_capteurs_flag = false;
       ...
@@ -2214,8 +2284,9 @@ if (timer_capteurs_flag) {
 ```
 2. **Attente non bloquante** : pendant les ~26 ms de la conversion, la boucle continue de traiter les autres événements. À chaque itération, `TMP102_is_measure_ready()` permet de vérifier si la mesure est terminée :
 
-*Dans la boucle `while(1)` de la fonction `main()` :*
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la boucle principale while (1) de la fonction main()
 if (TMP102_is_measure_ready(&thermometre)) {
    evaluer_temperature();
    printf("\r\n");
@@ -2251,7 +2322,9 @@ Cependant nous sommes capable de décrire à quoi cela devrait ressembler en th�
 
 Deux seuils sont définis en haut du `main.c` :
 
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE PD
 #define SEUIL_CHALEUR  26  // °C
 #define SEUIL_FROID    24  // °C
 ```
@@ -2289,7 +2362,9 @@ Dans notre fonction `evaluer_temperature()`, nous avons ajouté l'actionnement d
 En dehors de ces transitions, la fenêtre reste sous le contrôle manuel de l'utilisateur ou est forcée par la détection de pluie.  
 La logique est volontairement asymétrique : une transition déclenche une action ponctuelle sur la fenêtre (sans la bloquer dans cette position).
 
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 0
 void evaluer_temperature() 
 {
   ...
@@ -2379,7 +2454,7 @@ Nous utilisons donc l'adresse `0x27`.
 #### 2.1. Modification de l'initialisation
 Comme nous avons défini l'instance `I2C3` de la HAL via une macro (`#define BUS_I2C (&hi2c3)`), nous avons adapté la fonction d'initialisation de la bibliothèque afin d'enregistrer le pointeur du bus I²C dans une variable statique interne au fichier source :
 
-*Extrait de Bibliotheques/Ecran_LCD/Src/i2c-lcd.c :*
+<!-- code:Bibliotheques/Ecran_LCD/Src/i2c-lcd.c -->
 ```c
 static I2C_HandleTypeDef *local_bus_i2c = NULL;
 
@@ -2424,8 +2499,9 @@ Un message de bienvenue personnalisé est affiché sur la ligne 2. Il reste visi
 
 L'affichage du mode est volontairement dissocié du rafraîchissement des capteurs : le mode doit être affiché dès le démarrage et réagir instantanément lors d'un appui sur le bouton HOME, tandis que les mesures des capteurs sont actualisées toutes les 2 secondes.
 
-*Extrait de la section `USER CODE 0` du fichier `main.c` :*  
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 0
 void afficher_mode_ecran() 
 { 
   char ligne_mode[8];
@@ -2446,8 +2522,9 @@ void afficher_mode_ecran()
 
 Les trois capteurs sont mis à jour ensemble à chaque fin de cycle de mesure via la fonction `afficher_capteurs_ecran()` :
 
-*Extrait de la section `USER CODE 0` du fichier `main.c` :*
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 0
 void afficher_capteurs_ecran() 
 {
     char ligne1[8+1];
@@ -2497,7 +2574,9 @@ Le clignotement de chaque LED est obtenu en calculant le nombre de périodes du 
 
 Le compteur est incrémenté dans `update_cycle_alarmes()`, appelée à chaque tic de 50 ms. Il est remis à zéro quand il n'y a plus d'alarme, pour que chaque nouveau cycle recommence en phase 0 :
 
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 0
 void update_cycle_alarmes() 
 {
   if (!alarme_gaz && !alarme_intrusion) {
@@ -2513,7 +2592,9 @@ void update_cycle_alarmes()
 
 Dans `update_cycle_alarmes_leds()`, la demi-période est calculée à partir de la fréquence de base (`FREQ_CYCLE_ALARME`, 20 Hz) et de la fréquence de clignotement cible. Le modulo du compteur détermine les instants d'inversion :
 
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 0
 void update_cycle_alarmes_leds() 
 {
   ...
@@ -2542,7 +2623,9 @@ Avec `FREQ_CYCLE_ALARME = 20`, on obtient `demi_periode_gaz = 1` (la LED bascule
 
 Ce mécanisme est fondamentalement non bloquant : au lieu d'utiliser des délais logiciels d'attente (`HAL_Delay`), le microcontrôleur évalue instantanément une simple condition mathématique (avec un modulo sur le compteur de tics du Timer 5) à chaque fin de période, afin de déterminer s'il faut inverser ou non l'état de la broche. Une fois l'évaluation terminée, il poursuit immédiatement l'exécution de la boucle principale. Cette fonction est appelée depuis la boucle `while(1)` sur le flag du Timer 5 :
 
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la boucle principale while (1) de la fonction main()
 if (timer_debounce_flag) {
   timer_debounce_flag = false;
   debounce_filter();
@@ -2590,7 +2673,9 @@ $$\implies \text{PSC} = \frac{100\, \text{MHz}}{25\, \text{MHz}} - 1 = 4 - 1$$
 #### 2.3. Fréquences distinctes pour chaque alarme
 
 Pour permettre à l'utilisateur de différencier les alertes à l'oreille, la fréquence du signal est ajustée de manière dynamique via la fonction `frequence_buzzer()`. Cette fonction recalcule et met à jour en temps réel la période (registre `ARR`) et l'impulsion (registre `CCR`) du Timer 3.
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 0
 void frequence_buzzer(int frequence) 
 {
 	int periode_tics = (double)FREQ_TIMER_BUZZER/frequence;
@@ -2605,7 +2690,9 @@ Nous avons donc choisi des fréquences distinctes pour chaque alarme :
 
 Le choix de la fréquence est fait dans `update_cycle_alarmes_buzzer()`, qui est appelée à la suite des LEDs. Pour une alarme seule, elle règle la fréquence correspondante, et le buzzer suit l'état de la LED de cette alarme :
 
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 0
 void update_cycle_alarmes_buzzer() 
 {
   if (!alarme_gaz && !alarme_intrusion) {
@@ -2641,7 +2728,9 @@ Le buzzer ne peut produire qu'une seule fréquence à la fois. Il alterne donc e
 
 Cette alternance est codée dans le troisième cas de `update_cycle_alarmes_buzzer()` :
 
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 0
 void update_cycle_alarmes_buzzer() 
 {
   ...
@@ -2806,6 +2895,7 @@ Comme `Roue_Chromatique()` est utilisée uniquement par la démonstration, elle 
 
 Comme pour le TMP102, la bande est représentée par un objet qui regroupe tout son contexte. Chaque LED est décrite par la structure `BL_RGB_t` :
 
+<!-- code:Bibliotheques/Bande_LED/Inc/bande-led.h -->
 ```c
 typedef struct {
     uint8_t rouge;
@@ -2820,6 +2910,7 @@ Nous avons séparé les champs `alpha` et `power` de la couleur pour que la coul
 
 L'objet `BandeLED_t` regroupe l'ensemble de la bande :
 
+<!-- code:Bibliotheques/Bande_LED/Inc/bande-led.h -->
 ```c
 typedef struct {
     bool                power;            // Interrupteur général de la bande
@@ -2839,8 +2930,7 @@ Le timer est stocké dans la structure, comme `busI2C` pour le TMP102, pour ne r
 
 Pour ne jamais rien hardcoder, nous avons utilisé des `#define` pour chaque valeur issue de la datasheet, ainsi que pour les couleurs courantes :
 
-*Extraits de `Bibliotheques/Bande_LED/Inc/bande-led.h`:*
-
+<!-- code:Bibliotheques/Bande_LED/Inc/bande-led.h -->
 ```c
 // Parametres datasheet bande led
 #define BL_FREQ_CYCLE_PWM 800000
@@ -2868,6 +2958,7 @@ Pour ne jamais rien hardcoder, nous avons utilisé des `#define` pour chaque val
 
 L'initialisation se fait avec une seule fonction :
 
+<!-- code:Bibliotheques/Bande_LED/Inc/bande-led.h -->
 ```c
 void BandeLED_Init(BandeLED_t* bande_led, TIM_HandleTypeDef *htim, uint32_t timer_channel, uint32_t freq_timer, uint8_t nb_leds)
 ```
@@ -2875,6 +2966,7 @@ void BandeLED_Init(BandeLED_t* bande_led, TIM_HandleTypeDef *htim, uint32_t time
 Les étapes sont les suivantes :
 
 1. **Calcul du nombre de périodes de reset :**
+<!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 bande_led->cycles_delai_maj = (BL_DELAI_MAJ_nS / (BL_NSEC_IN_1_SEC / BL_FREQ_CYCLE_PWM)) + 1;
 ```
@@ -2883,6 +2975,7 @@ La trame doit être suivie d'au moins 50 µs d'état bas. Comme une période de 
 2. **Enregistrement du matériel :** le timer, le canal, la fréquence de comptage du timer et le nombre de LEDs sont mémorisés dans l'objet.
 
 3. **Allocation du tableau pour le DMA :**
+<!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 bande_led->dma_buffer = malloc((nb_leds * 3 * 8 + bande_led->cycles_delai_maj) * sizeof(uint32_t));
 ```
@@ -2899,6 +2992,7 @@ L'allocation dynamique permet à la bibliothèque de s'adapter à **n'importe qu
 La fonction `BandeLED_show()` convertit l'état de toutes les LEDs en tableau de valeurs de `CCR1`, puis lance son envoi par DMA.
 
 1. **Conversion des durées en tics du timer :**
+<!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 int nS_per_timer_tic = BL_NSEC_IN_1_SEC  / bande_led->freq_timer;
 int pulse_bit_0_tics = BL_PULSE_BIT_0_nS / nS_per_timer_tic;
@@ -2907,6 +3001,7 @@ int pulse_bit_1_tics = BL_PULSE_BIT_1_nS / nS_per_timer_tic;
 Avec `freq_timer = 100 000 000` Hz : $\frac{10^9}{10^8} = 10\, \text{ns par tic}$, donc $\frac{400}{10} = 40$ tics pour un 0 et $\frac{800}{10} = 80$ tics pour un 1. On retrouve les valeurs calculées dans la configuration du timer.
 
 2. **Parcours des LEDs et de leurs trois composantes :** pour chaque LED, une boucle sur le rang de la composante (1 à 3) sélectionne la couleur à envoyer selon l'ordre de la datasheet :
+<!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 switch (composante)
 {
@@ -2926,12 +3021,14 @@ La boucle passe par les rangs 1, 2, 3 et c'est le `switch` qui détermine quelle
 3. **Application de la luminosité :** la composante est multipliée par `alpha / 255`. Avec `alpha = 255` la couleur est inchangée, avec `alpha = 0` elle est nulle, et entre les deux la luminosité est proportionnelle. Cela permet de régler la luminosité sans modifier la couleur mémorisée.
 
 4. **Application de l'interrupteur :**
+<!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 uint8_t valeur_a_envoyer = (bande_led->power && led_courante->power) ? valeur_composante : 0;
 ```
 Pour qu'une LED soit éteinte, il ne suffit pas de ne plus lui envoyer de données : elle conserve la dernière couleur reçue jusqu'à la trame suivante. On lui envoie donc explicitement des 0. La LED s'allume si l'interrupteur général de la bande **et** celui de la LED sont actifs.
 
 5. **Encodage des 8 bits, poids fort en premier :**
+<!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 for (int bit = 8-1; bit >= 0; bit--)
 {
@@ -2953,6 +3050,7 @@ Le masque `1 << bit` isole chaque bit, du bit 7 au bit 0, et on écrit dans le t
 La trame de cette LED est donc `00000000 00000101 00001010`, soit 24 valeurs de 40 ou 80 dans le tableau.
 
 6. **Ajout du délai de reset :**
+<!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 for (int i = 0; i < bande_led->cycles_delai_maj; i++) {
     bande_led->dma_buffer[dma_index] = 0;
@@ -2962,6 +3060,7 @@ for (int i = 0; i < bande_led->cycles_delai_maj; i++) {
 Les 41 dernières cases valent 0 : avec `CCR1 = 0` la sortie reste à l'état bas pendant 41 périodes, ce qui forme le reset de 51 µs. Comme ces zéros sont envoyés par le même mécanisme que les bits, il n'y a pas besoin de timer supplémentaire ni d'attente active.
 
 7. **Lancement de l'envoi par DMA :**
+<!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 HAL_TIM_PWM_Stop_DMA(bande_led->PWM_timer, bande_led->PWM_channel);
 __HAL_TIM_SET_COUNTER(bande_led->PWM_timer, 0);
@@ -2981,11 +3080,13 @@ Les fonctions `BandeLED_set_led_*` ne font que **modifier la mémoire** : aucune
 Cette séparation est volontaire : une seule trame contient l'état de toutes les LEDs. On peut ainsi modifier autant de LEDs que nécessaire, puis envoyer **une seule trame** au lieu d'une par modification.
 
 Toutes les fonctions vérifient que l'indice de LED est valide avant d'écrire, pour ne jamais écrire en dehors du tableau :
+<!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 if (led_id >= 0 && led_id < bande_led->nb_leds)
 ```
 
 - **`BandeLED_set_led_hexa()`** extrait chaque composante d'une couleur au format `0xRRGGBB` par décalage et masquage :
+<!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 bande_led->leds[led_id].rouge = (hexa >> 16) & 0xFF;
 bande_led->leds[led_id].vert  = (hexa >> 8) & 0xFF;
@@ -3007,14 +3108,17 @@ La bibliothèque contient aussi `BandeLED_demo()`, non utilisée dans le `main.c
 
 La bande est représentée par une unique variable globale de type `BandeLED_t`.
 
-*Dans la section `USER CODE PV` du fichier `main.c`*
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE PV
 BandeLED_t bande_led;
 ```
 
 Les paramètres matériels et d'affichage sont définis par des `#define` en tête de `main.c` :
 
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE PD
 #define TIMER_BANDE_LED      (&htim4)
 #define CANAL_BANDE_LED      TIM_CHANNEL_1
 #define FREQ_TIMER_BANDE_LED 100000000
@@ -3040,8 +3144,9 @@ Les paramètres matériels et d'affichage sont définis par des `#define` en tê
 
 L'initialisation est regroupée dans la fonction `initialiser_bande_led()`, appelée une seule fois au début du `main()` :
 
-*Dans la section `USER CODE 0` du fichier `main.c`*
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 0
 void initialiser_bande_led()
 {
   BandeLED_Init(&bande_led, TIMER_BANDE_LED, CANAL_BANDE_LED, FREQ_TIMER_BANDE_LED, NB_LEDS_BANDE_RGB);
@@ -3084,8 +3189,9 @@ Les trois premières LEDs **recopient l'état des LEDs discrètes déjà gérée
 
 #### 8.3. Mise à jour périodique
 
-*Dans la section `USER CODE 0` du fichier `main.c`*
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 0
 void update_bande_led()
 {
     BandeLED_set_led_state(&bande_led, LED_HAUT_GAUCHE, led_capteurs.state);
@@ -3120,7 +3226,9 @@ void update_bande_led()
 
 Cette fonction est appelée dans la boucle `while(1)` **à la cadence de 20 Hz** du Timer 5, c'est-à-dire sur le même flag que le filtre anti-rebond et le cycle des alarmes :
 
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la boucle principale while (1) de la fonction main()
 if (timer_debounce_flag) {
     timer_debounce_flag = false;
     debounce_filter();

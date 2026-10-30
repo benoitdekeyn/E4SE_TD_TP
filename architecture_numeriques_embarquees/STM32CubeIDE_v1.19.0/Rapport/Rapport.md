@@ -42,7 +42,7 @@
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#2-clignotement-de-la-led-t%C3%A9moin">2. Clignotement de la LED témoin</a><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#3-validation-exp%C3%A9rimentale">3. Validation expérimentale</a><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#4-ancienne-m%C3%A9thode">4. Ancienne méthode</a><br>
-\newpage
+<!-- newpage -->
 <span class="fo">&ensp;&ensp;</span><b><a href="#sc%C3%A9nario-2--s%C3%A9curit%C3%A9--homeaway-et-d%C3%A9tection-dintrusion">Scénario 2 — Sécurité : HOME/AWAY et détection d'intrusion</a></b><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#1-configuration-du-bouton-mode">1. Configuration du bouton MODE</a>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#2-gestion-de-lanti-rebond">2. Gestion de l'anti-rebond</a></summary>
@@ -73,7 +73,7 @@
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-seuil-de-d%C3%A9tection">3.2. Seuil de détection</a>
 </details>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#4-alarme-gaz">4. Alarme gaz</a><br>
-\newpage
+<!-- newpage -->
 <span class="fo">&ensp;&ensp;</span><b><a href="#sc%C3%A9nario-4--supervision-uart">Scénario 4 — Supervision UART</a></b><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#1-configuration-de-luart-avec-st-link">1. Configuration de l'UART avec ST-LINK</a><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#2-redirection-de-printf-vers-luart">2. Redirection de printf vers l'UART</a><br>
@@ -110,7 +110,7 @@
 </details>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#5-logique-de-d%C3%A9cision-de-la-fen%C3%AAtre">5. Logique de décision de la fenêtre</a><br>
 <span class="fo">&ensp;&ensp;</span><b>
-\newpage
+<!-- newpage -->
 <a href="#sc%C3%A9nario-6--mesure-de-temp%C3%A9rature-tmp102">Scénario 6 — Mesure de température (TMP102)</a></b>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#1-branchement-et-configuration-cubemx">1. Branchement et configuration CubeMX</a></summary>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#11-alimentation-vccgnd">1.1. Alimentation (VCC/GND)</a><br>
@@ -185,7 +185,7 @@
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#33-valeurs-capteurs">3.3. Valeurs capteurs</a>
 </details>
 <span class="fo">&ensp;&ensp;</span><b>
-\newpage
+<!-- newpage -->
 <a href="#bonus--biblioth%C3%A8que-bande-led-rgb-ws2812b">Bonus — Bibliothèque Bande LED RGB (WS2812B)</a></b><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#1-analyse-de-la-datasheet-protocole-one-wire">1. Analyse de la datasheet (protocole one-wire)</a><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#2-principe-dimpl%C3%A9mentation--pwm--dma">2. Principe d'implémentation : PWM + DMA</a>
@@ -335,7 +335,7 @@ L'ADC1 est le seul ADC de la carte, mais on dispose de plusieurs entrées sur le
 Nous avions besoin de 3 interruptions externes (EXTI) :
 - **Bouton HOME** (bascule mode HOME/AWAY)
 - **Bouton FENÊTRE** (commande manuelle de la fenêtre)
-\newpage
+<!-- newpage -->
 - **Capteur PIR** (détection de mouvement)
 
 La contrainte importante est que deux broches de **même numéro** sur des ports différents partagent la même ligne EXTI. Il fallait donc choisir des broches ayant un numéro différent. Nous avons choisi :
@@ -370,7 +370,7 @@ Nous avions besoin de 3 sorties GPIO pour les LEDs indicatrices. Nous avons choi
 | Bande LED NeoPixel | RGB_BANDE | D10 | PB6 | TIM4 CH1 – PWM + DMA | — | 3V3 |
 | Capteur gaz MQ-2 | GAZ | A2 | PA4 | ADC1 CH4 | — | 5V |
 | Capteur de pluie | PLUIE | A3 | PB0 | ADC1 CH8 | — | 5V |
-\newpage
+<!-- newpage -->
 | Capteur PIR | PIR_MVMT | D9 | PC7 | EXTI7 – Rising Edge | PULLDOWN | 3V3 |
 | Bouton HOME/AWAY | BTN_HOME | D12 | PA6 | EXTI6 – Falling Edge | PULLUP | 3V3 |
 | Bouton fenêtre | BTN_FENTR | D2 | PA10 | EXTI10 – Falling Edge | PULLUP | 3V3 |
@@ -399,7 +399,7 @@ Nous avons donc créé des liens symboliques, ajouté les chemins des headers au
 Dossiers symboliques  
 <img src="media/stm32cubeide_liens_symboliques.png" alt="Dossiers symboliques" width="200">
 
-\newpage
+<!-- newpage -->
 
 Décochage de « Exclude from Build » dans les propriétés des dossiers symboliques
 <img src="media/stm32cubeide_exclude_from_build_project_settings.png" alt="Exclude from build dans project settings" width="600">
@@ -407,7 +407,23 @@ Décochage de « Exclude from Build » dans les propriétés des dossiers symbol
 Include path dans les project settings   
 <img src="media/stm32cubeide_include_path_project_settings.png" alt="Include path dans project settings" width="600">
 
-## Defines et types personnalisés
+
+### 4. Recyclage des timers
+Le SysTick est le compteur de millisecondes intégré au cœur Cortex-M, et la HAL fournit `HAL_GetTick()` pour l'exploiter. Nous ne l'avons pas utilisé : nous avons oublié, pendant le développement, que ce compteur était disponible. Nous avons donc géré tous les délais non bloquants avec des timers que nous avons nous-mêmes configurés.
+
+Nous avons eu besoin de mesurer du temps dans deux situations :
+- le délai de filtrage des rebonds des boutons ;
+- le délai d'inversion des LEDs et du buzzer pour le clignotement des alarmes de gaz et d'intrusion.
+
+Pour le debounce, nous avions d'abord configuré un timer dédié, et M. ROY nous a indiqué qu'il s'agissait d'une meilleure solution que la nôtre. Plutôt que de revenir au SysTick, nous avons donc continué sur cette lancée : le Timer 3 a d'abord compté les 50 ms de debounce, puis nous l'avons recyclé pour gérer le clignotement des alarmes. Dans la version finale du projet, la base de 50 ms est portée par le Timer 5 (voir [6.2. Gestion de l'anti-rebond](#2-gestion-de-lanti-rebond) et [13.1. Clignotement non bloquant par compteur partagé](#1-clignotement-non-bloquant-par-compteur-partagé)).
+
+Ce choix présente plusieurs avantages, certes minimes :
+- les événements basés sur des délais non bloquants sont vérifiés moins souvent, ce qui décharge le CPU : `update_cycle_alarmes()` et `debounce_filter()` ne sont appelées que 20 fois par seconde au lieu d'être évaluées à chaque tour de boucle ;
+- nous avons appris à baser nos délais sur une fréquence non conventionnelle, avec des formules qui s'adaptent à la fréquence du timer grâce aux modulos (voir la partie [13.1](#1-clignotement-non-bloquant-par-compteur-partagé)).
+
+Nous sommes conscients de n'avoir pas exploité toutes les ressources de la carte, qui auraient permis de simplifier le code. Nous aurions tout aussi bien pu utiliser le SysTick et calculer des différences de temps avec `HAL_GetTick()`.
+
+### 5. Defines et types personnalisés
 
 
 ### 1. Pas de Hardcoding
@@ -627,6 +643,8 @@ La fonction `debounce_filter()` est appelée à chaque fin de période du timer,
 Si le flag `debouncing_bouton_home` est levé ET que le bouton est toujours au niveau bas (actif à 0), cela signifie que l'appui est bien resté stable 50 ms après la détection du front descendant.  
 La variable `bouton_home_appuye` est alors validée et le flag `debouncing_bouton_home` est réinitialisé.  
 Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrairement à un simple délai qui bloquerait l'exécution du programme.
+
+> Nous n'avons pas utilisé le compteur de millisecondes du SysTick (`HAL_GetTick()`) pour cette temporisation, mais un timer dédié. Ce choix et son contexte sont expliqués dans [4. Recyclage des timers](#4-recyclage-des-timers).
 
 ### 3. Machine à états HOME / AWAY
 
@@ -2937,6 +2955,8 @@ Le clignotement de chaque LED est obtenu en calculant le nombre de périodes du 
 - L'alarme intrusion clignote à 2 Hz. Ainsi, sa demi-période est atteinte à 4 Hz, ce qui correspond exactement à un cinquième ($5$ tics) de la fréquence du Timer 5. La LED s'inverse donc tous les 5 tics du Timer 5.
 
 Ce mécanisme est fondamentalement non bloquant : au lieu d'utiliser des délais logiciels d'attente (`HAL_Delay`), le microcontrôleur évalue instantanément une simple condition mathématique (avec un modulo sur le compteur de tics du Timer 5) à chaque fin de période, afin de déterminer s'il faut inverser ou non l'état de la broche. Une fois l'évaluation terminée, il poursuit immédiatement l'exécution de la boucle principale.
+
+> Comme pour le debounce, ce délai est porté par un timer recyclé plutôt que par le compteur de millisecondes du SysTick. Le détail de ce choix est présenté dans [3.3. Recyclage des timers](#33-recyclage-des-timers).
 
 ### 2. Gestion du buzzer avec fréquences distinctes
 

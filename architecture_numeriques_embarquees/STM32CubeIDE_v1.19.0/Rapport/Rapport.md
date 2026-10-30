@@ -184,8 +184,15 @@
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-home--away">3.2. HOME / AWAY</a><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#33-valeurs-capteurs">3.3. Valeurs capteurs</a>
 </details>
-<!-- newpage -->
-<span class="fo">&ensp;&ensp;</span><b><a href="#bonus--biblioth%C3%A8que-bande-led-rgb-ws2812b">Bonus – Bibliothèque Bande LED RGB (WS2812B)</a></b><br>
+<span class="fo">&ensp;&ensp;</span><b><a href="#sc%C3%A9nario-8--gestion-globale-des-alarmes">Scénario 8 – Gestion globale des alarmes</a></b><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#1-clignotement-non-bloquant-par-compteur-partag%C3%A9">1. Clignotement non bloquant par compteur partagé</a>
+<details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#2-gestion-du-buzzer-avec-fr%C3%A9quences-distinctes">2. Gestion du buzzer avec fréquences distinctes</a></summary>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#21-configuration-du-timer-pwm">2.1. Configuration du Timer PWM</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#22-configuration-sur-cubemx">2.2. Configuration sur CubeMX</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#23-fr%C3%A9quences-distinctes-pour-chaque-alarme">2.3. Fréquences distinctes pour chaque alarme</a>
+</details>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#3-cas-simultan%C3%A9--alternance-gaz--intrusion">3. Cas simultané : alternance gaz / intrusion</a><br>
+<span class="fo">&ensp;&ensp;</span><b><a href="#sc%C3%A9nario-9--bande-de-led-neopixel">Scénario 9 – Bande de LED NeoPixel</a></b><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#1-analyse-de-la-datasheet-protocole-one-wire">1. Analyse de la datasheet (protocole one-wire)</a><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#2-principe-dimpl%C3%A9mentation--pwm--dma">2. Principe d'implémentation : PWM + DMA</a>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#3-branchement-et-configuration-cubemx">3. Branchement et configuration CubeMX</a></summary>
@@ -205,20 +212,12 @@
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#7-modification-de-l%C3%A9tat-des-leds">7. Modification de l'état des LEDs</a></summary>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#71-fonction-de-d%C3%A9monstration">7.1. Fonction de démonstration</a>
 </details>
-<details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#8-utilisation-dans-le-code--tableau-de-bord-led">8. Utilisation dans le code : tableau de bord LED</a></summary>
+<details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#8-utilisation-dans-le-code">8. Utilisation dans le code</a></summary>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#81-d%C3%A9claration-et-initialisation">8.1. Déclaration et initialisation</a><br>
-<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#82-le-tableau-de-bord">8.2. Le tableau de bord</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#82-informations-transmises-par-les-neopixels">8.2. Informations transmises par les NeoPixels</a><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#83-mise-%C3%A0-jour-p%C3%A9riodique">8.3. Mise à jour périodique</a><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#84-respect-de-la-r%C3%A8gle--pas-de-blocage-">8.4. Respect de la règle « pas de blocage »</a>
 </details>
-<span class="fo">&ensp;&ensp;</span><b><a href="#bonus--gestion-globale-des-alarmes">Bonus – Gestion globale des alarmes</a></b><br>
-<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#1-clignotement-non-bloquant-par-compteur-partag%C3%A9">1. Clignotement non bloquant par compteur partagé</a>
-<details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#2-gestion-du-buzzer-avec-fr%C3%A9quences-distinctes">2. Gestion du buzzer avec fréquences distinctes</a></summary>
-<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#21-configuration-du-timer-pwm">2.1. Configuration du Timer PWM</a><br>
-<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#22-configuration-sur-cubemx">2.2. Configuration sur CubeMX</a><br>
-<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#23-fr%C3%A9quences-distinctes-pour-chaque-alarme">2.3. Fréquences distinctes pour chaque alarme</a>
-</details>
-<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#3-cas-simultan%C3%A9--alternance-gaz--intrusion">3. Cas simultané : alternance gaz / intrusion</a>
 </details>
 
 <!-- /TOC -->
@@ -414,11 +413,11 @@ Nous avons eu besoin de mesurer du temps dans deux situations :
 - le délai de filtrage des rebonds des boutons ;
 - le délai d'inversion des LEDs et du buzzer pour le clignotement des alarmes de gaz et d'intrusion.
 
-Pour le debounce, nous avions d'abord configuré un timer dédié, et M. ROY nous a indiqué qu'il s'agissait d'une meilleure solution que la nôtre. Plutôt que de revenir au SysTick, nous avons donc continué sur cette lancée : le Timer 3 a d'abord compté les 50 ms de debounce, puis nous l'avons recyclé pour gérer le clignotement des alarmes. Dans la version finale du projet, la base de 50 ms est portée par le Timer 5 (voir [Scénario 2 – 2. Gestion de l'anti-rebond](#2-gestion-de-lanti-rebond) et [Bonus – Gestion globale des alarmes - 1. Clignotement non bloquant par compteur partagé](#1-clignotement-non-bloquant-par-compteur-partagé)).
+Pour le debounce, nous avions d'abord configuré un timer dédié, et M. ROY nous a indiqué qu'il s'agissait d'une meilleure solution que la nôtre. Plutôt que de revenir au SysTick, nous avons donc continué sur cette lancée : le Timer 3 a d'abord compté les 50 ms de debounce, puis nous l'avons recyclé pour gérer le clignotement des alarmes. Dans la version finale du projet, la base de 50 ms est portée par le Timer 5 (voir [Scénario 2 – 2. Gestion de l'anti-rebond](#2-gestion-de-lanti-rebond) et [Scénario 8 – Gestion globale des alarmes - 1. Clignotement non bloquant par compteur partagé](#1-clignotement-non-bloquant-par-compteur-partagé)).
 
 Ce choix présente plusieurs avantages, certes minimes :
 - les événements basés sur des délais non bloquants sont vérifiés moins souvent, ce qui décharge le CPU : `update_cycle_alarmes()` et `debounce_filter()` ne sont appelées que 20 fois par seconde au lieu d'être évaluées à chaque tour de boucle ;
-- nous avons appris à baser nos délais sur une fréquence non conventionnelle, avec des formules qui s'adaptent à la fréquence du timer grâce aux modulos (voir la partie [Bonus – Gestion globale des alarmes - 1. Clignotement non bloquant par compteur partagé](#1-clignotement-non-bloquant-par-compteur-partagé)).
+- nous avons appris à baser nos délais sur une fréquence non conventionnelle, avec des formules qui s'adaptent à la fréquence du timer grâce aux modulos (voir la partie [Scénario 8 – Gestion globale des alarmes - 1. Clignotement non bloquant par compteur partagé](#1-clignotement-non-bloquant-par-compteur-partagé)).
 
 Nous sommes conscients de n'avoir pas exploité toutes les ressources de la carte, qui auraient permis de simplifier le code. Nous aurions tout aussi bien pu utiliser le SysTick et calculer des différences de temps avec `HAL_GetTick()`.
 
@@ -493,7 +492,7 @@ led_capteurs.state = !led_capteurs.state;
 
 ### 1. Configuration du Timer
 
-Comme justifié dans la partie [Bonus – 1. Branchement des composants](#1-branchement-des-composants), nous avons choisi le Timer 2 pour cadencer la prise de mesure de nos capteurs.
+Comme justifié dans la partie [Architecture globale – 1. Branchement des composants](#1-branchement-des-composants), nous avons choisi le Timer 2 pour cadencer la prise de mesure de nos capteurs.
 Nous avons utilisé un timer avec interruptions pour éviter l'utilisation de boucles bloquantes, garantissant ainsi un échantillonnage régulier. L'horloge source du timer étant de 100 MHz, nous avons configuré les registres PSC et ARR pour obtenir une période d'échantillonnage de 2 s.
 
 #### 1.1. Contraintes de départ
@@ -640,7 +639,7 @@ Si le flag `debouncing_bouton_home` est levé ET que le bouton est toujours au n
 La variable `bouton_home_appuye` est alors validée et le flag `debouncing_bouton_home` est réinitialisé.  
 Ce mécanisme permet de gérer l'anti-rebond de manière non bloquante, contrairement à un simple délai qui bloquerait l'exécution du programme.
 
-> Nous n'avons pas utilisé le compteur de millisecondes du SysTick (`HAL_GetTick()`) pour cette temporisation, mais un timer dédié. Ce choix et son contexte sont expliqués dans [Bonus – 4. Recyclage des timers](#4-recyclage-des-timers).
+> Nous n'avons pas utilisé le compteur de millisecondes du SysTick (`HAL_GetTick()`) pour cette temporisation, mais un timer dédié. Ce choix et son contexte sont expliqués dans [Architecture globale – 4. Recyclage des timers](#4-recyclage-des-timers).
 
 ### 3. Machine à états HOME / AWAY
 
@@ -814,7 +813,7 @@ bool alarme_intrusion = false;
 ```
 
 L'application de l'alarme intrusion est déportée dans une fonction non bloquante `update_cycle_alarmes()` qui lit la variable globale `alarme_intrusion`.  
-→ [Bonus – Gestion globale des alarmes](#bonus--gestion-globale-des-alarmes).
+→ [Scénario 8 – Gestion globale des alarmes](#scénario-8--gestion-globale-des-alarmes).
 
 ## Scénario 3 – Détection de gaz
 
@@ -904,7 +903,7 @@ La détection de gaz est permanente et indépendante du mode HOME/AWAY comme dem
 La variable globale `alarme_gaz` est positionnée à `true` dans `evaluer_gaz()` dès que la valeur dépasse le seuil.  
 
 La gestion de l'alarme de gaz est déportée dans une fonction non bloquante `update_cycle_alarmes()` qui lit la variable globale `alarme_gaz`.  
-→ [Bonus – Gestion globale des alarmes](#bonus--gestion-globale-des-alarmes).
+→ [Scénario 8 – Gestion globale des alarmes](#scénario-8--gestion-globale-des-alarmes).
 
 ---
 
@@ -2471,7 +2470,84 @@ Cette fonction applique plusieurs choix de conception :
 
 ---
 
-## Bonus – Bibliothèque Bande LED RGB (WS2812B)
+## Scénario 8 – Gestion globale des alarmes
+
+### 1. Clignotement non bloquant par compteur partagé
+
+Pour gérer les différentes alarmes sans interrompre l'exécution du programme, nous avons exploité le Timer 5, configuré à 20 Hz (soit une interruption toutes les 50 ms). À chaque itération de ce timer, un compteur global `blink_counter_alarm` est incrémenté.
+Le clignotement de chaque LED est obtenu en calculant le nombre de périodes du Timer à 20 Hz qui doivent s'écouler pour atteindre la demi-période de la fréquence de clignotement cible, moment où l'état de la LED s'inverse :  
+- L'alarme gaz est définie pour clignoter à 10 Hz. Ainsi, sa demi-période est atteinte à 20 Hz, ce qui correspond à la fréquence du Timer 5. La LED s'inverse donc à chaque tic du Timer 5. 
+- L'alarme intrusion clignote à 2 Hz. Ainsi, sa demi-période est atteinte à 4 Hz, ce qui correspond exactement à un cinquième ($5$ tics) de la fréquence du Timer 5. La LED s'inverse donc tous les 5 tics du Timer 5.
+
+Ce mécanisme est fondamentalement non bloquant : au lieu d'utiliser des délais logiciels d'attente (`HAL_Delay`), le microcontrôleur évalue instantanément une simple condition mathématique (avec un modulo sur le compteur de tics du Timer 5) à chaque fin de période, afin de déterminer s'il faut inverser ou non l'état de la broche. Une fois l'évaluation terminée, il poursuit immédiatement l'exécution de la boucle principale.
+
+> Comme pour le debounce, ce délai est porté par un timer recyclé plutôt que par le compteur de millisecondes du SysTick. Le détail de ce choix est présenté dans [Architecture globale – 4. Recyclage des timers](#4-recyclage-des-timers).
+
+### 2. Gestion du buzzer avec fréquences distinctes
+
+#### 2.1. Configuration du Timer PWM
+
+Pour générer nos signaux PWM destinés au buzzer, nous cherchons à maximiser la précision de comptage du Timer 3 tout en respectant sa contrainte matérielle de 16 bits (capacité maximale du registre ARR : $2^{16} - 1 = 65\,535$).
+
+Les contraintes pour le calcul sont :
+- La fréquence minimale à générer est de $384\text{ Hz}$ (alarme intrusion).
+- Le registre ARR est codé sur 16 bits ($\le 65\,535$).
+- La fréquence d'horloge source du bus est de $100\text{ MHz}$.
+
+On cherche la fréquence de comptage maximale $f$ permettant d'obtenir le plus de précision et la note la plus basse sans saturer le registre ARR :
+
+$$ARR = \frac{f}{384\, \text{Hz}} \leq 65\,535$$
+$$f \leq 384 \times 65\,535 \approx 25{,}16\, \text{MHz}$$
+
+On sélectionne une fréquence de comptage de **$25\text{ MHz}$**, qui est un diviseur entier de l'horloge source de $100\text{ MHz}$ :
+
+$$\implies \text{PSC} = \frac{100\, \text{MHz}}{25\, \text{MHz}} - 1 = 4 - 1$$
+
+À partir de cette fréquence de base de $25\text{ MHz}$, nous calculons la période (`ARR`) et l'impulsion (`CCR`) pour chaque alarme. La valeur de comparaison `CCR` est fixée à la moitié de la période afin d'obtenir un rapport cyclique de 50 % (onde carrée) pour le buzzer :
+
+- Alarme Gaz (440 Hz) :
+  $$ARR_{440\text{Hz}} = \frac{25\,000\,000}{440} - 1 = 56\,818 - 1$$
+  $$CCR_{440\text{Hz}} = \frac{ARR_{440\text{Hz}} + 1}{2} = \mathbf{28\,409}$$
+
+- Alarme Intrusion (384 Hz) :
+  $$ARR_{384\text{Hz}} = \frac{25\,000\,000}{384} - 1 = 65\,104 - 1$$
+  $$CCR_{384\text{Hz}} = \frac{ARR_{384\text{Hz}} + 1}{2} = \mathbf{32\,552}$$
+   
+#### 2.2. Configuration sur CubeMX
+
+<img src="media/stm32cubeide_Timer_3.png">
+
+#### 2.3. Fréquences distinctes pour chaque alarme
+
+Pour permettre à l'utilisateur de différencier les alertes à l'oreille, la fréquence du signal est ajustée de manière dynamique via la fonction `frequence_buzzer()`. Cette fonction recalcule et met à jour en temps réel la période (registre `ARR`) et l'impulsion (registre `CCR`) du Timer 3.
+```c
+void frequence_buzzer(int frequence) 
+{
+	int periode_tics = (double)FREQ_TIMER_BUZZER/frequence;
+	int pulse_tics   = periode_tics/2;
+	__HAL_TIM_SET_AUTORELOAD(TIMER_BUZZER, periode_tics);
+	__HAL_TIM_SET_COMPARE(TIMER_BUZZER, CANAL_BUZZER, pulse_tics);
+}
+```
+Nous avons donc choisi des fréquences distinctes pour chaque alarme :
+- Alarme gaz : 440 Hz (note La4 fondamentale), produisant un son plus aigu avec un rythme rapide.
+- Alarme intrusion : 384 Hz, produisant un son légèrement plus grave.
+
+De plus, l'activation du buzzer est synchronisée avec le retour visuel : le signal PWM du buzzer est activé uniquement lorsque la LED de l'alarme correspondante est à l'état haut et le buzzer se tait lorsque la LED s'éteint, suivant ainsi le rythme visuel de la LED. On obtient donc deux signatures distinctes pour chaque alarme.
+
+### 3. Cas simultané : alternance gaz / intrusion
+
+Lorsque les deux alarmes sont actives simultanément, les deux LEDs continuent de clignoter indépendamment selon leur propre fréquence : la LED rouge du gaz à 10 Hz (demi-période de 50 ms) et la LED jaune de l'intrusion à 2 Hz (demi-période de 250 ms).
+
+![one_note_cycle_alarmes](media/onenote_cycle_alarmes.png "Cycle des alarmes gaz et intrusion") 
+
+Le buzzer ne peut produire qu'une seule fréquence à la fois. Il alterne donc entre les deux signatures sonores par phases de 250 ms : d'abord 384 Hz pour l'intrusion, puis 440 Hz pour le gaz. Pendant la phase gaz, le buzzer suit le clignotement rapide de la LED rouge et se tait lorsque celle-ci est éteinte. Ce cycle de 500 ms se répète tant que les deux alarmes restent actives.
+
+Cette alternance permet de distinguer auditivement les deux alarmes sans empêcher leur signalisation visuelle simultanée : chaque LED conserve son rythme propre, même pendant la phase sonore de l'autre alarme.
+
+---
+
+## Scénario 9 – Bande de LED NeoPixel
 
 Pour afficher l'état de la maison de manière visuelle, nous avons ajouté en bonus un module de 4 LEDs NeoPixel (WS2812B) chaînées. Contrairement aux LEDs classiques de la maison, chaque NeoPixel contient un circuit intégré qui pilote lui-même ses 3 puces LED (rouge, verte, bleue) via une PWM sur 8 bits (256 niveaux par couleur).
 
@@ -2514,7 +2590,7 @@ Le signal est donc généré entièrement par le matériel, avec la précision d
 
 #### 3.1. Branchement
 
-La bande est alimentée en 3,3 V et son entrée de données DI est connectée à PB6 (D10), qui correspond à TIM4 CH1 (cf. [Bonus – 1.2. Tableau de brochage final](#12-tableau-de-brochage-final)).
+La bande est alimentée en 3,3 V et son entrée de données DI est connectée à PB6 (D10), qui correspond à TIM4 CH1 (cf. [Architecture globale – 1.2. Tableau de brochage final](#12-tableau-de-brochage-final)).
 
 | Signal | Broche |
 | :--- | :--- |
@@ -2661,7 +2737,7 @@ Pour ne jamais rien hardcoder, nous avons utilisé des `#define` pour chaque val
 ...
 ```
 
-- Les durées sont exprimées en nanosecondes comme dans la datasheet : elles sont converties en tics du timer par la bibliothèque (cf. [Bonus – Bibliothèque Bande LED RGB (WS2812B) - 6. Encodage et envoi de la trame](#6-encodage-et-envoi-de-la-trame)). Si on change la fréquence du timer, rien ne change dans la bibliothèque.
+- Les durées sont exprimées en nanosecondes comme dans la datasheet : elles sont converties en tics du timer par la bibliothèque (cf. [Scénario 9 – 6. Encodage et envoi de la trame](#6-encodage-et-envoi-de-la-trame)). Si on change la fréquence du timer, rien ne change dans la bibliothèque.
 - Les trois `BL_*_SEQ_RANG` donnent l'ordre d'envoi des couleurs (Vert, Rouge, Bleu). Si on utilisait une bande avec un autre ordre (par exemple RVB), il suffirait de modifier ces trois valeurs.
 - Les couleurs sont au format `0xRRGGBB` pour pouvoir les écrire naturellement, comme en HTML/CSS.
 
@@ -2802,7 +2878,7 @@ bande_led->leds[led_id].bleu  = hexa & 0xFF;
 
 La bibliothèque contient aussi `BandeLED_demo()`, non utilisée dans le `main.c` final, qui permet de tester rapidement la bande. Elle est conçue pour être appelée à 20 Hz sans bloquer : un compteur statique incrémenté à chaque appel fait défiler deux LEDs sur la roue chromatique à des vitesses différentes (fonction `Roue_Chromatique()` qui convertit une position de 0 à 255 en couleur RGB), et fait clignoter deux autres LEDs en blanc à des fréquences différentes, puis envoie la trame avec `BandeLED_show()`.
 
-### 8. Utilisation dans le code : tableau de bord LED
+### 8. Utilisation dans le code
 
 #### 8.1. Déclaration et initialisation
 
@@ -2870,7 +2946,7 @@ void initialiser_bande_led()
 3. **Les couleurs des trois LEDs qui n'ont qu'une seule signification sont affectées une seule fois ici** (alarme gaz, alarme intrusion, capteurs). Comme la couleur est mémorisée indépendamment de l'état `power`, il suffira ensuite de les allumer et de les éteindre sans jamais les recalculer. La LED de température est la seule dont la couleur varie, elle est donc gérée dans la boucle.
 4. Toutes les LEDs sont éteintes (`power = false`) pour démarrer proprement, puis `BandeLED_show()` envoie cet état.
 
-#### 8.2. Le tableau de bord
+#### 8.2. Informations transmises par les NeoPixels
 
 Les 4 NeoPixels affichent l'état de la maison :
 
@@ -2881,7 +2957,7 @@ Les 4 NeoPixels affichent l'état de la maison :
 | `LED_BAS_DROITE` (0) | Alarme intrusion | Orange | Clignote à 2 Hz pendant l'alarme |
 | `LED_BAS_GAUCHE` (3) | Tranche de température | Bleu / Vert / Orange | Froid / tempérée / chaude |
 
-Les trois premières LEDs **recopient l'état des LEDs discrètes déjà gérées** : `led_capteurs`, `led_alarme_gaz` et `led_alarme_intrusion` ([Defines et types personnalisés - 3. Structure pour les LEDs](#6-structure-pour-les-leds)). Les clignotements restent donc calculés à un seul endroit par le compteur partagé ([Bonus – Gestion globale des alarmes - 1. Clignotement non bloquant par compteur partagé](#1-clignotement-non-bloquant-par-compteur-partagé)), et les NeoPixels n'ont pas leur propre logique de temporisation : ils affichent simplement le même état que les LEDs soudées.
+Les trois premières LEDs **recopient l'état des LEDs discrètes déjà gérées** : `led_capteurs`, `led_alarme_gaz` et `led_alarme_intrusion` ([Defines et types personnalisés - 3. Structure pour les LEDs](#6-structure-pour-les-leds)). Les clignotements restent donc calculés à un seul endroit par le compteur partagé ([Scénario 8 – 1. Clignotement non bloquant par compteur partagé](#1-clignotement-non-bloquant-par-compteur-partagé)), et les NeoPixels n'ont pas leur propre logique de temporisation : ils affichent simplement le même état que les LEDs soudées.
 
 #### 8.3. Mise à jour périodique
 
@@ -2917,7 +2993,7 @@ void update_bande_led()
 
 1. **Recopie des états :** les états `state` des trois LEDs discrètes sont copiés dans le `power` des LEDs correspondantes. Si l'état n'a pas changé, la valeur écrite est identique.
 2. **Tranche de température :** la LED est toujours allumée, et c'est sa couleur qui change selon la variable `temperature` calculée par `evaluer_temperature()` ([Scénario 6 – 12. Gestion automatique de la fenêtre par la température](#12-gestion-automatique-de-la-fenêtre-par-la-température)). Le `default` éteint la LED si la valeur n'est pas reconnue.
-3. **Envoi d'une seule trame** avec `BandeLED_show()` après toutes les modifications ([Bonus – Bibliothèque Bande LED RGB (WS2812B) - 7. Modification de l'état des LEDs](#7-modification-de-létat-des-leds)).
+3. **Envoi d'une seule trame** avec `BandeLED_show()` après toutes les modifications ([Scénario 9 – 7. Modification de l'état des LEDs](#7-modification-de-létat-des-leds)).
 
 Cette fonction est appelée dans la boucle `while(1)` **à la cadence de 20 Hz** du Timer 5, c'est-à-dire sur le même flag que le filtre anti-rebond et le cycle des alarmes :
 
@@ -2931,87 +3007,9 @@ if (timer_debounce_flag) {
 ```
 
 Cette cadence est justifiée de deux manières :
-- **Cohérence avec les alarmes :** l'alarme gaz clignote à 10 Hz, donc sa LED change d'état toutes les 50 ms ([Bonus – Gestion globale des alarmes - 1. Clignotement non bloquant par compteur partagé](#1-clignotement-non-bloquant-par-compteur-partagé)). `update_cycle_alarmes()` et `update_bande_led()` étant appelées à la suite sur le même tic de 20 Hz, chaque changement d'état est envoyé aux NeoPixels dans le même tic, sans retard ni état manqué.
+- **Cohérence avec les alarmes :** l'alarme gaz clignote à 10 Hz, donc sa LED change d'état toutes les 50 ms ([Scénario 8 – 1. Clignotement non bloquant par compteur partagé](#1-clignotement-non-bloquant-par-compteur-partagé)). `update_cycle_alarmes()` et `update_bande_led()` étant appelées à la suite sur le même tic de 20 Hz, chaque changement d'état est envoyé aux NeoPixels dans le même tic, sans retard ni état manqué.
 - **Temps de transmission :** une trame dure $\approx 171\, \mu\text{s}$, soit environ 300 fois moins que les 50 ms qui séparent deux mises à jour : la transmission d'une trame est toujours terminée bien avant la suivante.
 
 #### 8.4. Respect de la règle « pas de blocage »
 
-Dans le prolongement de la règle de [Bonus – 3. Organisation logicielle](#3-organisation-logicielle), l'utilisation des NeoPixels ne bloque jamais le programme : le CPU n'écrit que quelques dizaines de valeurs dans un tableau et lance le DMA, qui génère ensuite les 137 périodes de PWM tout seul. La boucle principale continue de traiter les boutons, capteurs et alarmes pendant la transmission.
-
----
-
-## Bonus – Gestion globale des alarmes
-
-
-### 1. Clignotement non bloquant par compteur partagé
-
-Pour gérer les différentes alarmes sans interrompre l'exécution du programme, nous avons exploité le Timer 5, configuré à 20 Hz (soit une interruption toutes les 50 ms). À chaque itération de ce timer, un compteur global `blink_counter_alarm` est incrémenté.
-Le clignotement de chaque LED est obtenu en calculant le nombre de périodes du Timer à 20 Hz qui doivent s'écouler pour atteindre la demi-période de la fréquence de clignotement cible, moment où l'état de la LED s'inverse :  
-- L'alarme gaz est définie pour clignoter à 10 Hz. Ainsi, sa demi-période est atteinte à 20 Hz, ce qui correspond à la fréquence du Timer 5. La LED s'inverse donc à chaque tic du Timer 5. 
-- L'alarme intrusion clignote à 2 Hz. Ainsi, sa demi-période est atteinte à 4 Hz, ce qui correspond exactement à un cinquième ($5$ tics) de la fréquence du Timer 5. La LED s'inverse donc tous les 5 tics du Timer 5.
-
-Ce mécanisme est fondamentalement non bloquant : au lieu d'utiliser des délais logiciels d'attente (`HAL_Delay`), le microcontrôleur évalue instantanément une simple condition mathématique (avec un modulo sur le compteur de tics du Timer 5) à chaque fin de période, afin de déterminer s'il faut inverser ou non l'état de la broche. Une fois l'évaluation terminée, il poursuit immédiatement l'exécution de la boucle principale.
-
-> Comme pour le debounce, ce délai est porté par un timer recyclé plutôt que par le compteur de millisecondes du SysTick. Le détail de ce choix est présenté dans [Bonus – 4. Recyclage des timers](#4-recyclage-des-timers).
-
-### 2. Gestion du buzzer avec fréquences distinctes
-
-#### 2.1. Configuration du Timer PWM
-
-Pour générer nos signaux PWM destinés au buzzer, nous cherchons à maximiser la précision de comptage du Timer 3 tout en respectant sa contrainte matérielle de 16 bits (capacité maximale du registre ARR : $2^{16} - 1 = 65\,535$).
-
-Les contraintes pour le calcul sont :
-- La fréquence minimale à générer est de $384\text{ Hz}$ (alarme intrusion).
-- Le registre ARR est codé sur 16 bits ($\le 65\,535$).
-- La fréquence d'horloge source du bus est de $100\text{ MHz}$.
-
-On cherche la fréquence de comptage maximale $f$ permettant d'obtenir le plus de précision et la note la plus basse sans saturer le registre ARR :
-
-$$ARR = \frac{f}{384\, \text{Hz}} \leq 65\,535$$
-$$f \leq 384 \times 65\,535 \approx 25{,}16\, \text{MHz}$$
-
-On sélectionne une fréquence de comptage de **$25\text{ MHz}$**, qui est un diviseur entier de l'horloge source de $100\text{ MHz}$ :
-
-$$\implies \text{PSC} = \frac{100\, \text{MHz}}{25\, \text{MHz}} - 1 = 4 - 1$$
-
-À partir de cette fréquence de base de $25\text{ MHz}$, nous calculons la période (`ARR`) et l'impulsion (`CCR`) pour chaque alarme. La valeur de comparaison `CCR` est fixée à la moitié de la période afin d'obtenir un rapport cyclique de 50 % (onde carrée) pour le buzzer :
-
-- Alarme Gaz (440 Hz) :
-  $$ARR_{440\text{Hz}} = \frac{25\,000\,000}{440} - 1 = 56\,818 - 1$$
-  $$CCR_{440\text{Hz}} = \frac{ARR_{440\text{Hz}} + 1}{2} = \mathbf{28\,409}$$
-
-- Alarme Intrusion (384 Hz) :
-  $$ARR_{384\text{Hz}} = \frac{25\,000\,000}{384} - 1 = 65\,104 - 1$$
-  $$CCR_{384\text{Hz}} = \frac{ARR_{384\text{Hz}} + 1}{2} = \mathbf{32\,552}$$
-   
-#### 2.2. Configuration sur CubeMX
-
-<img src="media/stm32cubeide_Timer_3.png">
-
-#### 2.3. Fréquences distinctes pour chaque alarme
-
-Pour permettre à l'utilisateur de différencier les alertes à l'oreille, la fréquence du signal est ajustée de manière dynamique via la fonction `frequence_buzzer()`. Cette fonction recalcule et met à jour en temps réel la période (registre `ARR`) et l'impulsion (registre `CCR`) du Timer 3.
-```c
-void frequence_buzzer(int frequence) 
-{
-	int periode_tics = (double)FREQ_TIMER_BUZZER/frequence;
-	int pulse_tics   = periode_tics/2;
-	__HAL_TIM_SET_AUTORELOAD(TIMER_BUZZER, periode_tics);
-	__HAL_TIM_SET_COMPARE(TIMER_BUZZER, CANAL_BUZZER, pulse_tics);
-}
-```
-Nous avons donc choisi des fréquences distinctes pour chaque alarme :
-- Alarme gaz : 440 Hz (note La4 fondamentale), produisant un son plus aigu avec un rythme rapide.
-- Alarme intrusion : 384 Hz, produisant un son légèrement plus grave.
-
-De plus, l'activation du buzzer est synchronisée avec le retour visuel : le signal PWM du buzzer est activé uniquement lorsque la LED de l'alarme correspondante est à l'état haut et le buzzer se tait lorsque la LED s'éteint, suivant ainsi le rythme visuel de la LED. On obtient donc deux signatures distinctes pour chaque alarme.
-
-### 3. Cas simultané : alternance gaz / intrusion
-
-Lorsque les deux alarmes sont actives simultanément, les deux LEDs continuent de clignoter indépendamment selon leur propre fréquence : la LED rouge du gaz à 10 Hz (demi-période de 50 ms) et la LED jaune de l'intrusion à 2 Hz (demi-période de 250 ms).
-
-![one_note_cycle_alarmes](media/onenote_cycle_alarmes.png "Cycle des alarmes gaz et intrusion") 
-
-Le buzzer ne peut produire qu'une seule fréquence à la fois. Il alterne donc entre les deux signatures sonores par phases de 250 ms : d'abord 384 Hz pour l'intrusion, puis 440 Hz pour le gaz. Pendant la phase gaz, le buzzer suit le clignotement rapide de la LED rouge et se tait lorsque celle-ci est éteinte. Ce cycle de 500 ms se répète tant que les deux alarmes restent actives.
-
-Cette alternance permet de distinguer auditivement les deux alarmes sans empêcher leur signalisation visuelle simultanée : chaque LED conserve son rythme propre, même pendant la phase sonore de l'autre alarme.
+Dans le prolongement de la règle de [Architecture globale – 3. Organisation logicielle](#3-organisation-logicielle), l'utilisation des NeoPixels ne bloque jamais le programme : le CPU n'écrit que quelques dizaines de valeurs dans un tableau et lance le DMA, qui génère ensuite les 137 périodes de PWM tout seul. La boucle principale continue de traiter les boutons, capteurs et alarmes pendant la transmission.

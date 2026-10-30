@@ -2762,7 +2762,7 @@ Cette alternance permet de distinguer auditivement les deux alarmes sans empêch
 
 ## Scénario 9 – Bande de LED NeoPixel
 
-Pour afficher l'état de la maison de manière visuelle, nous avons ajouté en bonus un module de 4 LEDs NeoPixel (WS2812B) chaînées. Contrairement aux LEDs classiques de la maison, chaque NeoPixel contient un circuit intégré qui pilote lui-même ses 3 puces LED (rouge, verte, bleue) via une PWM sur 8 bits (256 niveaux par couleur).
+Pour afficher l'état de la maison de manière visuelle, nous avons ajouté en bonus un module de 4 LEDs NeoPixel (WS2812B) chaînées. Contrairement aux LEDs classiques de la maison, chaque NeoPixel est un circuit intégré qui pilote lui-même ses 3 LEDs (rouge, verte, bleue) via une PWM, sur 8 bits par couleur (256 niveaux par couleur).
 
 ### 1. Analyse de la datasheet (protocole one-wire)
 
@@ -2781,7 +2781,7 @@ Les LEDs n'ont qu'une seule broche d'entrée de données (DI) et une broche de s
 
 <img src="media/programmation_neopixel_datasheet.png"/>
 
-Le microcontrôleur n'est connecté qu'à la première LED de la chaîne et envoie à la suite **24 bits par LED** (8 bits par couleur, dans l'ordre Vert, Rouge, Bleu, bit de poids fort en premier). Chaque LED garde pour elle les 24 premiers bits qu'elle reçoit et retransmet les suivants à la LED suivante. Pour notre bande de 4 LEDs, une trame comporte donc $4 \times 24 = 96$ bits.
+La STM32 n'est connectée qu'à la première LED de la chaîne et envoie à la suite **24 bits par LED** (8 bits par couleur, dans l'ordre Vert, Rouge, Bleu, bit de poids fort en premier). Chaque LED garde pour elle les 24 premiers bits qu'elle reçoit et retransmet les suivants à la LED suivante. Pour notre bande de 4 LEDs, une trame comporte donc $4 \times 24 = 96$ bits.
 
 Pour que chaque LED enregistre sa couleur, la trame doit être suivie d'un état bas d'au moins 50 µs (« reset ») : c'est ce temps de silence qui réinitialise le mécanisme de transmission, afin que la trame suivante soit de nouveau lue depuis la première LED.
 
@@ -2789,13 +2789,13 @@ Durée d'une trame complète pour 4 LEDs :
 
 $$T_{trame} = 96 \times 1{,}25\, \mu\text{s} = 120\, \mu\text{s} \qquad T_{trame+reset} \approx 120\, \mu\text{s} + 50\, \mu\text{s} = 170\, \mu\text{s}$$
 
-### 2. Principe d'implémentation : PWM + DMA
+### 2. Utilisation d'un PWM avec un DMA
 
-Le protocole impose un signal dont les fronts doivent être précis à quelques dizaines de nanosecondes près. À 100 MHz, une période de bit de 1,25 µs ne représente que 125 cycles d'horloge, ce qui exclut les approches logicielles :
+Le protocole impose un signal dont les fronts doivent être précis à quelques dizaines de nanosecondes près. À 100 MHz, une période de bit de 1,25 µs ne représente que 125 cycles d'horloge, donc on a cherché directement une solution matérielle :
 
-**Solution retenue : PWM de timer + DMA** :
-* Chaque bit est une période de PWM. Le rapport cyclique de la période encode la valeur du bit : un état haut court pour un bit 0 et un état haut long pour un bit 1.
-* Le DMA recopie, à chaque période, la valeur suivante dans le registre de comparaison `CCR1` du timer, depuis un tableau en mémoire. Le CPU ne fait que remplir le tableau, puis lance le transfert : il n'intervient plus pendant les 120 µs de la trame.
+* Chaque bit correspond à une période de PWM où le rapport cyclique (Pulse) encode la valeur du bit : court pour la valeur 0 et long pour la valeur 1.
+* On créée un tableau qui contient la séquence binaire de la trame à envoyer sous forme d'une séquence de rapports cycliques correspondant aux bits.
+* Le DMA recopie, à chaque période, la valeur suivante dans le registre de comparaison `CCR1` du timer, depuis le tableau en mémoire. Le CPU ne fait que remplir le tableau, puis lance le transfert : il n'intervient plus pendant les 120 µs de la trame.
 
 Le signal est donc généré entièrement par le matériel, avec la précision du timer.
 
@@ -2803,7 +2803,7 @@ Le signal est donc généré entièrement par le matériel, avec la précision d
 
 #### 3.1. Branchement
 
-La bande est alimentée en 3,3 V et son entrée de données DI est connectée à PB6 (D10), qui correspond à TIM4 CH1 (cf. [Architecture globale – 1.2. Tableau de brochage final](#12-tableau-de-brochage-final)).
+La bande est alimentée en 3,3 V (c'était déjà bien assez éblouissant à 3,3V, nous n'avons pas tenté 5V) et son entrée de données DI est connectée à PB6 (D10), qui correspond à TIM4 CH1 (cf. [Architecture globale – 1.2. Tableau de brochage final](#12-tableau-de-brochage-final)).
 
 | Signal | Broche |
 | :--- | :--- |
@@ -2811,18 +2811,24 @@ La bande est alimentée en 3,3 V et son entrée de données DI est connectée à
 | GND | GND |
 | DI | PB6 (D10) — TIM4 CH1 |
 
-#### 3.2. Calcul des paramètres du Timer 4
+#### 3.2. Calcul des paramètres du Timer
 
-Comme pour les autres timers, le Timer 4 est alimenté par l'horloge à 100 MHz.
+Comme pour les autres timers, le Timer 4 est alimenté par l'horloge interne à 100 MHz.
 
-Les contraintes pour le calcul sont :
-- La période d'un bit est de $1{,}25\, \mu\text{s}$, soit une fréquence PWM de $800\, \text{kHz}$.
+Les contraintes pour le calcul de ARR sont :
+- On veut une fréquence PWM de $800\, \text{kHz}$ (période de 1,25 µs).
 - La largeur d'impulsion doit pouvoir valoir $400\, \text{ns}$ et $800\, \text{ns}$, avec une tolérance de $\pm 150\, \text{ns}$.
 - La fréquence de l'horloge source est de $100\, \text{MHz}$.
 
-La période de 1,25 µs correspond à un petit nombre de tics, il n'y a donc pas besoin de diviser l'horloge : au contraire, on garde la résolution maximale avec `PSC = 0` :
+Pour bien contrôler la précision de l'encodage, on a cherché à avoir la résolution maximale. Comme la fréquence PWM est très élevée, ARR ne risque pas d'être saturé même en gardant une fréquence de comptage la plus haute possible à 100 MHz :
 
-$$T_{tic} = \frac{1}{100\, \text{MHz}} = 10\, \text{ns}$$
+$$PSC = \frac{f_{clk}}{f_{counter}} - 1 = \frac{100\, \text{MHz}}{100\, \text{MHz}} - 1 = 0$$
+
+On a donc : 
+
+$$f_{timer} = f_{counter} = 100\, \text{MHz}$$  
+et  
+$$T_{tic} = \frac{1}{f_{timer}} = \frac{1}{100\, \text{MHz}} = 10\, \text{ns}$$
 
 Cette résolution de 10 ns est très inférieure à la tolérance de 150 ns de la datasheet. On en déduit la période du timer :
 
@@ -2830,9 +2836,8 @@ $$ARR = \frac{100\, \text{MHz}}{800\, \text{kHz}} - 1 = 125 - 1 = 124$$
 
 Et les valeurs de `CCR1` pour chaque valeur de bit :
 
-$$CCR_{bit\,0} = \frac{400\, \text{ns}}{10\, \text{ns}} = \mathbf{40} \quad (32\,\%) \qquad CCR_{bit\,1} = \frac{800\, \text{ns}}{10\, \text{ns}} = \mathbf{80} \quad (64\,\%)$$
-
-Les durées à l'état bas sont donc : $(125 - 40) \times 10\, \text{ns} = 850\, \text{ns}$ pour un 0 et $(125 - 80) \times 10\, \text{ns} = 450\, \text{ns}$ pour un 1.
+$$CCR_{bit\,0} = \frac{400\, \text{ns}}{T_{tic}} = \frac{400\, \text{ns}}{10\, \text{ns}} = \mathbf{40} \text{ tics} \quad (32\,\%)$$
+$$ CCR_{bit\,1} = \frac{800\, \text{ns}}{T_{tic}} = \frac{800\, \text{ns}}{10\, \text{ns}} = \mathbf{80} \text{ tics} \quad (64\,\%)$$
 
 #### 3.3. Configuration du Timer 4 dans CubeMX
 

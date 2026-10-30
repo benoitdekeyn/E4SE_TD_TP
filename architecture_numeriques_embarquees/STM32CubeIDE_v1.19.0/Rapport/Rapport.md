@@ -428,7 +428,9 @@ Pour éviter les erreurs de recopie, faciliter la compréhension du code et surt
 #### 5.1. Defines matériels
 
 Voici les `#define`s matériels définis dans le main.c qui permettent de pointer vers les différents périphériques sans avoir à changer toutes les occurrences en cas de changement dans le .ioc :
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE PD
 #define ADC_CAPTEURS    (&hadc1)
 #define BUS_I2C         (&hi2c3)
 #define TIMER_CAPTEURS  (&htim2)
@@ -450,7 +452,9 @@ Nous avons défini un type structure `LED_t` pour représenter une LED et son é
 - On peut associer un nom fonctionnel à un label matériel (ex : ```led_capteurs``` est redirigée vers ```LED_BLEUE```), ce qui donne plus de sens au code sans insérer des choix logiciels dans la configuration du ```.ioc```.
 
 Voici la définition du type `LED_t` dans le ```main.c``` : 
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE PTD
 typedef struct {
     GPIO_TypeDef *port;
     uint16_t pin;
@@ -459,7 +463,9 @@ typedef struct {
 ```
 
 Voici un exemple de déclaration de LED dans le ```main.c``` :
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE PV
 LED_t led_capteurs = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pin, false};
 ...
 ```
@@ -467,7 +473,9 @@ LED_t led_capteurs = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pin, false};
 
 Dans la boucle while(1) de la fonction main, nous appelons à chaque itération la fonction de commande des LEDs, qui va modifier l'état des LEDs en fonction de leur état mémorisé :
 
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 0
 void commande_led()
 {
   if (led_capteurs.state) {
@@ -525,7 +533,9 @@ On choisit donc `ARR = 20 000 - 1 = 19 999`.
 Pour être informé de la mise à jour des capteurs par le timer TIM2, nous avons codé le changement d'état de la LED bleue à chaque interruption de fin de comptage générée par le TIM2 en passant par un flag :
 
 Dans la section `USER CODE 4` du `main.c` :
+<!-- code:Core/Src/main.c -->
 ```c
+// Dans la section USER CODE 4
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim == TIMER_CAPTEURS)
@@ -538,7 +548,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 Dans la boucle while(1) de la fonction main, nous vérifions le flag à chaque itération :
 
+<!-- code:Core/Src/main.c -->
 ```c
+  // Dans la boucle principale while (1) de la fonction main()
   if (timer_capteurs_flag) {
     timer_capteurs_flag = false;
     led_capteurs.state = !led_capteurs.state;
@@ -554,6 +566,7 @@ En observant la LED à l'oscilloscope, nous avons pu vérifier que la période d
 
 Au début, nous avions utilisé le Timer 3 de manière totalement arbitraire, sans `#define` personnalisé pour les objets HAL, sans structure pour les LED, et sans flag pour les routines d'interruption :
 
+<!-- code:Core/Src/main.c -->
 ```c
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     if (htim->Instance == TIM3) {

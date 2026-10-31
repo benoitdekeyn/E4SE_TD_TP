@@ -1,6 +1,12 @@
 #include "tmp102.h"
 
-// Reglages par defaut du capteur TMP102
+/**
+ * @brief  Initialise l'objet TMP102 avec les réglages par défaut.
+ *         Le bus I2C reste à NULL : il doit être renseigné par l'appelant avant d'appeler TMP102_apply_registers().
+ *         // cf rapport : Scénario 6 – 6.2. Valeurs par défaut
+ * @param  tmp102 Pointeur vers l'objet TMP102 à initialiser
+ * @return None
+ */
 void TMP102_init_default(TMP102_t *tmp102) 
 {
     if (tmp102 == NULL) 
@@ -26,7 +32,17 @@ void TMP102_init_default(TMP102_t *tmp102)
     tmp102->config.Padding          = TMP102_PADD_DEFAULT;
 }
 
-// Mapping des champs du registre de configuration
+/**
+ * @brief  Synchronise le buffer du registre de configuration (2 octets) avec la structure TMP102_Config_t.
+ *         Une seule boucle générique parcourt la table de mapping des champs.
+ *         En écriture, le buffer doit être initialisé à 0 car l'encodage se fait par OU binaire.
+ *         // cf rapport : Scénario 6 – 4.4. Organisation des champs du registre de configuration
+ *         // cf rapport : Scénario 6 – 4.5. Synchronisation entre le registre de configuration et l'objet TMP102
+ * @param  tmp102   Pointeur vers l'objet TMP102
+ * @param  buffer   Buffer du registre de configuration (2 octets)
+ * @param  is_write WRITE : structure -> buffer, READ : buffer -> structure
+ * @return None
+ */
 static void TMP102_SyncConfigBuffer(TMP102_t *tmp102, uint8_t *buffer, bool is_write) 
 {
     TMP102_FieldMap_t fields[] = {
@@ -46,23 +62,35 @@ static void TMP102_SyncConfigBuffer(TMP102_t *tmp102, uint8_t *buffer, bool is_w
 
     uint8_t num_fields = sizeof(fields) / sizeof(fields[0]);
 
+    // Parcours de tous les champs pour la synchronisation entre la structure et le buffer
     for (uint8_t i = 0; i < num_fields; i++) 
     {
+        // Masque de la taille du champ (ex : 2 bits -> 0b11)
         uint8_t mask = (1U << fields[i].length) - 1;
         
         if (is_write) 
         {
-            // Encode : Structure -> Buffer
+            // Encode : Structure -> Buffer (masque, décalage à la position du champ, puis OU binaire)
+            // Cf rapport : Scénario 6 – 4.5. Synchronisation entre le registre de configuration et l'objet TMP102
             buffer[fields[i].byte_idx] |= (*fields[i].value_ptr & mask) << fields[i].position;
         } 
         else 
         {
-            // Décode : Buffer -> Structure
+            // Décode : Buffer -> Structure (décalage vers le LSB, puis masque)
+            // Cf rapport : Scénario 6 – 4.5. Synchronisation entre le registre de configuration et l'objet TMP102
             *fields[i].value_ptr = (buffer[fields[i].byte_idx] >> fields[i].position) & mask;
         }
     }
 }
 
+/**
+ * @brief  Convertit une température en °C vers la valeur brute du registre (2 octets, aligné à gauche).
+ *         // cf rapport : Scénario 6 – 8.2. Température en °C → Registre brut
+ * @param  temperature   Température en °C
+ * @param  reg_value     Buffer de sortie (2 octets : octet de poids fort puis de poids faible)
+ * @param  extended_mode true : mode étendu (13 bits), false : mode normal (12 bits)
+ * @return None
+ */
 static void TMP102_celsius_to_register(float temperature, uint8_t *reg_value, bool extended_mode) 
 {
     // Sur combien de bits est codée la température
@@ -84,10 +112,17 @@ static void TMP102_celsius_to_register(float temperature, uint8_t *reg_value, bo
     reg_value[1] = (uint8_t)(raw_reg & 0xFF);
 }
 
+/**
+ * @brief  Convertit la valeur brute du registre de température (complément à 2) en °C.
+ *         // cf rapport : Scénario 6 – 8.1. Registre brut → température en °C
+ * @param  reg_value   Octets lus dans le registre de température (2 octets)
+ * @param  temperature Pointeur vers la température en °C (sortie)
+ * @return None
+ */
 static void TMP102_register_to_celsius(uint8_t *reg_value, float *temperature) 
 {
     // Sur combien de bits est codée la température
-    // en mode etendu, le dernier bit (LSB) du second byte indique le mode étendu
+    // En mode étendu, le bit D0 (LSB) du second octet vaut 1
     bool extended_mode = (reg_value[1] & 0x01) != 0;
     uint8_t temp_length = (extended_mode) 
                         ? TMP102_EXT_BIT_LEN 
@@ -99,15 +134,26 @@ static void TMP102_register_to_celsius(uint8_t *reg_value, float *temperature)
     // Décalage à droite avec extension du signe
     int16_t reg_val = (int16_t)raw_reg >> (16 - temp_length);
     
-    // conversion de la valeur du capteur en degres celsius
+    // Conversion de la valeur du capteur en degrés Celsius (1 LSB = 0,0625 °C)
     *temperature = (float)reg_val * TMP102_TEMP_RESOLUTION;
 }
 
+/**
+ * @brief  Écrit le registre de configuration du capteur d'après les réglages de l'objet TMP102.
+ *         // cf rapport : Scénario 6 – 5.1. Application du registre de configuration
+ * @param  tmp102 Pointeur vers l'objet TMP102
+ * @return true si la transaction I2C a réussi, false sinon
+ */
 static bool TMP102_write_config_reg(TMP102_t *tmp102) 
 {
+    // Initialisation du buffer de configuration à zéro
+    // (important pour les bitwise operations de la fonction TMP102_SyncConfigBuffer)
     uint8_t config_reg_bytes[TMP102_NBR_CONFIG_REG_BYTES] = {0};
+
+    // Synchronisation du buffer de configuration avec l'objet TMP102 avant l'écriture
     TMP102_SyncConfigBuffer(tmp102, config_reg_bytes, WRITE);
 
+    // Écriture du buffer de configuration sur le capteur via I2C
     bool i2c_ok = (HAL_I2C_Mem_Write(tmp102->busI2C, 
                                      tmp102->address, 
                                      TMP102_REG_CONFIG, 
@@ -121,13 +167,24 @@ static bool TMP102_write_config_reg(TMP102_t *tmp102)
     {
         return false;
     }
+    // Si l'écriture I2C a réussi, on retourne true
     return true;
 }
 
+/**
+ * @brief  Lit le registre de configuration du capteur et met à jour les réglages de l'objet TMP102.
+ *         Utilisée pour lire le bit OS lors d'une mesure One-Shot.
+ *         // cf rapport : Scénario 6 – 5.1. Application du registre de configuration
+ *         // cf rapport : Scénario 6 – 9.3. Attendre la fin de la mesure
+ * @param  tmp102 Pointeur vers l'objet TMP102
+ * @return true si la transaction I2C a réussi, false sinon
+ */
 static bool TMP102_read_config_reg(TMP102_t *tmp102) 
 {
+    // Initialisation du buffer de configuration pour la lecture
     uint8_t config_reg_bytes[TMP102_NBR_CONFIG_REG_BYTES] = {0};
 
+    // Lecture du registre de configuration du capteur via I2C
     bool i2c_ok = (HAL_I2C_Mem_Read(tmp102->busI2C, 
                                     tmp102->address, 
                                     TMP102_REG_CONFIG, 
@@ -142,16 +199,26 @@ static bool TMP102_read_config_reg(TMP102_t *tmp102)
         return false;
     }
 
+    // Synchronisation du buffer de configuration avec l'objet TMP102 après la lecture
     TMP102_SyncConfigBuffer(tmp102, config_reg_bytes, READ);
     return true;
 }
 
+/**
+ * @brief  Écrit les registres de seuil T_LOW puis T_HIGH, convertis en valeurs brutes.
+ *         // cf rapport : Scénario 6 – 5.2. Application des registres de seuil de température
+ * @param  tmp102 Pointeur vers l'objet TMP102
+ * @return true si les deux écritures I2C ont réussi, false sinon
+ */
 static  bool TMP102_write_T_LOW_T_HIGH_reg(TMP102_t *tmp102) 
 {
     // Registre T_LOW
+
+    // Conversion de la température T_LOW en valeurs brutes pour le registre
     uint8_t t_low_reg_bytes[TMP102_NBR_REG_TEMP_BYTES];
     TMP102_celsius_to_register(tmp102->T_Low, t_low_reg_bytes, tmp102->config.ExtendedMode);
     
+    // Écriture du registre T_LOW sur le capteur via I2C
     bool i2c_ok = (HAL_I2C_Mem_Write(tmp102->busI2C, 
                                      tmp102->address, 
                                      TMP102_REG_TLOW, 
@@ -167,9 +234,12 @@ static  bool TMP102_write_T_LOW_T_HIGH_reg(TMP102_t *tmp102)
     }
 
     // Registre T_HIGH
+
+    // Conversion de la température T_HIGH en valeurs brutes pour le registre
     uint8_t t_high_reg_bytes[TMP102_NBR_REG_TEMP_BYTES];
     TMP102_celsius_to_register(tmp102->T_High, t_high_reg_bytes, tmp102->config.ExtendedMode);
     
+    // Écriture du registre T_HIGH sur le capteur via I2C
     i2c_ok = (HAL_I2C_Mem_Write(tmp102->busI2C, 
                                 tmp102->address, 
                                 TMP102_REG_THIGH, 
@@ -187,6 +257,13 @@ static  bool TMP102_write_T_LOW_T_HIGH_reg(TMP102_t *tmp102)
     return true;
 }
 
+/**
+ * @brief  Applique tous les réglages de l'objet TMP102 au capteur (registre de configuration, puis T_LOW et T_HIGH).
+ *         // cf rapport : Scénario 6 – 5.1. Application du registre de configuration
+ *         // cf rapport : Scénario 6 – 5.2. Application des registres de seuil de température
+ * @param  tmp102 Pointeur vers l'objet TMP102
+ * @return true si toutes les écritures ont réussi, false sinon
+ */
 bool TMP102_apply_registers(TMP102_t *tmp102) 
 {
     // Écriture du registre de configuration d'après les valeurs stockées dans la structure
@@ -195,7 +272,7 @@ bool TMP102_apply_registers(TMP102_t *tmp102)
         return false;
     }
 
-    // Ecriture des registres T_LOW et T_HIGH
+    // Écriture des registres T_LOW et T_HIGH
     if (!TMP102_write_T_LOW_T_HIGH_reg(tmp102)) 
     {
         return false;
@@ -204,10 +281,21 @@ bool TMP102_apply_registers(TMP102_t *tmp102)
     return true;
 }
 
+/**
+ * @brief  Lit le registre de température et le convertit en °C.
+ *         En cas d'erreur I2C, *Temperature vaut -999.0f.
+ *         // cf rapport : Scénario 6 – 7.1. Fonction de lecture
+ * @param  tmp102      Pointeur vers l'objet TMP102
+ * @param  Temperature Pointeur vers la température en °C (sortie)
+ * @return true si la lecture I2C a réussi, false sinon
+ */
 static bool TMP102_read_temperature_register(TMP102_t *tmp102, float *Temperature) 
 {
+    // Initialisation du buffer de lecture du registre de température
+    // Mise à zéro du buffer avant la lecture pour la fonction TMP102_register_to_celsius
     uint8_t buffer_temp_reg[TMP102_NBR_REG_TEMP_BYTES] = {0};
 
+    // Lecture du registre de température via I2C
     bool i2c_ok = (HAL_I2C_Mem_Read(tmp102->busI2C, 
                                     tmp102->address, 
                                     TMP102_REG_TEMP, 
@@ -217,64 +305,113 @@ static bool TMP102_read_temperature_register(TMP102_t *tmp102, float *Temperatur
                                     TMP102_I2C_TIMEOUT)
                    == HAL_OK);
 
+    // Vérification du succès de la lecture I2C
     if (!i2c_ok) 
     {
+        // En cas d'erreur I2C, on écrit une valeur aberrante et retourne false
         *Temperature = -999.0f;
         return false;
     }
 
+    // Conversion des valeurs brutes du registre en température en °C
     TMP102_register_to_celsius(buffer_temp_reg, Temperature);
 
     return true;
 }
 
-// Démarre une conversion One-Shot, uniquement si en mode shutdown
+/**
+ * @brief  Démarre une conversion One-Shot, uniquement si le capteur est en mode Shutdown.
+ *         Positionne le flag interne de mesure en cours, puis écrit le bit OS à 1.
+ *         // cf rapport : Scénario 6 – 9.1. Mode Continous vs Shutdown
+ *         // cf rapport : Scénario 6 – 9.2. Déclencher une mesure One-Shot
+ * @param  tmp102 Pointeur vers l'objet TMP102
+ * @return true si la mesure a été déclenchée, false sinon
+ */
 bool TMP102_start_measure(TMP102_t *tmp102) 
 {
+    // Vérification que le capteur est en mode Shutdown avant de démarrer une mesure One-Shot
     if (tmp102->config.Mode != TMP102_MODE_SHUTDOWN) 
     {
         return false;
     }
 
+    // Positionnement du flag interne de mesure en cours
     tmp102->is_measuring_one_shot = true;
 
+    // Écriture du bit OS à 1 pour démarrer la mesure One-Shot
     tmp102->config.OneShot = TMP102_OS_START_MEASURE;
     return (TMP102_write_config_reg(tmp102));
 }
 
+/**
+ * @brief  Teste (sans bloquer) si la mesure One-Shot est terminée : le bit OS vaut 0 pendant la mesure et 1 une fois terminée.
+ *         À appeler périodiquement (polling) jusqu'à obtenir true.
+ *         // cf rapport : Scénario 6 – 9.3. Attendre la fin de la mesure
+ * @param  tmp102 Pointeur vers l'objet TMP102
+ * @return true si la mesure est terminée, false si elle est en cours ou en cas d'erreur
+ */
 bool TMP102_is_measure_ready(TMP102_t *tmp102) 
 {
+    // Vérification que la mesure One-Shot est en cours
     if (!tmp102->is_measuring_one_shot) 
     {
         return false;
     }
+    // Vérification que le capteur est toujours en mode Shutdown
     if (tmp102->config.Mode != TMP102_MODE_SHUTDOWN) 
     {
         return false;
     }
+    // Lecture du registre de configuration pour pouvoir vérifier le bit OS
     if (!TMP102_read_config_reg(tmp102)) 
     {
         return false;
     }
+    // Vérification de si la mesure est toujours en cours (bit OS = 0)
     if (tmp102->config.OneShot == TMP102_OS_MEASURING) 
     {
         return false;
     }
+    // La mesure est terminée (bit OS = 1)
+    // donc on met à jour le flag interne et retourne true
     tmp102->is_measuring_one_shot = false;
     return true;
 }
 
+/**
+ * @brief  Récupère la température mesurée par le capteur, en °C.
+ *         // cf rapport : Scénario 6 – 7.2. Appel externe
+ *         // cf rapport : Scénario 6 – 9.4. Lire la température actualisée
+ * @param  tmp102      Pointeur vers l'objet TMP102
+ * @param  Temperature Pointeur vers la température en °C (sortie, -999.0f en cas d'erreur)
+ * @return true si la lecture a réussi, false sinon
+ */
 bool TMP102_get_temperature(TMP102_t *tmp102, float *Temperature) 
 {
+    // Lecture de la température depuis le registre du capteur
     return TMP102_read_temperature_register(tmp102, Temperature);
 }
 
+/**
+ * @brief  Convertit une température float en chaîne de caractères (séparateur décimal : virgule), sans utiliser %f.
+ *         Le buffer est statique : le résultat est écrasé à l'appel suivant.
+ *         // cf rapport : Scénario 6 – 8.3. Affichage de la température de type float
+ * @param  temperature Température en °C
+ * @param  precision   Nombre de décimales (limité à 4)
+ * @return Pointeur vers la chaîne statique (16 caractères maximum)
+ */
 char* TMP102_temperature_to_string(float temperature, uint8_t precision) 
 {
-    static char buffer[16];
+    // Création du buffer statique pour la chaîne de caractères de la température
+    // Au pire la string ressemble à ça : +-XXX,XXXX ce qui donne un nombre max de caractères 
+    // = signe + max 3 chiffres pour la partie entière + max 4 chiffres pour la partie décimale + signe + '\0' 
+    // = max 13 caractères
+    static char buffer[13];
+    // Table des puissances de 10 pour décaler la partie décimale
     static const int multi_table[] = {1, 10, 100, 1000, 10000};
 
-    // Precision maximale = 4
+    // Précision maximale = 4
+    // Cf. rapport : Scénario 6 – 8.3. Affichage de la température de type float
     if (precision > 4) 
     {
         precision = 4;
@@ -290,13 +427,17 @@ char* TMP102_temperature_to_string(float temperature, uint8_t precision)
     int partie_entiere = (int)temp_abs;
     int partie_decimale = (int)((temp_abs - (float)partie_entiere) * (float)multiplicateur + 0.5f);
 
-    // Propagation de la retenue si l'arrondi déborde
+    // Propagation de la retenue si l'arrondi déborde (Exemple : 18,997 arrondi à 19,00)
     if (partie_decimale >= multiplicateur) 
     {
         partie_entiere++;
         partie_decimale = 0;
     }
-
+    
+    // Formatage de la chaîne de caractères avec snprintf
+    // %s : signe
+    // %d : partie entière
+    // %0*d : partie décimale avec zéro-padding pour une précision variable
     snprintf(buffer, sizeof(buffer), "%s%d,%0*d", 
              negatif ? "-" : "", 
              partie_entiere, 

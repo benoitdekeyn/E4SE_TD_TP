@@ -2167,7 +2167,7 @@ Une précision de 4 décimales est largement suffisante : la résolution du capt
 ```
 ##### 6. On propage la retenue si l'arrondi déborde 
 
-Ex: 18,997 arrondi à 19,00
+Exemple : 18,997 arrondi à 19,00
 
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
@@ -2814,6 +2814,10 @@ Les LEDs n'ont qu'une seule broche d'entrée de données (DI) et une broche de s
 
 La STM32 n'est connectée qu'à la première LED de la chaîne et envoie à la suite **24 bits par LED** (8 bits par couleur, dans l'ordre Vert, Rouge, Bleu, bit de poids fort en premier). Chaque LED garde pour elle les 24 premiers bits qu'elle reçoit et retransmet les suivants à la LED suivante. Pour notre bande de 4 LEDs, une trame comporte donc $4 \times 24 = 96$ bits.
 
+*Extrait de la <a href="media/WS2812B_datasheet.pdf" target="_blank">datasheet des WS2812B</a> :*
+
+<img src="media/Bande_LED_GRB_order.png"/>
+
 Pour que chaque LED enregistre sa couleur, la trame doit être suivie d'un état bas d'au moins 50 µs (« reset ») : c'est ce temps de silence qui réinitialise le mécanisme de transmission, afin que la trame suivante soit de nouveau lue depuis la première LED.
 
 Durée d'une trame complète pour 4 LEDs :
@@ -3104,9 +3108,7 @@ bool BandeLED_show(BandeLED_t* bande_led)
 > La fonction renvoie un booléen indiquant si l'envoi de la trame a été correctement lancé.
 
 #### 6.2. Parcours des trois composantes
-Un switch sur le rang de la composante permet de sélectionner l'ordre d'envoi de chasue composante (R, G, B) selon l'ordre de la datasheet :
-
-![Bande LED GRB order](media/Bande_LED_GRB_order.png)
+Un switch sur le rang de la composante permet de sélectionner l'ordre d'envoi de chasue composante (R, G, B) selon l'ordre de la datasheet (Cf. [Scénario 9 – 1. Analyse de la datasheet (Protocole One-Wire)](#1-analyse-de-la-datasheet-protocole-one-wire))
 
 <!-- code:Bibliotheques/Bande_LED/Inc/bande-led.h -->
 ```c

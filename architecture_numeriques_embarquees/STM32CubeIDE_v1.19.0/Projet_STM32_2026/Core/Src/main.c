@@ -39,7 +39,7 @@
 
 /**
  * @brief Structure d'encapsulation pour la gestion unifiée d'une LED matérielle.
- *        // cf rapport : 4.3. Structure pour les LEDs
+ *        // cf rapport : Architecture globale – 6. Structure pour les LEDs
  */
 typedef struct {
     GPIO_TypeDef *port;   /**< Pointeur vers le port GPIO (ex: GPIOA, GPIOB) */
@@ -49,7 +49,7 @@ typedef struct {
 
 /**
  * @brief Modes de fonctionnement et de surveillance globale de la maison.
- *        // cf rapport : 6.3. Machine à états HOME / AWAY
+ *        //  cf rapport : Scénario 2 – 3. Machine à états HOME / AWAY
  */
 typedef enum {
   HOME,                   /**< Mode Présent : alarme intrusion désactivée, contrôle manuel fenêtre actif */
@@ -58,7 +58,7 @@ typedef enum {
 
 /**
  * @brief États discrets de la fenêtre motorisée par servomoteur.
- *        // cf rapport : 9.2. Gestion de la fenêtre (États de la fenêtre)
+ *        // cf rapport : Scénario 5 – 2.1. États de la fenêtre
  */
 typedef enum {
   INIT,                   /**< État initial au démarrage avant positionnement */
@@ -68,7 +68,7 @@ typedef enum {
 
 /**
  * @brief Plages de confort thermique pour la régulation automatique de la fenêtre.
- *        // cf rapport : 10.11. Seuils et états de température
+ *        // cf rapport : Scénario 6 – 12.1. Seuils et états de température
  */
 typedef enum {
   FROID,                  /**< Température <= 24°C : force la fermeture de la fenêtre */
@@ -83,7 +83,7 @@ typedef enum {
 
 // ==============================================================================
 // Brochage matériel Arduino Header (NUCLEO-F411RE)
-// cf rapport : 3.1. Branchement des composants (Tableau de brochage final)
+// cf rapport : Architecture globale – 1.2. Tableau de brochage final
 // ==============================================================================
 //  BTN_FENTR | D2  | PA_10 | EXTI 10 - Falling Edge | PULLUP   | 3V3
 //  LED_JAUNE | D3  | PB_3  | GPIO OUTPUT            | NO       | 3V3 (Shield)
@@ -101,7 +101,7 @@ typedef enum {
 
 // ==============================================================================
 // Abstraction matérielle (évite le hardcoding des handles HAL)
-// cf rapport : 4.2. Define matériels
+// cf rapport : Architecture globale – 5.1. Defines matériels
 // ==============================================================================
 #define ADC_CAPTEURS    (&hadc1)    /**< Instance ADC1 pour mesures gaz et pluie */
 #define BUS_I2C         (&hi2c3)    /**< Bus I2C3 partagé (TMP102 + Afficheur LCD) */
@@ -116,26 +116,29 @@ typedef enum {
 
 // ==============================================================================
 // Seuils de décision et configuration ADC
-// cf rapport : 7.3 (Gaz), 9.4 (Pluie), 10.11 (Température)
+// cf rapport : Scénario 3 – 3.2. Seuil de détection (Gaz),
+//              Scénario 5 – 4.6. Tests du capteur de pluie et seuil (Pluie),
+//              Scénario 6 – 12.1. Seuils et états de température (Température)
 // ==============================================================================
-#define SEUIL_GAZ         2500      /**< Seuil détection gaz MQ-2 (0-4095) // cf rapport : 7.3 */
-#define SEUIL_PLUIE       4000      /**< Seuil détection eau/pluie (0-4095) // cf rapport : 9.4 */
-#define SEUIL_CHALEUR     26        /**< Seuil haut de température en °C // cf rapport : 10.11 */
-#define SEUIL_FROID       24        /**< Seuil bas de température en °C // cf rapport : 10.11 */
+#define SEUIL_GAZ         2500      /**< Seuil détection gaz MQ-2 (0-4095) // cf rapport : Scénario 3 – 3.2. Seuil de détection */
+#define SEUIL_PLUIE       4000      /**< Seuil détection eau/pluie (0-4095) // cf rapport : Scénario 5 – 4.6. Tests du capteur de pluie et seuil */
+#define SEUIL_CHALEUR     26        /**< Seuil haut de température en °C // cf rapport : Scénario 6 – 12.1. Seuils et états de température */
+#define SEUIL_FROID       24        /**< Seuil bas de température en °C // cf rapport : Scénario 6 – 12.1. Seuils et états de température */
 #define NBR_CAPTEURS_ADC  2         /**< Nombre de canaux convertis en séquence Scan */
 #define GAZ_ADC_RANK      0         /**< Index Rank 1 dans buffer DMA : Capteur MQ-2 */
 #define PLUIE_ADC_RANK    1         /**< Index Rank 2 dans buffer DMA : Capteur pluie */
 
 // ==============================================================================
 // Fréquences d'échantillonnage et bases temporelles
-// cf rapport : 5.1 (Timer 2), 6.2 (Timer 5)
+// cf rapport : Scénario 1 – 1. Configuration du Timer (Timer 2),
+//              Scénario 2 – 2.1. Prescaler du Timer 5 (Timer 5)
 // ==============================================================================
 #define FREQ_CYCLE_CAPTEURS   0.5   /**< Fréquence d'échantillonnage (0.5 Hz => Période = 2 s) */
 #define FREQ_CYCLE_DEBOUNCE   20    /**< Fréquence de scrutation anti-rebond (20 Hz => 50 ms) */
 
 // ==============================================================================
 // Paramètres PWM Servomoteur (Timer 1)
-// cf rapport : 9.1. Commande du servomoteur
+// cf rapport : Scénario 5 – 1. Commande du servomoteur
 // ==============================================================================
 #define FREQ_TIMER_SERVO  2500000   /**< Fréquence de comptage TIM1 (2.5 MHz => 0.4 µs/tic) */
 #define FREQ_CYCLE_SERVO  50        /**< Fréquence PWM servomoteur standard (50 Hz => 20 ms) */
@@ -144,7 +147,7 @@ typedef enum {
 
 // ==============================================================================
 // Paramètres Audio et Alarmes (Timer 3 & Timer 5)
-// cf rapport : 13. Bonus — Gestion globale des alarmes
+// cf rapport : Scénario 8 – Gestion globale des alarmes
 // ==============================================================================
 #define FREQ_TIMER_BUZZER             25000000 /**< Fréquence d'horloge TIM3 (25 MHz) */
 #define FREQ_TIMER_BANDE_LED          100000000/**< Fréquence d'horloge TIM4 (100 MHz) */
@@ -156,7 +159,7 @@ typedef enum {
 
 // ==============================================================================
 // Tableau de bord NeoPixel WS2812B (Timer 4 + DMA)
-// cf rapport : 12. Bonus — Bibliothèque Bande LED RGB (WS2812B)
+// cf rapport : Scénario 9 – Bande de LED NeoPixel
 // ==============================================================================
 #define NB_LEDS_BANDE_RGB 4         /**< Nombre total de LEDs sur le bandeau */
 #define LED_BAS_DROITE    0         /**< Index LED 0 : Alarme intrusion (orange) */
@@ -176,7 +179,7 @@ typedef enum {
 
 // ==============================================================================
 // Butées angulaires de la fenêtre
-// cf rapport : 9.2. Gestion de la fenêtre
+// cf rapport : Scénario 5 – 2. Gestion de la fenêtre
 // ==============================================================================
 #define ANGLE_SERVO_OUVERT  120     /**< Butée mécanique maximale d'ouverture (120°) */
 #define ANGLE_SERVO_FERME   0       /**< Position de fermeture (0°) */
@@ -193,7 +196,7 @@ typedef enum {
 /* USER CODE BEGIN PV */
 // ==============================================================================
 // Instances et états des voyants LED physiques
-// cf rapport : 4.3. Structure pour les LEDs
+// cf rapport : Architecture globale – 6. Structure pour les LEDs
 // ==============================================================================
 LED_t           led_capteurs                = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pin, false};
 LED_t           led_alarme_gaz              = {RGB_ROUGE_GPIO_Port, RGB_ROUGE_Pin, false};
@@ -203,7 +206,7 @@ fenetre_t       fenetre                     = OUVERTE; /**< État courant de la 
 
 // ==============================================================================
 // Signaux de contrôle et drapeaux anti-rebond (partagés avec EXTI Callback)
-// cf rapport : 6.2. Gestion de l'anti-rebond & 9.3. Bouton fenêtre et anti-rebond
+// cf rapport : Scénario 2 – 2. Gestion de l'anti-rebond & Scénario 5 – 3.1. Implémentation et anti-rebond
 // ==============================================================================
 volatile bool   debouncing_bouton_home      = false; /**< Verrou anti-rebond en cours (Bouton HOME) */
 volatile bool   debouncing_bouton_fenetre   = false; /**< Verrou anti-rebond en cours (Bouton Fenêtre) */
@@ -212,7 +215,7 @@ bool            bouton_fenetre_appuye       = false; /**< Impulsion validée d'a
 
 // ==============================================================================
 // Drapeaux d'interruptions périodiques et DMA (partagés avec ISR)
-// cf rapport : 3.3. Boucle principale et gestion des interruptions
+// cf rapport : Architecture globale – 3.1. Boucle principale et gestion des interruptions
 // ==============================================================================
 volatile bool   timer_debounce_flag         = false; /**< Tick périodique TIM5 (20 Hz / 50 ms) */
 volatile bool   timer_capteurs_flag         = false; /**< Tick périodique TIM2 (0.5 Hz / 2 s) */
@@ -221,7 +224,9 @@ int             blink_counter_alarm         = 0;     /**< Compteur de tics pour 
 
 // ==============================================================================
 // Variables d'état métier et sécurité
-// cf rapport : 6.3 (Modes), 6.4 (PIR), 7.4 (Gaz), 9.4 (Pluie), 10.11 (Température)
+// cf rapport : Scénario 2 – 3.2. Gestion des modes, Scénario 2 – 4. Capteur PIR et alarme intrusion,
+//              Scénario 3 – 4. Alarme gaz, Scénario 5 – 4. Détection de pluie avec ADC DMA multi-canaux,
+//              Scénario 6 – 12.1. Seuils et états de température
 // ==============================================================================
 maison_mode_t   mode                        = HOME;  /**< Mode courant de la maison (HOME / AWAY) */
 volatile bool   presence_detectee           = false; /**< Détection brute PIR (EXTI 7) */
@@ -236,7 +241,8 @@ int             gaz_valeur                  = 0;        /**< Valeur brute ADC du
 
 // ==============================================================================
 // Buffers matériels et descripteurs de périphériques
-// cf rapport : 9.4 (DMA ADC), 10.4 (TMP102), 12.2 (Bande LED)
+// cf rapport : Scénario 5 – 4.3. Configuration DMA, Scénario 6 – 4. Structure de la bibliothèque,
+//              Scénario 9 – 4. Structure de la bibliothèque
 // ==============================================================================
 volatile uint16_t adc_valeurs[NBR_CAPTEURS_ADC]; /**< Buffer de destination du DMA circulaire ADC1 */
 TMP102_t        thermometre;                     /**< Contexte et configuration du capteur TMP102 */
@@ -274,7 +280,7 @@ void update_cycle_alarmes(void);
  * @brief  Met à jour l'affichage des valeurs des capteurs sur l'écran LCD 16x2.
  *         Formate et affiche la température (°C) sur la seconde moitié de la première ligne,
  *         et les valeurs brutes ADC de pluie (Hu) et de gaz (Ga) sur la deuxième ligne.
- *         // cf rapport : 11.3. Affichage des données en 16x2 (Valeurs capteurs)
+ *         // cf rapport :   Scénario 7 – 3.3. Valeurs capteurs
  * @param  None
  * @return None
  */
@@ -285,13 +291,13 @@ void afficher_capteurs_ecran()
 
     // Ligne 1 (2nde moitié) : formatage de la température sur 5 caractères avec le symbole degré
     // Le code hexadécimal \xDF correspond au symbole '°' dans la table CGROM du contrôleur LCD
-    // cf rapport : 11.3. Affichage des données en 16x2 (Caractère degré personnalisé)
+    // cf rapport : Scénario 7 – 3.3. Valeurs capteurs
     snprintf(ligne1, sizeof(ligne1), " %5s\xDF" "C",
              TMP102_temperature_to_string(temperature_valeur, 2));
 
     // Ligne 2 : formatage à largeur fixe (%4d) pour écraser entièrement l'ancienne mesure
     // et éviter les reliquats visuels d'affichage sur les capteurs de pluie et de gaz
-    // cf rapport : 11.3. Affichage des données en 16x2 (Formatage à largeur fixe)
+    // cf rapport : Scénario 7 – 3.3. Valeurs capteurs
     snprintf(ligne2, sizeof(ligne2), "Hu %4d  Ga %4d", 
              pluie_valeur, 
              gaz_valeur);
@@ -308,7 +314,7 @@ void afficher_capteurs_ecran()
 /**
  * @brief  Affiche le mode de présence de la maison (HOME ou AWAY) sur le LCD.
  *         Écrit sur les 4 premières colonnes de la première ligne de l'afficheur.
- *         // cf rapport : 11.3. Affichage des données en 16x2 (HOME / AWAY)
+ *          // cf rapport : Scénario 7 – 3.2. HOME / AWAY
  * @param  None
  * @return None
  */
@@ -317,7 +323,7 @@ void afficher_mode_ecran()
   char ligne_mode[8];
   // Formatage à largeur fixe (%4s) pour occuper exactement 4 caractères (HOME ou AWAY)
   // sans déborder sur l'affichage de la température situé en colonne 8
-  // cf rapport : 11.3. Affichage des données en 16x2 (HOME / AWAY)
+  // cf rapport : Scénario 7 – 3.2. HOME / AWAY
   snprintf(ligne_mode, sizeof(ligne_mode), "%4s",
            (mode == HOME) ? "HOME" : "AWAY");
 
@@ -330,21 +336,21 @@ void afficher_mode_ecran()
  * @brief  Initialise le module d'affichage LCD 16x2 sur le bus I2C.
  *         Configure le contrôleur LCD HD44780 (via extenseur PCF8574), affiche le mode
  *         initial et un message d'accueil temporaire sur la ligne 2.
- *         // cf rapport : 11.2. Intégration de la bibliothèque LCD I²C & 11.3. Initialisation
+ *         // cf rapport : Scénario 7 – 2. Intégration de la bibliothèque LCD I²C & Scénario 7 – 3.1. Initialisation
  * @param  None
  * @return None
  */
 void initialiser_ecran()
 {
     // Initialisation matérielle du contrôleur LCD avec le bus I2C3
-    // cf rapport : 11.2. Modification de l'initialisation
+    // cf rapport : Scénario 7 – 2.1. Modification de l'initialisation
     lcd_init(BUS_I2C);
 
     // Affichage initial du mode de la maison (HOME par défaut)
     afficher_mode_ecran();
 
     // Message de bienvenue temporaire (écrasé au premier cycle capteurs après 2 s)
-    // cf rapport : 11.3. Affichage des données en 16x2 (Message d'accueil)
+    // cf rapport : Scénario 7 – 3.1. Initialisation
     lcd_put_cur(1, 0);
     lcd_send_string("Hello Abir (^w^)");
 }
@@ -353,14 +359,14 @@ void initialiser_ecran()
  * @brief  Initialise et configure le capteur de température I2C TMP102.
  *         Charge la configuration par défaut puis active le mode Shutdown basse consommation
  *         pour opérer en mode One-Shot cadencé par le timer d'échantillonnage.
- *         // cf rapport : 10.6. Initialisation, 10.9. Mesure One-Shot, 10.10. Utilisation de la bibliothèque
+ *         // cf rapport : Scénario 6 – 6. Initialisation, Scénario 6 – 9. Mesure One-Shot en mode Shutdown, Scénario 6 – 10. Utilisation de la bibliothèque dans le code
  * @param  None
  * @return None
  */
 void initialiser_thermometre() 
 {
     // Chargement des valeurs nominales par défaut dans la structure
-    // cf rapport : 10.6. Valeurs par défaut
+    // cf rapport : Scénario 6 – 6.2. Valeurs par défaut
     TMP102_init_default(&thermometre);
 
     // Configuration des paramètres matériels et applicatifs
@@ -370,7 +376,7 @@ void initialiser_thermometre()
     thermometre.config.ExtendedMode   = TMP102_EXTENDED_OFF; // Résolution standard 12 bits
 
     // Transmission de la configuration vers les registres du capteur physique via I2C
-    // cf rapport : 10.5. Mise à jour des registres du capteur
+    // cf rapport : Scénario 6 – 5.1. Application du registre de configuration
     if (TMP102_apply_registers(&thermometre)) {
         printf("Capteur TMP102 configuré\r\n");
     } else {
@@ -382,18 +388,18 @@ void initialiser_thermometre()
  * @brief  Initialise le pilote du ruban de 4 LEDs adressables RGB (WS2812B NeoPixel).
  *         Configure le timer PWM et DMA associé (TIM4 CH1, 800 kHz), règle la luminosité de base
  *         et précharge les teintes de repos pour le tableau de bord.
- *         // cf rapport : 12.2. Implémentation PWM + DMA (TIM4) & 12.3. Tableau de bord LED
+ *         // cf rapport : Scénario 9 – 3. Branchement et configuration CubeMX & Scénario 9 – 8. Utilisation dans le code principal
  * @param  None
  * @return None
  */
 void initialiser_bande_led()
 {
   // Initialisation du descripteur : TIM4 CH1 cadencé à 100 MHz, protocole one-wire 800 kHz
-  // cf rapport : 12.2. Implémentation PWM + DMA (TIM4)
+  // cf rapport : Scénario 9 – 5. Initialisation
   BandeLED_Init(&bande_led, TIMER_BANDE_LED, CANAL_BANDE_LED, FREQ_TIMER_BANDE_LED, NB_LEDS_BANDE_RGB);
 
   // Luminosité réduite (10/255) sur chaque LED pour limiter le courant et éviter l'éblouissement
-  // cf rapport : 12.3. Tableau de bord LED
+  // cf rapport : Scénario 9 – 6.3. Application de la luminosité
   for (int i = 0; i < NB_LEDS_BANDE_RGB; i++) {
       BandeLED_set_led_luminosity(&bande_led, i, LUMINOSITE_BASE);
   }
@@ -420,7 +426,7 @@ void initialiser_bande_led()
  * @brief  Met à jour l'affichage dynamique du tableau de bord sur les 4 NeoPixels.
  *         Reflète l'état des cycles capteurs, des alarmes gaz et intrusion, ainsi que
  *         la couleur représentative de la température, puis déclenche le transfert DMA.
- *         // cf rapport : 12.3. Tableau de bord LED
+ *          // cf rapport : Scénario 9 – 8.4. Mise à jour périodique
  * @param  None
  * @return None
  */
@@ -437,7 +443,7 @@ void commande_bande_led()
 
     // LED Bas Gauche : indicateur chromatique de la tranche de température
     // Bleu = Froid (<= 24°C), Vert = Tempéré (24-26°C), Orange = Chaud (>= 26°C)
-    // cf rapport : 12.3. Tableau de bord LED & 10.11. Seuils et états de température
+    // cf rapport : Scénario 9 – 8.4. Mise à jour périodique & Scénario 6 – 12.1. Seuils et états de température
     switch (temperature) {
         case FROID:
             BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, true);
@@ -457,7 +463,7 @@ void commande_bande_led()
     }
 
     // Mise à jour matérielle des NeoPixels
-    // cf rapport : 12.2. Implémentation PWM + DMA (TIM4)
+    // cf rapport : Scénario 9 – 6.7. Lancement de l'envoi par DMA
     BandeLED_show(&bande_led);
 }
 
@@ -465,7 +471,7 @@ void commande_bande_led()
  * @brief  Positionne le servomoteur de la fenêtre à l'angle angulaire spécifié (0° à 180°).
  *         Convertit l'angle cible en durée d'impulsion PWM (0.5 ms à 2.5 ms),
  *         calcule le nombre de tics d'horloge du Timer 1 et met à jour le registre de comparaison CCR.
- *         // cf rapport : 9.1. Commande du servomoteur (Protocole PWM, Timer 1 et fonction angle_servo)
+ *         //  cf rapport : Scénario 5 – 1. Commande du servomoteur
  * @param  angle Angle cible en degrés compris entre 0 et 180 (ex: 0° fermé, 120° ouvert).
  * @return None
  */
@@ -474,7 +480,7 @@ void angle_servo(int angle)
   // Calcul mathématique de la largeur d'impulsion :
   // Impulsion (tics) = [ [(angle / 180.0) * (T_180 - T_0)] + T_0 ] * Freq_timer_servo
   // Résolution angulaire ≈ 27.8 tics/degré
-  // cf rapport : 9.1. Calcul de la résolution angulaire
+  // cf rapport : Scénario 5 – 1.4. Calcul de la résolution angulaire
 	int pulse_tics = 
   (
     ( 
@@ -488,7 +494,7 @@ void angle_servo(int angle)
   * FREQ_TIMER_SERVO;
 
   // Mise à jour du registre de comparaison CCR (TIM1 Channel 2, broche PA9)
-  // cf rapport : 9.1. Fonction angle_servo()
+  // cf rapport : Scénario 5 – 1.5. Appliquer un angle au servomoteur
 	__HAL_TIM_SET_COMPARE(TIMER_SERVO, CANAL_SERVO, pulse_tics);
 }
 
@@ -496,22 +502,22 @@ void angle_servo(int angle)
  * @brief  Gère l'actionnement mécanique de la fenêtre via le servomoteur.
  *         N'applique la consigne d'angle que lors d'un changement d'état effectif
  *         (OUVERTE -> 120°, FERMEE -> 0°) pour éviter les écritures redondantes.
- *         // cf rapport : 9.2. Gestion de la fenêtre
+ *          // cf rapport : Scénario 5 – 2. Gestion de la fenêtre
  * @param  None
  * @return None
  */
 void commande_fenetre()
 { 
   // Variable statique pour mémoriser l'état précédent entre deux itérations
-  // Initialisée à INIT pour rendre possible la première transistion depuis un état indéfini.
-  // cf rapport : Scenario 5 - 2.2 Application de l'état de la fenêtre
+  // Initialisée à INIT pour rendre possible la première transition depuis un état indéfini.
+  // cf rapport : Scénario 5 – 2.2. Application de l'etat de la fenêtre
   static fenetre_t etat_precedent = INIT;
 
   if (fenetre != etat_precedent) {
     switch(fenetre) {
       case OUVERTE :
         // Angle d'ouverture fixé empiriquement à 120° (au-delà, risque de casse mécanique contre le mur)
-        // cf rapport : 9.2. États de la fenêtre
+        // cf rapport : Scénario 5 – 2.1. États de la fenêtre
         angle_servo(ANGLE_SERVO_OUVERT);
         break;
       case FERMEE :
@@ -528,7 +534,7 @@ void commande_fenetre()
 
 /**
  * @brief  Applique l'état logique mémorisé des structures LED_t aux sorties GPIO physiques.
- *         // cf rapport : 4.3. Structure pour les LEDs
+ *          // cf rapport : Architecture globale – 6. Structure pour les LEDs
  * @param  None
  * @return None
  */
@@ -559,7 +565,7 @@ void commande_led()
 /**
  * @brief  Pilote l'activation ou l'extinction du signal PWM alimentant le buzzer passif.
  *         Démarre ou arrête la génération PWM sur le Canal 2 du Timer 3 selon le drapeau 'buzzer'.
- *         // cf rapport : 13.2. Gestion du buzzer avec fréquences distinctes
+ *         //  cf rapport : Scénario 8 – 2. Gestion du buzzer avec fréquences distinctes
  * @param  None
  * @return None
  */
@@ -578,7 +584,7 @@ void commande_buzzer()
  * @brief  Configure dynamiquement la fréquence sonore émise par le buzzer passif.
  *         Calcule et programme en temps réel la période de comptage (registre ARR)
  *         et la durée à l'état haut (registre CCR) pour obtenir un rapport cyclique de 50%.
- *         // cf rapport : 13.2. Configuration du Timer PWM et fréquences distinctes
+ *         // cf rapport : Scénario 8 – 2.1. Configuration du Timer PWM & Scénario 8 – 2.3. Fréquences distinctes pour chaque alarme
  * @param  frequence Fréquence acoustique cible en Hertz (ex: 440 Hz pour gaz, 384 Hz pour intrusion).
  * @return None
  */
@@ -589,7 +595,7 @@ void frequence_buzzer(int frequence)
   // ARR = (FREQ_TIMER_BUZZER / frequence) - 1
   // Exemple Gaz       (440 Hz) : 25 000 000 / 440 ≈ 56818 tics -1
   // Exemple Intrusion (384 Hz) : 25 000 000 / 384 ≈ 65104 tics -1
-  // cf rapport : 13.2. Configuration du Timer PWM
+  // cf rapport : Scénario 8 – 2.1. Configuration du Timer PWM
 	int periode_tics = (double)FREQ_TIMER_BUZZER / frequence - 1;
 
   // Calcul du temps haut pour un rapport cyclique de 50% (onde carrée acoustique optimale) :
@@ -607,17 +613,17 @@ void frequence_buzzer(int frequence)
  *         Lit la valeur convertie dans le buffer DMA (Canal ADC 4, Rank 1),
  *         compare la mesure au seuil critique (SEUIL_GAZ) pour armer l'alarme fuite de gaz,
  *         et affiche la valeur sur le moniteur série USART2.
- *         // cf rapport : 7.3. Tests du capteur et seuil, 7.4. Alarme gaz, 9.4. Détection de pluie avec ADC DMA multi-canaux
+ *         // cf rapport : Scénario 3 – 3.2. Seuil de détection, Scénario 3 – 4. Alarme gaz, Scénario 5 – 4. Détection de pluie avec ADC DMA multi-canaux
  * @param  None
  * @return None
  */
 void evaluer_gaz() 
 {
   // Lecture de la conversion ADC Rank 1 directement en mémoire via le buffer DMA
-  // cf rapport : 7.3. Seuil de détection & 9.4. Lecture et évaluation des capteurs
+  // cf rapport : Scénario 3 – 3.2. Seuil de détection & Scénario 5 – 4.5. Lecture et évaluation des capteurs
   gaz_valeur = adc_valeurs[GAZ_ADC_RANK];
 
-  // Evaluation du dépassement du seuil de détection de gaz
+  // Évaluation du dépassement du seuil de détection de gaz
   if (gaz_valeur >= SEUIL_GAZ) {
     printf("Gaz detecte !\r\n");
     alarme_gaz = true; // Déclenchement de l'alarme (prioritaire et indépendante du mode HOME/AWAY)
@@ -626,7 +632,7 @@ void evaluer_gaz()
   }
 
   // Affichage périodique sur le moniteur série UART
-  // cf rapport : 8.4. Supervision en temps réel
+  // cf rapport : Scénario 4 – 4.1. Mesures périodiques (toutes les 2 s)
   printf("                                      GAZ   = %d\r\n", gaz_valeur);
 }
 
@@ -635,7 +641,7 @@ void evaluer_gaz()
  *         Lit la conversion ADC stockée dans le buffer DMA (Canal ADC 8, Rank 2),
  *         la compare au seuil de pluie (SEUIL_PLUIE) pour commander la fermeture de sécurité
  *         de la fenêtre, et transmet la mesure sur l'UART.
- *         // cf rapport : 9.4. Détection de pluie avec ADC DMA multi-canaux & 9.5. Logique de décision de la fenêtre
+ *         // cf rapport : Scénario 5 – 4. Détection de pluie avec ADC DMA multi-canaux & Scénario 5 – 5. Logique de décision de la fenêtre
  * @param  None
  * @return None
  */
@@ -643,7 +649,7 @@ void evaluer_pluie()
 {
   // Lecture de la conversion ADC Rank 2 issue du transfert DMA
   // Surface mouillée : monte immédiatement vers 4095
-  // cf rapport : 9.4. Tests du capteur de pluie et seuil
+  // cf rapport : Scénario 5 – 4.6. Tests du capteur de pluie et seuil
   pluie_valeur = adc_valeurs[PLUIE_ADC_RANK];
 
   // Seuil fixé à 4000 pour éviter tout faux positif dû à l'humidité résiduelle
@@ -662,8 +668,8 @@ void evaluer_pluie()
  * @brief  Acquiert la température via le capteur I2C TMP102 et gère la machine à états thermique.
  *         Convertit le registre brut en degrés Celsius, applique une hystérésis (FROID <= 24°C,
  *         TEMPEREE, CHAUD >= 26°C) et déclenche l'ouverture ou la fermeture automatique de la fenêtre
- *         (si on est pas bloqué par le mode AWAY ou par la pluie).
- *         // cf rapport : 10.10. Utilisation de la bibliothèque dans le code & 10.11. Gestion automatique de la fenêtre par la température
+ *          (si l'on n'est pas bloqué par le mode AWAY ou par la pluie).
+  *         // cf rapport : Scénario 6 – 10. Utilisation de la bibliothèque dans le code & Scénario 6 – 12. Gestion automatique de la fenêtre par la température
  * @param  None
  * @return None
  */
@@ -672,12 +678,12 @@ void evaluer_temperature()
   float temperature_local;
 
   // Lecture du registre de température du capteur TMP102 (communication I2C, en mode One-Shot)
-  // cf rapport : 10.7. Lecture du registre de température & 10.8. Registre brut -> température en °C
+  // cf rapport : Scénario 6 – 7. Lecture du registre de température & Scénario 6 – 8.1. Registre brut → température en °C
   if (TMP102_get_temperature(&thermometre, &temperature_local)) 
   {
     temperature_valeur = temperature_local;
     // Formatage personnalisé du float avec précision 2 décimales sans bibliothèque math lourde
-    // cf rapport : 10.8. Affichage de la température de type float
+    // cf rapport : Scénario 6 – 8.3. Affichage de la température de type float
     printf("                                      TEMP  = %s°C\r\n", TMP102_temperature_to_string(temperature_valeur, 2));
   } 
   else 
@@ -688,7 +694,7 @@ void evaluer_temperature()
   // Machine à états de régulation thermique avec une hystérésis [24°C - 26°C]
   // Logique asymétrique : action unique lors de l'entrée dans CHAUD ou FROID, 
   // aucune action au retour en zone TEMPEREE
-  // cf rapport : 10.11. Seuils et états de température & Logique de décision de la fenêtre
+  // cf rapport : Scénario 6 – 12.1. Seuils et états de température & Scénario 6 – 12.2. Logique de décision de la fenêtre
   switch(temperature)
   {
     case CHAUD:
@@ -722,7 +728,7 @@ void evaluer_temperature()
         temperature = CHAUD;
         // Protection : en cas de pluie ou si le mode est AWAY, on ne touche à rien.
         if (mode == HOME && !pluie_detectee) {
-          fenetre = OUVERTE; // On ouvre la fenetre pour aérer la maison
+          fenetre = OUVERTE; // On ouvre la fenêtre pour aérer la maison
         }
         break;
       }
@@ -732,7 +738,7 @@ void evaluer_temperature()
         temperature = FROID;
         // Protection : en cas de pluie ou si le mode est AWAY, on ne touche à rien.
         if (mode == HOME && !pluie_detectee) {
-          fenetre = FERMEE; // On ferme la fenetre pour se protéger du froid
+          fenetre = FERMEE; // On ferme la fenêtre pour se protéger du froid
         }
         break;
       }
@@ -747,7 +753,7 @@ void evaluer_temperature()
  * @brief  Filtre anti-rebond logiciel non bloquant pour les boutons poussoirs (MODE/HOME et Fenêtre).
  *         Appelé périodiquement toutes les 50 ms par le Timer 5. Confirme l'appui uniquement
  *         si le signal est maintenu à l'état bas après la temporisation de rebond mécanique.
- *         // cf rapport : 6.2. Gestion de l'anti-rebond & 9.3. Bouton fenêtre et anti-rebond
+ *          // cf rapport : Scénario 2 – 2. Gestion de l'anti-rebond & Scénario 5 – 3.1. Implémentation et anti-rebond
  * @param  None
  * @return None
  */
@@ -755,7 +761,7 @@ void debounce_filter()
 {
   // Bouton HOME (PA6 / D12) : configuré avec pull-up interne (actif à 0 V)
   // L'interruption EXTI6 a levé debouncing_bouton_home et remis TIM5 à 0 il y a 50 ms
-  // cf rapport : 6.2. Détection d'appui
+  // cf rapport : Scénario 2 – 2.4. Détection d'appui
 	if (debouncing_bouton_home && !HAL_GPIO_ReadPin(BTN_HOME_GPIO_Port, BTN_HOME_Pin)) {
 		debouncing_bouton_home = false; // Réarmement du verrou anti-rebond
 		bouton_home_appuye = true;      // Validation de l'appui pour la gestion du mode HOME
@@ -763,7 +769,7 @@ void debounce_filter()
 
   // Bouton Fenêtre (PA10 / D2) : configuré avec pull-up interne (actif à 0 V)
   // Même logique d'évaluation 50 ms après le front descendant initial
-  // cf rapport : 9.3. Bouton fenêtre et anti-rebond
+  // cf rapport : Scénario 5 – 3.1. Implémentation et anti-rebond
 	if (debouncing_bouton_fenetre && !HAL_GPIO_ReadPin(BTN_FENTR_GPIO_Port, BTN_FENTR_Pin)) {
 		debouncing_bouton_fenetre = false;// Réarmement du verrou anti-rebond
 		bouton_fenetre_appuye = true;     // Validation de l'appui pour la gestion de la fenêtre
@@ -774,7 +780,7 @@ void debounce_filter()
  * @brief  Module de clignotement asynchrone non bloquant des voyants lumineux d'alarmes (LEDs).
  *         Évalue un compteur de tics partagé cadencé à 20 Hz par le Timer 5 pour faire clignoter
  *         la LED gaz à 10 Hz et la LED intrusion à 2 Hz par division de fréquence entière.
- *         // cf rapport : 13.1. Clignotement non bloquant par compteur partagé
+ *          // cf rapport : Scénario 8 – 1. Clignotement non bloquant par compteur partagé
  * @param  None
  * @return None
  */
@@ -790,7 +796,7 @@ void update_cycle_alarmes_leds()
   // Gestion du clignotement de l'alarme Gaz (10 Hz souhaité)
   // Horloge de base = 20 Hz (période = 50 ms). Demi-période = 20 / (2 * 10) = 1 tic.
   // La LED bascule d'état logique à chaque tic de 50 ms (50 ms ON, 50 ms OFF => Période = 100 ms => 10 Hz)
-  // cf rapport : 13.1. Clignotement non bloquant par compteur partagé
+  // cf rapport : Scénario 8 – 1. Clignotement non bloquant par compteur partagé
   if (alarme_gaz) {
     int demi_periode_gaz = FREQ_CYCLE_ALARME / (2 * FREQ_BLINK_ALARME_GAZ);
     if (blink_counter_alarm % demi_periode_gaz == 0) {
@@ -803,7 +809,7 @@ void update_cycle_alarmes_leds()
   // Gestion du clignotement de l'alarme Intrusion (2 Hz souhaité)
   // Horloge de base = 20 Hz. Demi-période = 20 / (2 * 2) = 5 tics.
   // La LED bascule d'état tous les 5 tics de 50 ms, soit 250 ms ON, 250 ms OFF => Période = 500 ms => 2 Hz
-  // cf rapport : 13.1. Clignotement non bloquant par compteur partagé
+  // cf rapport : Scénario 8 – 1. Clignotement non bloquant par compteur partagé
   if (alarme_intrusion) {
     int demi_periode_intrusion = FREQ_CYCLE_ALARME / (2 * FREQ_BLINK_ALARME_INTRUSION);
     if (blink_counter_alarm % demi_periode_intrusion == 0) {
@@ -818,7 +824,7 @@ void update_cycle_alarmes_leds()
  * @brief  Module de commande acoustique non bloquante du buzzer selon les alarmes en cours.
  *         Génère les fréquences distinctes (440 Hz pour le gaz, 384 Hz pour l'intrusion) et
  *         gère l'alternance temporelle par tranches de 250 ms en cas de double alarme simultanée.
- *         // cf rapport : 13.2. Gestion du buzzer avec fréquences distinctes & 13.3. Cas simultané : alternance gaz / intrusion
+ *         // cf rapport : Scénario 8 – 2. Gestion du buzzer avec fréquences distinctes & Scénario 8 – 3. Cas simultané : alternance gaz / intrusion
  * @param  None
  * @return None
  */
@@ -832,14 +838,14 @@ void update_cycle_alarmes_buzzer()
 
   // Cas 1 : Alarme Gaz seule
   // Note de 440 Hz (La4), hachée en synchronisation parfaite avec la LED rouge (10 Hz)
-  // cf rapport : 13.2. Fréquences distinctes pour chaque alarme
+  // cf rapport : Scénario 8 – 2.3. Fréquences distinctes pour chaque alarme
   if (alarme_gaz && !alarme_intrusion) {
     frequence_buzzer(FREQ_BUZZER_ALARME_GAZ);
     buzzer = led_alarme_gaz.state; // Le buzzer retentit quand la LED s'allume
   }
   // Cas 2 : Alarme Intrusion seule
   // Note de 384 Hz (plus grave), hachée en synchronisation avec la LED jaune (2 Hz)
-  // cf rapport : 13.2. Fréquences distinctes pour chaque alarme
+  // cf rapport : Scénario 8 – 2.3. Fréquences distinctes pour chaque alarme
   else if (!alarme_gaz && alarme_intrusion) {
     frequence_buzzer(FREQ_BUZZER_ALARME_INTRUSION);
     buzzer = led_alarme_intrusion.state; // Le buzzer retentit quand la LED s'allume
@@ -849,7 +855,7 @@ void update_cycle_alarmes_buzzer()
   // Période complète du motif = 20 Hz / 2 Hz = 10 tics (500 ms)
   // Phase 1 (tics 0 à 4 = 250 ms) : Son Intrusion continu à 384 Hz
   // Phase 2 (tics 5 à 9 = 250 ms) : Son Gaz à 440 Hz suivant le clignotement rapide de la LED rouge
-  // cf rapport : 13.3. Cas simultané : alternance gaz / intrusion
+  // cf rapport : Scénario 8 – 3. Cas simultané : alternance gaz / intrusion
   else if (alarme_gaz && alarme_intrusion) {
     int full_period_alternance = FREQ_CYCLE_ALARME / FREQ_BLINK_ALARME_INTRUSION;
     int half_period_alternance = full_period_alternance / 2;
@@ -871,7 +877,7 @@ void update_cycle_alarmes_buzzer()
  * @brief  Fonction unique à appeler en boucle pour l'animation cyclique des alarmes.
  *         Incrémente le compteur de base de temps partagé (cadencé à 20 Hz par le Timer 5)
  *         et appelle les fonctions qui gèrent le clignotement des LEDs et du Buzzer.
- *         // cf rapport : 13. — Bonus — Gestion globale des alarmes
+ *         // cf rapport : Scénario 8 – Gestion globale des alarmes
  * @param  None
  * @return None
  */
@@ -934,26 +940,26 @@ int main(void)
   // Démarrage des bases temporelles en interruption :
   // - TIMER_DEBOUNCE (TIM5) : cadence l'anti-rebond et les alarmes à 20 Hz (période = 50 ms)
   //   En mode base temporelle (_BASE) car simple comptage cyclique.
-  //   En mode interruption (_IT) pour déclencher le debounuce filter et la mise à jour des alarmes.
-  //   cf rapport : 6.2. Prescaler et période du Timer 5
+  //   En mode interruption (_IT) pour déclencher debounce_filter() et la mise à jour des alarmes.
+  //   cf rapport : Scénario 2 – 2.1. Prescaler du Timer 5 & Scénario 2 – 2.2. Période du Timer 5
   HAL_TIM_Base_Start_IT(TIMER_DEBOUNCE);
 
   // - TIMER_CAPTEURS (TIM2) : cadence l'échantillonnage à 0.5 Hz (période = 2 s)
   //   En mode base temporelle (_BASE) car simple comptage cyclique.
   //   En mode interruption (_IT) pour déclencher le cycle des capteurs.
   //   Émet automatiquement un signal TRGO matériel à chaque update pour déclencher l'ADC
-  //   cf rapport : 5.1. Configuration du Timer & 7.1. Déclenchement de l'ADC par le Timer 2
+  //   cf rapport : Scénario 1 – 1. Configuration du Timer & Scénario 3 – 1. Déclenchement de l'ADC par le Timer 2
   HAL_TIM_Base_Start_IT(TIMER_CAPTEURS);
 
   // Démarrage des canaux PWM pour les actionneurs :
   // - TIMER_BUZZER (TIM3 CH2)
   //   En mode PWM (_PWM) pour générer l'onde carrée sur le buzzer passif.
-  //   cf rapport : 13.2. Gestion du buzzer avec fréquences distinctes
+  //   cf rapport : Scénario 8 – 2. Gestion du buzzer avec fréquences distinctes
   HAL_TIM_PWM_Start(TIMER_BUZZER, CANAL_BUZZER);
 
   // - TIMER_SERVO (TIM1 CH2) : PWM 50 Hz pour pilotage angulaire de la fenêtre
   //   En mode PWM (_PWM) pour générer le signal de commande angulaire du servo.
-  //   cf rapport : 9.1. Configuration du Timer 1 dans CubeMX
+  //   cf rapport : Scénario 5 – 1.3. Configuration du Timer 1 dans CubeMX
   HAL_TIM_PWM_Start(TIMER_SERVO, CANAL_SERVO);
 
   // Démarrage de la chaîne d'acquisition analogique multi-canaux (Gaz + Pluie)
@@ -963,17 +969,18 @@ int main(void)
   // En paramètres : 
   //   - adc_valeurs : tableau de stockage des mesures
   //   - NBR_CAPTEURS_ADC : nombre de canaux à acquérir
-  // cf rapport : 9.4. Configuration DMA
+  // cf rapport : Scénario 5 – 4.3. Configuration DMA
   HAL_ADC_Start_DMA(ADC_CAPTEURS, (uint32_t*)adc_valeurs, NBR_CAPTEURS_ADC);
 
   // Initialisation des bibliothèques utilisées
-  // cf rapport : 10.6 (TMP102), 11.2 (LCD I2C), 12.2 (NeoPixel DMA)
+  // cf rapport : Scénario 6 – 6. Initialisation, Scénario 7 – 2. Intégration de la bibliothèque LCD I²C,
+  //              Scénario 9 – 5. Initialisation
   initialiser_thermometre();
   initialiser_ecran();
   initialiser_bande_led();
 
   // Affichage des messages d'accueil et récapitulatif des paramètres système sur l'UART
-  // cf rapport : 8.3. Message de bienvenue au démarrage
+  // cf rapport : Scénario 4 – 3. Message de bienvenue au démarrage
   printf("\r\n--- Demarrage Systeme STM32 ---\r\n\n");
   printf("Seuil gaz configure: %d\r\n", SEUIL_GAZ);
   printf("Seuil pluie configure: %d\r\n", SEUIL_PLUIE);
@@ -995,7 +1002,7 @@ int main(void)
 
     // ==========================================================================
     // Machine à états principale : Modes de présence HOME et AWAY
-    // cf rapport : 6.3. Machine à états HOME / AWAY & 6.5. Comportement selon le mode
+    // cf rapport : Scénario 2 – 3. Machine à états HOME / AWAY & Scénario 2 – 5. Comportement selon le mode (AWAY vs HOME)
     // ==========================================================================
     switch(mode) 
     {
@@ -1021,7 +1028,7 @@ int main(void)
           presence_detectee = false;
 
           // Priorité 1 fenêtre : La pluie maintient la fermeture 
-          // cf rapport : 9.5. Logique de décision de la fenêtre
+          // cf rapport : Scénario 5 – 5. Logique de décision de la fenêtre
           if (pluie_detectee)
           {
             fenetre = FERMEE;
@@ -1029,8 +1036,8 @@ int main(void)
           } 
           else 
           {
-            // Priorité 2 : Commande manuelle de la fenêtre occasionelle par bouton poussoir
-            // cf rapport : 9.3. Comportement et priorités selon le mode
+            // Priorité 2 : Commande manuelle de la fenêtre occasionnelle par bouton poussoir
+            // cf rapport : Scénario 5 – 3.2. Comportement et priorités selon le mode (HOME vs AWAY)
             if (bouton_fenetre_appuye) 
             {
               bouton_fenetre_appuye = false; // Acquittement du flag d'appui
@@ -1076,11 +1083,11 @@ int main(void)
         {
           // --- Actions continues en mode AWAY ---
           // Verrouillage de la commande manuelle : les appuis fenêtre sont ignorés
-          // cf rapport : 9.3. Comportement et priorités selon le mode
+          // cf rapport : Scénario 5 – 3.2. Comportement et priorités selon le mode (HOME vs AWAY)
           bouton_fenetre_appuye = false;
           
           // Surveillance active du détecteur de mouvement PIR
-          // cf rapport : 6.4. Capteur PIR et alarme intrusion
+          // cf rapport : Scénario 2 – 5.3. Alarme intrusion
           if (presence_detectee) 
           {
             alarme_intrusion = true;    // Armement et déclenchement de l'alarme intrusion
@@ -1096,11 +1103,12 @@ int main(void)
 
     // ==========================================================================
     // Traitement des tâches périodiques non bloquantes cadencées par interruptions
-    // cf rapport : 3.3. Boucle principale et gestion des interruptions
+        // cf rapport : Architecture globale – 3.1. Boucle principale et gestion des interruptions
     // ==========================================================================
     
     // Tâche 1 : Base de temps 50 ms (TIM5) - Anti-rebond, modulation alarmes, NeoPixels
-    // cf rapport : 6.2 (Anti-rebond), 12.3 (Bande LED), 13.1 (Alarmes)
+    // cf rapport : Scénario 2 – 2. Gestion de l'anti-rebond, Scénario 9 – 8.4. Mise à jour périodique,
+    //              Scénario 8 – 1. Clignotement non bloquant par compteur partagé
     if (timer_debounce_flag) {
       timer_debounce_flag = false; // Acquittement du flag d'interruption
       debounce_filter();           // Évaluation de la stabilité des boutons (50 ms après front)
@@ -1110,7 +1118,7 @@ int main(void)
     
     // Tâche 2 : Base de temps 2 s (TIM2) - Déclenchement One-Shot capteur température
     // N.B. L'ADC est déclenché en arrière-plan par le signal matériel TRGO du TIM2
-    // cf rapport : 5.2. Clignotement de la LED témoin & 10.9. Déclencher une mesure One-Shot
+    // cf rapport : Scénario 1 – 2. Clignotement de la LED témoin & Scénario 6 – 9.2. Déclencher une mesure One-Shot
     if (timer_capteurs_flag) {
       timer_capteurs_flag = false; // Acquittement du flag d'interruption
       led_capteurs.state = !led_capteurs.state; // Clignotement témoin d'activité (LED bleue)
@@ -1120,16 +1128,16 @@ int main(void)
     }
     
     // Tâche 3 : Fin de conversion ADC multi-canaux notifiée par le DMA (Gaz + Pluie)
-    // cf rapport : 9.4. Lecture et évaluation des capteurs
+    // cf rapport : Scénario 5 – 4.5. Lecture et évaluation des capteurs
     if (fin_mesure_ADC_flag) {
       fin_mesure_ADC_flag = false; // Acquittement du flag d'interruption
-      evaluer_pluie(); // Mise à jour de le valeur du capteur et Vérification seuil de pluie
-      evaluer_gaz();   // Mise à jour de le valeur du capteur et Vérification seuil de gaz
+      evaluer_pluie(); // Mise à jour de la valeur du capteur et vérification du seuil de pluie
+      evaluer_gaz();   // Mise à jour de la valeur du capteur et vérification du seuil de gaz
     }
     
     // Tâche 4 : Fin de conversion du thermomètre TMP102 prête (polling non bloquant ~10 ms après le lancement)
     // La température étant la dernière mesure disponible, l'afficheur LCD est rafraîchi ici
-    // cf rapport : 10.9. Attendre la fin de la mesure & 11.3. Synchronisation avec la dernière mesure prête
+    // cf rapport : Scénario 6 – 9.3. Attendre la fin de la mesure & Scénario 7 – 3.3. Valeurs capteurs
     if (TMP102_is_measure_ready(&thermometre)) {
       evaluer_temperature();     // Mise à jour de la température et de l'état thermique de la maison
       printf("\r\n");            // Saut de ligne pour différencier les séries de 3 mesures successives
@@ -1196,23 +1204,23 @@ void SystemClock_Config(void)
 /**
  * @brief  Redirige le flux de sortie standard C (utilisé par printf) vers l'USART2.
  *         Permet l'envoi caractère par caractère vers l'interface ST-LINK branchée au PC.
- *         // cf rapport : 8.2. Redirection de printf vers l'UART
+ *         //  cf rapport : Scénario 4 – 2. Redirection de printf vers l'UART
  * @param  ch Caractère ASCII à transmettre.
  * @return int Caractère émis ou EOF en cas d'erreur (non utilisé)
  */
 int __io_putchar(int ch) 
 {
     // Émission synchrone bloquante de 1 octet sur USART2 avec timeout maximal
-    // cf rapport : 8.2. Redirection de printf vers l'UART
+    // cf rapport : Scénario 4 – 2. Redirection de printf vers l'UART
     HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
     return ch;
 }
 
 /**
  * @brief  Callback appelée par la routine d'interruption pour les interruptions externes sur broches GPIO (EXTI).
- *         Capture les événements asynchrones en temps réel
- *         cf rapport : 6.2. Routine d'interruption du GPIO et du Timer, 
- *                      6.4. Capteur PIR, 9.3. Bouton fenêtre et anti-rebond
+ *         Capture les événements asynchrones en temps réel.
+ *         cf rapport : Scénario 2 – 2.3. Routine d'interruption du GPIO et du Timer,
+ *                      Scénario 2 – 4.2. Lecture du capteur PIR, Scénario 5 – 3.1. Implémentation et anti-rebond
  * @param  GPIO_Pin Numéro du pin GPIO ayant déclenché l'interruption.
  * @return None
  */
@@ -1220,7 +1228,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   // 1. Détection de mouvement par le capteur PIR (broche PC7 / EXTI 7)
   // Signal actif sur front montant avec pulldown interne
-  // cf rapport : 6.4. Lecture du capteur PIR
+  // cf rapport : Scénario 2 – 4.2. Lecture du capteur PIR
   if (GPIO_Pin == PIR_MVMT_Pin)
   {
     presence_detectee = true; // Activation du flag de détection de présence
@@ -1228,11 +1236,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
   // 2. Appui sur le bouton HOME (broche PA6 / EXTI 6)
   // Déclenché sur front descendant (pull-up interne, passage de 1 à 0)
-  // cf rapport : 6.2. Routine d'interruption du GPIO et du Timer
+  // cf rapport : Scénario 2 – 2.3. Routine d'interruption du GPIO et du Timer
   if (GPIO_Pin == BTN_HOME_Pin)
   {
     if (!debouncing_bouton_home) {
-      debouncing_bouton_home = true; // Active la détection de d'appui pour le bouton HOME
+      debouncing_bouton_home = true; // Active la détection d'appui pour le bouton HOME
       // Amorce le délai anti-rebond de 50 ms en réinitialisant le compteur de TIM5 à zéro
       __HAL_TIM_SET_COUNTER(TIMER_DEBOUNCE, 0);
     }
@@ -1240,11 +1248,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
   // 3. Appui sur le bouton FENÊTRE (broche PA10 / EXTI 10)
   // Déclenché sur front descendant (pull-up interne)
-  // cf rapport : 9.3. Bouton fenêtre et anti-rebond
+  // cf rapport : Scénario 5 – 3.1. Implémentation et anti-rebond
   if (GPIO_Pin == BTN_FENTR_Pin)
   {
     if (!debouncing_bouton_fenetre) {
-      debouncing_bouton_fenetre = true; // Active la détection de d'appui pour le bouton FENÊTRE
+      debouncing_bouton_fenetre = true; // Active la détection d'appui pour le bouton FENÊTRE
       // Amorce le délai anti-rebond de 50 ms en réinitialisant le compteur de TIM5 à zéro
       __HAL_TIM_SET_COUNTER(TIMER_DEBOUNCE, 0);
     }
@@ -1255,22 +1263,22 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
  * @brief  Callback déclenchée à l'atteinte de la période de n'importe quel timer démarré en interruption.
  *         Lève les drapeaux logiciels asynchrones correspondants afin de déporter les traitements
  *         dans la boucle principale.
- *         // cf rapport : 3.3. Boucle principale et gestion des interruptions, 5.1. Configuration du Timer, 6.2. Prescaler du Timer 5
+ *         // cf rapport : Architecture globale – 3.1. Boucle principale et gestion des interruptions, Scénario 1 – 1. Configuration du Timer, Scénario 2 – 2.1. Prescaler du Timer 5
  * @param  htim Pointeur vers la structure du timer ayant généré l'interruption.
  * @return None
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   // Timer d'anti-rebond et de clignotement des alarmes (TIM5, 20 Hz / 50 ms)
-  // cf rapport : 6.2. Routine d'interruption du GPIO et du Timer
-  //             13.1. Clignotement non bloquant
+  // cf rapport : Scénario 2 – 2.3. Routine d'interruption du GPIO et du Timer
+  //             Scénario 8 – 1. Clignotement non bloquant par compteur partagé
   if (htim == TIMER_DEBOUNCE)
   {
     timer_debounce_flag = true; // Activation du flag du timer d'anti-rebond
   }
 
   // Timer d'échantillonnage (TIM2, 0.5 Hz / 2 s)
-  // cf rapport : ...
+  // cf rapport : Scénario 1 – 1. Configuration du Timer
   if (htim == TIMER_CAPTEURS)
   {
     timer_capteurs_flag = true; // Activation du flag du timer d'échantillonnage
@@ -1281,7 +1289,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  * @brief  Callback appelée par le contrôleur DMA à la fin de chaque cycle de conversion ADC.
  *         Confirme que les mesures des canaux Gaz (Rank 1) et Pluie (Rank 2) 
  *         ont été transférées dans le buffer en mémoire.
- *         // cf rapport : 9.4. Détection de pluie avec ADC DMA multi-canaux (Interruptions ADC et DMA activées)
+ *         //  cf rapport : Scénario 5 – 4.4. Interruptions ADC et DMA activées
  * @param  hadc Pointeur vers la structure du convertisseur ADC (ADC_CAPTEURS / hadc1).
  * @return None
  */
@@ -1289,7 +1297,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
     if (hadc == ADC_CAPTEURS)
     {
-        // cf rapport : 7.2. Problème rencontré & 9.4. Callback de fin de conversion
+        // cf rapport : Scénario 3 – 2. Lecture de la valeur ADC au Scénario 3 et problème rencontré & Scénario 5 – 4.4. Interruptions ADC et DMA activées
         fin_mesure_ADC_flag = true; // Activation du flag de fin de mesure ADC
     }
 }

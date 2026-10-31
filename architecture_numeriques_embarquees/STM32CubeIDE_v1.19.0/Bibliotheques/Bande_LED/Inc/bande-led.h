@@ -37,7 +37,7 @@
 #define BL_DELAI_MAJ_nS   50000      /**< Durée minimale du reset entre deux trames (ns) */
 #define BL_NSEC_IN_1_SEC  1000000000 /**< Nombre de ns dans 1 s (évite le hardcoding) */
 // Ordre d'envoi des composantes : G, R, B
-// cf rapport : Scénario 9 – 6.2. Parcours des trois composantes
+// cf rapport : Scénario 9 – 6.3. Parcours des trois composantes
 #define BL_VERT_SEQ_RANG  1 /**< Rang d'envoi de la composante verte */
 #define BL_ROUGE_SEQ_RANG 2 /**< Rang d'envoi de la composante rouge */
 #define BL_BLEU_SEQ_RANG  3 /**< Rang d'envoi de la composante bleue */

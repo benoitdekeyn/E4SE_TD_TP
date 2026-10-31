@@ -58,25 +58,25 @@ bool BandeLED_show(BandeLED_t* bande_led)
     int pulse_bit_0_tics    = BL_PULSE_BIT_0_nS / nS_per_timer_tic;
     int pulse_bit_1_tics    = BL_PULSE_BIT_1_nS / nS_per_timer_tic;
 
-    // cf rapport : Scénario 9 – 6.5. Encodage de l'octet de chaque composante (index d'écriture dans le buffer DMA)
+    // cf rapport : Scénario 9 – 6.6. Encodage de l'octet de chaque composante (index d'écriture dans le buffer DMA)
     uint32_t dma_index = 0;
 
     // Pour chaque NeoPixel de la bande LED
-    // cf rapport : Scénario 9 – 6.2 Boucles for imbriquées
+    // cf rapport : Scénario 9 – 6.2. Boucles for imbriquées
     for (int led_index = 0; led_index < bande_led->nb_leds; led_index++)
     {
         // Stockage temporaire de l'état de la LED courante pour simplifier le code ensuite
         BL_RGB_t* led_courante = &bande_led->leds[led_index];
 
         // Parcours des composantes dans l'ordre G, R, B (vert, rouge, bleu)
-        // cf rapport : Scénario 9 – 6.2. Parcours des trois composantes
+        // cf rapport : Scénario 9 – 6.3. Parcours des trois composantes
         for (int composante = 1; composante <= 3; composante++)
         {
             uint8_t valeur_composante = 0;
             switch (composante) 
             {   
                 // Application de la luminosité sur la composante courante
-                // cf rapport : Scénario 9 – 6.3. Application de la luminosité
+                // cf rapport : Scénario 9 – 6.4. Application de la luminosité
                 case BL_ROUGE_SEQ_RANG :
                     valeur_composante = led_courante->rouge * led_courante->alpha / 255;
                     break;
@@ -89,12 +89,12 @@ bool BandeLED_show(BandeLED_t* bande_led)
             }
 
             // On vérifie si la LED doit être allumée ou éteinte (power local et global)
-            // cf rapport : Scénario 9 – 6.4. Application de l'interrupteur
+            // cf rapport : Scénario 9 – 6.5. Application de l'interrupteur
             uint8_t valeur_a_envoyer = (bande_led->power && led_courante->power) ? valeur_composante : 0;
             
             // Encodage de l'octet de chaque composante bit à bit en valeurs de Pulse
             // puis écriture dans le buffer du DMA.
-            // cf rapport : Scénario 9 – 6.5. Encodage de l'octet de chaque composante
+            // cf rapport : Scénario 9 – 6.6. Encodage de l'octet de chaque composante
             for (int bit = 8-1; bit >= 0; bit--)
             {
                 uint32_t valeur_pulse = (valeur_a_envoyer & (1 << bit)) ? pulse_bit_1_tics : pulse_bit_0_tics;
@@ -105,7 +105,7 @@ bool BandeLED_show(BandeLED_t* bande_led)
     }
     
     // Ajout du délai de reset au buffer DMA (41 periodes PWM avec Pulse à 0)
-    // cf rapport : Scénario 9 – 6.6. Ajout du délai de reset
+    // cf rapport : Scénario 9 – 6.7. Ajout du délai de reset
     for (int i = 0; i < bande_led->cycles_delai_maj; i++) {
         bande_led->dma_buffer[dma_index] = 0;
         dma_index++;
@@ -113,7 +113,7 @@ bool BandeLED_show(BandeLED_t* bande_led)
     
     // Arrêt propre d'un éventuel transfert précédent avant de lancer le nouveau
     // Puis lancement du nouveau transfert DMA avec le buffer mis à jour.
-    // cf rapport : Scénario 9 – 6.7. Lancement de l'envoi par DMA
+    // cf rapport : Scénario 9 – 6.8. Lancement de l'envoi par DMA
     HAL_TIM_PWM_Stop_DMA(bande_led->PWM_timer, bande_led->PWM_channel);
     
     __HAL_TIM_SET_COUNTER(bande_led->PWM_timer, 0);
@@ -206,7 +206,7 @@ void BandeLED_set_led_rgb(BandeLED_t* bande_led, int led_id, uint8_t rouge, uint
 
 /**
  * @brief  Modifie la luminosité (alpha) d'une LED en mémoire, sans changer sa couleur (sans envoi : il faut appeler BandeLED_show()).
- *         // cf rapport : Scénario 9 – 6.3. Application de la luminosité
+ *         // cf rapport : Scénario 9 – 6.4. Application de la luminosité
  *         // cf rapport : Scénario 9 – 7. Modification de l'état des LEDs
  * @param  bande_led  Pointeur vers l'objet bande LED
  * @param  led_id     Indice de la LED (ignoré s'il est invalide)
@@ -283,6 +283,6 @@ bool BandeLED_demo(BandeLED_t* bande) {
     }
 
     // --- 3. Envoi physique vers le DMA ---
-    // cf rapport : Scénario 9 – 6.7. Lancement de l'envoi par DMA
+    // cf rapport : Scénario 9 – 6.8. Lancement de l'envoi par DMA
     return BandeLED_show(bande);
 }

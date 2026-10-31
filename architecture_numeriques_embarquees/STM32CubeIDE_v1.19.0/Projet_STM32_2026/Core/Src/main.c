@@ -88,14 +88,14 @@ typedef enum {
 //  BTN_FENTR | D2  | PA_10 | EXTI 10 - Falling Edge | PULLUP   | 3V3
 //  LED_JAUNE | D3  | PB_3  | GPIO OUTPUT            | NO       | 3V3 (Shield)
 //  BUZZER    | D4  | PB_5  | TIMER 3 - CHANNEL 2    | NO       | 3V3 (Passif PWM)
-//  I2C_SDA   | D5  | PB_4  | I2C3 - SDA             | NO       | LCD + TMP102 (5V pullup)
+//  I2C_SDA   | D5  | PB_4  | I2C3 - SDA             | NO       | LCD (5V) + TMP102 (3V3)
 //  LED_BLEUE | D6  | PB_10 | GPIO OUTPUT            | NO       | 3V3 (Cycle capteurs)
-//  I2C_SCL   | D7  | PA_8  | I2C3 - SCL             | NO       | LCD + TMP102 (5V pullup)
+//  I2C_SCL   | D7  | PA_8  | I2C3 - SCL             | NO       | LCD (5V) + TMP102 (3V3)
 //  SERVO     | D8  | PA_9  | TIMER 1 - CHANNEL 2    | NO       | 5V (PWM 50 Hz)
 //  PIR_MVMT  | D9  | PC_7  | EXTI 7 - Rising Edge   | PULLDOWN | 3V3 (Détecteur mouvement)
-//  RGB_BANDE | D10 | PB_6  | TIMER 4 - CHANNEL 1    | NO       | 5V (WS2812B PWM + DMA)
+//  RGB_BANDE | D10 | PB_6  | TIMER 4 - CHANNEL 1    | NO       | 3V3 (WS2812B PWM + DMA)
 //  RGB_ROUGE | D11 | PA_7  | GPIO OUTPUT            | NO       | 3V3 (Alarme gaz Shield)
-//  BTN_HOME  | D12 | PA_6  | EXTI 6 - Falling Edge  | PULLUP   | 3V3 (Bouton mode)
+//  BTN_HOME  | D12 | PA_6  | EXTI 6 - Falling Edge  | PULLUP   | 3V3 (Bouton HOME)
 //  GAZ       | A2  | PA_4  | ADC 1 - CHANNEL 4      | NO       | 5V (Capteur MQ-2)
 //  PLUIE     | A3  | PB_0  | ADC 1 - CHANNEL 8      | NO       | 5V (Capteur résistif)
 
@@ -399,7 +399,7 @@ void initialiser_bande_led()
   BandeLED_Init(&bande_led, TIMER_BANDE_LED, CANAL_BANDE_LED, FREQ_TIMER_BANDE_LED, NB_LEDS_BANDE_RGB);
 
   // Luminosité réduite (10/255) sur chaque LED pour limiter le courant et éviter l'éblouissement
-  // cf rapport : Scénario 9 – 6.3. Application de la luminosité
+  // cf rapport : Scénario 9 – 6.4. Application de la luminosité
   for (int i = 0; i < NB_LEDS_BANDE_RGB; i++) {
       BandeLED_set_led_luminosity(&bande_led, i, LUMINOSITE_BASE);
   }
@@ -463,7 +463,7 @@ void commande_bande_led()
     }
 
     // Mise à jour matérielle des NeoPixels
-    // cf rapport : Scénario 9 – 6.7. Lancement de l'envoi par DMA
+    // cf rapport : Scénario 9 – 6.8. Lancement de l'envoi par DMA
     BandeLED_show(&bande_led);
 }
 

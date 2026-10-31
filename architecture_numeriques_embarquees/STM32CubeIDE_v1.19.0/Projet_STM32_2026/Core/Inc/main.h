@@ -75,8 +75,8 @@ void Error_Handler(void);
 #define PIR_MVMT_Pin GPIO_PIN_7
 #define PIR_MVMT_GPIO_Port GPIOC
 #define PIR_MVMT_EXTI_IRQn EXTI9_5_IRQn
-#define I2C_SDA_Pin GPIO_PIN_8
-#define I2C_SDA_GPIO_Port GPIOA
+#define I2C_SCL_Pin GPIO_PIN_8
+#define I2C_SCL_GPIO_Port GPIOA
 #define SERVO_Pin GPIO_PIN_9
 #define SERVO_GPIO_Port GPIOA
 #define BTN_FENTR_Pin GPIO_PIN_10
@@ -84,8 +84,8 @@ void Error_Handler(void);
 #define BTN_FENTR_EXTI_IRQn EXTI15_10_IRQn
 #define LED_JAUNE_Pin GPIO_PIN_3
 #define LED_JAUNE_GPIO_Port GPIOB
-#define I2C_SCL_Pin GPIO_PIN_4
-#define I2C_SCL_GPIO_Port GPIOB
+#define I2C_SDA_Pin GPIO_PIN_4
+#define I2C_SDA_GPIO_Port GPIOB
 #define BUZZER_Pin GPIO_PIN_5
 #define BUZZER_GPIO_Port GPIOB
 #define RGB_BANDE_Pin GPIO_PIN_6

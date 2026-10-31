@@ -1098,13 +1098,14 @@ int main(void)
     // Traitement des tâches périodiques non bloquantes cadencées par interruptions
     // cf rapport : 3.3. Boucle principale et gestion des interruptions
     // ==========================================================================
-
+    
     // Tâche 1 : Base de temps 50 ms (TIM5) - Anti-rebond, modulation alarmes, NeoPixels
     // cf rapport : 6.2 (Anti-rebond), 12.3 (Bande LED), 13.1 (Alarmes)
     if (timer_debounce_flag) {
       timer_debounce_flag = false; // Acquittement du flag d'interruption
-      debounce_filter();       // Évaluation de la stabilité des boutons (50 ms après front)
-      update_cycle_alarmes();  // Cadencement du clignotement des LEDs et alternance buzzer
+      debounce_filter();           // Évaluation de la stabilité des boutons (50 ms après front)
+      update_cycle_alarmes();      // Cadencement du clignotement des LEDs et alternance buzzer
+      update_bande_led();          // Actualisation de l'état des NeoPixels en fonction des variables
     }
     
     // Tâche 2 : Base de temps 2 s (TIM2) - Déclenchement One-Shot capteur température
@@ -1141,7 +1142,6 @@ int main(void)
     commande_buzzer();   // Actualisation de l'état ON/OFF du signal PWM sonore
     commande_led();      // Actualisation des broches GPIO des LEDs du shield
     commande_fenetre();  // Actualisation de la position PWM du servomoteur sur changement d'état
-    update_bande_led();  // Actualisation de l'état des NeoPixels en fonction des variables
   }
   /* USER CODE END 3 */
 }

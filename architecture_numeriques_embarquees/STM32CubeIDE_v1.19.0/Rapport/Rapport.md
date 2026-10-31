@@ -2796,6 +2796,7 @@ Le protocole impose un signal dont les fronts doivent être précis à quelques 
 * Chaque bit correspond à une période de PWM où le rapport cyclique (Pulse) encode la valeur du bit : court pour la valeur 0 et long pour la valeur 1.
 * On créée un tableau qui contient la séquence binaire de la trame à envoyer sous forme d'une séquence de rapports cycliques correspondant aux bits.
 * Le DMA recopie, à chaque période, la valeur suivante dans le registre de comparaison `CCR1` du timer, depuis le tableau en mémoire. Le CPU ne fait que remplir le tableau, puis lance le transfert : il n'intervient plus pendant les 120 µs de la trame.
+* Pour que les NeoPixels mettent à jour leur couleur, dans le buffer du DMA, à la suite des valeurs correspondant aux bits de la trame, on ajoute autant de '0' que nécessaire pour générer un état bas d'au moins 50 µs (« reset »).
 
 Le signal est donc généré entièrement par le matériel, avec la précision du timer.
 
@@ -2843,38 +2844,36 @@ $$ CCR_{bit\,1} = \frac{800\, \text{ns}}{T_{tic}} = \frac{800\, \text{ns}}{10\, 
 
 <img src="media/stm32cubeide_timer_4.png"/>
 
-| Paramètre | Valeur | Justification |
-| :--- | :--- | :--- |
-| Mode | PWM Generation CH1 | Signal de sortie sur PB6 |
-| Prescaler | 0 | Résolution maximale de 10 ns |
-| Counter Period (ARR) | 125 - 1 | Période de 1,25 µs (800 kHz) |
-| PWM Mode | PWM mode 1 | Sortie à l'état haut tant que le compteur est inférieur à `CCR1` |
-| Output compare preload | Enable | Voir ci-dessous |
-
-L'*Output compare preload* est activé car le DMA écrit la prochaine valeur de `CCR1` pendant que la période en cours n'est pas terminée. Avec le preload, la nouvelle valeur est mise en attente et n'est appliquée qu'au début de la période suivante : la largeur d'impulsion d'un bit n'est donc jamais modifiée en cours de route.
+Nous avons fait attention à bien activer l'*Output compare preload* car le DMA écrit la prochaine valeur de `CCR1` pendant que la période en cours n'est pas terminée. Avec le preload, la nouvelle valeur est mise en attente et n'est appliquée qu'au début de la période suivante : la largeur d'impulsion d'un bit n'est donc jamais modifiée en cours de route.
 
 #### 3.4. Configuration du DMA
 
-<img src="media/stm32cubeide_timer_4_DMA.png"/>
+##### Memory to Peripheral
+Pour transférer les valeurs d'impulsion correspondant à chaque bit vers le registre `CCR1` du timer, nous avons donc utilisé un DMA configuré en mode *Memory To Peripheral*, avec une incrémentation automatique de l'adresse mémoire pour lire successivement chaque valeur du tableau contenant les impulsions qui encodent la trame de couleurs.  
 
-| Paramètre | Valeur | Justification |
-| :--- | :--- | :--- |
-| DMA Request | TIM4_CH1 | Requête générée à chaque comparaison sur le canal 1 du timer, soit une fois par bit |
-| Stream | DMA1 Stream 0 | Le seul flux qui peut servir la requête TIM4_CH1 (canal 2) |
-| Direction | Memory To Peripheral | On lit le tableau en mémoire pour écrire dans `CCR1` |
-| Mode | Normal | Le tableau est envoyé une seule fois puis le DMA s'arrête |
-| Increment Address (Peripheral) | Désactivé | On écrit toujours dans le même registre `CCR1` |
-| Increment Address (Memory) | Activé | On avance d'une case du tableau à chaque bit |
-| Data Width | Word / Word | Le tableau est de type `uint32_t`, la largeur est identique des deux côtés |
+##### Mode Normal vs Circulaire
 
-Le mode Normal (et non Circular comme pour l'ADC) est choisi car une trame doit être envoyée une seule fois à chaque mise à jour. Une fois le tableau entièrement parcouru, le DMA s'arrête, et la dernière valeur de `CCR1` étant 0, la sortie reste à l'état bas : c'est l'état de repos exigé par la datasheet.
+Pour l'ADC, nous avions utilisé le mode *Circular* car le DMA attendait le signal de ifn de conversion pour faire son transfert, et permettait de revenir au début du buffer de sortie.  
+
+En revanche comme ici nous voulons écrire depuis un buffer d'entrée dans le CCR, le DMA en mode circulaire ne se contenterait pas de revenir au début du tableau, mais enchaînerait les transferts indéfiniment.
+
+Or les NeoPixels stockent déjà leur couleur courante, donc ce serait inutile d'envoyer la même trame en boucle à la bande LED, et ce serait même source de bug, car nous devrions alors modifier une trame alors qu'elle est en cours de transfert vers la bande.
+
+##### Data Width
+
+La largeur de données était imposée à 32 bits (Word) pour la configuration du DMA, donc même si les valeurs à stocker ne dépassent pas 80, (ce qui aurait pu n'utiliser que 8 bits),  
+nous avons également configuré la largeur de donnée du périphérique à 32 bits pour qu'il y ait bien une correspondance entre la mémoire et le périphérique.  
+
+##### CubeMX  
+
+<img src="media/stm32cubeide_timer_4_DMA.png"/>  
 
 #### 3.5. Interruptions activées
 
 <img src="media/stm32cubeide_timer_4_NVIC.png"/>
 
 - DMA1 Stream 0 global interrupt : activée par défaut
-- TIM4 global interrupt : désactivée. Aucune interruption du timer n'est utile.
+- TIM4 global interrupt : désactivée. Aucune interruption du timer n'est utile ici.
 
 ### 4. Structure de la bibliothèque
 
@@ -2882,20 +2881,17 @@ Le mode Normal (et non Circular comme pour l'ADC) est choisi car une trame doit 
 
 La bibliothèque est organisée autour de deux fichiers : `bande-led.h` pour les définitions et l'accès externe, et `bande-led.c` pour l'implémentation. Comme pour le TMP102, la bibliothèque ne dépend d'aucun timer ou canal en particulier : ils sont passés en paramètre à l'initialisation, et le `main.c` reste le seul endroit où ils sont choisis.
 
-Les fonctions publiques sont :
+##### Fonctions externes
 
 | Fonction | Rôle |
 | :--- | :--- |
-| `BandeLED_Init()` | Alloue et initialise l'objet bande |
-| `BandeLED_show()` | Encode l'état de toutes les LEDs et lance l'envoi par DMA |
-| `BandeLED_allumer()` / `BandeLED_eteindre()` | Allume / éteint toute la bande |
-| `BandeLED_set_led_state()` | Allume / éteint une LED |
-| `BandeLED_set_led_hexa()` / `BandeLED_set_led_rgb()` | Fixe la couleur d'une LED |
-| `BandeLED_set_led_luminosity()` | Fixe la luminosité d'une LED |
-| `BandeLED_demo()` | Démonstration non bloquante |
-
-Nous avons fait générer par IA les fonctions `Roue_Chromatique()` et `Bande_LED_demo()`.
-Comme `Roue_Chromatique()` est utilisée uniquement par la démonstration, elle est déclarée `static` pour ne pas être exposée.
+| `BandeLED_Init()` | Alloue et initialise l'*objet* bande led |
+| `BandeLED_show()` | Traduit l'état des LEDs et lance le transfert DMA |
+| `BandeLED_allumer()`/`_eteindre()` | Allume / éteint toute la bande |
+| `BandeLED_set_led_state()` | Allume / éteint une LED sans modifier sa couleur |
+| `BandeLED_set_led_hexa()` / `_rgb()` | Définit la couleur d'une LED |
+| `BandeLED_set_led_luminosity()` | Définit la luminosité d'une LED |
+| `BandeLED_demo()` | Démonstration de test |
 
 #### 4.2. Les structures `BL_RGB_t` et `BandeLED_t`
 
@@ -2904,9 +2900,9 @@ Comme pour le TMP102, la bande est représentée par un objet qui regroupe tout 
 <!-- code:Bibliotheques/Bande_LED/Inc/bande-led.h -->
 ```c
 typedef struct {
-    uint8_t rouge;
-    uint8_t vert;
-    uint8_t bleu;
+    uint8_t rouge;  // composante rouge 0-255
+    uint8_t vert;   // composante verte 0-255
+    uint8_t bleu;   // composante bleue 0-255
     uint8_t alpha;  // Luminosité 0-255
     bool    power;  // LED allumée ou éteinte
 } BL_RGB_t;
@@ -2914,7 +2910,7 @@ typedef struct {
 
 Nous avons séparé les champs `alpha` et `power` de la couleur pour que la couleur soit mémorisée indépendamment de l'état de la LED : éteindre une LED puis la rallumer, ou baisser sa luminosité, ne fait pas perdre sa couleur.
 
-L'objet `BandeLED_t` regroupe l'ensemble de la bande :
+L'objet `BandeLED_t` regroupe l'ensemble des paramètres propres à chaque LED d'une bande de NeoPixels :
 
 <!-- code:Bibliotheques/Bande_LED/Inc/bande-led.h -->
 ```c
@@ -2930,8 +2926,6 @@ typedef struct {
 } BandeLED_t;
 ```
 
-Le timer est stocké dans la structure, comme `busI2C` pour le TMP102, pour ne rien hardcoder dans la bibliothèque.
-
 #### 4.3. Define
 
 Pour ne jamais rien hardcoder, nous avons utilisé des `#define` pour chaque valeur issue de la datasheet, ainsi que pour les couleurs courantes :
@@ -2939,16 +2933,16 @@ Pour ne jamais rien hardcoder, nous avons utilisé des `#define` pour chaque val
 <!-- code:Bibliotheques/Bande_LED/Inc/bande-led.h -->
 ```c
 // Parametres datasheet bande led
-#define BL_FREQ_CYCLE_PWM 800000
-#define BL_PULSE_BIT_0_nS 400
-#define BL_PULSE_BIT_1_nS 800
-#define BL_DELAI_MAJ_nS   50000
-#define BL_NSEC_IN_1_SEC  1000000000
+#define BL_FREQ_CYCLE_PWM 800000      // Hz
+#define BL_PULSE_BIT_0_nS 400         // ns
+#define BL_PULSE_BIT_1_nS 800         // ns
+#define BL_DELAI_MAJ_nS   50000       // ns
+#define BL_NSEC_IN_1_SEC  1000000000  // ns
 #define BL_VERT_SEQ_RANG  1
 #define BL_ROUGE_SEQ_RANG 2
 #define BL_BLEU_SEQ_RANG  3
 
-// Couleurs predefinies
+// Couleurs predefinies au format 0xRRGGBB
 #define BL_HEXA_BLANC  0xFFFFFF
 #define BL_HEXA_ROUGE  0xFF0000
 #define BL_HEXA_VERT   0x00FF00
@@ -2956,9 +2950,7 @@ Pour ne jamais rien hardcoder, nous avons utilisé des `#define` pour chaque val
 ...
 ```
 
-- Les durées sont exprimées en nanosecondes comme dans la datasheet : elles sont converties en tics du timer par la bibliothèque (cf. [Scénario 9 – 6. Encodage et envoi de la trame](#6-encodage-et-envoi-de-la-trame)). Si on change la fréquence du timer, rien ne change dans la bibliothèque.
-- Les trois `BL_*_SEQ_RANG` donnent l'ordre d'envoi des couleurs (Vert, Rouge, Bleu). Si on utilisait une bande avec un autre ordre (par exemple RVB), il suffirait de modifier ces trois valeurs.
-- Les couleurs sont au format `0xRRGGBB` pour pouvoir les écrire naturellement, comme en HTML/CSS.
+Si on change les paramètres de la structure pour s'adapter à une autre datasheet d'une autre bande LED, la bibliothèque s'adapte automatiquement.
 
 ### 5. Initialisation
 
@@ -2967,73 +2959,180 @@ L'initialisation se fait avec une seule fonction :
 <!-- code:Bibliotheques/Bande_LED/Inc/bande-led.h -->
 ```c
 void BandeLED_Init(BandeLED_t* bande_led, TIM_HandleTypeDef *htim, uint32_t timer_channel, uint32_t freq_timer, uint8_t nb_leds)
-```
+```  
+Qui contient ces différentes étapes :
 
-Les étapes sont les suivantes :
+#### 5.1. Calcul du nombre de périodes de reset  
 
-1. **Calcul du nombre de périodes de reset :**
+La trame doit être suivie d'au moins 50 µs d'état bas. Comme une période PWM dure $ T_\text{PWM} = \frac{1}{800\,\text{KHz}} = 1250\, \text{ns}$, pour 50 µs de reset il faut $N_{reset} = \frac{50\,\text{µs}}{T_\text{PWM}} = 40$ périodes avec un Pulse de zéro.  
+
+Comme la datasheet parle de *minimum* 50 µs, nous avons préféré ajouté `+ 1` pour garantir que le délai est toujours **supérieur** à 50 µs, même si la division entière arrondissait à l'inférieur avec d'autres paramètres. 
+
+On obtient donc **41 périodes**, soit $41 \times 1{,}25\, \mu\text{s} = 51{,}25\, \mu\text{s}$.  
+
+Dans le code : 
+> Nous avons utilisé le suffixe `_maj` pour évoquer la mise à jour des NeoPixels après réception d'une trame de couleur. 
+(reset $\iff$ maj) et (cycle $\iff$ période PWM)
 <!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 bande_led->cycles_delai_maj = (BL_DELAI_MAJ_nS / (BL_NSEC_IN_1_SEC / BL_FREQ_CYCLE_PWM)) + 1;
 ```
-La trame doit être suivie d'au moins 50 µs d'état bas. Comme une période de bit dure $\frac{1\,\text{s}}{800\,\text{KHz}} = 1250\, \text{ns}$, il faut $\frac{50\,000}{1250} = 40$ périodes à zéro. Le `+ 1` garantit que le délai est toujours **supérieur** à 50 µs, même si la division entière arrondissait à l'inférieur avec d'autres paramètres. On obtient donc **41 périodes**, soit $41 \times 1{,}25\, \mu\text{s} = 51{,}25\, \mu\text{s}$.
+#### 5.2. Enregistrement du matériel
 
-2. **Enregistrement du matériel :** le timer, le canal, la fréquence de comptage du timer et le nombre de LEDs sont mémorisés dans l'objet.
+Le timer, le canal, la fréquence de comptage du timer et le nombre de LEDs passés en paramètes sont simplement enregistrés dans l'objet.
 
-3. **Allocation du tableau pour le DMA :**
 <!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
-bande_led->dma_buffer = malloc((nb_leds * 3 * 8 + bande_led->cycles_delai_maj) * sizeof(uint32_t));
+bande_led->PWM_timer   = htim;
+bande_led->PWM_channel = timer_channel;
+bande_led->freq_timer  = freq_timer;
+bande_led->nb_leds     = nb_leds;
 ```
+
+#### 5.3. Allocation du tableau pour le DMA
 Il faut une case par bit à envoyer ($3 \times 8 = 24$ bits par LED) plus une case par période de reset. Chaque case est un `uint32_t` pour correspondre à la largeur Word configurée dans le DMA. Pour nos 4 LEDs :
 $$(4 \times 24 + 41) \times 4\, \text{octets} = 137 \times 4 = 548\, \text{octets}$$
-L'allocation dynamique permet à la bibliothèque de s'adapter à **n'importe quelle longueur de bande** simplement en changeant `NB_LEDS_BANDE_RGB` dans le `main.c`, sans modifier la bibliothèque. Le tableau `leds` est alloué de la même manière.
+L'allocation dynamique permet à la bibliothèque de s'adapter à **n'importe quelle longueur de bande** simplement en changeant `NB_LEDS_BANDE_RGB` dans le `main.c`, sans modifier la bibliothèque. Le tableau `leds` est alloué de la même manière. 
 
-4. **Valeurs par défaut :** chaque LED est initialisée en noir (0, 0, 0), avec une luminosité maximale (`alpha = 255`) et allumée (`power = true`). On part ainsi d'un état connu, comme pour `TMP102_init_default()`.
+<!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
+```c
+bande_led->leds             = malloc(nb_leds * sizeof(BL_RGB_t));
+bande_led->dma_buffer       = malloc((nb_leds * 3 * 8 + bande_led->cycles_delai_maj) * sizeof(uint32_t));
+```
 
-5. **Envoi de la première trame** : `BandeLED_show()` puis `BandeLED_allumer()` envoient l'état initial (noir) pour que les LEDs soient dans un état défini dès le démarrage plutôt que dans un état aléatoire à la mise sous tension.
+#### 5.4. Valeurs par défaut   
+
+Chaque LED est initialisée en noir (0, 0, 0), avec une luminosité maximale (`alpha = 255`) et allumée (`power = true`). On part ainsi d'un état connu.
+
+<!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
+```c
+for (int i = 0; i < nb_leds; i++)
+{
+    bande_led->leds[i].rouge = 0;
+    bande_led->leds[i].vert  = 0;
+    bande_led->leds[i].bleu  = 0;
+    bande_led->leds[i].alpha = 255;
+    bande_led->leds[i].power = true;
+}
+```
+#### 5.5. Envoi de la première trame
+`BandeLED_show()` puis `BandeLED_allumer()` envoient l'état initial (noir) pour que les LEDs soient dans un état défini dès le démarrage plutôt que dans un état aléatoire à la mise sous tension.
+
+<!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
+```c
+BandeLED_show(bande_led);
+BandeLED_allumer(bande_led);
+```
 
 ### 6. Encodage et envoi de la trame
 
-La fonction `BandeLED_show()` convertit l'état de toutes les LEDs en tableau de valeurs de `CCR1`, puis lance son envoi par DMA.
+Pour éviter que les LEDs soient misent à jour trop régulièrement et que les mise à jour se chevauchent à chaque changement de couleur, nous avons séparé la mise à jour des objets LED et le  transfert vers la bande LED.  
 
-1. **Conversion des durées en tics du timer :**
+La fonction dédiée `BandeLED_show()` convertit l'état de toutes les LEDs en tableau de valeurs de `CCR1`, puis lance son transfert par DMA.
+
+#### 6.1. Conversion des durées en tics du timer
 <!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 int nS_per_timer_tic = BL_NSEC_IN_1_SEC  / bande_led->freq_timer;
 int pulse_bit_0_tics = BL_PULSE_BIT_0_nS / nS_per_timer_tic;
 int pulse_bit_1_tics = BL_PULSE_BIT_1_nS / nS_per_timer_tic;
 ```
-Avec `freq_timer = 100 000 000` Hz : $\frac{10^9}{10^8} = 10\, \text{ns par tic}$, donc $\frac{400}{10} = 40$ tics pour un 0 et $\frac{800}{10} = 80$ tics pour un 1. On retrouve les valeurs calculées dans la configuration du timer.
+Pour simplifier les calculs dans le code, nous calculons d'abord ces 3 valeurs : 
+- le nombre de nanosecondes par tic du timer
+- le nombre de tics dans Pulse pour coder un '0'
+- le nombre de tics dans Pulse pour coder un '1'
 
-2. **Parcours des LEDs et de leurs trois composantes :** pour chaque LED, une boucle sur le rang de la composante (1 à 3) sélectionne la couleur à envoyer selon l'ordre de la datasheet :
+Pour le détail des calculs $\rightarrow$ Cf. [Scénario 9 – 3.2. Calcul des paramètres du timer](#32-calcul-des-paramètres-du-timer)
+
+#### 6.2 Boucles for imbriquées
+L'écriture du buffer DMA se fait grâce à 2 boucles for imbriquées : 
+- la première parcourt les LEDs de la bande
+- la seconde parcourt les composantes (R, G, B) de chaque LED.
+
 <!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
-switch (composante)
+bool BandeLED_show(BandeLED_t* bande_led)
 {
-    case BL_ROUGE_SEQ_RANG :
-        valeur_composante = led_courante->rouge * led_courante->alpha / 255;
-        break;
-    case BL_VERT_SEQ_RANG :
-        valeur_composante = led_courante->vert * led_courante->alpha / 255;
-        break;
-    case BL_BLEU_SEQ_RANG :
-        valeur_composante = led_courante->bleu * led_courante->alpha / 255;
-        break;
+  for (int led_index = 0; led_index < bande_led->nb_leds; led_index++)
+  {
+    BL_RGB_t* led_courante = &bande_led->leds[led_index];
+
+    for (int composante = 1; composante <= 3; composante++)
+    {
+      uint8_t valeur_composante = 0;
+
+      // Prise en compte de la luminosité
+      // Encodage de la composante en valeurs de Pulse
+      // Remplissage du buffer DMA avec les valeurs encodées
+    }
+  }
+  // Encodage des periode des reset
+  // Lancement DMA
 }
 ```
-La boucle passe par les rangs 1, 2, 3 et c'est le `switch` qui détermine quelle couleur correspond à chaque rang : le Vert (rang 1) est donc émis en premier, puis le Rouge, puis le Bleu.
+> La fonction renvoie un booléen indiquant si l'envoi de la trame a été correctement lancé.
 
-3. **Application de la luminosité :** la composante est multipliée par `alpha / 255`. Avec `alpha = 255` la couleur est inchangée, avec `alpha = 0` elle est nulle, et entre les deux la luminosité est proportionnelle. Cela permet de régler la luminosité sans modifier la couleur mémorisée.
+#### 6.2. Parcours des trois composantes
+Un switch sur le rang de la composante permet de sélectionner l'ordre d'envoi de chasue composante (R, G, B) selon l'ordre de la datasheet :
 
-4. **Application de l'interrupteur :**
+![Bande LED GRB order](media/Bande_LED_GRB_order.png)
+
+<!-- code:Bibliotheques/Bande_LED/Inc/bande-led.h -->
+```c
+#define BL_VERT_SEQ_RANG  1
+#define BL_ROUGE_SEQ_RANG 2
+#define BL_BLEU_SEQ_RANG  3
+```
+<!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
+```c
+// Dans la boucle for précédente :
+for (int composante = 1; composante <= 3; composante++)
+{
+  ...
+  switch (composante) 
+  {
+    case BL_ROUGE_SEQ_RANG :
+        // traitement de la composante rouge
+        break;
+    case BL_VERT_SEQ_RANG :
+        // traitement de la composante verte
+        break;
+    case BL_BLEU_SEQ_RANG :
+        // traitement de la composante bleue
+        break;
+  }
+  // concaténation de la composante dans le buffer DMA
+}
+```
+#### 6.3. Application de la luminosité  
+
+Dans le traitement de chaque composante, on multiplie sa valeur par le facteur de luminosité `alpha / 255`.
+Avec `alpha = 255` la couleur est inchangée, avec `alpha = 0` elle est nulle, et entre les deux la luminosité est proportionnelle. Cela permet de régler la luminosité envoyée sans modifier la couleur mémorisée.
+
+Exemple pour la composante rouge :
+<!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
+```c
+case BL_ROUGE_SEQ_RANG :
+    valeur_composante = led_courante->rouge * led_courante->alpha / 255;
+    break;
+```
+#### 6.4. Application de l'interrupteur
+Pour qu'une LED soit éteinte, il ne suffit pas de ne plus lui envoyer de données : elle conserve la dernière couleur reçue jusqu'à la trame suivante. On lui envoie donc explicitement des 0. La LED s'allume si l'interrupteur général de la bande **et** celui de la LED sont actifs.
+
 <!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 uint8_t valeur_a_envoyer = (bande_led->power && led_courante->power) ? valeur_composante : 0;
 ```
-Pour qu'une LED soit éteinte, il ne suffit pas de ne plus lui envoyer de données : elle conserve la dernière couleur reçue jusqu'à la trame suivante. On lui envoie donc explicitement des 0. La LED s'allume si l'interrupteur général de la bande **et** celui de la LED sont actifs.
+#### 6.5. Encodage de l'octet de chaque composante
+Une fois que nous avons déterminé l'octet à envoyer pour la composante courante, il faut l'encoder en une série de pulses pour le DMA : 
 
-5. **Encodage des 8 bits, poids fort en premier :**
+Au début de la fonction `Bande_LED_show()`, on initialise l'index du buffer DMA à 0 pour commencer à remplir le tableau depuis le début.
+<!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
+```c
+uint32_t dma_index = 0;
+```
+Pour que tout le long du triatement dans la double boucle for, il suffise d'incrémenter `dma_index` à chaque bit encodé pour que le suivant soit concaténé dans le buffer DMA.
+
 <!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 for (int bit = 8-1; bit >= 0; bit--)
@@ -3043,19 +3142,12 @@ for (int bit = 8-1; bit >= 0; bit--)
     dma_index++;
 }
 ```
-Le masque `1 << bit` isole chaque bit, du bit 7 au bit 0, et on écrit dans le tableau 80 tics pour un 1 ou 40 tics pour un 0.
+Le masque `1 << bit` isole chaque bit de l'octet à envoyer, et on écrit dans le tableau 80 tics pour un '1' ou 40 tics pour un '0'.
+Ces valeurs sont calculées dans les formules décrites plus tôt → Cf. [Sénario 9 – 6.1. Conversion des durées en tics du timer](#61-conversion-des-durées-en-tics-du-timer) ).
 
-*Exemple : LED violette (`0x8000FF`) à la luminosité de 10 :*
+#### 6.6. Ajout du délai de reset
+On sort maintenant de la double boucle for qui encode chaque composante, et on ajoute ensuite le délai de reset en remplissant les dernières cases du buffer DMA avec des zéros.
 
-| Composante | Valeur | Après luminosité ($\times\, 10 / 255$) | Bits envoyés |
-| :--- | :--- | :--- | :--- |
-| Vert | 0x00 = 0 | 0 | `00000000` |
-| Rouge | 0x80 = 128 | 5 | `00000101` |
-| Bleu | 0xFF = 255 | 10 | `00001010` |
-
-La trame de cette LED est donc `00000000 00000101 00001010`, soit 24 valeurs de 40 ou 80 dans le tableau.
-
-6. **Ajout du délai de reset :**
 <!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 for (int i = 0; i < bande_led->cycles_delai_maj; i++) {
@@ -3063,9 +3155,15 @@ for (int i = 0; i < bande_led->cycles_delai_maj; i++) {
     dma_index++;
 }
 ```
-Les 41 dernières cases valent 0 : avec `CCR1 = 0` la sortie reste à l'état bas pendant 41 périodes, ce qui forme le reset de 51 µs. Comme ces zéros sont envoyés par le même mécanisme que les bits, il n'y a pas besoin de timer supplémentaire ni d'attente active.
+Les 41 dernières cases valent 0 : avec `CCR1 = 0` la sortie reste à l'état bas pendant 41 périodes, ce qui forme le reset de 51 µs.
 
-7. **Lancement de l'envoi par DMA :**
+#### 6.7. Lancement de l'envoi par DMA
+On arrête d'abord proprement un éventuel transfert précédent, car la HAL refuse de démarrer un nouveau transfert si le canal est déjà occupé. Le compteur est ensuite remis à 0 pour que la première période commence au début. Enfin `HAL_TIM_PWM_Start_DMA()` reçoit le tableau et sa longueur en nombre de cases (ici $137$ pour 4 LEDs) : le DMA envoie alors les 96 bits suivis des 41 périodes de reset, soit une durée de :
+
+$$137 \times 1{,}25\, \mu\text{s} \approx 171\, \mu\text{s}$$
+
+La fonction retourne `true` si le DMA a bien démarré, et **ne bloque pas** : la transmission se déroule en arrière-plan pendant que la boucle principale continue.
+
 <!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 HAL_TIM_PWM_Stop_DMA(bande_led->PWM_timer, bande_led->PWM_channel);
@@ -3073,11 +3171,7 @@ __HAL_TIM_SET_COUNTER(bande_led->PWM_timer, 0);
 bool status = (HAL_TIM_PWM_Start_DMA(bande_led->PWM_timer, bande_led->PWM_channel, bande_led->dma_buffer, dma_index) == HAL_OK);
 return status;
 ```
-On arrête d'abord proprement un éventuel transfert précédent, car la HAL refuse de démarrer un nouveau transfert si le canal est déjà occupé. Le compteur est ensuite remis à 0 pour que la première période commence au début. Enfin `HAL_TIM_PWM_Start_DMA()` reçoit le tableau et sa longueur en nombre de cases (ici $137$ pour 4 LEDs) : le DMA envoie alors les 96 bits suivis des 41 périodes de reset, soit une durée de :
-
-$$137 \times 1{,}25\, \mu\text{s} \approx 171\, \mu\text{s}$$
-
-La fonction retourne `true` si le DMA a bien démarré, et **ne bloque pas** : la transmission se déroule en arrière-plan pendant que la boucle principale continue.
+> Au départ, nous n'avions pas arrêté proprement le DMA et le timer avant de lancer un nouveau transfert, ce qui provoquait des transferts bizarre et générait des flashs verts sur un des NeoPixel de manière aléatoire.
 
 ### 7. Modification de l'état des LEDs
 
@@ -3085,7 +3179,8 @@ Les fonctions `BandeLED_set_led_*` ne font que **modifier la mémoire** : aucune
 
 Cette séparation est volontaire : une seule trame contient l'état de toutes les LEDs. On peut ainsi modifier autant de LEDs que nécessaire, puis envoyer **une seule trame** au lieu d'une par modification.
 
-Toutes les fonctions vérifient que l'indice de LED est valide avant d'écrire, pour ne jamais écrire en dehors du tableau :
+Toutes les fonctions vérifient que l'indice de LED est valide avant d'écrire, pour ne jamais écrire en dehors du tableau : 
+
 <!-- code:Bibliotheques/Bande_LED/Src/bande-led.c -->
 ```c
 if (led_id >= 0 && led_id < bande_led->nb_leds)
@@ -3104,9 +3199,19 @@ bande_led->leds[led_id].bleu  = hexa & 0xFF;
 - **`BandeLED_set_led_state()`** modifie le `power` d'une LED.
 - **`BandeLED_allumer()` / `BandeLED_eteindre()`** modifient le `power` global de la bande puis appellent `BandeLED_show()` pour l'appliquer immédiatement.
 
+Ces fonctions sont toutes triviales et nombreuses, donc vous pouvez directement aller les consulter dans le fichier source.
+
 #### 7.1. Fonction de démonstration
 
 La bibliothèque contient aussi `BandeLED_demo()`, non utilisée dans le `main.c` final, qui permet de tester rapidement la bande. Elle est conçue pour être appelée à 20 Hz sans bloquer : un compteur statique incrémenté à chaque appel fait défiler deux LEDs sur la roue chromatique à des vitesses différentes (fonction `Roue_Chromatique()` qui convertit une position de 0 à 255 en couleur RGB), et fait clignoter deux autres LEDs en blanc à des fréquences différentes, puis envoie la trame avec `BandeLED_show()`.
+
+Nous avons fait générer par IA la fonction `Bande_LED_demo()` afin de tester la bande LED sous toutes ses coutures.
+D'ailleurs nous avons identifé un bug : il y avait un flash vert très lumineux aléatoire sur une des LEDs. 
+Nous avons découvert que ce flash était dû à une mauvaise gestion du DMA à la fin de la focntion show() → Cf. [Sénario 9 – 6.7. Lancement de l'envoi par DMA](#67-lancement-de-lenvoi-par-dma).
+
+Elle utilise également la fonction static `Roue_Chromatique()`. Cette fonction est utilisée uniquement par la démonstration.
+
+Nous n'expliquons pas en détail le fonctionnement interne de cette fonction, car ce n'est pas nous qui l'avons codée.
 
 ### 8. Utilisation dans le code
 

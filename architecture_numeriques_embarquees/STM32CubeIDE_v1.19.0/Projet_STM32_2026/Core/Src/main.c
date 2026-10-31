@@ -510,7 +510,7 @@ void commande_fenetre()
 { 
   // Variable statique pour mémoriser l'état précédent entre deux itérations
   // Initialisée à INIT pour rendre possible la première transition depuis un état indéfini.
-  // cf rapport : Scénario 5 – 2.2. Application de l'etat de la fenêtre
+  // cf rapport : Scénario 5 – 2.2. Application de l'état de la fenêtre
   static fenetre_t etat_precedent = INIT;
 
   if (fenetre != etat_precedent) {
@@ -821,7 +821,7 @@ void update_cycle_alarmes_leds()
 }
 
 /**
- * @brief  Module de commande acoustique non bloquante du buzzer selon les alarmes en cours.
+ * @brief  Module de commande non bloquant du buzzer selon les alarmes en cours.
  *         Génère les fréquences distinctes (440 Hz pour le gaz, 384 Hz pour l'intrusion) et
  *         gère l'alternance temporelle par tranches de 250 ms en cas de double alarme simultanée.
  *         // cf rapport : Scénario 8 – 2. Gestion du buzzer avec fréquences distinctes & Scénario 8 – 3. Cas simultané : alternance gaz / intrusion

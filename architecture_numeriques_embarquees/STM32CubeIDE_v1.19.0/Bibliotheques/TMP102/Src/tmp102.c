@@ -322,7 +322,7 @@ static bool TMP102_read_temperature_register(TMP102_t *tmp102, float *Temperatur
 /**
  * @brief  Démarre une conversion One-Shot, uniquement si le capteur est en mode Shutdown.
  *         Positionne le flag interne de mesure en cours, puis écrit le bit OS à 1.
- *         // cf rapport : Scénario 6 – 9.1. Mode Continous vs Shutdown
+ *         // cf rapport : Scénario 6 – 9.1. Mode Continuous vs Shutdown
  *         // cf rapport : Scénario 6 – 9.2. Déclencher une mesure One-Shot
  * @param  tmp102 Pointeur vers l'objet TMP102
  * @return true si la mesure a été déclenchée, false sinon
@@ -404,9 +404,9 @@ char* TMP102_temperature_to_string(float temperature, uint8_t precision)
 {
     // Création du buffer statique pour la chaîne de caractères de la température
     // Au pire la string ressemble à ça : +-XXX,XXXX ce qui donne un nombre max de caractères 
-    // = signe + max 3 chiffres pour la partie entière + max 4 chiffres pour la partie décimale + signe + '\0' 
-    // = max 13 caractères
-    static char buffer[13];
+    // = signe + max 3 chiffres pour la partie entière + virgule + max 4 chiffres pour la partie décimale + '\0' 
+    // = max 14 caractères
+    static char buffer[14];
     // Table des puissances de 10 pour décaler la partie décimale
     static const int multi_table[] = {1, 10, 100, 1000, 10000};
 

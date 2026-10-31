@@ -4,7 +4,7 @@
 
 **ECUE :** Architectures Numériques Embarquées  
 **Binôme :** Thibault AGUEH, Benoît DE KEYN   
-**Date :** 26/10/2026  
+**Date :** 31/10/2026  
 **Carte cible :** NUCLEO-F411RE (STM32F411RET6)
 
 ---

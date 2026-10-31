@@ -403,10 +403,7 @@ bool TMP102_get_temperature(TMP102_t *tmp102, float *Temperature)
 char* TMP102_temperature_to_string(float temperature, uint8_t precision) 
 {
     // Création du buffer statique pour la chaîne de caractères de la température
-    // Au pire la string ressemble à ça : +-XXX,XXXX ce qui donne un nombre max de caractères 
-    // = signe + max 3 chiffres pour la partie entière + virgule + max 4 chiffres pour la partie décimale + '\0' 
-    // = max 14 caractères
-    static char buffer[14];
+    static char buffer[16];
     // Table des puissances de 10 pour décaler la partie décimale
     static const int multi_table[] = {1, 10, 100, 1000, 10000};
 
@@ -438,7 +435,7 @@ char* TMP102_temperature_to_string(float temperature, uint8_t precision)
     // %s : signe
     // %d : partie entière
     // %0*d : partie décimale avec zéro-padding pour une précision variable
-    snprintf(buffer, sizeof(buffer), "%s%d,%0*d", 
+    snprintf(buffer, sizeof(buffer), "%s%d,%0*d",
              negatif ? "-" : "", 
              partie_entiere, 
              precision, 

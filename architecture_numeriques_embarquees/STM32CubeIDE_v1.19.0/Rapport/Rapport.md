@@ -243,6 +243,8 @@
 <img src="media/photo_maison_1.jpg" width="500">
 <img src="media/photo_maison_2.jpg" width="500">
 
+<!-- newpage -->
+
 Pour simplifier le câblage, notamment pour les premiers scénarios, nous avons soudé des boutons, des LEDs (une RGB, une jaune et une bleue), et collé une breadboard sur un shield Arduino vierge. Voici à quoi ressemble notre montage :
 
 <img src="media/breadboard.jpg" width="500">
@@ -299,6 +301,8 @@ Nous sommes partis de cette base :
 
 ---
 
+<!-- newpage -->
+
 **Priorité 2 — I²C**
 
 Le header Arduino n'avait qu'une seule paire de broches SDA & SCL disponible, nous les avons donc réservées directement :
@@ -340,6 +344,8 @@ L'ADC1 est le seul ADC de la carte, mais on dispose de plusieurs entrées sur le
 
 ---
 
+<!-- newpage -->
+
 **Priorité 5 — Broches d'interruption**
 
 Nous avions besoin de 3 interruptions externes (EXTI) :
@@ -368,7 +374,7 @@ Nous avions besoin de 3 sorties GPIO pour les LEDs indicatrices. Nous avons choi
 
 ---
 
-#### 1.2. Tableau de brochage final
+#### 1.2. Tableau de brochage final  
 | Composant | Label CubeMX | Connecteur Arduino | Broche STM32 | Périphérique / Mode | Pull | Tension |
 |---|---|---|---|---|---|---|
 | Liaison série USB | SERIAL_TX | — | PA2 | USART2 TX (ST-LINK) | — | 3V3 |
@@ -408,7 +414,7 @@ Nous avons donc créé des liens symboliques, ajouté les chemins des headers au
 Dossiers symboliques  
 <img src="media/stm32cubeide_liens_symboliques.png" alt="Dossiers symboliques" width="200">
 
-
+<!-- newpage -->
 
 Décochage de « Exclude from Build » dans les propriétés des dossiers symboliques
 <img src="media/stm32cubeide_exclude_from_build_project_settings.png" alt="Exclude from build dans project settings" width="600">
@@ -473,6 +479,8 @@ typedef struct {
 } LED_t;
 ```
 
+<!-- newpage -->
+
 Voici un exemple de déclaration de LED dans le ```main.c``` :
 <!-- code:Core/Src/main.c -->
 ```c
@@ -527,12 +535,12 @@ $$Prescaler < 65 535$$
 
 La plus grande puissance de 10 permettant de diviser 100 MHz sans dépasser la valeur maximale du prescaler est 10 000. On choisit donc :
 $$PSC = 10 000 - 1 = 9 999$$
-$$\implies f_{PSC} = \frac{100\text{ MHz}}{10 000} = 10\text{ kHz}$$
-$$\implies T_{PSC} = \frac{1}{10\text{ kHz}} = 0,1\text{ ms}$$
+$$\implies f_{timer} = \frac{100\text{ MHz}}{\text{PSC} + 1} = \frac{100\text{ MHz}}{10000} = 10\text{ kHz}$$
+$$\implies \text{T}_{tic} = \frac{1}{f_{timer}} = \frac{1}{10\text{ kHz}} = 0,1\text{ ms}$$
 
 #### 1.3. Calcul de la Période
 Ainsi pour mesurer une durée de 2 secondes, le nombre de tics requis est de :
-$$N_{tics} = \frac{2\text{ s}}{0,1\text{ ms}} = 20 000$$
+$$\text{N}_{tic} = \frac{2\text{ s}}{0,1\text{ ms}} = 20 000$$
 On choisit donc `ARR = 20 000 - 1 = 19 999`.
 
 #### 1.4. Dans CubeMX
@@ -771,7 +779,9 @@ HOME:Alarme intrusion désactivée<br>
   AWAY:<b>AWAY</b>
 AWAY:Surveillance alarme intrusion<br>
 ```
+
 <!-- newpage -->
+
 **Organigramme de l'alarme intrusion du mode AWAY :**
 ```mermaid
 flowchart TD
@@ -1014,6 +1024,8 @@ Comme nous envoyons systématiquement toutes les 2 secondes les valeurs de ces t
 
 > Pour la température, nous avons une fonction dédiée à la génération de la chaîne correspondant à un float, comme détaillé au paragraphe [Scénario 6 – 8.3. Affichage de la température de type float](#83-affichage-de-la-température-de-type-float).
 
+<!-- newpage -->
+
 #### 4.2. Événements d'état (asynchrones)
 
 Seules ces 8 actions provoquent un message sur l'UART en plus des mesures périodiques :
@@ -1102,6 +1114,8 @@ $$\implies ARR = \frac{2{,}5\, \text{MHz}}{50\, \text{Hz}} - 1 = 50\,000 - 1 = 4
 On obtient ainsi une fréquence PWM exactement égale à 50 Hz, avec une résolution de comptage de :
 
 $$T_{tic} = \frac{1}{2{,}5\, \text{MHz}} = 0{,}4\, \mu\text{s par tic}$$
+
+<!-- newpage -->
 
 Ce qui donne la configuration suivante dans CubeMX :
 
@@ -1229,6 +1243,8 @@ La prise en compte de l'appui sur le bouton de la fenêtre dépend directement d
 - **En mode HOME :** L'utilisateur a le contrôle de l'ouverture et de la fermeture de la fenêtre, sauf en cas d'intempérie. Si la pluie est détectée, elle prend une priorité absolue et force la fermeture. Sinon, chaque appui validé bascule l'état de la fenêtre.
 - **En mode AWAY :** L'utilisateur n'a pas le contrôle de la fenêtre, celle-ci devant rester impérativement fermée.
 
+<!-- newpage -->
+
 <!-- code:Core/Src/main.c -->
 ```c
 // Dans la boucle principale while (1) de la fonction main()
@@ -1292,9 +1308,6 @@ Pour acquérir simultanément deux capteurs (GAZ sur A2, et PLUIE sur A3), nous 
 
 Par rapport à la configuration du Scénario 3, les paramètres suivants ont été modifiés dans CubeMX :
 
-
-<img src="media/stm32cubeide_ADC_Scenario_5.png"/>
-
 | Paramètre | Scénario 3 | Scénario 5 |
 | :--- | :--- | :--- |
 | Number of Conversions | 1 | 2 |
@@ -1303,7 +1316,12 @@ Par rapport à la configuration du Scénario 3, les paramètres suivants ont ét
 | Rank 2 | — | CH8 (PLUIE) — 3 cycles |
 | DMA Continuous Requests | Disabled | Enabled |
 
-<img src="media/stm32cubeide_ADC_2_channels.png"/>
+Ce qui donne la configuration suivante dans CubeMX :  
+<img src="media/stm32cubeide_ADC_2_channels.png" width="500"/>
+
+<!-- newpage -->
+
+<img src="media/stm32cubeide_ADC_Scenario_5.png"/>
 
 Dans le Scénario 3, nous avions choisi 480 cycles d'échantillonnage, ce qui donnait environ 19,7 µs par canal pour stabiliser la mesure. Mais en cherchant à réduire au maximum la latence entre déclenchement et mesure, nous avons testé avec 3 cycles, et les valeurs obtenues étaient cohérentes et stables.
 
@@ -1462,12 +1480,7 @@ Nous avons alimenté le capteur avec la broche 3.3V de la carte Nucleo.
 | GND | GND |
 
 #### 1.2. Bus I²C (SDA/SCL)
-Pour tous les composants I²C (à savoir le TMP102 et l'écran LCD), nous avons utilisé le bus I2C3 selon le câblage suivant : 
-
-| Signal | Broche | Arduino |
-| :--- | :--- | :--- |
-| SDA | PB4 | D5 |
-| SCL | PA8 | D7 |
+Pour tous les composants I²C (à savoir le TMP102 et l'écran LCD), nous avons utilisé le bus I2C3 selon le câblage détaillé en [Tableau de brochage final](#12-tableau-de-brochage-final).
 
 Nous n'avons pas touché à la configuration par défaut après avoir assigné les 2 broches :  
 
@@ -1500,7 +1513,7 @@ La valeur est alignée à gauche et suivie d'un padding de 3 ou 4 '0'.
 La conversion se fait selon une série d'étapes détaillées ici :
 
 *Extrait de la datasheet du capteur TMP102 :*      
-<img src="media/TMP102_datasheet_conversion_temperature.png">
+<img src="media/TMP102_datasheet_conversion_temperature.png" width="600">
 
 #### 2.3. Registre de configuration
 Le registre de configuration (adresse 0x01) permet de régler plusieurs paramètres du capteur :
@@ -1657,6 +1670,8 @@ typedef struct
 
 La fonction statique `TMP102_SyncConfigBuffer()`, via un tableau de `TMP102_FieldMap_t`, encode ou décode l'ensemble des champs.
 Lorsque l'on veut mettre à jour l'objet TMP102 de la bibliothèque à partir du contenu du registre de configuration du capteur (```is_write = false```) ou, à l'inverse, préparer le buffer d'écriture à partir de l'objet TMP102 (```is_write = true```), il suffit de fournir en paramètre l'instance du capteur, le buffer et le booléen `is_write` :
+
+<!-- newpage -->
 
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
@@ -2084,6 +2099,8 @@ uint8_t temp_length = (extended_mode)
                        : TMP102_NORM_BIT_LEN;
 ```
 
+<!-- newpage -->
+
 Puis on effectue les mêmes étapes mais en sens inverse :  
 ##### 1. On divise la température par la résolution
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
@@ -2121,6 +2138,12 @@ Voici les étapes de la conversion de `float` en `String` :
 
 ##### 1. On définit un buffer pour stocker la chaîne de caractères
 
+Le buffer est défini comme `static` pour qu'il persiste après la sortie de la fonction et puisse être retourné sans problème.
+
+Le nombre de caractère théorique est de 10 :  
+signe + 3 chiffres pour la partie entière + virgule + 4 chiffres pour la partie décimale + '\0'
+Cependant, le commilateur évalue une grosse marge pour les zéro-paddings et exige plus de caractères sous peine de warning de dépassement. Pour plus de détails, Cf. [Formatage sprintf de la chaîne de caractères](#7-on-formate-la-chaîne-de-caractères-en-utilisant-snprintf)
+
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     static char buffer[16];
@@ -2143,6 +2166,8 @@ NB : On aurait pu utiliser la fonction `pow`, mais il aurait fallu utiliser une 
 ```c
     if(precision > 4) precision = 4;
 ```
+
+<!-- newpage -->
 
 Une précision de 4 décimales est largement suffisante : la résolution du capteur est de 0,0625 °C (soit 4 chiffres après la virgule) et sa précision absolue de ±2 °C.
 
@@ -2200,6 +2225,8 @@ De plus, les fréquences de rafraîchissement disponibles en mode Continuous ét
 #### 9.2. Déclencher une mesure One-Shot
 
 En mode Shutdown, le capteur ne mesure rien tout seul. Pour déclencher une mesure, il faut écrire le bit `OS` (One-Shot) à 1 dans le registre de configuration. Le capteur effectue alors une unique mesure, met le résultat dans le registre de température, et repasse automatiquement en veille. On peut savoir si la mesure est terminée en relisant le registre de configuration : le bit `OS` repasse à 0 pendant la mesure et revient à 1 une fois terminée.
+
+<!-- newpage -->
 
 Dans la fonction de démarrage d'une mesure, on vérifie d'abord que le capteur est bien en mode Shutdown, puis on positionne le drapeau `is_measuring_one_shot` à `true` pour autoriser les tests de fin de conversion via `TMP102_is_measure_ready()`. Enfin, on écrit `1` sur le bit `OS` du registre de configuration pour déclencher la conversion.  
 *NB : Le bit OS valant déjà 1 au repos en mode Shutdown, le capteur déclenche la conversion sur l'événement d'écriture du registre.*
@@ -2284,6 +2311,8 @@ On commence par appeler `TMP102_init_default()` pour partir d'un état connu, pu
 
 Le cycle de mesure complet se déroule sur plusieurs itérations de la boucle `while(1)`, sans jamais bloquer. On peut décomposer la séquence :
 
+<!-- newpage -->
+
 ##### 1. Déclenchement
 Au tick du `TIMER_CAPTEURS` (toutes les 2 s), `TMP102_start_measure()` est lancé :
 
@@ -2329,11 +2358,6 @@ void evaluer_temperature()
   }
 }
 ```
-  
-### 11. Analyse des trames I²C
-
-Nous avons oublié de faire l'analyse des trames I²C le jour de la démo, quand nous sommes arrivés avec le Scénario 6 enfin terminé. 
-Cependant nous sommes capables de décrire à quoi cela devrait ressembler en théorie.
 
 ### 12. Gestion automatique de la fenêtre par la température
 
@@ -2365,6 +2389,9 @@ typedef enum {
 // Dans la section USER CODE PV
 temperature_t temperature = TEMPEREE;
 ```
+
+<!-- newpage -->
+
 La plage tempérée (24–26°C) crée une hystérésis naturelle : une fois détecté comme `CHAUD`, le capteur ne revient à `TEMPEREE` que si la température descend en dessous de `SEUIL_CHALEUR`. Cela évite les oscillations rapides de la fenêtre autour du seuil. On suit donc la température selon la machine à états suivante.
 
 ```mermaid
@@ -2380,6 +2407,8 @@ stateDiagram
 Dans notre fonction `evaluer_temperature()`, nous avons ajouté l'actionnement de la fenêtre lors des transitions vers les états `CHAUD` et `FROID`, lorsque le système est en mode `HOME` et en l'absence de pluie :  
 En dehors de ces transitions, la fenêtre reste sous le contrôle manuel de l'utilisateur ou est forcée par la détection de pluie.  
 La logique est volontairement asymétrique : une transition déclenche une action ponctuelle sur la fenêtre (sans la bloquer dans cette position).  
+
+<!-- newpage -->
 
 <!-- code:Core/Src/main.c -->
 ```c
@@ -2526,7 +2555,7 @@ L'affichage du mode est volontairement dissocié du rafraîchissement des capteu
 // Dans la section USER CODE 0
 void afficher_mode_ecran() 
 { 
-  char ligne_mode[8];
+  char ligne_mode[8+1];
   snprintf(ligne_mode, sizeof(ligne_mode), "%4s",
            (mode == HOME) ? "HOME" : "AWAY");
 
@@ -2534,6 +2563,8 @@ void afficher_mode_ecran()
   lcd_send_string(ligne_mode);
 }
 ```
+##### 1. Taille du buffer
+Le buffer `ligne_mode` est dimensionné pour contenir 8 caractères plus le caractère nul de fin de chaîne (`\0`). Ce qui correpond à la moitié de la première ligne de l'afficheur (16 caractères).
 
 ##### 1. Chaîne de caractères
 On utilise `snprintf` de la bibliothèque standard `<stdio.h>` pour formater la chaîne de manière à ce qu'elle fasse toujours exactement 4 caractères (`%4s`), remplaçant proprement `HOME` par `AWAY` (et inversement) sans altérer le reste de la ligne (la température).
@@ -2571,6 +2602,7 @@ void afficher_capteurs_ecran()
     lcd_send_string(ligne2);
 }
 ```
+> La taille du tableau `ligne1` est de 8 caractères pour la première demi-ligne, et celle de `ligne2` est de 16 caractères pour la 2e ligne, +1 pour le caractère de fin '\0' à chaque fois.
 
 Cette fonction applique plusieurs choix de conception :
 
@@ -2838,12 +2870,6 @@ Le signal est donc généré entièrement par le matériel, avec la précision d
 
 La bande est alimentée en 3,3 V (c'était déjà bien assez éblouissant à 3,3V, nous n'avons pas tenté 5V) et son entrée de données DI est connectée à PB6 (D10), qui correspond à TIM4 CH1 (cf. [Architecture globale – 1.2. Tableau de brochage final](#12-tableau-de-brochage-final)).
 
-| Signal | Broche |
-| :--- | :--- |
-| VCC | 3,3 V |
-| GND | GND |
-| DI | PB6 (D10) — TIM4 CH1 |
-
 #### 3.2. Calcul des paramètres du Timer
 
 Comme pour les autres timers, le Timer 4 est alimenté par l'horloge interne à 100 MHz.
@@ -2996,7 +3022,7 @@ Qui contient ces différentes étapes :
 
 #### 5.1. Calcul du nombre de périodes de reset  
 
-La trame doit être suivie d'au moins 50 µs d'état bas. Comme une période PWM dure $ T_\text{PWM} = \frac{1}{800\,\text{KHz}} = 1250\, \text{ns}$, pour 50 µs de reset il faut $N_{reset} = \frac{50\,\text{µs}}{T_\text{PWM}} = 40$ périodes avec un Pulse de zéro.  
+La trame doit être suivie d'au moins 50 µs d'état bas. Comme une période PWM dure $\text{T}_{PWM} = \frac{1}{800\,\text{KHz}} = 1250\, \text{ns}$, pour 50 µs de reset il faut $\text{N}_{reset} = \frac{50\,\mu\text{s}}{\text{T}_{PWM}} = 40$ périodes avec un Pulse de zéro.
 
 Comme la datasheet parle de *minimum* 50 µs, nous avons préféré ajouter `+ 1` pour garantir que le délai est toujours **supérieur** à 50 µs, même si la division entière arrondissait à l'inférieur avec d'autres paramètres. 
 

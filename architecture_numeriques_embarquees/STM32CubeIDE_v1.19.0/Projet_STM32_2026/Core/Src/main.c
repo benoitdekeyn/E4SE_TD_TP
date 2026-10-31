@@ -286,6 +286,8 @@ void update_cycle_alarmes(void);
  */
 void afficher_capteurs_ecran() 
 {
+	// Tableaux de 8 caractères pour la première demi-ligne, et de 16 charactères pour la 2e ligne
+	// +1 pour le caractère de fin \0
     char ligne1[8+1];
     char ligne2[16+1];
 
@@ -320,7 +322,8 @@ void afficher_capteurs_ecran()
  */
 void afficher_mode_ecran() 
 { 
-  char ligne_mode[8];
+  // Tableau de 8 caractères (demi ligne), +1 pour le caractère de fin \0
+  char ligne_mode[8+1];
   // Formatage à largeur fixe (%4s) pour occuper exactement 4 caractères (HOME ou AWAY)
   // sans déborder sur l'affichage de la température situé en colonne 8
   // cf rapport : Scénario 7 – 3.2. HOME / AWAY

@@ -252,7 +252,7 @@ void afficher_mode_ecran(void);
 void initialiser_ecran(void);
 void initialiser_thermometre(void);
 void initialiser_bande_led(void);
-void update_bande_led(void);
+void commande_bande_led(void);
 void angle_servo(int angle);
 void commande_fenetre(void);
 void commande_led(void);
@@ -424,7 +424,7 @@ void initialiser_bande_led()
  * @param  None
  * @return None
  */
-void update_bande_led()
+void commande_bande_led()
 {
     // LED Haut Gauche : pulsation de cycle capteurs, synchronisée sur la LED bleue physique
     BandeLED_set_led_state(&bande_led, LED_HAUT_GAUCHE, led_capteurs.state);
@@ -1105,7 +1105,7 @@ int main(void)
       timer_debounce_flag = false; // Acquittement du flag d'interruption
       debounce_filter();           // Évaluation de la stabilité des boutons (50 ms après front)
       update_cycle_alarmes();      // Cadencement du clignotement des LEDs et alternance buzzer
-      update_bande_led();          // Actualisation de l'état des NeoPixels en fonction des variables
+      commande_bande_led();          // Actualisation de l'état des NeoPixels en fonction des variables
     }
     
     // Tâche 2 : Base de temps 2 s (TIM2) - Déclenchement One-Shot capteur température

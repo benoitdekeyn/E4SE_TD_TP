@@ -3213,9 +3213,22 @@ Elle utilise également la fonction static `Roue_Chromatique()`. Cette fonction 
 
 Nous n'expliquons pas en détail le fonctionnement interne de cette fonction, car ce n'est pas nous qui l'avons codée.
 
-### 8. Utilisation dans le code
+### 8. Utilisation dans le code principal
+  
+#### 8.1. Informations transmises par les NeoPixels
 
-#### 8.1. Déclaration et initialisation
+Les 4 NeoPixels affichent l'état de la maison :
+
+| NeoPixel | Information | Couleur | Comportement |
+| :--- | :--- | :--- | :--- |
+| `LED_HAUT_GAUCHE` | Mise à jour des capteurs | Violet | Change d'état (toggle) toutes les 2 s à chaque cycle de mesure |
+| `LED_HAUT_DROITE` | Alarme gaz | Rouge | Clignote à 10 Hz pendant l'alarme |
+| `LED_BAS_DROITE` | Alarme intrusion | Orange | Clignote à 2 Hz pendant l'alarme |
+| `LED_BAS_GAUCHE` | Tranche de température | Bleu / Vert / Orange | Froid / tempérée / chaude |
+
+Les trois premiers NeoPixels ont un comportement identique aux simples LED utilisées jusqu'à présent : `led_capteurs`, `led_alarme_gaz` et `led_alarme_intrusion` (Bleue, Rouge et Jaune). Ces trois NeoPixels n'ont pas leur propre logique ils affichent simplement le même état que les LEDs de base.
+
+#### 8.2. Déclarations
 
 La bande est représentée par une unique variable globale de type `BandeLED_t`.
 
@@ -3225,14 +3238,14 @@ La bande est représentée par une unique variable globale de type `BandeLED_t`.
 BandeLED_t bande_led;
 ```
 
-Les paramètres matériels et d'affichage sont définis par des `#define` en tête de `main.c` :
+Les paramètres matériels et d'affichage sont définis par des `#define` :
 
 <!-- code:Core/Src/main.c -->
 ```c
 // Dans la section USER CODE PD
 #define TIMER_BANDE_LED      (&htim4)
 #define CANAL_BANDE_LED      TIM_CHANNEL_1
-#define FREQ_TIMER_BANDE_LED 100000000
+#define FREQ_TIMER_BANDE_LED 100000000 // Hz
 
 #define NB_LEDS_BANDE_RGB 4
 #define LED_BAS_DROITE    0
@@ -3249,10 +3262,11 @@ Les paramètres matériels et d'affichage sont définis par des `#define` en tê
 #define COULEUR_TEMP_CHAUD       BL_HEXA_ORANGE
 ```
 
-- `FREQ_TIMER_BANDE_LED` vaut 100 MHz car c'est la fréquence de comptage du Timer 4 avec `PSC = 0`. Cette valeur doit correspondre à la configuration CubeMX, car la bibliothèque s'en sert pour convertir les durées de la datasheet en tics.
-- Les quatre `LED_*` associent un **nom fonctionnel** à la **position physique** de la LED dans la chaîne (indice 0 = première LED reliée au microcontrôleur), de la même manière que `LED_t` associe un nom à un label matériel ([Defines et types personnalisés - 6. Structure pour les LEDs](#6-structure-pour-les-leds)).
-- La luminosité est volontairement limitée à $\frac{10}{255} \approx 4\,\%$ : les NeoPixels sont très lumineux à pleine puissance, et cette valeur suffit à les voir clairement tout en limitant la consommation de la bande.
+Pour simplifier la compréhension du code, nous sommes encore une fois passé par des noms qui ont du sens pour désigné l'ordre des LEDs dans la bande configurée en carré, ou bien les couleurs associées à chaque fonction.
 
+Nous avons résduit la luminosité à 10 (c'est celle de la démo de mardi) car au-delà, les NeoPixels étaient vraiement éblouissants.
+
+#### 8.3. Initialisation
 L'initialisation est regroupée dans la fonction `initialiser_bande_led()`, appelée une seule fois au début du `main()` :
 
 <!-- code:Core/Src/main.c -->
@@ -3260,6 +3274,7 @@ L'initialisation est regroupée dans la fonction `initialiser_bande_led()`, appe
 // Dans la section USER CODE 0
 void initialiser_bande_led()
 {
+  // Initialisation de la bande LED avec les paramètres matériels et le nombre de LEDs
   BandeLED_Init(&bande_led, TIMER_BANDE_LED, CANAL_BANDE_LED, FREQ_TIMER_BANDE_LED, NB_LEDS_BANDE_RGB);
   for (int i = 0; i < NB_LEDS_BANDE_RGB; i++) {
       BandeLED_set_led_luminosity(&bande_led, i, LUMINOSITE_BASE);
@@ -3276,34 +3291,19 @@ void initialiser_bande_led()
   BandeLED_set_led_state(&bande_led, LED_BAS_DROITE, false);
   BandeLED_set_led_state(&bande_led, LED_BAS_GAUCHE, false);
 
+  // Affectation physique des nouveaux états des NeoPixels
   BandeLED_show(&bande_led);
 }
 ```
 
-1. `BandeLED_Init()` crée l'objet avec les paramètres matériels.
-2. La luminosité de base est appliquée à toutes les LEDs.
-3. **Les couleurs des trois LEDs qui n'ont qu'une seule signification sont affectées une seule fois ici** (alarme gaz, alarme intrusion, capteurs). Comme la couleur est mémorisée indépendamment de l'état `power`, il suffira ensuite de les allumer et de les éteindre sans jamais les recalculer. La LED de température est la seule dont la couleur varie, elle est donc gérée dans la boucle.
-4. Toutes les LEDs sont éteintes (`power = false`) pour démarrer proprement, puis `BandeLED_show()` envoie cet état.
+#### 8.4. Mise à jour périodique
 
-#### 8.2. Informations transmises par les NeoPixels
-
-Les 4 NeoPixels affichent l'état de la maison :
-
-| LED (indice) | Information | Couleur | Comportement |
-| :--- | :--- | :--- | :--- |
-| `LED_HAUT_GAUCHE` (2) | Mise à jour des capteurs | Violet | Change d'état (toggle) toutes les 2 s à chaque cycle de mesure |
-| `LED_HAUT_DROITE` (1) | Alarme gaz | Rouge | Clignote à 10 Hz pendant l'alarme |
-| `LED_BAS_DROITE` (0) | Alarme intrusion | Orange | Clignote à 2 Hz pendant l'alarme |
-| `LED_BAS_GAUCHE` (3) | Tranche de température | Bleu / Vert / Orange | Froid / tempérée / chaude |
-
-Les trois premières LEDs **recopient l'état des LEDs discrètes déjà gérées** : `led_capteurs`, `led_alarme_gaz` et `led_alarme_intrusion` ([Defines et types personnalisés - 3. Structure pour les LEDs](#6-structure-pour-les-leds)). Les clignotements restent donc calculés à un seul endroit par le compteur partagé ([Scénario 8 – 1. Clignotement non bloquant par compteur partagé](#1-clignotement-non-bloquant-par-compteur-partagé)), et les NeoPixels n'ont pas leur propre logique de temporisation : ils affichent simplement le même état que les LEDs soudées.
-
-#### 8.3. Mise à jour périodique
+Nous avons créé une fonction `commande_bande_led()` pour mettre à jour l'état des NeoPixels en fonction des variables de l'application (capteurs, alarmes et température) :
 
 <!-- code:Core/Src/main.c -->
 ```c
 // Dans la section USER CODE 0
-void update_bande_led()
+void commande_bande_led()
 {
     BandeLED_set_led_state(&bande_led, LED_HAUT_GAUCHE, led_capteurs.state);
     BandeLED_set_led_state(&bande_led, LED_HAUT_DROITE, led_alarme_gaz.state);
@@ -3331,11 +3331,21 @@ void update_bande_led()
 }
 ```
 
-1. **Recopie des états :** les états `state` des trois LEDs discrètes sont copiés dans le `power` des LEDs correspondantes. Si l'état n'a pas changé, la valeur écrite est identique.
-2. **Tranche de température :** la LED est toujours allumée, et c'est sa couleur qui change selon la variable `temperature` calculée par `evaluer_temperature()` ([Scénario 6 – 12. Gestion automatique de la fenêtre par la température](#12-gestion-automatique-de-la-fenêtre-par-la-température)). Le `default` éteint la LED si la valeur n'est pas reconnue.
-3. **Envoi d'une seule trame** avec `BandeLED_show()` après toutes les modifications ([Scénario 9 – 7. Modification de l'état des LEDs](#7-modification-de-létat-des-leds)).
+##### 1. **Recopie des états** 
+Les états `state` des trois LEDs discrètes sont copiés dans le `power` des LEDs correspondantes. Si l'état n'a pas changé, la valeur écrite est identique.
+##### 2. **Tranche de température** 
+La LED est toujours allumée, et c'est sa couleur qui change selon la variable `temperature` calculée par `evaluer_temperature()` ([Scénario 6 – 12. Gestion automatique de la fenêtre par la température](#12-gestion-automatique-de-la-fenêtre-par-la-température)). Le `default` éteint la LED si la valeur n'est pas reconnue.
+##### 3. **Envoi d'une seule trame** 
+Avec `BandeLED_show()` après toutes les modifications (Cf. [Scénario 9 – 7. Modification de l'état des LEDs](#7-modification-de-létat-des-leds)).
 
-Cette fonction est appelée dans la boucle `while(1)` **à la cadence de 20 Hz** du Timer 5, c'est-à-dire sur le même flag que le filtre anti-rebond et le cycle des alarmes :
+#### 8.5. Fréquence de mise à jour
+
+Cette fonction est appelée **à la cadence de 20 Hz** du Timer 5, c'est-à-dire sur le même flag que le filtre anti-rebond et le cycle des alarmes dans la boucle `while(1)` afin de ne pas risquer d'appeler `BandeLED_show()` trop souvent et ainsi de devoir interrompre la transmission en cours (chacune prenant environ 171 µs).
+
+D'autant plus que l'appel de `BandeLED_show()` est assez lourd : il pourrait augmenter significativementle temps passé dans la boucle principale.
+Alors que les LEDs n'ont en réalité pas besoin d'être mises à jour à plus de 20Hz pour l'œil humain (qui tourne à 24 fps comme on dit souvent).
+
+Nous avons cependant laissé la commande des LEDs simples dans l'appel global de la `while(1)` car le temps de triatement est négligeable par rapport à la durée de transmission d'une trame, et que cela permet de vérifier que les fréquences soient respectées avec un oscilloscope.
 
 <!-- code:Core/Src/main.c -->
 ```c
@@ -3344,14 +3354,10 @@ if (timer_debounce_flag) {
     timer_debounce_flag = false;
     debounce_filter();
     update_cycle_alarmes();
-    update_bande_led();
+    commande_bande_led();
 }
 ```
 
-Cette cadence est justifiée de deux manières :
-- **Cohérence avec les alarmes :** l'alarme gaz clignote à 10 Hz, donc sa LED change d'état toutes les 50 ms ([Scénario 8 – 1. Clignotement non bloquant par compteur partagé](#1-clignotement-non-bloquant-par-compteur-partagé)). `update_cycle_alarmes()` et `update_bande_led()` étant appelées à la suite sur le même tic de 20 Hz, chaque changement d'état est envoyé aux NeoPixels dans le même tic, sans retard ni état manqué.
-- **Temps de transmission :** une trame dure $\approx 171\, \mu\text{s}$, soit environ 300 fois moins que les 50 ms qui séparent deux mises à jour : la transmission d'une trame est toujours terminée bien avant la suivante.
-
-#### 8.4. Respect de la règle « pas de blocage »
+#### 8.4. Mise à jour non bloquante
 
 Dans le prolongement de la règle de [Architecture globale – 3. Organisation logicielle](#3-organisation-logicielle), l'utilisation des NeoPixels ne bloque jamais le programme : le CPU n'écrit que quelques dizaines de valeurs dans un tableau et lance le DMA, qui génère ensuite les 137 périodes de PWM tout seul. La boucle principale continue de traiter les boutons, capteurs et alarmes pendant la transmission.

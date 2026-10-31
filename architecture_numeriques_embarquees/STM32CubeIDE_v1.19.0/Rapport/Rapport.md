@@ -134,9 +134,7 @@
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#42-les-structures-tmp102_config_t-et-tmp102_t">4.2. Les structures TMP102_Config_t et TMP102_t</a><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#43-define">4.3. Define</a><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#44-organisation-des-champs-du-registre-de-configuration">4.4. Organisation des champs du registre de configuration</a><br>
-<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#45-synchronisation-entre-le-registre-de-configuration-et-lobjet-tmp102">4.5. Synchronisation entre le registre de configuration et l'objet TMP102</a>
-</details>
-<details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#5-mise-%C3%A0-jour-des-registres-du-capteur">5. Mise à jour des registres du capteur</a></summary>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#45-synchronisation-entre-le-registre-de-configuration-et-lobjet-tmp102">4.5. Synchronisation entre le registre de configuration et l'objet TMP102</a><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#51-application-du-registre-de-configuration">5.1. Application du registre de configuration</a><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#52-application-des-registres-de-seuil-de-temp%C3%A9rature">5.2. Application des registres de seuil de température</a>
 </details>
@@ -194,10 +192,10 @@
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#3-cas-simultan%C3%A9--alternance-gaz--intrusion">3. Cas simultané : alternance gaz / intrusion</a><br>
 <span class="fo">&ensp;&ensp;</span><b><a href="#sc%C3%A9nario-9--bande-de-led-neopixel">Scénario 9 – Bande de LED NeoPixel</a></b><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#1-analyse-de-la-datasheet-protocole-one-wire">1. Analyse de la datasheet (protocole one-wire)</a><br>
-<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#2-principe-dimpl%C3%A9mentation--pwm--dma">2. Principe d'implémentation : PWM + DMA</a>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#2-utilisation-dun-pwm-avec-un-dma">2. Utilisation d'un PWM avec un DMA</a>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#3-branchement-et-configuration-cubemx">3. Branchement et configuration CubeMX</a></summary>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#31-branchement">3.1. Branchement</a><br>
-<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-calcul-des-param%C3%A8tres-du-timer-4">3.2. Calcul des paramètres du Timer 4</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#32-calcul-des-param%C3%A8tres-du-timer">3.2. Calcul des paramètres du Timer</a><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#33-configuration-du-timer-4-dans-cubemx">3.3. Configuration du Timer 4 dans CubeMX</a><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#34-configuration-du-dma">3.4. Configuration du DMA</a><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#35-interruptions-activ%C3%A9es">3.5. Interruptions activées</a>
@@ -207,16 +205,33 @@
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#42-les-structures-bl_rgb_t-et-bandeled_t">4.2. Les structures BL_RGB_t et BandeLED_t</a><br>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#43-define-1">4.3. Define</a>
 </details>
-<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#5-initialisation">5. Initialisation</a><br>
-<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;<a href="#6-encodage-et-envoi-de-la-trame">6. Encodage et envoi de la trame</a>
+<details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#5-initialisation">5. Initialisation</a></summary>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#51-calcul-du-nombre-de-p%C3%A9riodes-de-reset">5.1. Calcul du nombre de périodes de reset</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#52-enregistrement-du-mat%C3%A9riel">5.2. Enregistrement du matériel</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#53-allocation-du-tableau-pour-le-dma">5.3. Allocation du tableau pour le DMA</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#54-valeurs-par-d%C3%A9faut">5.4. Valeurs par défaut</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#55-envoi-de-la-premi%C3%A8re-trame">5.5. Envoi de la première trame</a>
+</details>
+<details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#6-encodage-et-envoi-de-la-trame">6. Encodage et envoi de la trame</a></summary>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#61-conversion-des-dur%C3%A9es-en-tics-du-timer">6.1. Conversion des durées en tics du timer</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#62-boucles-for-imbriqu%C3%A9es">6.2 Boucles for imbriquées</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#62-parcours-des-trois-composantes">6.2. Parcours des trois composantes</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#63-application-de-la-luminosit%C3%A9">6.3. Application de la luminosité</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#64-application-de-linterrupteur">6.4. Application de l'interrupteur</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#65-encodage-de-loctet-de-chaque-composante">6.5. Encodage de l'octet de chaque composante</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#66-ajout-du-d%C3%A9lai-de-reset">6.6. Ajout du délai de reset</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#67-lancement-de-lenvoi-par-dma">6.7. Lancement de l'envoi par DMA</a>
+</details>
 <details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#7-modification-de-l%C3%A9tat-des-leds">7. Modification de l'état des LEDs</a></summary>
 <span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#71-fonction-de-d%C3%A9monstration">7.1. Fonction de démonstration</a>
 </details>
-<details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#8-utilisation-dans-le-code">8. Utilisation dans le code</a></summary>
-<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#81-d%C3%A9claration-et-initialisation">8.1. Déclaration et initialisation</a><br>
-<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#82-informations-transmises-par-les-neopixels">8.2. Informations transmises par les NeoPixels</a><br>
-<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#83-mise-%C3%A0-jour-p%C3%A9riodique">8.3. Mise à jour périodique</a><br>
-<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#84-respect-de-la-r%C3%A8gle--pas-de-blocage-">8.4. Respect de la règle « pas de blocage »</a>
+<details><summary>&ensp;&ensp;&ensp;&ensp;<a href="#8-utilisation-dans-le-code-principal">8. Utilisation dans le code principal</a></summary>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#81-informations-transmises-par-les-neopixels">8.1. Informations transmises par les NeoPixels</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#82-d%C3%A9clarations">8.2. Déclarations</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#83-initialisation">8.3. Initialisation</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#84-mise-%C3%A0-jour-p%C3%A9riodique">8.4. Mise à jour périodique</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#85-fr%C3%A9quence-de-mise-%C3%A0-jour">8.5. Fréquence de mise à jour</a><br>
+<span class="fo">&ensp;&ensp;</span>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a href="#84-mise-%C3%A0-jour-non-bloquante">8.4. Mise à jour non bloquante</a>
 </details>
 </details>
 
@@ -413,11 +428,11 @@ Nous avons eu besoin de mesurer du temps dans deux situations :
 - le délai de filtrage des rebonds des boutons ;
 - le délai d'inversion des LEDs et du buzzer pour le clignotement des alarmes de gaz et d'intrusion.
 
-Pour le debounce, nous avions d'abord configuré un timer dédié, et M. ROY nous a indiqué qu'il s'agissait d'une meilleure solution que la nôtre. Plutôt que de revenir au SysTick, nous avons donc continué sur cette lancée : le Timer 3 a d'abord compté les 50 ms de debounce, puis nous l'avons recyclé pour gérer le clignotement des alarmes. Dans la version finale du projet, la base de 50 ms est portée par le Timer 5 (voir [Scénario 2 – 2. Gestion de l'anti-rebond](#2-gestion-de-lanti-rebond) et [Scénario 8 – Gestion globale des alarmes - 1. Clignotement non bloquant par compteur partagé](#1-clignotement-non-bloquant-par-compteur-partagé)).
+Pour le debounce, nous avions d'abord configuré un timer dédié, et M. ROY nous a indiqué qu'il s'agissait d'une meilleure solution que la nôtre. Plutôt que de revenir au SysTick, nous avons donc continué sur cette lancée : le Timer 3 a d'abord compté les 50 ms de debounce, puis nous l'avons recyclé pour gérer le clignotement des alarmes. Dans la version finale du projet, la base de 50 ms est portée par le Timer 5 (voir [Scénario 2 – 2. Gestion de l'anti-rebond](#2-gestion-de-lanti-rebond) et [Scénario 8 – 1. Clignotement non bloquant par compteur partagé](#1-clignotement-non-bloquant-par-compteur-partagé)).
 
 Ce choix présente plusieurs avantages, certes minimes :
 - les événements basés sur des délais non bloquants sont vérifiés moins souvent, ce qui décharge le CPU : `update_cycle_alarmes()` et `debounce_filter()` ne sont appelées que 20 fois par seconde au lieu d'être évaluées à chaque tour de boucle ;
-- nous avons appris à baser nos délais sur une fréquence non conventionnelle, avec des formules qui s'adaptent à la fréquence du timer grâce aux modulos (voir la partie [Scénario 8 – Gestion globale des alarmes - 1. Clignotement non bloquant par compteur partagé](#1-clignotement-non-bloquant-par-compteur-partagé)).
+- nous avons appris à baser nos délais sur une fréquence non conventionnelle, avec des formules qui s'adaptent à la fréquence du timer grâce aux modulos (voir la partie [Scénario 8 – Clignotement non bloquant par compteur partagé](#1-clignotement-non-bloquant-par-compteur-partagé)).
 
 Nous sommes conscients de n'avoir pas exploité toutes les ressources de la carte, qui auraient permis de simplifier le code. Nous aurions tout aussi bien pu utiliser le SysTick et calculer des différences de temps avec `HAL_GetTick()`.
 
@@ -449,7 +464,7 @@ Nous avons défini un type structure `LED_t` pour représenter une LED et son é
 
 - Une seule variable de type `LED_t` suffit pour représenter une LED au lieu d'avoir un port et une broche (pin) à spécifier à chaque changement d'état.
 - On peut mémoriser l'état de la LED dans la variable `state` de la structure, et le modifier sans avoir à utiliser les lourdes fonctions HAL.
-- On peut associer un nom fonctionnel à un label matériel (ex : ```led_capteurs``` est redirigée vers ```LED_BLEUE```), ce qui donne plus de sens au code sans insérer des choix logiciels dans la configuration du ```.ioc```.
+- On peut associer un nom fonctionnel à un label matériel (ex : `led_capteurs` est redirigée vers `LED_BLEUE`), ce qui donne plus de sens au code sans insérer des choix logiciels dans la configuration du `.ioc`.
 
 Voici la définition du type `LED_t` dans le ```main.c``` : 
 <!-- code:Core/Src/main.c -->
@@ -469,7 +484,7 @@ Voici un exemple de déclaration de LED dans le ```main.c``` :
 LED_t led_capteurs = {LED_BLEUE_GPIO_Port, LED_BLEUE_Pin, false};
 ...
 ```
-*NB : Les `#define`s associés aux ports et pins des broches sont générés automatiquement par le .ioc dans le fichier ```main.h```.*
+> *Les `#define` associés aux ports et pins des broches sont générés automatiquement par le .ioc dans le fichier `main.h`.*
 
 À chaque itération, nous appelons la fonction de commande des LEDs, qui modifie l'état des LEDs en fonction de leur état mémorisé :
 
@@ -1204,9 +1219,9 @@ La variable `etat_precedent` est déclarée `static` : elle est initialisée une
 Le bouton de fenêtre est physiquement identique à celui du mode HOME/AWAY.
 Les seules différences d'implémentation de sa lecture par rapport au bouton de mode sont : 
 
-1. Sa broche de connexion : PA10 (D2) qui lève l'EXTI 10.
-2. Le nom du flag levé par l'interruption EXTI : `debouncing_bouton_fenetre`
-3. Le nom de la variable globale qui indique si le bouton a été appuyé : `bouton_fenetre_appuye`
+- Sa broche de connexion : PA10 (D2) qui lève l'EXTI 10.
+- Le nom du flag levé par l'interruption EXTI : `debouncing_bouton_fenetre`
+- Le nom de la variable globale qui indique si le bouton a été appuyé : `bouton_fenetre_appuye`
 
 Pour un rappel sur la méthode d'implémentation, voir les sections dédiées :  
 - [Scénario 2 – 1. Configuration du bouton MODE](#1-configuration-du-bouton-mode)  
@@ -1533,11 +1548,11 @@ Pour éviter tout hardcoding, l'adresse I²C et le pointeur vers le bus sont sto
 
 Si nous avions voulu réinventer la roue sans utiliser `HAL_I2C_Mem_*`, nous avions deux options en utilisant les fonctions de base de la HAL :
 
-* **1. Fonctions bloquantes directes (`HAL_I2C_Master_Transmit / Receive`)** :
+##### 1. `HAL_I2C_Master_Transmit()` / `_Receive()`
   * En écriture, il aurait fallu concaténer manuellement l'adresse du registre et les données dans un buffer temporaire de 3 octets à transmettre.
-  * En lecture, `Transmit` termine obligatoirement par un `STOP`, découpant la transaction de lecture en 2 octets au lieu d'enchaîner avec un **Repeated Start** (`Sr`) comme recommandé par la datasheet.
+  * En lecture, `Transmit` termine obligatoirement par un `STOP`, découpant la transaction de lecture en 2 octets au lieu d'enchaîner avec un **Repeated Start** comme recommandé par la datasheet.
 
-* **2. Fonctions séquentielles asynchrones (`HAL_I2C_Master_Seq_*_IT` ou DMA)** :
+##### 2. `HAL_I2C_Master_Seq_*_IT()` ou DMA
   * Elles permettent de gérer le Repeated Start (via les drapeaux `I2C_FIRST_FRAME` et `I2C_LAST_FRAME`).
   * En revanche, elles imposent d'activer les interruptions I²C dans le NVIC, de créer une machine à états et d'enchaîner deux callbacks (`MasterTxCpltCallback` puis `MasterRxCpltCallback`), ou d'utiliser le DMA, pour seulement 2 octets toutes les 2 secondes.
 
@@ -1706,7 +1721,7 @@ for (uint8_t i = 0; i < num_fields; i++)
 }
 ```
 Le traitement repose sur trois étapes :
-1. **Calcul dynamique du masque de bits**
+##### 1. Calcul dynamique du masque de bits
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 uint8_t mask = (1U << fields[i].length) - 1;
@@ -1718,7 +1733,7 @@ On génère un masque adapté à la largeur de chaque champ.
 
 *NB : 1U force l'entier 1 à être interprété comme un entier non signé, évitant un avertissement du compilateur lors du décalage à gauche du bit de signe.* 
 
-2. **Encodage : Structure $\rightarrow$ Buffer (`is_write == true`)**
+##### 2. Encodage : Structure $\rightarrow$ Buffer (`is_write == true`)
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
    buffer[fields[i].byte_idx] 
@@ -1752,7 +1767,7 @@ On génère un masque adapté à la largeur de chaque champ.
 > `buffer |= 1010 1000`   
 > → `buffer = 1010 1110`    
 
-3. **Décodage : Buffer $\rightarrow$ Structure (`is_write == false`)**
+##### 3. Décodage : Buffer $\rightarrow$ Structure (`is_write == false`)  
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
        *fields[i].value_ptr =
@@ -1785,7 +1800,7 @@ On génère un masque adapté à la largeur de chaque champ.
 > → `*value_ptr = 10101` (valeur d'origine)  
 
 
-### 5. Mise à jour des registres du capteur
+##### 4. Mise à jour des registres du capteur
 
 La fonction publique `TMP102_apply_registers()` envoie la configuration stockée dans l'objet TMP102 vers le capteur via I²C. Elle commence par le registre de configuration en appelant `TMP102_write_config_reg()`, puis écrit les registres de seuil de température T_LOW et T_HIGH avec la fonction `TMP102_write_T_LOW_T_HIGH_reg()`.  
 
@@ -1804,13 +1819,13 @@ Le retour `bool` permet de détecter un problème de communication I²C.
 
 La fonction `TMP102_write_config_reg()` met à jour le registre de configuration du TMP102 en appelant `TMP102_SyncConfigBuffer()` pour encoder la structure en buffer et en utilisant les fonctions HAL pour la lecture/écriture de registres en I²C :
 
-1. **Initialisation des variables**
+##### 1. Initialisation des variables
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 uint8_t write_buffer[TMP102_NBR_CONFIG_REG_BYTES];
 ```
 
-2. **Encodage de la structure en buffer**
+##### 2. Encodage de la structure en buffer
 
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
@@ -1818,7 +1833,7 @@ uint8_t write_buffer[TMP102_NBR_CONFIG_REG_BYTES];
 ```
 La fonction `TMP102_SyncConfigBuffer()` est détaillée ci-dessus en [Scénario 6 – 4.5. Synchronisation entre le registre de configuration et l'objet TMP102](#45-synchronisation-entre-le-registre-de-configuration-et-lobjet-tmp102).
 
-3. **Envoi du buffer vers le registre de configuration du capteur**
+##### 3. Envoi du buffer vers le registre de configuration du capteur
 
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
@@ -1846,19 +1861,19 @@ On spécifie à la fonction HAL :
 #### 5.2. Application des registres de seuil de température
 
 <!-- code:Bibliotheques/TMP102/Inc/tmp102.h -->
-```cpp
+```c
 bool TMP102_write_T_LOW_T_HIGH_reg(TMP102_t *tmp102);
 ```
 La fonction met à jour les registres de seuil de température T_LOW et T_HIGH du TMP102 en appelant `TMP102_celsius_to_register()` pour convertir les températures en valeurs de registre et en utilisant les fonctions HAL pour l'écriture de registres en I²C :
 
-1. **Déclaration des buffers**
+##### 1. Déclaration des buffers
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 uint8_t t_low_reg_bytes[TMP102_NBR_REG_TEMP_BYTES];
 uint8_t t_high_reg_bytes[TMP102_NBR_REG_TEMP_BYTES];
 ```
 
-2. **Conversion des températures en valeurs de registre**
+##### 2. Conversion des températures en valeurs de registre
 
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```cpp
@@ -1867,7 +1882,7 @@ TMP102_celsius_to_register(tmp102->T_High, t_high_reg_bytes, tmp102->config.Exte
 ```
 La fonction `TMP102_celsius_to_register()` est expliquée ci-après en [Scénario 6 – 8.2. Température en °C → Registre brut](#82-température-en-c--registre-brut).
 
-3. **Envoi des buffers vers le capteur en I²C**
+##### 3. Envoi des buffers vers le capteur en I²C
 
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
@@ -1955,14 +1970,14 @@ La lecture de la température se fait avec la fonction suivante qui lit le regis
 ```c
 static bool TMP102_read_temperature_register(TMP102_t *tmp102, float *Temperature) 
 ``` 
-1. **Initialisation des variables :**  
+##### 1. Initialisation des variables 
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     uint8_t buffer_temp_reg[TMP102_NBR_REG_TEMP_BYTES] = {0};
 ```
 Le buffer est un tableau de 2 octets correspondant au registre de température du TMP102.
 
-2. **Lecture de registre en I²C**  
+##### 2. Lecture de registre en I²C  
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     bool i2c_ok = (HAL_I2C_Mem_Read(tmp102->busI2C, 
@@ -1983,7 +1998,7 @@ Pour la fonction HAL on spécifie :
 - la taille du buffer en octets
 - le timeout de la transaction
 
-3. **Si la communication I²C a échoué**
+##### 3. Si la communication I²C a échoué
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 if (!i2c_ok) 
@@ -1994,9 +2009,9 @@ if (!i2c_ok)
 ```
 En cas de problème de communication, la température est mise à -999.0f pour rendre l'erreur plus visible encore, et la fonction retourne `false`.
 
-4. **Conversion du registre de température en température en °C :**  
+##### 4. Conversion du registre de température en température en °C 
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
-```cpp
+```c
 TMP102_register_to_celsius(buffer_temp_reg, Temperature);
 ```
 
@@ -2027,7 +2042,7 @@ Le registre de température est un entier signé en complément à 2, aligné à
 *Extrait de la datasheet du TMP102 :*
 <img src="media/TMP102_datasheet_conversion.png">
 
-1. **On détecte le mode étendu**
+##### 1. On détecte le mode étendu
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     bool extended_mode = (reg_value[1] & 0x01) != 0;
@@ -2035,21 +2050,21 @@ Le registre de température est un entier signé en complément à 2, aligné à
 ```
 Cette ligne détecte si le mode étendu est activé en lisant le bit **D0** de l'octet 2 (index 1). Si le bit 0 est à 1, le mode étendu est activé et la longueur du registre est de 13 bits. Sinon, le mode normal est activé et la longueur du registre est de 12 bits.
 
-2. **On concatène les 2 octets**
+##### 2. On concatène les 2 octets
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 uint16_t raw_reg = (uint16_t)((reg_value[0] << 8) | reg_value[1]);
 ```
 Cette ligne concatène les deux octets du registre de température pour former un entier non signé de 16 bits. On décale le premier octet de 8 bits vers la gauche pour le placer dans la partie haute du registre, puis on effectue un OU binaire avec le second octet qui reste donc dans la partie basse.   
 
-3. **On décale à droite avec extension du signe**
+##### 3. On décale à droite avec extension du signe
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 int16_t reg_val = (int16_t)raw_reg >> (16 - temp_length);
 ```
 Cette ligne décale le registre de température du nombre de bits de padding (**16 - temp_length**). Le cast en `int16_t` avant le décalage est essentiel car si l'entier est signé, le MSB de signe est propagé lors du décalage, ce qui permet de gérer les températures négatives.
 
-4. **On multiplie par la résolution**
+##### 4. On multiplie par la résolution
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 *temperature = (float)reg_val * TMP102_TEMP_RESOLUTION;
@@ -2073,24 +2088,24 @@ uint8_t temp_length = (extended_mode)
 ```
 
 Puis on effectue les mêmes étapes mais en sens inverse :  
-1. **On divise la température par la résolution**
+##### 1. On divise la température par la résolution
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 float reg_value_float = temperature / TMP102_TEMP_RESOLUTION;
 ```
-2. **On arrondit au nombre entier le plus proche**
+##### 2. On arrondit au nombre entier le plus proche
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 int16_t reg_val = (int16_t)(reg_value_float >= 0.0f 
                             ? (reg_value_float + 0.5f)
                             : (reg_value_float - 0.5f));
 ```
-3. **On décale à gauche du nombre de bits de padding**
+##### 3. On décale à gauche du nombre de bits de padding
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 uint16_t raw_reg = (uint16_t)reg_val << (16 - temp_length);
 ```
-4. **On sépare les 2 octets dans le buffer**
+##### 4. On sépare les 2 octets dans le buffer
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
 reg_value[0] = (uint8_t)(raw_reg >> 8);
@@ -2107,14 +2122,14 @@ char* TMP102_temperature_to_string(float temperature, uint8_t precision);
 ```
 Voici les étapes de la conversion de `float` en `String` :
 
-1. **On définit un buffer pour stocker la chaîne de caractères**
+##### 1. On définit un buffer pour stocker la chaîne de caractères
 
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     static char buffer[16];
 ```
 
-2. **On précalcule les puissances de 10**
+##### 2. On précalcule les puissances de 10
 
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
@@ -2125,7 +2140,7 @@ Le tableau `multi_table` sert à multiplier la partie décimale de la températu
 
 NB : On aurait pu utiliser la fonction `pow`, mais il aurait fallu utiliser une bibliothèque mathématique, ce qui aurait augmenté la taille du code pour une seule utilisation ridicule dans tout le TP.
 
-3. **On bride la précision à 4**
+##### 3. On bride la précision
 
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
@@ -2136,21 +2151,23 @@ Une précision de 4 décimales est largement suffisante : la résolution du capt
 
 <img src="media/TMP102_datasheet_accuracy.png">
 
-4. **On détecte le signe et on prend la valeur absolue :**
+##### 4. On détecte le signe et on prend la valeur absolue
 
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     bool negatif   = (temperature < 0.0f);
     float temp_abs = negatif ? -temperature : temperature;
 ```
-5. **On sépare la partie entière et la partie décimale :**
+##### 5. On sépare la partie entière et la partie décimale
 
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     int partie_entiere  = (int)temp_abs;
     int partie_decimale = (int)((temp_abs - partie_entiere) * multi_table[precision] + 0.5f);
 ```
-6. **On propage la retenue si l'arrondi déborde (ex: 18,997 arrondi à 19,00)**
+##### 6. On propage la retenue si l'arrondi déborde 
+
+Ex: 18,997 arrondi à 19,00
 
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
@@ -2159,7 +2176,7 @@ Une précision de 4 décimales est largement suffisante : la résolution du capt
         partie_decimale = 0;
     }
 ```
-7. **On formate la chaîne de caractères en utilisant `snprintf`**
+##### 7. On formate la chaîne de caractères en utilisant `snprintf`
 <!-- code:Bibliotheques/TMP102/Src/tmp102.c -->
 ```c
     snprintf(buffer, sizeof(buffer), "%s%d,%0*d",
@@ -2270,7 +2287,9 @@ On commence par appeler `TMP102_init_default()` pour partir d'un état connu, pu
 
 Le cycle de mesure complet se déroule sur plusieurs itérations de la boucle `while(1)`, sans jamais bloquer. On peut décomposer la séquence :
 
-1. **Déclenchement** : au tick du `TIMER_CAPTEURS` (toutes les 2 s), `TMP102_start_measure()` est lancé :
+##### 1. Déclenchement
+Au tick du `TIMER_CAPTEURS` (toutes les 2 s), `TMP102_start_measure()` est lancé :
+
 <!-- code:Core/Src/main.c -->
 ```c
 // Dans la boucle principale while (1) de la fonction main()
@@ -2283,7 +2302,8 @@ if (timer_capteurs_flag) {
       ...
     }
 ```
-2. **Attente non bloquante** : pendant les ~26 ms de la conversion, la boucle continue de traiter les autres événements. À chaque itération, `TMP102_is_measure_ready()` permet de vérifier si la mesure est terminée :
+##### 2. Attente non bloquante
+Pendant les ~26 ms de la conversion, la boucle continue de traiter les autres événements. À chaque itération, `TMP102_is_measure_ready()` permet de vérifier si la mesure est terminée :
 
 <!-- code:Core/Src/main.c -->
 ```c
@@ -2296,7 +2316,8 @@ if (TMP102_is_measure_ready(&thermometre)) {
 ```
 Nous mettons à jour l'affichage LCD après la lecture de température, qui est la dernière valeur à arriver lors du déclenchement des différentes mesures (l'ADC est très rapide comparé au TMP102 qui a besoin de ~10 ms).
 
-3. **Lecture et traitement** : dès que la mesure est terminée, `evaluer_temperature()` appelle `TMP102_get_temperature()` qui lit le registre de température et décode la valeur en °C :
+##### 3. Lecture et traitement
+Dès que la mesure est terminée, `evaluer_temperature()` appelle `TMP102_get_temperature()` qui lit le registre de température et décode la valeur en °C :
 
 <!-- code:Core/Src/main.c -->
 ```c
@@ -2489,11 +2510,14 @@ void initialiser_ecran()
 }
 ```
 
-1. **Configuration matérielle** :  
+##### 1. Configuration matérielle :  
 Appel de `lcd_init(BUS_I2C)` en passant le bus `I2C3` (défini par `#define BUS_I2C (&hi2c3)`).  
 → Cf. [Scénario 7 – 2.1. Modification de l'initialisation](#21-modification-de-linitialisation).
-2. **Affichage du mode initial** : `afficher_mode_ecran()` écrit immédiatement le mode par défaut (`HOME`) en haut à gauche dès le démarrage.
-3. **Message d'accueil** :  
+
+##### 2. Affichage du mode initial
+`afficher_mode_ecran()` écrit immédiatement le mode par défaut (`HOME`) en haut à gauche dès le démarrage.
+
+##### 3. Message d'accueil
 Un message de bienvenue personnalisé est affiché sur la ligne 2. Il reste visible pendant les 2 premières secondes, jusqu'à l'arrivée de la première mesure des capteurs qui vient écraser cette seconde ligne.
 
 #### 3.2. HOME / AWAY
@@ -2514,8 +2538,11 @@ void afficher_mode_ecran()
 }
 ```
 
-1. **Chaîne de caractères** : on utilise `snprintf` de la bibliothèque standard `<stdio.h>` pour formater la chaîne de manière à ce qu'elle fasse toujours exactement 4 caractères (`%4s`), remplaçant proprement `HOME` par `AWAY` (et inversement) sans altérer le reste de la ligne (la température).
-2. **Curseur** : le curseur est placé au début de la première ligne (`lcd_put_cur(0, 0)`).
+##### 1. Chaîne de caractères
+On utilise `snprintf` de la bibliothèque standard `<stdio.h>` pour formater la chaîne de manière à ce qu'elle fasse toujours exactement 4 caractères (`%4s`), remplaçant proprement `HOME` par `AWAY` (et inversement) sans altérer le reste de la ligne (la température).
+
+##### 2. Curseur
+Le curseur est placé au début de la première ligne (`lcd_put_cur(0, 0)`).
 
 *Remarque : Cette fonction n'est appelée que lors des transitions de la machine à états du mode, et non en continu dans la boucle principale.*
 
@@ -2550,16 +2577,19 @@ void afficher_capteurs_ecran()
 
 Cette fonction applique plusieurs choix de conception :
 
-1. **Préservation du mode** : la température est écrite à partir de la colonne 8 (`lcd_put_cur(0, 8)`). Les 8 premières colonnes de la ligne 1 restent ainsi totalement intactes, ce qui permet de conserver le texte `HOME` ou `AWAY`.
+##### 1. Préservation du mode
+La température est écrite à partir de la colonne 8 (`lcd_put_cur(0, 8)`). Les 8 premières colonnes de la ligne 1 restent ainsi totalement intactes, ce qui permet de conserver le texte `HOME` ou `AWAY`.
 
-2. **Formatage à largeur fixe** :
+##### 2. Formatage à largeur fixe
 * La température est cadrée sur 5 caractères grâce à `TMP102_temperature_to_string()` (ex. : `"18,38"`).
 * Les valeurs ADC de pluie (`Hu` pour humidité) et de gaz (`Ga`) sont formatées avec `%4d`. Cela force l'affichage sur 4 chiffres, évitant que les chiffres d'une mesure précédente ne restent affichés si la valeur passe par exemple de 1024 à 95.
 
-3. **Synchronisation avec la dernière mesure prête** : dans la boucle `while(1)`, `afficher_capteurs_ecran()` n'est appelée que lorsque `TMP102_is_measure_ready(&thermometre)` devient vrai. Comme la mesure du TMP102 prend ~10 ms alors que les conversions ADC en DMA sont quasi instantanées, la température est toujours la dernière donnée disponible. L'affichage est donc rafraîchi une seule fois par cycle de 2 s avec des valeurs parfaitement synchronisées.  
+##### 3. Synchronisation avec la dernière mesure prête
+Dans la boucle `while(1)`, `afficher_capteurs_ecran()` n'est appelée que lorsque `TMP102_is_measure_ready(&thermometre)` devient vrai. Comme la mesure du TMP102 prend ~10 ms alors que les conversions ADC en DMA sont quasi instantanées, la température est toujours la dernière donnée disponible. L'affichage est donc rafraîchi une seule fois par cycle de 2 s avec des valeurs parfaitement synchronisées.  
 → Cf. [Scénario 6 – 10.2. Cycle de mesure dans la boucle principale](#102-cycle-de-mesure-dans-la-boucle-principale).
    
-4. **Caractère degré personnalisé (`\xDF`)** : la table ASCII standard ne contient pas le symbole degré `°`. Dans la mémoire ROM du contrôleur I²C de l'écran il y a une table de caractères où le caractère `°` est situé à l'adresse hexadécimale `1101 1111` en binaire soit `0xDF` en hexadécimal :  
+##### 4. Caractère degré personnalisé (`\xDF`)
+La table ASCII standard ne contient pas le symbole degré `°`. Dans la mémoire ROM du contrôleur I²C de l'écran il y a une table de caractères où le caractère `°` est situé à l'adresse hexadécimale `1101 1111` en binaire soit `0xDF` en hexadécimal :  
 <img src="media/ecran_LCD_CGROM_ASCII_degre.jpg" alt="CGROM ASCII degre" width="500"></img>  
 
 ---
@@ -2568,7 +2598,8 @@ Cette fonction applique plusieurs choix de conception :
 
 ### 1. Clignotement non bloquant par compteur partagé
 
-Pour gérer les différentes alarmes sans interrompre l'exécution du programme, nous avons exploité le Timer 5, configuré à 20 Hz (soit une interruption toutes les 50 ms). À chaque itération de ce timer, un compteur global `blink_counter_alarm` est incrémenté.
+Pour gérer les différentes alarmes sans interrompre l'exécution du programme, nous avons exploité le Timer 5, configuré à 20 Hz (soit une interruption toutes les 50 ms). À chaque itération de ce timer, un compteur global `blink_counter_alarm` est incrémenté.  
+
 Le clignotement de chaque LED est obtenu en calculant le nombre de périodes du Timer à 20 Hz qui doivent s'écouler pour atteindre la demi-période de la fréquence de clignotement cible, moment où l'état de la LED s'inverse :  
 - L'alarme gaz est définie pour clignoter à 10 Hz. Ainsi, sa demi-période est atteinte à 20 Hz, ce qui correspond à la fréquence du Timer 5. La LED s'inverse donc à chaque tic du Timer 5. 
 - L'alarme intrusion clignote à 2 Hz. Ainsi, sa demi-période est atteinte à 4 Hz, ce qui correspond exactement à un cinquième ($5$ tics) de la fréquence du Timer 5. La LED s'inverse donc tous les 5 tics du Timer 5.

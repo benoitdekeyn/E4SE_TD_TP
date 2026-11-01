@@ -1,0 +1,8 @@
+Votre travail remis a été successful!
+Cours : undefined, 26_EPIGEP-SE-4-S3-UT1-EA01 — Architectures Numériques Embarquées
+Évaluation : Rendu Projet
+
+Date de soumission : 01/11/2026 01:06 (UTC+1)
+Taille de la remise : 18,3 Mo
+Auteur de la remise : Benoît DE KEYN
+Numéro de confirmation : e718bcfc199b4c23b60bfe5567b57b54

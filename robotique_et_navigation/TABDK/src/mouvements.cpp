@@ -15,6 +15,8 @@ using geometry_msgs::Twist;
 #define SEUIL_PRECISION_POS 0.02 // m
 #define Kp_ANG 2.0
 #define SEUIL_PRECISION_ANG deg_to_rad(2) // rad
+#define SEUIL_PIVOT_ANG deg_to_rad(5) // rad
+#define COEF_V_ANGULAIRE_CORRECTION 0.5
 
 // Cibles courantes des différents modes de déplacement
 struct Targets {
@@ -31,6 +33,7 @@ struct PositionDebug {
   double erreur_distance = 0.0;
   double delta_x = 0.0;
   double delta_y = 0.0;
+  bool pivot_en_cours = false;
 };
 
 // Commande des moteurs via /cmd_vel
@@ -114,13 +117,13 @@ public:
    */
   void reachPositionX(double x) {
     double error = x - odom_->pose.x;
-    double control_signal = fabs(Kp_POS * error);
-    control_signal = control_signal > params_->linear_speed ? params_->linear_speed : control_signal;
+    double linear_speed = fabs(Kp_POS * error);
+    linear_speed = linear_speed > params_->linear_speed ? params_->linear_speed : linear_speed;
 
     if (error > SEUIL_PRECISION_POS) {
-      forward(control_signal);
+      forward(linear_speed);
     } else if (error < -SEUIL_PRECISION_POS) {
-      backward(control_signal);
+      backward(linear_speed);
     } else {
       stop();
     }
@@ -133,13 +136,13 @@ public:
    */
   void reachAngle(double angle) {
     double error = cal_delta_Theta(angle, odom_->pose.rotation);
-    double control_signal = fabs(Kp_ANG * error);
-    control_signal = control_signal > params_->angular_speed ? params_->angular_speed : control_signal;
+    double linear_speed = fabs(Kp_ANG * error);
+    linear_speed = linear_speed > params_->angular_speed ? params_->angular_speed : linear_speed;
 
     if (error > SEUIL_PRECISION_ANG) {
-      pivoter(control_signal);
+      pivoter(linear_speed);
     } else if (error < -SEUIL_PRECISION_ANG) {
-      pivoter(-control_signal);
+      pivoter(-linear_speed);
     } else {
       stop();
     }
@@ -149,14 +152,13 @@ public:
    * Atteint une position donnée sur l'axe x et y en suivant ces étapes :
    * 1. Pivoter pour s'aligner avec la direction de la cible.
    * 2. Avancer ou reculer jusqu'à atteindre la position cible,
-   *    en ajustant l'angle en parrallèle si nécessaire en cours de route.
+   *    en ajustant l'angle en mode bloquant si nécessaire en cours de route.
    * Correcteur PROPORTIONNEL -> Kp_POS pour la distance,
    * Correcteur PROPORTIONNEL -> Kp_ANG pour l'angle.
    * @param x La position cible sur l'axe x.
    * @param y La position cible sur l'axe y.
    * @return void
    */
-
   void reachPosition(double x, double y) {
     debug.delta_x = x - odom_->pose.x;
     debug.delta_y = y - odom_->pose.y;
@@ -168,31 +170,110 @@ public:
     if (fabs(debug.erreur_angle) > SEUIL_PRECISION_ANG) {
 
       // Calcul de la commande de contrôle angulaire proportionnelle à l'erreur angulaire.
-      double control_signal_a = fabs(Kp_ANG * debug.erreur_angle);
-      control_signal_a = control_signal_a > params_->angular_speed ? params_->angular_speed : control_signal_a;
+      double angular_speed = fabs(Kp_ANG * debug.erreur_angle);
+      angular_speed = angular_speed > params_->angular_speed ? params_->angular_speed : angular_speed;
 
       // Pivoter dans la direction appropriée en fonction du signe de l'erreur angulaire.
       if (debug.erreur_angle > SEUIL_PRECISION_ANG) {
-        pivoter(control_signal_a);
+        pivoter(angular_speed);
       } else if (debug.erreur_angle < -SEUIL_PRECISION_ANG) {
-        pivoter(-control_signal_a);
+        pivoter(-angular_speed);
       }
     }
     // Si l'erreur angulaire est dans le seuil, contrôler la distance vers la cible.
     else
     {
       // Calcul de la commande de contrôle proportionnelle à l'erreur de distance.
-      double control_signal = fabs(Kp_POS * debug.erreur_distance);
-      control_signal = control_signal > params_->linear_speed ? params_->linear_speed : control_signal;
+      double linear_speed = fabs(Kp_POS * debug.erreur_distance);
+      linear_speed = linear_speed > params_->linear_speed ? params_->linear_speed : linear_speed;
 
       // Déterminer la direction du mouvement en fonction de l'erreur de distance.
       if (debug.erreur_distance > SEUIL_PRECISION_POS) {
-        forward(control_signal);
+        forward(linear_speed);
       } else if (debug.erreur_distance < -SEUIL_PRECISION_POS) {
-        backward(control_signal);
+        backward(linear_speed);
       } else {
         stop();
       }
+    }
+  }
+
+  /**
+   * Atteint une position donnée sur l'axe x et y en suivant ces étapes :
+   * 1. Pivoter pour s'aligner avec la direction de la cible.
+   * 2. Avancer ou reculer jusqu'à atteindre la position cible,
+   *    en ajustant l'angle EN PARRALLÈLE si nécessaire en cours de route.
+   * Correcteur PROPORTIONNEL -> Kp_POS pour la distance,
+   * Correcteur PROPORTIONNEL -> Kp_ANG pour l'angle.
+   * @param x La position cible sur l'axe x.
+   * @param y La position cible sur l'axe y.
+   * @return void
+   */
+  void reachPositionSmooth(double x, double y) {
+    debug.delta_x = x - odom_->pose.x;
+    debug.delta_y = y - odom_->pose.y;
+    debug.angle_target = atan2(debug.delta_y, debug.delta_x);
+    debug.erreur_distance = sqrt(pow(debug.delta_x, 2) + pow(debug.delta_y, 2));
+    debug.erreur_angle = cal_delta_Theta(debug.angle_target, odom_->pose.rotation);
+
+    // Si l'erreur angulaire est supérieure au seuil de pivot bloquant, on pivote pour s'aligner avec la cible.
+    if (fabs(debug.erreur_angle) > SEUIL_PIVOT_ANG) {
+      debug.pivot_en_cours = true;
+    }
+
+    if (debug.pivot_en_cours == true) {
+
+      // Calcul de la commande de contrôle angulaire proportionnelle à l'erreur angulaire.
+      double angular_speed = fabs(Kp_ANG * debug.erreur_angle);
+      // Limitation de la vitesse angulaire pour ne pas dépasser la vitesse maximale autorisée.
+      angular_speed = angular_speed > params_->angular_speed ? params_->angular_speed : angular_speed;
+
+      // Pivoter dans la direction appropriée en fonction du signe de l'erreur angulaire.
+      if (debug.erreur_angle > SEUIL_PRECISION_ANG) {
+        pivoter(angular_speed);
+      } else if (debug.erreur_angle < -SEUIL_PRECISION_ANG) {
+        pivoter(-angular_speed);
+      } else {
+        debug.pivot_en_cours = false;
+      }
+    }
+    // Si l'erreur angulaire est dans le seuil de corrctionen parralele de l'avancement,
+    // on avance ou recule en fonction de l'erreur de distance, tout en ajustant l'angle en parallèle si nécessaire.
+    else
+    {
+      // Calcul de la commande de contrôle proportionnelle à l'erreur de distance.
+      double linear_speed = fabs(Kp_POS * debug.erreur_distance);
+      // Bridage de la vitesse linéaire pour ne pas dépasser la vitesse maximale autorisée.
+      linear_speed = linear_speed > params_->linear_speed ? params_->linear_speed : linear_speed;
+
+      // Calcul de la commande de contrôle angulaire proportionnelle à l'erreur angulaire
+      double angular_speed = fabs(Kp_ANG * debug.erreur_angle)*COEF_V_ANGULAIRE_CORRECTION;
+      angular_speed = angular_speed > params_->angular_speed ? params_->angular_speed : angular_speed;
+
+      // Déterminer le mouvement linéaire en fonction de l'erreur de distance.
+      if (debug.erreur_distance > SEUIL_PRECISION_POS) {
+        linear_speed = linear_speed;
+      } else if (debug.erreur_distance < -SEUIL_PRECISION_POS) {
+        linear_speed = -linear_speed;
+      } else {
+        linear_speed = 0;
+      }
+
+      // Déterminer la rotation angulaire en fonction de l'erreur angulaire.
+      if (linear_speed != 0) {
+        if (debug.erreur_angle > SEUIL_PRECISION_ANG) {
+          angular_speed = angular_speed;
+        } else if (debug.erreur_angle < -SEUIL_PRECISION_ANG) {
+          angular_speed = -angular_speed;
+        } else {
+          angular_speed = 0;
+        }
+      } else {
+        angular_speed = 0;
+      }
+
+      // Appliquer les vitesses linéaire et angulaire calculées.
+      move(linear_speed, angular_speed);
     }
   }
 

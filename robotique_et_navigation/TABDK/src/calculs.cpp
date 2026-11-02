@@ -3,6 +3,11 @@
 
 #include <cmath>
 
+// Convertit un temps en millisecondes en nombre de tics de la boucle
+int msToTicks(int ms) {
+  return frequence * ms / 1000;
+}
+
 // Convertit un angle en radians en degrés.
 double rad_to_deg(double radians) {
   return radians * (180.0 / M_PI);

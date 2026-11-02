@@ -22,11 +22,6 @@ public:
     nh.getParam("move_bwd_tm", move_bwd_tm);
     nh.getParam("move_stp_tm", move_stp_tm);
   }
-
-  // Convertit un temps en millisecondes en nombre de tics de la boucle
-  int msToTicks(int ms) {
-    return frequence * ms / 1000;
-  }
 };
 
 #endif

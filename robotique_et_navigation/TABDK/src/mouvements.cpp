@@ -197,7 +197,6 @@ public:
     }
   }
 
-
   /**
    * Atteint une position donnée sur l'axe x et y en suivant ces étapes :
    * 1. Pivoter pour s'aligner avec la direction de la cible.
@@ -216,6 +215,11 @@ public:
     debug.erreur_distance = sqrt(pow(debug.delta_x, 2) + pow(debug.delta_y, 2));
     debug.erreur_angle = cal_delta_Theta(debug.angle_target, odom->pose.rotation);
 
+    if (debug.erreur_distance < precision_linear && debug.erreur_distance > -precision_linear) {
+      stop();
+      return;
+    }
+
     // Si l'erreur angulaire est supérieure au seuil de pivot bloquant, on pivote pour s'aligner avec la cible.
     if (fabs(debug.erreur_angle) > trigger_pivot) {
       debug.pivot_en_cours = true;
@@ -224,7 +228,7 @@ public:
     if (debug.pivot_en_cours == true) 
     {
       // Calcul de la commande de contrôle angulaire proportionnelle à l'erreur angulaire.
-      double soft_angular_speed = fabs(Kp_angular * debug.erreur_angle);
+      double soft_angular_speed = fabs(Kp_pivot * debug.erreur_angle);
       // Limitation de la vitesse angulaire pour ne pas dépasser la vitesse maximale autorisée.
       soft_angular_speed = soft_angular_speed > angular_speed ? angular_speed : soft_angular_speed;
 
@@ -247,7 +251,7 @@ public:
       soft_linear_speed = soft_linear_speed > linear_speed ? linear_speed : soft_linear_speed;
 
       // Calcul de la commande de contrôle angulaire proportionnelle à l'erreur angulaire
-      double soft_angular_speed = fabs(Kp_pivot * debug.erreur_angle);
+      double soft_angular_speed = fabs(Kp_angular * debug.erreur_angle);
       soft_angular_speed = soft_angular_speed > angular_speed ? angular_speed : soft_angular_speed;
 
       // Déterminer le mouvement linéaire en fonction de l'erreur de distance.

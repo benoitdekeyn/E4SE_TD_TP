@@ -146,8 +146,10 @@ include_directories(
 # add_executable(${PROJECT_NAME}_node src/TABDK_node.cpp)
 add_executable(controleur src/main.cpp)
 add_executable(key_input_node src/nodes/keyboard_input.cpp)
+add_executable(lidar src/nodes/detector.cpp)
 add_dependencies(controleur ${catkin_EXPORTED_TARGETS})
 add_dependencies(key_input_node ${catkin_EXPORTED_TARGETS})
+add_dependencies(lidar ${catkin_EXPORTED_TARGETS})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -165,6 +167,7 @@ add_dependencies(key_input_node ${catkin_EXPORTED_TARGETS})
 # )
 target_link_libraries(controleur ${catkin_LIBRARIES})
 target_link_libraries(key_input_node ${catkin_LIBRARIES})
+target_link_libraries(lidar ${catkin_LIBRARIES})
 
 #############
 ## Install ##

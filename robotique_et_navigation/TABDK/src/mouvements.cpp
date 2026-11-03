@@ -121,9 +121,9 @@ public:
     double soft_linear_speed = fabs(Kp_linear * error);
     soft_linear_speed = soft_linear_speed > linear_speed ? linear_speed : soft_linear_speed;
 
-    if (error > SEUIL_PRECISION_POS) {
+    if (error > precision_linear) {
       forward(soft_linear_speed);
-    } else if (error < -SEUIL_PRECISION_POS) {
+    } else if (error < -precision_linear) {
       backward(soft_linear_speed);
     } else {
       stop();
@@ -140,9 +140,9 @@ public:
     double soft_linear_speed = fabs(Kp_angular * error);
     soft_linear_speed = soft_linear_speed > angular_speed ? angular_speed : soft_linear_speed;
 
-    if (error > SEUIL_PRECISION_ANG) {
+    if (error > precision_angular) {
       pivoter(soft_linear_speed);
-    } else if (error < -SEUIL_PRECISION_ANG) {
+    } else if (error < -precision_angular) {
       pivoter(-soft_linear_speed);
     } else {
       stop();
@@ -168,16 +168,16 @@ public:
     debug.erreur_angle = cal_delta_Theta(debug.angle_target, odom->pose.rotation);
 
     // Si l'erreur angulaire est supérieure au seuil, pivoter pour s'aligner avec la cible.
-    if (fabs(debug.erreur_angle) > SEUIL_PRECISION_ANG) {
+    if (fabs(debug.erreur_angle) > precision_angular) {
 
       // Calcul de la commande de contrôle angulaire proportionnelle à l'erreur angulaire.
       double soft_angular_speed = fabs(Kp_angular * debug.erreur_angle);
       soft_angular_speed = soft_angular_speed > angular_speed ? angular_speed : soft_angular_speed;
 
       // Pivoter dans la direction appropriée en fonction du signe de l'erreur angulaire.
-      if (debug.erreur_angle > SEUIL_PRECISION_ANG) {
+      if (debug.erreur_angle > precision_angular) {
         pivoter(soft_angular_speed);
-      } else if (debug.erreur_angle < -SEUIL_PRECISION_ANG) {
+      } else if (debug.erreur_angle < -precision_angular) {
         pivoter(-soft_angular_speed);
       }
     }
@@ -189,7 +189,7 @@ public:
       soft_linear_speed = soft_linear_speed > linear_speed ? linear_speed : soft_linear_speed;
 
       // Déterminer la direction du mouvement en fonction de l'erreur de distance.
-      if (debug.erreur_distance > SEUIL_PRECISION_POS) {
+      if (debug.erreur_distance > precision_linear) {
         forward(soft_linear_speed);
       } else {
         stop();
@@ -249,10 +249,10 @@ public:
       // Calcul de la commande de contrôle proportionnelle à l'erreur de distance.
       double soft_linear_speed = fabs(Kp_linear * debug.erreur_distance);
       // Bridage de la vitesse linéaire pour ne pas dépasser la vitesse maximale autorisée.
-      soft_linear_speed = linear_speed > linear_speed ? linear_speed : soft_linear_speed;
+      soft_linear_speed = soft_linear_speed > linear_speed ? linear_speed : soft_linear_speed;
 
       // Calcul de la commande de contrôle angulaire proportionnelle à l'erreur angulaire
-      double soft_angular_speed = fabs(Kp_angular * debug.erreur_angle)*COEF_V_ANGULAIRE_CORRECTION;
+      double soft_angular_speed = fabs(Kp_pivot * debug.erreur_angle);
       soft_angular_speed = soft_angular_speed > angular_speed ? angular_speed : soft_angular_speed;
 
       // Déterminer le mouvement linéaire en fonction de l'erreur de distance.

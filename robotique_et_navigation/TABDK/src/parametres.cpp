@@ -2,6 +2,7 @@
 #define PARAMETRES_CPP
 
 #include <ros/ros.h>
+#include "calculs.cpp"
 
 // Paramètres du contrôleur : valeurs par défaut, écrasées par params.yaml dans load()
 class Params {
@@ -37,6 +38,11 @@ public:
 
     precision_angular = deg_to_rad(precision_angular);
     trigger_pivot = deg_to_rad(trigger_pivot);
+  }
+
+  // Convertit un temps en millisecondes en nombre de tics de la boucle
+  int msToTicks(int ms) {
+    return frequence * ms / 1000;
   }
 };
 

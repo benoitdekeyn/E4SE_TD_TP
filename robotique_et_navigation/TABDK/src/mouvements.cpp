@@ -197,6 +197,7 @@ public:
     }
   }
 
+
   /**
    * Atteint une position donnée sur l'axe x et y en suivant ces étapes :
    * 1. Pivoter pour s'aligner avec la direction de la cible.
@@ -214,12 +215,6 @@ public:
     debug.angle_target = atan2(debug.delta_y, debug.delta_x);
     debug.erreur_distance = sqrt(pow(debug.delta_x, 2) + pow(debug.delta_y, 2));
     debug.erreur_angle = cal_delta_Theta(debug.angle_target, odom->pose.rotation);
-
-    // Si on doit se retourner à plus e 90 degrés, on y va en marche arrière
-    if (!( -90 < debug.erreur_angle && debug.erreur_angle < 90)) {
-      debug.erreur_angle = cal_delta_Theta(debug.angle_target + M_PI, odom->pose.rotation);
-      debug.erreur_distance = -debug.erreur_distance;
-    }
 
     // Si l'erreur angulaire est supérieure au seuil de pivot bloquant, on pivote pour s'aligner avec la cible.
     if (fabs(debug.erreur_angle) > trigger_pivot) {

@@ -3,10 +3,10 @@
   angular_speed     : 0.5
 
   Kp_linear         : 1.0
-  precision_linear  : 0.01
-  Kp_pivot          : 2.0
-  trigger_pivot     : 10.0
-  Kp_angular        : 0.5
+  precision_linear  : 0.02
+  Kp_pivot          : 1.0
+  trigger_pivot     : 20.0
+  Kp_angular        : 1.0
   precision_angular : 1.0
 
   move_fwd_tm       : 3000

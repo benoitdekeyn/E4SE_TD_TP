@@ -19,6 +19,7 @@ enum RobotState {
   STOP,
   REACH_POSITION,
   REACH_POSITION_X,
+  REACH_POSITION_SMOOTH,
   REACH_ANGLE
 };
 
@@ -115,6 +116,9 @@ private:
       case REACH_POSITION:
         mouvements_.reachPosition(mouvements_.targets.x, mouvements_.targets.y);
         break;
+      case REACH_POSITION_SMOOTH:
+        mouvements_.reachPositionSmooth(mouvements_.targets.x, mouvements_.targets.y);
+        break;
       case REACH_POSITION_X:
         mouvements_.reachPositionX(mouvements_.targets.position_x);
         break;
@@ -207,19 +211,19 @@ private:
     switch (clavier_.inputs.direction) {
       case UP:
         mouvements_.targets.x += 0.1;
-        current_state_ = REACH_POSITION;
+        current_state_ = REACH_POSITION_SMOOTH;
         break;
       case DOWN:
         mouvements_.targets.x -= 0.1;
-        current_state_ = REACH_POSITION;
+        current_state_ = REACH_POSITION_SMOOTH;
         break;
       case LEFT:
         mouvements_.targets.y -= 0.1;
-        current_state_ = REACH_POSITION;
+        current_state_ = REACH_POSITION_SMOOTH;
         break;
       case RIGHT:
         mouvements_.targets.y += 0.1;
-        current_state_ = REACH_POSITION;
+        current_state_ = REACH_POSITION_SMOOTH;
         break;
       default:
         break;
@@ -252,6 +256,8 @@ private:
     ROS_INFO_THROTTLE(1, "angle_target=%.4f deg, erreur_angle=%.4f deg, erreur_distance=%.4f",
                       rad_to_deg(mouvements_.debug.angle_target), rad_to_deg(mouvements_.debug.erreur_angle), mouvements_.debug.erreur_distance);
     ROS_INFO_THROTTLE(1, "delta_x=%.4f delta_y=%.4f", mouvements_.debug.delta_x, mouvements_.debug.delta_y);
+    ROS_INFO_THROTTLE(1, "pivot_en_cours=%d", mouvements_.debug.pivot_en_cours);
+    ROS_INFO_THROTTLE(1, " --- ");
   }
 };
 

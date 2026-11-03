@@ -11,13 +11,6 @@
 
 using geometry_msgs::Twist;
 
-#define Kp_POS 1.0
-#define SEUIL_PRECISION_POS 0.02 // m
-#define Kp_ANG 2.0
-#define SEUIL_PRECISION_ANG deg_to_rad(2) // rad
-#define SEUIL_PIVOT_ANG deg_to_rad(5) // rad
-#define COEF_V_ANGULAIRE_CORRECTION 0.5
-
 // Cibles courantes des différents modes de déplacement
 struct Targets {
   double position_x = 0.0; // pour reachPositionX
@@ -44,9 +37,17 @@ public:
 
   // params et odom appartiennent au contrôleur, on garde juste leur adresse
   void init(ros::NodeHandle &nh, Params *params, Odometry *odom) {
-    params_ = params;
-    odom_ = odom;
-    pub_vel_ = nh.advertise<Twist>("/cmd_vel", 1000);
+    this->odom = odom;
+    pub_vel = nh.advertise<Twist>("/cmd_vel", 1000);
+
+    this->Kp_linear          = params->Kp_linear;
+    this->precision_linear   = params->precision_linear;
+    this->Kp_pivot           = params->Kp_pivot;
+    this->Kp_angular         = params->Kp_angular;
+    this->trigger_pivot    = params->trigger_pivot;
+    this->precision_angular  = params->precision_angular;
+    this->linear_speed       = params->linear_speed;
+    this->angular_speed      = params->angular_speed;
   }
 
   void reset() {
@@ -59,7 +60,7 @@ public:
    * Arrête les moteurs du robot.
    */
   void stop() {
-    pub_vel_.publish(Twist());
+    pub_vel.publish(Twist());
   }
 
   /**
@@ -69,7 +70,7 @@ public:
   void forward(double v) {
     Twist velocity;
     velocity.linear.x = fabs(v);
-    pub_vel_.publish(velocity);
+    pub_vel.publish(velocity);
   }
 
   /**
@@ -79,7 +80,7 @@ public:
   void backward(double v) {
     Twist velocity;
     velocity.linear.x = -fabs(v);
-    pub_vel_.publish(velocity);
+    pub_vel.publish(velocity);
   }
 
   /**
@@ -94,7 +95,7 @@ public:
     Twist velocity;
     velocity.linear.x = linear;
     velocity.angular.z = angular;
-    pub_vel_.publish(velocity);
+    pub_vel.publish(velocity);
   }
 
   /**
@@ -106,7 +107,7 @@ public:
   void pivoter(double w) {
     Twist velocity;
     velocity.angular.z = w;
-    pub_vel_.publish(velocity);
+    pub_vel.publish(velocity);
   }
 
   /**
@@ -116,14 +117,14 @@ public:
    * @param x La position cible sur l'axe x.
    */
   void reachPositionX(double x) {
-    double error = x - odom_->pose.x;
-    double linear_speed = fabs(Kp_POS * error);
-    linear_speed = linear_speed > params_->linear_speed ? params_->linear_speed : linear_speed;
+    double error = x - odom->pose.x;
+    double soft_linear_speed = fabs(Kp_linear * error);
+    soft_linear_speed = soft_linear_speed > linear_speed ? linear_speed : soft_linear_speed;
 
     if (error > SEUIL_PRECISION_POS) {
-      forward(linear_speed);
+      forward(soft_linear_speed);
     } else if (error < -SEUIL_PRECISION_POS) {
-      backward(linear_speed);
+      backward(soft_linear_speed);
     } else {
       stop();
     }
@@ -135,14 +136,14 @@ public:
    * @param angle L'angle cible.
    */
   void reachAngle(double angle) {
-    double error = cal_delta_Theta(angle, odom_->pose.rotation);
-    double linear_speed = fabs(Kp_ANG * error);
-    linear_speed = linear_speed > params_->angular_speed ? params_->angular_speed : linear_speed;
+    double error = cal_delta_Theta(angle, odom->pose.rotation);
+    double soft_linear_speed = fabs(Kp_angular * error);
+    soft_linear_speed = soft_linear_speed > angular_speed ? angular_speed : soft_linear_speed;
 
     if (error > SEUIL_PRECISION_ANG) {
-      pivoter(linear_speed);
+      pivoter(soft_linear_speed);
     } else if (error < -SEUIL_PRECISION_ANG) {
-      pivoter(-linear_speed);
+      pivoter(-soft_linear_speed);
     } else {
       stop();
     }
@@ -152,7 +153,7 @@ public:
    * Atteint une position donnée sur l'axe x et y en suivant ces étapes :
    * 1. Pivoter pour s'aligner avec la direction de la cible.
    * 2. Avancer ou reculer jusqu'à atteindre la position cible,
-   *    en ajustant l'angle en mode bloquant si nécessaire en cours de route.
+   *    en ajustant l'angle en MODE BLOQUANT si nécessaire en cours de route.
    * Correcteur PROPORTIONNEL -> Kp_POS pour la distance,
    * Correcteur PROPORTIONNEL -> Kp_ANG pour l'angle.
    * @param x La position cible sur l'axe x.
@@ -160,38 +161,36 @@ public:
    * @return void
    */
   void reachPosition(double x, double y) {
-    debug.delta_x = x - odom_->pose.x;
-    debug.delta_y = y - odom_->pose.y;
+    debug.delta_x = x - odom->pose.x;
+    debug.delta_y = y - odom->pose.y;
     debug.angle_target = atan2(debug.delta_y, debug.delta_x);
     debug.erreur_distance = sqrt(pow(debug.delta_x, 2) + pow(debug.delta_y, 2));
-    debug.erreur_angle = cal_delta_Theta(debug.angle_target, odom_->pose.rotation);
+    debug.erreur_angle = cal_delta_Theta(debug.angle_target, odom->pose.rotation);
 
     // Si l'erreur angulaire est supérieure au seuil, pivoter pour s'aligner avec la cible.
     if (fabs(debug.erreur_angle) > SEUIL_PRECISION_ANG) {
 
       // Calcul de la commande de contrôle angulaire proportionnelle à l'erreur angulaire.
-      double angular_speed = fabs(Kp_ANG * debug.erreur_angle);
-      angular_speed = angular_speed > params_->angular_speed ? params_->angular_speed : angular_speed;
+      double soft_angular_speed = fabs(Kp_angular * debug.erreur_angle);
+      soft_angular_speed = soft_angular_speed > angular_speed ? angular_speed : soft_angular_speed;
 
       // Pivoter dans la direction appropriée en fonction du signe de l'erreur angulaire.
       if (debug.erreur_angle > SEUIL_PRECISION_ANG) {
-        pivoter(angular_speed);
+        pivoter(soft_angular_speed);
       } else if (debug.erreur_angle < -SEUIL_PRECISION_ANG) {
-        pivoter(-angular_speed);
+        pivoter(-soft_angular_speed);
       }
     }
     // Si l'erreur angulaire est dans le seuil, contrôler la distance vers la cible.
     else
     {
       // Calcul de la commande de contrôle proportionnelle à l'erreur de distance.
-      double linear_speed = fabs(Kp_POS * debug.erreur_distance);
-      linear_speed = linear_speed > params_->linear_speed ? params_->linear_speed : linear_speed;
+      double soft_linear_speed = fabs(Kp_linear * debug.erreur_distance);
+      soft_linear_speed = soft_linear_speed > linear_speed ? linear_speed : soft_linear_speed;
 
       // Déterminer la direction du mouvement en fonction de l'erreur de distance.
       if (debug.erreur_distance > SEUIL_PRECISION_POS) {
-        forward(linear_speed);
-      } else if (debug.erreur_distance < -SEUIL_PRECISION_POS) {
-        backward(linear_speed);
+        forward(soft_linear_speed);
       } else {
         stop();
       }
@@ -210,77 +209,90 @@ public:
    * @return void
    */
   void reachPositionSmooth(double x, double y) {
-    debug.delta_x = x - odom_->pose.x;
-    debug.delta_y = y - odom_->pose.y;
+    debug.delta_x = x - odom->pose.x;
+    debug.delta_y = y - odom->pose.y;
     debug.angle_target = atan2(debug.delta_y, debug.delta_x);
     debug.erreur_distance = sqrt(pow(debug.delta_x, 2) + pow(debug.delta_y, 2));
-    debug.erreur_angle = cal_delta_Theta(debug.angle_target, odom_->pose.rotation);
+    debug.erreur_angle = cal_delta_Theta(debug.angle_target, odom->pose.rotation);
+
+    // Si on doit se retourner à plus e 90 degrés, on y va en marche arrière
+    if (!( -90 < debug.erreur_angle && debug.erreur_angle < 90)) {
+      debug.erreur_angle = cal_delta_Theta(debug.angle_target + M_PI, odom->pose.rotation);
+      debug.erreur_distance = -debug.erreur_distance;
+    }
 
     // Si l'erreur angulaire est supérieure au seuil de pivot bloquant, on pivote pour s'aligner avec la cible.
-    if (fabs(debug.erreur_angle) > SEUIL_PIVOT_ANG) {
+    if (fabs(debug.erreur_angle) > trigger_pivot) {
       debug.pivot_en_cours = true;
     }
 
-    if (debug.pivot_en_cours == true) {
-
+    if (debug.pivot_en_cours == true) 
+    {
       // Calcul de la commande de contrôle angulaire proportionnelle à l'erreur angulaire.
-      double angular_speed = fabs(Kp_ANG * debug.erreur_angle);
+      double soft_angular_speed = fabs(Kp_angular * debug.erreur_angle);
       // Limitation de la vitesse angulaire pour ne pas dépasser la vitesse maximale autorisée.
-      angular_speed = angular_speed > params_->angular_speed ? params_->angular_speed : angular_speed;
+      soft_angular_speed = soft_angular_speed > angular_speed ? angular_speed : soft_angular_speed;
 
       // Pivoter dans la direction appropriée en fonction du signe de l'erreur angulaire.
-      if (debug.erreur_angle > SEUIL_PRECISION_ANG) {
-        pivoter(angular_speed);
-      } else if (debug.erreur_angle < -SEUIL_PRECISION_ANG) {
-        pivoter(-angular_speed);
+      if (debug.erreur_angle > precision_angular) {
+        pivoter(soft_angular_speed);
+      } else if (debug.erreur_angle < -precision_angular) {
+        pivoter(-soft_angular_speed);
       } else {
         debug.pivot_en_cours = false;
       }
     }
-    // Si l'erreur angulaire est dans le seuil de corrctionen parralele de l'avancement,
+    // Si l'erreur angulaire est dans le seuil de correction en parallèle de l'avancement,
     // on avance ou recule en fonction de l'erreur de distance, tout en ajustant l'angle en parallèle si nécessaire.
     else
     {
       // Calcul de la commande de contrôle proportionnelle à l'erreur de distance.
-      double linear_speed = fabs(Kp_POS * debug.erreur_distance);
+      double soft_linear_speed = fabs(Kp_linear * debug.erreur_distance);
       // Bridage de la vitesse linéaire pour ne pas dépasser la vitesse maximale autorisée.
-      linear_speed = linear_speed > params_->linear_speed ? params_->linear_speed : linear_speed;
+      soft_linear_speed = linear_speed > linear_speed ? linear_speed : soft_linear_speed;
 
       // Calcul de la commande de contrôle angulaire proportionnelle à l'erreur angulaire
-      double angular_speed = fabs(Kp_ANG * debug.erreur_angle)*COEF_V_ANGULAIRE_CORRECTION;
-      angular_speed = angular_speed > params_->angular_speed ? params_->angular_speed : angular_speed;
+      double soft_angular_speed = fabs(Kp_angular * debug.erreur_angle)*COEF_V_ANGULAIRE_CORRECTION;
+      soft_angular_speed = soft_angular_speed > angular_speed ? angular_speed : soft_angular_speed;
 
       // Déterminer le mouvement linéaire en fonction de l'erreur de distance.
-      if (debug.erreur_distance > SEUIL_PRECISION_POS) {
-        linear_speed = linear_speed;
-      } else if (debug.erreur_distance < -SEUIL_PRECISION_POS) {
-        linear_speed = -linear_speed;
+      if (debug.erreur_distance > precision_linear) {
+        soft_linear_speed = soft_linear_speed;
+      } else if (debug.erreur_distance < -precision_linear) {
+        soft_linear_speed = -soft_linear_speed;
       } else {
-        linear_speed = 0;
+        soft_linear_speed = 0;
       }
 
       // Déterminer la rotation angulaire en fonction de l'erreur angulaire.
-      if (linear_speed != 0) {
-        if (debug.erreur_angle > SEUIL_PRECISION_ANG) {
-          angular_speed = angular_speed;
-        } else if (debug.erreur_angle < -SEUIL_PRECISION_ANG) {
-          angular_speed = -angular_speed;
+      if (soft_linear_speed != 0) {
+        if (debug.erreur_angle > precision_angular) {
+          soft_angular_speed = soft_angular_speed;
+        } else if (debug.erreur_angle < -precision_angular) {
+          soft_angular_speed = -soft_angular_speed;
         } else {
-          angular_speed = 0;
+          soft_angular_speed = 0;
         }
       } else {
-        angular_speed = 0;
+        soft_angular_speed = 0;
       }
 
       // Appliquer les vitesses linéaire et angulaire calculées.
-      move(linear_speed, angular_speed);
+      move(soft_linear_speed, soft_angular_speed);
     }
   }
 
 private:
-  Params *params_;
-  Odometry *odom_;
-  ros::Publisher pub_vel_;
+  double Kp_linear;
+  double precision_linear;
+  double Kp_pivot;
+  double Kp_angular;
+  double trigger_pivot;
+  double precision_angular;
+  double linear_speed;
+  double angular_speed;
+  Odometry *odom;
+  ros::Publisher pub_vel;
 };
 
 #endif

@@ -12,7 +12,7 @@ using namespace std;
 
 // VARIABLES GLOBALES
 int NBR_REGION = 8;
-int SCAN_SAMPLE = 2*M_PI;
+int SCAN_SAMPLE = 360;
 int ANGLE_REGION = SCAN_SAMPLE / NBR_REGION;
 std::vector<float> distances;
 std::vector<float> min_distances;
@@ -27,8 +27,10 @@ void filtrer_distances(vector<float>& data, float seuil_min, float seuil_max);
 // FONCTION CALLBACK
 // A COMPLETER//
 void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan) {
+  ROS_INFO(" --- Mesures a 360 LIDAR --- ");
 
   distances = scan->ranges;
+  int angle_deg_increment = scan->angle_increment * 180 / M_PI;
   filtrer_distances(distances, scan->range_min, scan->range_max);
 
   float min_region_i;
@@ -36,18 +38,17 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan) {
   min_distances.clear();
 
   for (int i = 0; i < NBR_REGION; i++) {
-    ROS_INFO("Distance at index %d: %f", i, distances[i]);
     int angle_debut = i * ANGLE_REGION;
     int angle_fin = (i + 1) * ANGLE_REGION;
     indice_min_i = -1;
     min_region_i = FLT_MAX;
-    min_region_i = get_minimum(distances, angle_debut / scan->angle_increment, angle_fin / scan->angle_increment, &indice_min_i);
+    min_region_i = get_minimum(distances, angle_debut / angle_deg_increment, angle_fin / angle_deg_increment -1, &indice_min_i);
     min_distances.push_back(min_region_i);
 
-    ROS_INFO("Region %d: min distance = %f at index %d", i, min_region_i, indice_min_i);
+    ROS_INFO("Region %d: min distance = %f a %d deg", i, min_region_i, indice_min_i * angle_deg_increment);
 
     if (min_region_i < SEUIL_OBSTACLE) {
-      ROS_WARN("Obstacle detecte dans la region %d! (entre %f° et %f°)", i, angle_debut*180/(2*M_PI), angle_fin*180/(2*M_PI));
+      ROS_WARN("Obstacle detecte dans la region %d! (entre %d et %d deg)", i, angle_debut, angle_fin);
     }
   }
 }
@@ -84,6 +85,5 @@ void filtrer_distances(vector<float>& data, float seuil_min, float seuil_max) {
     if (data[i] < seuil_min || data[i] > seuil_max) {
       data[i] = FLT_MAX;
     }
-    ROS_INFO("Distance at index %zu: %f", i, data[i]);
   }
 }

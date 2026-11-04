@@ -6,7 +6,6 @@
 #include <cfloat>
 #include <cmath>
 
-
 using namespace ros;
 using namespace std;
 
@@ -19,13 +18,11 @@ std::vector<float> min_distances;
 
 #define SEUIL_OBSTACLE 0.45 //m
 
-
 // PROTOTYPE DES FONCTIONS
 float get_minimum(vector<float> data, int debut, int fin, int *indiceMin);
 void filtrer_distances(vector<float>& data, float seuil_min, float seuil_max);
 
 // FONCTION CALLBACK
-// A COMPLETER//
 void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan) {
   ROS_INFO(" --- Mesures a 360 LIDAR --- ");
 
@@ -59,7 +56,6 @@ int main(int argc, char **argv) {
 
   Rate loop_rate(1); //Hz
 
-  // A COMPLETER
   Subscriber scan_sub = nh.subscribe("/scan", 1, scanCallback);
 
   spin();

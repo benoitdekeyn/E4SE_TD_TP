@@ -1,11 +1,11 @@
 {
 	"folders": [
 		{
-			"name": "TABDK",
+			"name": "GitHub Local",
 			"path": "./"
 		},
 		{
-			"name": "SSH - turtle bot - /TABDK/",
+			"name": "SSH FS - turtle_bot_3",
 			"uri": "ssh://turtle_bot_3/home/ubuntu/catkin_ws/src/TABDK"
 		}
 	],
@@ -16,7 +16,7 @@
 		"emeraldwalk.runonsave": {
 			"commands": [
 				{
-					"match": "TABDK[\\\\/](?!\\.vscode|\\.git)",
+					"match": "^[A-Za-z]:(?!.*[\\\\/]\\.(vscode|git)[\\\\/]).*",
 					"cmd": "powershell -NoProfile -ExecutionPolicy Bypass -File \"${workspaceFolder}\\.vscode\\sync_robot.ps1\""
 				}
 			]
@@ -26,8 +26,8 @@
 		},
 		"terminal.integrated.profiles.windows": {
 			"TurtleBot SSH": {
-				"path": "C:\\Windows\\System32\\OpenSSH\\ssh.exe",
-				"args": ["-Y", "-o", "ServerAliveInterval=30", "ubuntu@192.168.222.135"],
+				"path": "powershell.exe",
+				"args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}\\.vscode\\connect.ps1"],
 				"icon": "remote"
 			}
 		},
@@ -38,7 +38,7 @@
 				"username": "ubuntu",
 				"password": "turtlebot",
 				"host": "192.168.222.135",
-				"root": "/home/ubuntu",
+				"root": "/home/ubuntu"
 			}
 		]
 	}

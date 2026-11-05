@@ -1,0 +1,12 @@
+[
+  {
+    "name": "turtle_bot_3",
+    "host": "192.168.222.135",
+    "username": "ubuntu",
+    "password": "turtlebot",
+    "root": "/home/ubuntu",
+    "package": "TABDK",
+    "catkinSrc": "~/catkin_ws/src",
+    "display": "localhost:0.0"
+  }
+]

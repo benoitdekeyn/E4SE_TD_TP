@@ -1,4 +1,4 @@
-$robot = 'ubuntu@192.168.222.135'
+. (Join-Path $PSScriptRoot 'config.ps1')
 $sshOpts = @('-o', 'StrictHostKeyChecking=accept-new')
 
 # VcXsrv (serveur X pour rviz)
@@ -25,6 +25,6 @@ if (-not (Test-Path $key)) {
 # Copie de la cle sur le robot (mot de passe demande une seule fois)
 ssh @sshOpts -o BatchMode=yes $robot true 2>$null
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "Copie de la cle SSH sur le robot (mot de passe : turtlebot)"
+    Write-Host "Copie de la cle SSH sur le robot (mot de passe : $($cfg.password))"
     Get-Content "$key.pub" | ssh @sshOpts $robot 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'
 }

@@ -13,6 +13,7 @@
 		"recommendations": ["emeraldwalk.RunOnSave", "kelvin.vscode-sshfs"]
 	},
 	"settings": {
+		"terminal.integrated.cwd": "${workspaceFolder:GitHub Local}",
 		"emeraldwalk.runonsave": {
 			"commands": [
 				{

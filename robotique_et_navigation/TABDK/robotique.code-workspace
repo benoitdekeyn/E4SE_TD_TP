@@ -3,6 +3,10 @@
 		{
 			"name": "TABDK",
 			"path": "./"
+		},
+		{
+			"name": "SSH - turtle bot - /TABDK/",
+			"uri": "ssh://turtle_bot_3/home/ubuntu/catkin_ws/src/TABDK"
 		}
 	],
 	"settings": {

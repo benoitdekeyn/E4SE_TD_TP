@@ -2,7 +2,16 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Installation automatique (VcXsrv, extensions, clé SSH)",
+      "type": "shell",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"${workspaceFolder}\\.vscode\\setup.ps1\"",
+      "options": { "shell": { "executable": "powershell.exe", "args": ["-NoProfile", "-Command"] } },
+      "presentation": { "reveal": "always", "panel": "dedicated", "close": true },
+      "problemMatcher": []
+    },
+    {
       "label": "Démarrer serveur X (VcXsrv)",
+      "dependsOn": "Installation automatique (VcXsrv, extensions, clé SSH)",
       "type": "shell",
       "command": "if (-not (Get-Process vcxsrv -ErrorAction SilentlyContinue)) { Start-Process 'C:\\Program Files\\VcXsrv\\vcxsrv.exe' -ArgumentList ':0','-multiwindow','-clipboard','-wgl','-ac' }",
       "options": { "shell": { "executable": "powershell.exe", "args": ["-NoProfile", "-Command"] } },
@@ -12,6 +21,7 @@
     },
     {
       "label": "Robot : run_robot.sh",
+      "dependsOn": "Installation automatique (VcXsrv, extensions, clé SSH)",
       "type": "shell",
       "command": "ssh -t ubuntu@192.168.222.135 'bash -ic ./run_robot.sh; exec bash -l'",
       "options": { "env": { "DISPLAY": "localhost:0.0" }, "shell": { "executable": "powershell.exe", "args": ["-NoProfile", "-Command"] } },
@@ -21,6 +31,7 @@
     },
     {
       "label": "Robot : terminal libre",
+      "dependsOn": "Installation automatique (VcXsrv, extensions, clé SSH)",
       "type": "shell",
       "command": "ssh -Y ubuntu@192.168.222.135",
       "options": { "env": { "DISPLAY": "localhost:0.0" }, "shell": { "executable": "powershell.exe", "args": ["-NoProfile", "-Command"] } },

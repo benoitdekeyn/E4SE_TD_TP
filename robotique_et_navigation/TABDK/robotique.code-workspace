@@ -9,7 +9,18 @@
 			"uri": "ssh://turtle_bot_3/home/ubuntu/catkin_ws/src/TABDK"
 		}
 	],
+	"extensions": {
+		"recommendations": ["emeraldwalk.RunOnSave", "kelvin.vscode-sshfs"]
+	},
 	"settings": {
+		"emeraldwalk.runonsave": {
+			"commands": [
+				{
+					"match": "TABDK[\\\\/](?!\\.vscode|\\.git)",
+					"cmd": "powershell -NoProfile -ExecutionPolicy Bypass -File \"${workspaceFolder}\\.vscode\\sync_robot.ps1\""
+				}
+			]
+		},
 		"terminal.integrated.env.windows": {
 			"DISPLAY": "localhost:0.0"
 		},

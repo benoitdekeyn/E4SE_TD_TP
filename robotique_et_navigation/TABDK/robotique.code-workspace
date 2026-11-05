@@ -6,7 +6,6 @@
 		}
 	],
 	"settings": {
-		"terminal.integrated.cwd": "C:\\Users\\benoi\\Documents\\GitHub\\E4SE_TD_TP\\robotique_et_navigation\\TABDK",
 		"terminal.integrated.env.windows": {
 			"DISPLAY": "localhost:0.0"
 		},

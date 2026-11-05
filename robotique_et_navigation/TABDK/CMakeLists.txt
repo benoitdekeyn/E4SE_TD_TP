@@ -63,11 +63,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  set_mode.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -77,10 +76,14 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   actionlib_msgs#   geometry_msgs#   nav_msgs#   sensor_msgs#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  actionlib_msgs
+  geometry_msgs
+  nav_msgs
+  sensor_msgs
+  std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -145,10 +148,10 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/TABDK_node.cpp)
 add_executable(controleur src/main.cpp)
-add_executable(key_input_node src/nodes/keyboard_input.cpp)
+add_executable(keyboard src/nodes/keyboard.cpp)
 add_executable(lidar src/nodes/detector.cpp)
 add_dependencies(controleur ${catkin_EXPORTED_TARGETS})
-add_dependencies(key_input_node ${catkin_EXPORTED_TARGETS})
+add_dependencies(keyboard ${catkin_EXPORTED_TARGETS})
 add_dependencies(lidar ${catkin_EXPORTED_TARGETS})
 
 ## Rename C++ executable without prefix
@@ -166,7 +169,7 @@ add_dependencies(lidar ${catkin_EXPORTED_TARGETS})
 #   ${catkin_LIBRARIES}
 # )
 target_link_libraries(controleur ${catkin_LIBRARIES})
-target_link_libraries(key_input_node ${catkin_LIBRARIES})
+target_link_libraries(keyboard ${catkin_LIBRARIES})
 target_link_libraries(lidar ${catkin_LIBRARIES})
 
 #############

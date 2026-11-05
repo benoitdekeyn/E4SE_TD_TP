@@ -7,6 +7,8 @@
 #include "mouvements.cpp"
 #include "odometry.cpp"
 
+#include <TABDK/SetMode.h>
+#include <TABDK/SetGlobalControl.h>
 #include <ros/ros.h>
 #include <std_msgs/Empty.h>
 #include <std_srvs/Empty.h>
@@ -39,6 +41,8 @@ public:
 
     pub_reset_ = nh.advertise<std_msgs::Empty>("/reset", 1);
     client_reset_sim_ = nh.serviceClient<std_srvs::Empty>("/gazebo/reset_simulation");
+    srv_set_mode_ = nh.advertiseService("/set_mode", setModeCallback);
+    srv_global_control_ = nh.advertiseService("/set_global_control", setGlobalControlCallback);
   }
 
   double frequence() {
@@ -48,13 +52,6 @@ public:
   // Une itération de la boucle de contrôle
   void step() {
     logStatus();
-
-    if (clavier_.inputs.reset_requested) {
-      resetRobot();
-      return;
-    }
-
-    updateMode();
     updateFSM();
   }
 
@@ -72,7 +69,6 @@ public:
     // Remise à zéro des contrôles
     mouvements_.reset();
     resetFSM();
-    clavier_.reset();
   }
 
 private:
@@ -83,19 +79,54 @@ private:
 
   ros::Publisher pub_reset_;
   ros::ServiceClient client_reset_sim_;
+  ros::ServiceServer srv_set_mode_;
+  ros::ServiceServer srv_global_control_;
 
   RobotState current_state_ = DEFAULT_STATE;
   RobotMode current_mode_ = DEFAULT_MODE;
   RobotMode previous_mode_ = DEFAULT_MODE;
   int ticks_counter_ = 0;
 
+  const char* mode_to_string(RobotMode mode) {
+    return mode == AUTO ? "auto" : "manual";
+  }
+
+  void applyMode(RobotMode mode) {
+    if (mode == current_mode_) {
+      ROS_INFO("Déjà en mode %s", mode_to_string(current_mode_));
+      return;
+    }
+    
+    if (current_mode_ != PAUSE) {
+      previous_mode_ = current_mode_;
+    }
+    current_mode_ = mode;
+    
+    switch (mode) {
+      case MANUAL:
+        ROS_INFO("Switching to MANUAL mode");
+        current_state_ = STOP;
+        clavier_.inputs.direction = NONE;
+        break;
+      case AUTO:
+        ROS_INFO("Switching to AUTO mode");
+        current_state_ = DEFAULT_STATE;
+        ticks_counter_ = 0;
+        break;
+      case PAUSE:
+        ROS_INFO("Switching to PAUSE mode");
+        current_state_ = STOP;
+        break;
+    }
+  }
+  
   void resetFSM() {
     current_state_ = DEFAULT_STATE;
-    current_mode_ = DEFAULT_MODE;
+    current_mode_  = DEFAULT_MODE;
     previous_mode_ = DEFAULT_MODE;
     ticks_counter_ = 0;
   }
-
+  
   void applyState() {
     switch (current_state_) {
       case FORWARD:
@@ -120,145 +151,154 @@ private:
         mouvements_.reachPositionSmooth(mouvements_.targets.x, mouvements_.targets.y);
         break;
       case REACH_POSITION_X:
-        mouvements_.reachPositionX(mouvements_.targets.position_x);
-        break;
-      case REACH_ANGLE:
-        mouvements_.reachAngle(mouvements_.targets.angle);
-        break;
-      default:
-        mouvements_.stop();
-        break;
+          mouvements_.reachPositionX(mouvements_.targets.position_x);
+          break;
+        case REACH_ANGLE:
+          mouvements_.reachAngle(mouvements_.targets.angle);
+          break;
+        default:
+          mouvements_.stop();
+          break;
+      }
     }
-  }
-
-  void updateMode() {
-    switch (current_mode_) {
-      case AUTO:
-        if (clavier_.inputs.change_mode) {
-          previous_mode_ = current_mode_;
-          current_mode_ = MANUAL;
-          ROS_INFO("Switching to MANUAL mode");
-          current_state_ = STOP;
-          clavier_.inputs.direction = NONE;
-        } else if (clavier_.inputs.play_pause) {
-          previous_mode_ = current_mode_;
-          current_mode_ = PAUSE;
-          ROS_INFO("Switching to PAUSE mode");
-        }
-        break;
-
-      case MANUAL:
-        if (clavier_.inputs.change_mode) {
-          previous_mode_ = current_mode_;
-          current_mode_ = AUTO;
-          ROS_INFO("Switching to AUTO mode");
-          current_state_ = DEFAULT_STATE;
-          ticks_counter_ = 0;
-        } else if (clavier_.inputs.play_pause) {
-          previous_mode_ = current_mode_;
-          current_mode_ = PAUSE;
-          ROS_INFO("Switching to PAUSE mode");
-        }
-        break;
-
-      case PAUSE:
-        if (clavier_.inputs.play_pause) {
-          current_mode_ = previous_mode_;
-          ROS_INFO("Switching to %s mode", (current_mode_ == AUTO) ? "AUTO" : "MANUAL");
-        }
-        break;
-
-      default:
-        current_mode_ = DEFAULT_MODE;
-        break;
-    }
-
-    clavier_.inputs.change_mode = false;
-    clavier_.inputs.play_pause = false;
-  }
-
-  void updateFSMAuto() {
-    switch (current_state_) {
-      case FORWARD:
+    
+    void updateFSMAuto() {
+      switch (current_state_) {
+        case FORWARD:
         if (params_.msToTicks(params_.move_fwd_tm) == ticks_counter_) {
           ROS_INFO("Switching to STOP state");
           ticks_counter_ = 0;
           current_state_ = STOP;
-        }
-        break;
-      case STOP:
+          }
+          break;
+        case STOP:
         if (params_.msToTicks(params_.move_stp_tm) == ticks_counter_) {
           ROS_INFO("Switching to BACKWARD state");
           ticks_counter_ = 0;
           current_state_ = BACKWARD;
-        }
-        break;
-      case BACKWARD:
+          }
+          break;
+        case BACKWARD:
         if (params_.msToTicks(params_.move_bwd_tm) == ticks_counter_) {
           ROS_INFO("Switching to FORWARD state");
           ticks_counter_ = 0;
           current_state_ = FORWARD;
-        }
-        break;
-      default:
-        current_state_ = DEFAULT_STATE;
-        break;
+          }
+          break;
+        default:
+          current_state_ = DEFAULT_STATE;
+          break;
+      }
+      ticks_counter_++;
     }
-    ticks_counter_++;
-  }
-
-  void updateFSMManual() {
-    switch (clavier_.inputs.direction) {
-      case UP:
+    
+    void updateFSMManual() {
+      switch (clavier_.inputs.direction) {
+        case UP:
         mouvements_.targets.x += 0.1;
-        current_state_ = REACH_POSITION_SMOOTH;
-        break;
-      case DOWN:
+          current_state_ = REACH_POSITION_SMOOTH;
+          break;
+        case DOWN:
         mouvements_.targets.x -= 0.1;
-        current_state_ = REACH_POSITION_SMOOTH;
-        break;
-      case LEFT:
+          current_state_ = REACH_POSITION_SMOOTH;
+          break;
+        case LEFT:
         mouvements_.targets.y -= 0.1;
-        current_state_ = REACH_POSITION_SMOOTH;
-        break;
-      case RIGHT:
+          current_state_ = REACH_POSITION_SMOOTH;
+          break;
+        case RIGHT:
         mouvements_.targets.y += 0.1;
-        current_state_ = REACH_POSITION_SMOOTH;
-        break;
-      default:
-        break;
+          current_state_ = REACH_POSITION_SMOOTH;
+          break;
+          default:
+          break;
+      }
+      clavier_.inputs.direction = NONE;
     }
-    clavier_.inputs.direction = NONE;
-  }
+    
+    void updateFSM() {
+      switch (current_mode_) {
+        case AUTO:
+          updateFSMAuto();
+          applyState();
+          break;
+        case MANUAL:
+          updateFSMManual();
+          applyState();
+          break;
+        case PAUSE:
+          mouvements_.stop();
+          break;
+        default:
+          break;
+      }
 
-  void updateFSM() {
-    switch (current_mode_) {
-      case AUTO:
-        updateFSMAuto();
-        applyState();
-        break;
-      case MANUAL:
-        updateFSMManual();
-        applyState();
-        break;
-      case PAUSE:
+      if (current_mode_ == PAUSE) {
         mouvements_.stop();
-        clavier_.inputs.direction = NONE;
-        break;
-      default:
-        break;
+      } else {
+        updateFSM();
+        applyState();
+      }
     }
-  }
-
-  void logStatus() {
-/*     ROS_INFO_THROTTLE(1, "x=%.4f y=%.4f rotation=%.4f deg", odom_.pose.x, odom_.pose.y, rad_to_deg(odom_.pose.rotation));
-    ROS_INFO_THROTTLE(1, "target_x=%.4f target_y=%.4f", mouvements_.targets.x, mouvements_.targets.y);
-    ROS_INFO_THROTTLE(1, "angle_target=%.4f deg, erreur_angle=%.4f deg, erreur_distance=%.4f",
-                      rad_to_deg(mouvements_.debug.angle_target), rad_to_deg(mouvements_.debug.erreur_angle), mouvements_.debug.erreur_distance);
-    ROS_INFO_THROTTLE(1, "delta_x=%.4f delta_y=%.4f", mouvements_.debug.delta_x, mouvements_.debug.delta_y);
-    ROS_INFO_THROTTLE(1, "pivot_en_cours=%d", mouvements_.debug.pivot_en_cours);
-    ROS_INFO_THROTTLE(1, " --- "); */
-  }
-};
-
-#endif
+    
+    void logStatus() {
+      /*     ROS_INFO_THROTTLE(1, "x=%.4f y=%.4f rotation=%.4f deg", odom_.pose.x, odom_.pose.y, rad_to_deg(odom_.pose.rotation));
+      ROS_INFO_THROTTLE(1, "target_x=%.4f target_y=%.4f", mouvements_.targets.x, mouvements_.targets.y);
+      ROS_INFO_THROTTLE(1, "angle_target=%.4f deg, erreur_angle=%.4f deg, erreur_distance=%.4f",
+      rad_to_deg(mouvements_.debug.angle_target), rad_to_deg(mouvements_.debug.erreur_angle), mouvements_.debug.erreur_distance);
+      ROS_INFO_THROTTLE(1, "delta_x=%.4f delta_y=%.4f", mouvements_.debug.delta_x, mouvements_.debug.delta_y);
+      ROS_INFO_THROTTLE(1, "pivot_en_cours=%d", mouvements_.debug.pivot_en_cours);
+      ROS_INFO_THROTTLE(1, " --- "); */
+    }
+  
+    bool setModeCallback(TABDK::SetMode::Request &request,
+                        TABDK::SetMode::Response &response) {
+      RobotMode requested_mode;
+  
+      if (request.mode != "manual" && request.mode != "auto" && request.mode != "toggle") {
+        // mode non reconnu
+        response.success = false;
+        response.mode_courant = mode_to_string(current_mode_);
+        return true;
+      }
+  
+      // Si on demande le mode toggle, on fait comme si on demandait 
+      // le mode inverse au mode courant
+      if (request.mode == "toggle") {
+        requested_mode = current_mode_ == AUTO ? MANUAL : AUTO;
+      }
+  
+      // Si on est en mode PAUSE, on change 
+      // le prochain mode à appliquer après la sortie de PAUSE
+      if (current_mode_ == PAUSE) {
+        previous_mode_ = requested_mode;
+      }
+      // Sinon, on applique le mode demandé directement
+      else {
+        requested_mode = request.mode == "manual" ? MANUAL : AUTO;
+        applyMode(requested_mode);
+      }
+  
+      // mode reconnu et appliqué avec succès si hors de PAUSE
+      response.success = true;
+      response.mode_courant = mode_to_string(current_mode_);
+      return true;
+    }
+  
+    bool setGlobalControlCallback(TABDK::SetGlobalControl::Request &request,
+                                  TABDK::SetGlobalControl::Response &response) {
+  
+      if (request.command == "pause") {
+        applyMode(PAUSE);
+      } else if (request.command == "play") {
+        applyMode(previous_mode_);
+      } else if (request.command == "reset") {
+        resetRobot();
+      }
+      response.success = true;
+      return true;
+    }
+  };
+  
+  #endif
+  

@@ -83,6 +83,8 @@
   <exec_depend>tf</exec_depend>
   <exec_depend>tf2</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>message_generation</exec_depend>
+
 
 
   <!-- The export tag contains other, unspecified, tags -->

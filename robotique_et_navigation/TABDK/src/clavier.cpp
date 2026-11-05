@@ -4,22 +4,17 @@
 #include <ros/ros.h>
 #include <std_msgs/Int8.h>
 
-#define KEY_M 109
-#define KEY_SPACE 32
 #define KEY_UP 65
 #define KEY_DOWN 66
 #define KEY_RIGHT 67
 #define KEY_LEFT 68
 #define KEY_ZERO 48
-#define KEY_R 114
 
 enum Arrow { NONE, UP, DOWN, LEFT, RIGHT };
 
 // Ordres issus du clavier, remis à zéro par le contrôleur une fois traités
 struct KeyboardInputs {
-  bool change_mode = false;
   Arrow direction = NONE;
-  bool play_pause = false;
   bool reset_requested = false;
 };
 
@@ -41,9 +36,6 @@ private:
 
   void callback(const std_msgs::Int8::ConstPtr &msg) {
     switch (msg->data) {
-      case KEY_M:
-        inputs.change_mode = true;
-        break;
       case KEY_UP:
         ROS_INFO("UP key received");
         inputs.direction = UP;
@@ -60,18 +52,9 @@ private:
         ROS_INFO("RIGHT key received");
         inputs.direction = RIGHT;
         break;
-      case KEY_SPACE:
-        ROS_INFO("SPACE key received");
-        inputs.play_pause = true;
-        break;
       case KEY_ZERO:
         ROS_INFO("ZERO key received");
         inputs.direction = NONE;
-        break;
-      case KEY_R:
-        ROS_INFO("R key received : reset robot + simulation");
-        // Le reset est exécuté par le contrôleur dans sa boucle
-        inputs.reset_requested = true;
         break;
       default:
         break;

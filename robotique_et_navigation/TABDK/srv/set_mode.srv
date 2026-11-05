@@ -1,0 +1,6 @@
+# requete
+string mode   # "manual", "auto" ou "toggle"
+---
+# reponse
+bool success
+string mode_courant

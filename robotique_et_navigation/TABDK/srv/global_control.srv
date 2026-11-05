@@ -1,0 +1,6 @@
+# requete
+string command   # "play", "pause", "toogle_play" ou "reset"
+---
+# reponse
+bool success
+string mode_courant

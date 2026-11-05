@@ -1,0 +1,7 @@
+{
+    "cmake.sourceDirectory": "./",
+    "cmake.configureOnOpen": false,
+    "cmake.configureOnEdit": false,
+    "cmake.automaticReconfigure": false,
+    "cmake.autoDetectSourceDirectory": false
+}

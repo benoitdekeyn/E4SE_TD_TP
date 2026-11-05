@@ -1,0 +1,31 @@
+{
+	"folders": [
+		{
+			"name": "TABDK",
+			"path": "./"
+		}
+	],
+	"settings": {
+		"terminal.integrated.cwd": "C:\\Users\\benoi\\Documents\\GitHub\\E4SE_TD_TP\\robotique_et_navigation\\TABDK",
+		"terminal.integrated.env.windows": {
+			"DISPLAY": "localhost:0.0"
+		},
+		"terminal.integrated.profiles.windows": {
+			"TurtleBot SSH": {
+				"path": "C:\\Windows\\System32\\OpenSSH\\ssh.exe",
+				"args": ["-Y", "-o", "ServerAliveInterval=30", "ubuntu@192.168.222.135"],
+				"icon": "remote"
+			}
+		},
+		"terminal.integrated.defaultProfile.windows": "TurtleBot SSH",
+		"sshfs.configs": [
+			{
+				"name": "turtle_bot_3",
+				"username": "ubuntu",
+				"password": "turtlebot",
+				"host": "192.168.222.135",
+				"root": "/home/ubuntu",
+			}
+		]
+	}
+}

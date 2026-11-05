@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Démarrer serveur X (VcXsrv)",
+      "type": "shell",
+      "command": "if (-not (Get-Process vcxsrv -ErrorAction SilentlyContinue)) { Start-Process 'C:\\Program Files\\VcXsrv\\vcxsrv.exe' -ArgumentList ':0','-multiwindow','-clipboard','-wgl','-ac' }",
+      "options": { "shell": { "executable": "powershell.exe", "args": ["-NoProfile", "-Command"] } },
+      "runOptions": { "runOn": "folderOpen" },
+      "presentation": { "reveal": "never", "close": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Robot : run_robot.sh",
+      "type": "shell",
+      "command": "ssh -t ubuntu@192.168.222.135 'bash -ic ./run_robot.sh; exec bash -l'",
+      "options": { "env": { "DISPLAY": "localhost:0.0" }, "shell": { "executable": "powershell.exe", "args": ["-NoProfile", "-Command"] } },
+      "runOptions": { "runOn": "folderOpen" },
+      "presentation": { "reveal": "always", "panel": "dedicated", "focus": false },
+      "problemMatcher": []
+    },
+    {
+      "label": "Robot : terminal libre",
+      "type": "shell",
+      "command": "ssh -Y ubuntu@192.168.222.135",
+      "options": { "env": { "DISPLAY": "localhost:0.0" }, "shell": { "executable": "powershell.exe", "args": ["-NoProfile", "-Command"] } },
+      "runOptions": { "runOn": "folderOpen" },
+      "presentation": { "reveal": "always", "panel": "dedicated", "focus": true },
+      "problemMatcher": []
+    }
+  ]
+}

@@ -202,7 +202,7 @@ int main(int argc, char **argv) {
   Rate loop_rate(1); //Hz
 
   Subscriber scan_sub = nh.subscribe("/scan", 1, scanCallback);
-  marker_pub = nh.advertise<visualization_msgs::MarkerArray>("/markers", 0);
+  marker_pub = nh.advertise<visualization_msgs::MarkerArray>("/lidar_visualization", 0);
 
   spin();
 

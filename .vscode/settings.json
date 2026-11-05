@@ -1,4 +1,7 @@
 {
     "cmake.sourceDirectory": "C:/Users/Tibault/Documents/GitHub/E4SE_TD_TP/robotique_et_navigation/TABDK",
-    "cmake.autoDetectSourceDirectory": false
+    "cmake.autoDetectSourceDirectory": false,
+    "cmake.configureOnOpen": false,
+    "cmake.configureOnEdit": false,
+    "cmake.automaticReconfigure": false
 }

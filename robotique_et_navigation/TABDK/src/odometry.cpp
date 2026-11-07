@@ -6,6 +6,7 @@
 #include <tf/tf.h>
 
 using namespace ros;
+using namespace tf;
 
 struct Pose2D {
   double x = 0.0;
@@ -28,12 +29,12 @@ private:
   void callback(const nav_msgs::Odometry::ConstPtr &msg) {
     pose.x = msg->pose.pose.position.x;
     pose.y = msg->pose.pose.position.y;
-    tf::Quaternion q = tf::Quaternion(
+    Quaternion q = Quaternion(
         msg->pose.pose.orientation.x,
         msg->pose.pose.orientation.y,
         msg->pose.pose.orientation.z,
         msg->pose.pose.orientation.w);
-    pose.rotation = tf::getYaw(q);
+    pose.rotation = getYaw(q);
   }
 };
 

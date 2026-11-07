@@ -1,4 +1,5 @@
 #include "controleur.cpp"
+#include "serveur_services.cpp"
 
 #include <csignal>
 #include <ros/ros.h>
@@ -19,6 +20,7 @@ int main(int argc, char **argv) {
   NodeHandle nh;
   Controleur controleur;
   controleur.init(nh);
+  ServeurServices services(nh, controleur);
 
   Rate loop_rate(controleur.frequence());
 

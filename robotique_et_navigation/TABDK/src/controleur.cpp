@@ -7,13 +7,11 @@
 #include "mouvements.cpp"
 #include "odometry.cpp"
 
-#include <TABDK/set_mode.h>
-#include <TABDK/global_control.h>
 #include <ros/ros.h>
 #include <std_msgs/Empty.h>
 #include <std_srvs/Empty.h>
+#include <string>
 
-using namespace TABDK;
 using namespace ros;
 
 enum RobotState {
@@ -44,8 +42,6 @@ public:
 
     pub_reset_ = nh.advertise<std_msgs::Empty>("/reset", 1);
     client_reset_sim_ = nh.serviceClient<std_srvs::Empty>("/gazebo/reset_simulation");
-    srv_set_mode_ = nh.advertiseService("/set_mode", &Controleur::setModeCallback, this);
-    srv_global_control_ = nh.advertiseService("/global_control", &Controleur::globalControlCallback, this);
   }
 
   double frequence() {
@@ -74,6 +70,52 @@ public:
     resetFSM();
   }
 
+  const char *modeCourant() const {
+    return mode_to_string(current_mode_);
+  }
+
+  bool changerMode(const std::string &mode) {
+    if (mode != "manual" && mode != "auto" && mode != "toggle") {
+      ROS_WARN("Mode inconnu : %s", mode.c_str());
+      return false;
+    }
+
+    const RobotMode base_mode = current_mode_ == PAUSE ? previous_mode_ : current_mode_;
+    const RobotMode requested_mode = mode == "toggle"
+        ? (base_mode == AUTO ? MANUAL : AUTO)
+        : (mode == "manual" ? MANUAL : AUTO);
+
+    if (current_mode_ == PAUSE) {
+      if (requested_mode != previous_mode_) {
+        previous_mode_ = requested_mode;
+        initModeState(requested_mode);
+      }
+    } else {
+      applyMode(requested_mode);
+    }
+    return true;
+  }
+
+  bool commandeGlobale(const std::string &command) {
+    if (command == "pause") {
+      pauseRobot();
+    } else if (command == "play") {
+      resumeRobot();
+    } else if (command == "play_pause") {
+      if (current_mode_ == PAUSE) {
+        resumeRobot();
+      } else {
+        pauseRobot();
+      }
+    } else if (command == "reset") {
+      resetRobot();
+    } else {
+      ROS_WARN("Commande globale inconnue : %s", command.c_str());
+      return false;
+    }
+    return true;
+  }
+
 private:
   Params params_;
   Odometry odom_;
@@ -82,15 +124,13 @@ private:
 
   Publisher pub_reset_;
   ServiceClient client_reset_sim_;
-  ServiceServer srv_set_mode_;
-  ServiceServer srv_global_control_;
 
   RobotState current_state_ = DEFAULT_STATE;
   RobotMode current_mode_ = DEFAULT_MODE;
   RobotMode previous_mode_ = DEFAULT_MODE;
   int ticks_counter_ = 0;
 
-  const char* mode_to_string(RobotMode mode) {
+  const char* mode_to_string(RobotMode mode) const {
     switch (mode) {
       case AUTO:
         return "auto";
@@ -276,68 +316,6 @@ private:
       ROS_INFO_THROTTLE(1, " --- "); */
     }
     
-    bool setModeCallback(set_mode::Request &request,
-                         set_mode::Response &response) {
-      RobotMode requested_mode;
-  
-      if (request.mode != "manual" && request.mode != "auto" && request.mode != "toggle") {
-        // mode non reconnu
-        response.success = false;
-        response.mode_courant = mode_to_string(current_mode_);
-        return true;
-      }
-  
-      // En PAUSE, "toggle" inverse le mode à reprendre, pas PAUSE lui-même
-      const RobotMode base_mode = current_mode_ == PAUSE ? previous_mode_ : current_mode_;
-      if (request.mode == "toggle") {
-        requested_mode = base_mode == AUTO ? MANUAL : AUTO;
-      } else {
-        requested_mode = request.mode == "manual" ? MANUAL : AUTO;
-      }
-  
-      // Si on est en mode PAUSE, on change 
-      // le prochain mode à appliquer après la sortie de PAUSE
-      if (current_mode_ == PAUSE) {
-        if (requested_mode != previous_mode_) {
-          previous_mode_ = requested_mode;
-          initModeState(requested_mode);
-        }
-      }
-      // Sinon, on applique le mode demandé directement
-      else {
-        applyMode(requested_mode);
-      }
-  
-      // mode reconnu et appliqué avec succès si hors de PAUSE
-      response.success = true;
-      response.mode_courant = mode_to_string(current_mode_);
-      return true;
-    }
-  
-    bool globalControlCallback(global_control::Request &request,
-                               global_control::Response &response) {
-  
-      if (request.command == "pause") {
-        pauseRobot();
-      } else if (request.command == "play") {
-        resumeRobot();
-      } else if (request.command == "play_pause") {
-        if (current_mode_ == PAUSE) {
-          resumeRobot();
-        } else {
-          pauseRobot();
-        }
-      } else if (request.command == "reset") {
-        resetRobot();
-      } else {
-        response.success = false;
-        response.mode_courant = mode_to_string(current_mode_);
-        return true;
-      }
-      response.success = true;
-      response.mode_courant = mode_to_string(current_mode_);
-      return true;
-    }
   };
   
   #endif

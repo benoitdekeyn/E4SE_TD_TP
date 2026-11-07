@@ -65,19 +65,18 @@ int main(int argc, char **argv) {
   Modes modes;
   modes.init(states);
 
-  ServeurAction action_server;
-  Server server(nh, "moving", false);
-  action_server.init(server, mouvements, modes, odometry, states);
+  ServeurAction serveur_action;
+  serveur_action.init(nh, mouvements, modes, odometry, states);
 
   ServeurServices services;
-  services.init(nh, modes, action_server, pub_reset, client_reset_sim);
+  services.init(nh, modes, serveur_action, pub_reset, client_reset_sim);
 
   publishStatus(modes, pub_mode, pub_pause);
   Rate loop_rate(params.frequence);
 
   while (ok() && !arret_demande) {
     modes.step();
-    action_server.step();
+    serveur_action.step();
     spinOnce();
     publishStatus(modes, pub_mode, pub_pause);
     loop_rate.sleep();

@@ -70,13 +70,21 @@ void keyboardCallback(const Int8::ConstPtr &message) {
       ROS_WARN("Le mode courant n'a pas encore été reçu sur /mode");
       break;
     }
-    if (!is_a_mode(current_mode)) {
-      ROS_WARN("Mode courant inconnu sur /mode : %s", current_mode.c_str());
-      break;
+    string requested_mode;
+    if (current_mode == "auto") {
+      requested_mode = "manual";
     }
-    string requested_mode = current_mode == MODE_AUTO ? MODE_MANUAL : MODE_AUTO;
-    if (callSetMode(requested_mode)) {
-      current_mode = requested_mode;
+    if (current_mode == "manual") {
+      requested_mode = "auto";
+    }
+    if (!requested_mode.empty()) {
+      if (callSetMode(requested_mode)) {
+        current_mode = requested_mode;
+      } else {
+        ROS_WARN("Échec du changement de mode vers : %s", requested_mode.c_str());
+      }
+    } else {
+      ROS_WARN("Mode courant non implémenté : %s", current_mode.c_str());
     }
     break;
   }

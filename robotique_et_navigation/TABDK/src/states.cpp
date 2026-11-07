@@ -37,14 +37,6 @@ public:
     ticks_counter = 0;
   }
 
-  // Signale à la FSM manuelle qu'un nouveau waypoint doit être suivi.
-  void requestManualWaypoint(double x, double y) {
-    mouvements->targets.x = x;
-    mouvements->targets.y = y;
-    mouvements->position_atteinte = false;
-    waypoint_active = true;
-  }
-
   void stop() {
     mouvements->stop();
   }

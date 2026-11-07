@@ -13,7 +13,6 @@
 		"recommendations": ["emeraldwalk.RunOnSave", "kelvin.vscode-sshfs"]
 	},
 	"settings": {
-		"terminal.integrated.cwd": "${workspaceFolder:GitHub Local}",
 		"emeraldwalk.runonsave": {
 			"commands": [
 				{
@@ -28,7 +27,7 @@
 		"terminal.integrated.profiles.windows": {
 			"TurtleBot SSH": {
 				"path": "powershell.exe",
-				"args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}\\.vscode\\connect.ps1"],
+				"args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder:GitHub Local}\\.vscode\\connect.ps1"],
 				"icon": "remote"
 			}
 		},

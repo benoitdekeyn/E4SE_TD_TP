@@ -10,6 +10,16 @@
       "problemMatcher": []
     },
     {
+      "label": "Robot : synchronisation initiale",
+      "dependsOn": "Installation automatique (VcXsrv, extensions, clé SSH)",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder:GitHub Local}\\.vscode\\sync_robot.ps1"],
+      "runOptions": { "runOn": "folderOpen" },
+      "presentation": { "reveal": "always", "panel": "dedicated", "focus": false, "close": true },
+      "problemMatcher": []
+    },
+    {
       "label": "Démarrer serveur X (VcXsrv)",
       "dependsOn": "Installation automatique (VcXsrv, extensions, clé SSH)",
       "type": "shell",

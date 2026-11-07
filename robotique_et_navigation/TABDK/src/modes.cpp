@@ -4,7 +4,6 @@
 #include <string>
 
 #include "parametres.cpp"
-#include "clavier.cpp"
 #include "mouvements.cpp"
 #include "states.cpp"
 
@@ -19,23 +18,25 @@ const int NBR_MODES = sizeof(MODES) / sizeof(MODES[0]);
 class Modes {
 public:
   void init(States &states) {
-    states_ = &states;
+    this->states = &states;
   }
 
   void step() {
-    if (paused_) {
-      states_->stop();
+    if (pause_active) {
+      states->stop();
       return;
     }
 
-    if (current_mode_ == AUTO) {
-      states_->stepAuto();
-    } else if (current_mode_ == MANUAL) {
-      states_->stepManual();
+    if (current_mode == AUTO) {
+      states->updateFSMAuto();
+    } else if (current_mode == MANUAL) {
+      states->updateFSMManual();
     } else {
-      ROS_ERROR("Mode non pris en charge : %s", current_mode_.c_str());
-      states_->stop();
+      ROS_ERROR("Mode non pris en charge : %s", current_mode.c_str());
+      states->stop();
+      return;
     }
+    states->applyState();
   }
 
   bool set_mode(string &mode) {
@@ -43,25 +44,26 @@ public:
       return false;
     }
 
-    if (mode != current_mode_) {
+    if (mode != current_mode) {
       if (mode == AUTO) {
-        states_->initAuto();
+        states->initAuto();
       } else if (mode == MANUAL) {
-        states_->initManual();
+        states->initManual();
       } else {
         ROS_ERROR("Mode non pris en charge : %s", mode.c_str());
         return false;
       }
-      current_mode_ = mode;
+      current_mode = mode;
     }
     return true;
   }
 
   bool set_pause(string &state) {
     if (state == "pause") {
-      paused_ = true;
+      pause_active = true;
+      states->stop();
     } else if (state == "play") {
-      paused_ = false;
+      pause_active = false;
     } else {
       return false;
     }
@@ -69,24 +71,23 @@ public:
   }
 
   void reset() {
-    current_mode_ = DEFAULT_MODE;
-    paused_ = false;
-    states_->reset();
+    current_mode = DEFAULT_MODE;
+    pause_active = false;
+    states->reset();
   }
 
   string mode() const {
-    return current_mode_;
+    return current_mode;
   }
 
   bool paused() const {
-    return paused_;
+    return pause_active;
   }
 
 private:
-  States *states_ = nullptr;
-  string current_mode_ = DEFAULT_MODE;
-  bool paused_ = false;
-
+  States *states = nullptr;
+  string current_mode = DEFAULT_MODE;
+  bool pause_active = false;
   bool is_a_mode(const string &mode) {
     for (int i = 0; i < NBR_MODES; i++) {
       if (mode == MODES[i]) {

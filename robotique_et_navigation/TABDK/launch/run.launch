@@ -2,6 +2,7 @@
     <rosparam command="load" file="$(find TABDK)/config/params.yaml" />
     <node name = "keyboard_input" pkg = "TABDK" type = "keyboard_input" output = "screen" />
     <node name = "client_services" pkg = "TABDK" type = "client_services" output = "screen" />
+    <node name = "client_action" pkg = "TABDK" type = "client_action" output = "screen" />
     <node name = "detector" pkg = "TABDK" type = "detector" output = "screen" />
     <node name = "controleur" pkg = "TABDK" type = "controleur" output = "screen" />
 </launch>

@@ -8,10 +8,10 @@
 #include "calculs.cpp"
 #include "parametres.cpp"
 #include "odometry.cpp"
-#include "clavier.cpp"
 #include "mouvements.cpp"
 #include "states.cpp"
 #include "modes.cpp"
+#include "serveur_action.cpp"
 #include "serveur_services.cpp"
 
 using namespace ros;
@@ -50,9 +50,6 @@ int main(int argc, char **argv) {
   Odometry odometry;
   odometry.init(nh);
 
-  Clavier clavier;
-  clavier.init(nh);
-
   Mouvements mouvements;
   mouvements.init(nh, &params, &odometry);
 
@@ -63,17 +60,24 @@ int main(int argc, char **argv) {
       nh.serviceClient<ResetService>("/gazebo/reset_simulation");
 
   States states;
-  states.init(params, clavier, mouvements);
+  states.init(params, mouvements);
+
   Modes modes;
   modes.init(states);
+
+  ServeurAction action_server;
+  Server server(nh, "moving", false);
+  action_server.init(server, mouvements, modes, odometry, states);
+
   ServeurServices services;
-  services.init(nh, modes, pub_reset, client_reset_sim);
+  services.init(nh, modes, action_server, pub_reset, client_reset_sim);
 
   publishStatus(modes, pub_mode, pub_pause);
   Rate loop_rate(params.frequence);
 
   while (ok() && !arret_demande) {
     modes.step();
+    action_server.step();
     spinOnce();
     publishStatus(modes, pub_mode, pub_pause);
     loop_rate.sleep();

@@ -37,6 +37,8 @@ class Mouvements {
 public:
   Targets targets;
   PositionDebug debug;
+  // Mis à true par reachPositionSmooth() quand la cible est dans la tolérance.
+  bool position_atteinte = false;
 
   // params et odom appartiennent au contrôleur, on garde juste leur adresse
   void init(NodeHandle &nh, Params *params, Odometry *odom) {
@@ -57,6 +59,7 @@ public:
     stop();
     targets = Targets();
     debug = PositionDebug();
+    position_atteinte = false;
   }
 
   /**
@@ -212,6 +215,7 @@ public:
    * @return void
    */
   void reachPositionSmooth(double x, double y) {
+    position_atteinte = false;
     debug.delta_x = x - odom->position.x;
     debug.delta_y = y - odom->position.y;
     debug.angle_target = atan2(debug.delta_y, debug.delta_x);
@@ -220,6 +224,7 @@ public:
 
     if (debug.erreur_distance < precision_linear && debug.erreur_distance > -precision_linear) {
       stop();
+      position_atteinte = true;
       return;
     }
 

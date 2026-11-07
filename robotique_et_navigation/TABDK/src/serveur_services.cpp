@@ -8,46 +8,51 @@
 #include <std_srvs/Empty.h>
 #include <string>
 
+#include "serveur_action.cpp"
+
 using namespace ros;
 using namespace TABDK;
 
 class ServeurServices {
 public:
-  void init(NodeHandle &nh, Modes &modes, Publisher &pub_reset,
+  void init(NodeHandle &nh, Modes &modes, ServeurAction &action_server,
+            Publisher &pub_reset,
             ServiceClient &client_reset_sim) {
-    modes_ = &modes;
-    pub_reset_ = &pub_reset;
-    client_reset_sim_ = &client_reset_sim;
-    srv_set_mode_ = nh.advertiseService(
+    this->modes = &modes;
+    this->action_server = &action_server;
+    this->pub_reset = &pub_reset;
+    this->client_reset_sim = &client_reset_sim;
+    srv_set_mode = nh.advertiseService(
         "/set_mode", &ServeurServices::setModeCallback, this);
-    srv_global_control_ = nh.advertiseService(
+    srv_global_control = nh.advertiseService(
         "/global_control", &ServeurServices::globalControlCallback, this);
   }
 
   void resetRobot() {
-    pub_reset_->publish(std_msgs::Empty());
+    action_server->reset();
+    modes->reset();
+    pub_reset->publish(std_msgs::Empty());
 
     std_srvs::Empty service;
-    if (!client_reset_sim_->call(service)) {
+    if (!client_reset_sim->call(service)) {
       ROS_WARN("Echec de l'appel au service /gazebo/reset_simulation");
     }
-
-    modes_->reset();
   }
 
 private:
-  Modes *modes_ = nullptr;
-  Publisher *pub_reset_ = nullptr;
-  ServiceClient *client_reset_sim_ = nullptr;
-  ServiceServer srv_set_mode_;
-  ServiceServer srv_global_control_;
+  Modes *modes = nullptr;
+  ServeurAction *action_server = nullptr;
+  Publisher *pub_reset = nullptr;
+  ServiceClient *client_reset_sim = nullptr;
+  ServiceServer srv_set_mode;
+  ServiceServer srv_global_control;
 
   bool setModeCallback(set_mode::Request &request, set_mode::Response &response) {
-    response.success = modes_->set_mode(request.mode);
+    response.success = modes->set_mode(request.mode);
     if (!response.success) {
       ROS_WARN("Mode inconnu : %s", request.mode.c_str());
     }
-    response.mode_courant = modes_->mode();
+    response.mode_courant = modes->mode();
     return true;
   }
 
@@ -57,12 +62,12 @@ private:
       resetRobot();
       response.success = true;
     } else {
-      response.success = modes_->set_pause(request.command);
+      response.success = modes->set_pause(request.command);
       if (!response.success) {
         ROS_WARN("Commande globale inconnue : %s", request.command.c_str());
       }
     }
-    response.mode_courant = modes_->mode();
+    response.mode_courant = modes->mode();
     return true;
   }
 };

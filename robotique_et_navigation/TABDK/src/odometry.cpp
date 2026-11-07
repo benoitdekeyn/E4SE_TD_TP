@@ -5,6 +5,7 @@
 #include <geometry_msgs/Pose2D.h>
 #include <ros/ros.h>
 #include <tf/tf.h>
+#include <cmath>
 
 using namespace ros;
 using namespace tf;
@@ -17,6 +18,12 @@ public:
 
   void init(NodeHandle &nh) {
     odom_sub = nh.subscribe("/odom", 100, &Odometry::odomCallback, this);
+  }
+
+  double distanceToPosition(double x, double y) const {
+    const double delta_x = x - position.x;
+    const double delta_y = y - position.y;
+    return std::sqrt(delta_x * delta_x + delta_y * delta_y);
   }
 
 private:

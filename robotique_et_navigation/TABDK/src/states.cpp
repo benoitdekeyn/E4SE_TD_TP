@@ -8,8 +8,8 @@ enum RobotState {
   PIVOTER_DROITE,
   STOP,
   REACH_POSITION,
-  REACH_POSITION_X,
   REACH_POSITION_SMOOTH,
+  REACH_POSITION_X,
   REACH_ANGLE
 };
 
@@ -17,136 +17,136 @@ enum RobotState {
 
 class States {
 public:
-  void init(Params &params, Clavier &clavier, Mouvements &mouvements) {
-    params_ = &params;
-    clavier_ = &clavier;
-    mouvements_ = &mouvements;
+  bool waypoint_active = false;
+
+  void init(Params &params, Mouvements &mouvements) {
+    this->params = &params;
+    this->mouvements = &mouvements;
   }
 
   void initManual() {
-    current_state_ = STOP;
-    clavier_->inputs.direction = NONE;
+    current_state = STOP;
+    if (waypoint_active) {
+      // La position peut avoir changé pendant le mode automatique.
+      mouvements->position_atteinte = false;
+    }
   }
 
   void initAuto() {
-    current_state_ = DEFAULT_STATE;
-    ticks_counter_ = 0;
+    current_state = DEFAULT_STATE;
+    ticks_counter = 0;
   }
 
-  void stepAuto() {
-    updateFSMAuto();
-    applyState();
-  }
-
-  void stepManual() {
-    updateFSMManual();
-    applyState();
+  // Signale à la FSM manuelle qu'un nouveau waypoint doit être suivi.
+  void requestManualWaypoint(double x, double y) {
+    mouvements->targets.x = x;
+    mouvements->targets.y = y;
+    mouvements->position_atteinte = false;
+    waypoint_active = true;
   }
 
   void stop() {
-    mouvements_->stop();
+    mouvements->stop();
   }
 
   void reset() {
-    mouvements_->reset();
-    current_state_ = DEFAULT_STATE;
-    ticks_counter_ = 0;
-    clavier_->reset();
+    mouvements->reset();
+    current_state = DEFAULT_STATE;
+    ticks_counter = 0;
+    waypoint_active = false;
   }
 
 private:
-  Params *params_ = nullptr;
-  Clavier *clavier_ = nullptr;
-  Mouvements *mouvements_ = nullptr;
+  Params *params = nullptr;
+  Mouvements *mouvements = nullptr;
 
-  RobotState current_state_ = DEFAULT_STATE;
-  int ticks_counter_ = 0;
+  RobotState current_state = DEFAULT_STATE;
+  int ticks_counter = 0;
 
-  void applyState() {
-    switch (current_state_) {
-    case FORWARD:
-      mouvements_->forward(params_->linear_speed);
-      break;
-    case PIVOTER_GAUCHE:
-      mouvements_->pivoter(params_->angular_speed);
-      break;
-    case PIVOTER_DROITE:
-      mouvements_->pivoter(-params_->angular_speed);
-      break;
+public:
+  // Les FSM choisissent l'état ; applyState() exécute ensuite son action.
+  void updateFSMManual() {
+    switch (current_state) {
     case STOP:
-      mouvements_->stop();
-      break;
-    case BACKWARD:
-      mouvements_->backward(params_->linear_speed);
-      break;
-    case REACH_POSITION:
-      mouvements_->reachPosition(mouvements_->targets.x, mouvements_->targets.y);
+      if (waypoint_active) {
+        current_state = REACH_POSITION_SMOOTH;
+      }
       break;
     case REACH_POSITION_SMOOTH:
-      mouvements_->reachPositionSmooth(mouvements_->targets.x,
-                                       mouvements_->targets.y);
-      break;
-    case REACH_POSITION_X:
-      mouvements_->reachPositionX(mouvements_->targets.position_x);
-      break;
-    case REACH_ANGLE:
-      mouvements_->reachAngle(mouvements_->targets.angle);
+      if (!waypoint_active || mouvements->position_atteinte) {
+        waypoint_active = false;
+        // Réinitialise l'indicateur lorsque la FSM quitte le suivi.
+        mouvements->position_atteinte = false;
+        current_state = STOP;
+      }
       break;
     default:
-      mouvements_->stop();
+      current_state = STOP;
+      break;
+    }
+  }
+
+  void applyState() {
+    switch (current_state) {
+    case FORWARD:
+      mouvements->forward(params->linear_speed);
+      break;
+    case PIVOTER_GAUCHE:
+      mouvements->pivoter(params->angular_speed);
+      break;
+    case PIVOTER_DROITE:
+      mouvements->pivoter(-params->angular_speed);
+      break;
+    case STOP:
+      mouvements->stop();
+      break;
+    case BACKWARD:
+      mouvements->backward(params->linear_speed);
+      break;
+    case REACH_POSITION:
+      mouvements->reachPosition(mouvements->targets.x, mouvements->targets.y);
+      break;
+    case REACH_POSITION_SMOOTH:
+      mouvements->reachPositionSmooth(mouvements->targets.x,
+                                       mouvements->targets.y);
+      break;
+    case REACH_POSITION_X:
+      mouvements->reachPositionX(mouvements->targets.position_x);
+      break;
+    case REACH_ANGLE:
+      mouvements->reachAngle(mouvements->targets.angle);
+      break;
+    default:
+      mouvements->stop();
       break;
     }
   }
 
   void updateFSMAuto() {
-    switch (current_state_) {
+    switch (current_state) {
     case FORWARD:
-      if (params_->msToTicks(params_->move_fwd_tm) == ticks_counter_) {
-        ticks_counter_ = 0;
-        current_state_ = STOP;
+      if (params->msToTicks(params->move_fwd_tm) == ticks_counter) {
+        ticks_counter = 0;
+        current_state = STOP;
       }
       break;
     case STOP:
-      if (params_->msToTicks(params_->move_stp_tm) == ticks_counter_) {
-        ticks_counter_ = 0;
-        current_state_ = BACKWARD;
+      if (params->msToTicks(params->move_stp_tm) == ticks_counter) {
+        ticks_counter = 0;
+        current_state = BACKWARD;
       }
       break;
     case BACKWARD:
-      if (params_->msToTicks(params_->move_bwd_tm) == ticks_counter_) {
-        ticks_counter_ = 0;
-        current_state_ = FORWARD;
+      if (params->msToTicks(params->move_bwd_tm) == ticks_counter) {
+        ticks_counter = 0;
+        current_state = FORWARD;
       }
       break;
     default:
-      current_state_ = DEFAULT_STATE;
+      current_state = DEFAULT_STATE;
       break;
     }
-    ticks_counter_++;
-  }
-
-  void updateFSMManual() {
-    switch (clavier_->inputs.direction) {
-    case UP:
-      mouvements_->targets.x += 0.1;
-      current_state_ = REACH_POSITION_SMOOTH;
-      break;
-    case DOWN:
-      mouvements_->targets.x -= 0.1;
-      current_state_ = REACH_POSITION_SMOOTH;
-      break;
-    case LEFT:
-      mouvements_->targets.y -= 0.1;
-      current_state_ = REACH_POSITION_SMOOTH;
-      break;
-    case RIGHT:
-      mouvements_->targets.y += 0.1;
-      current_state_ = REACH_POSITION_SMOOTH;
-      break;
-    default:
-      break;
-    }
-    clavier_->inputs.direction = NONE;
+    ticks_counter++;
   }
 
 };

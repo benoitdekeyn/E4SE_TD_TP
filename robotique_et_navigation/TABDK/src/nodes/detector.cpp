@@ -11,6 +11,11 @@
 
 using namespace ros;
 using namespace std;
+using std_msgs::ColorRGBA;
+using geometry_msgs::Point;
+using visualization_msgs::Marker;
+using visualization_msgs::MarkerArray;
+using sensor_msgs::LaserScan;
 
 // VARIABLES GLOBALES
 int NBR_REGION = 8;
@@ -29,14 +34,15 @@ void filtrer_distances(vector<float>& data, float seuil_min, float seuil_max);
 
 // FONCTIONS MARKERS
 const char* FRAME_MARKERS = "base_scan";
-const float OFFSET_LABEL = 0.18f; // m, décalage du texte vers l'extérieur
+const float OFFSET_LABEL = 0.18; // m, décalage du texte vers l'extérieur
+const float LONGUEUR_RAYON = 10.5; // m
 
 float angle_region_rad(int i) {
-  return ((i + 0.5f) * ANGLE_REGION) * M_PI / 180.0f;
+  return ((i + 0.5) * ANGLE_REGION) * M_PI / 180.0;
 }
 
-std_msgs::ColorRGBA get_color(bool is_danger) {
-  std_msgs::ColorRGBA c;
+ColorRGBA get_color(bool is_danger) {
+  ColorRGBA c;
   c.r = is_danger ? 1.0 : 0.0;
   c.g = is_danger ? 0.0 : 1.0;
   c.b = 0.0;
@@ -44,8 +50,8 @@ std_msgs::ColorRGBA get_color(bool is_danger) {
   return c;
 }
 
-geometry_msgs::Point polar_to_point(float distance, float angle_rad) {
-  geometry_msgs::Point p;
+Point polar_to_point(float distance, float angle_rad) {
+  Point p;
   p.x = distance * cos(angle_rad);
   p.y = distance * sin(angle_rad);
   p.z = 0.0;
@@ -62,22 +68,22 @@ string format_label(float distance) {
   return buf;
 }
 
-visualization_msgs::Marker init_marker(const string& ns, int id, int type) {
-  visualization_msgs::Marker m;
+Marker init_marker(const string& ns, int id, int type) {
+  Marker m;
   m.header.frame_id = FRAME_MARKERS;
   m.header.stamp = Time();
   m.ns = ns;
   m.id = id;
   m.type = type;
-  m.action = visualization_msgs::Marker::ADD;
+  m.action = Marker::ADD;
   m.pose.orientation.w = 1.0;
   return m;
 }
 
 // Un segment par région, perpendiculaire à la direction centrale de la région,
 // passant par le point minimum. Rouge si l'obstacle est sous le seuil.
-visualization_msgs::Marker make_stripline() {
-  visualization_msgs::Marker line = init_marker("stripline", 0, visualization_msgs::Marker::LINE_LIST);
+Marker make_stripline() {
+  Marker line = init_marker("stripline", 0, Marker::LINE_LIST);
   line.scale.x = 0.05;
   line.color.a = 1.0; // remplacée par line.colors
 
@@ -90,7 +96,7 @@ visualization_msgs::Marker make_stripline() {
     // ce qui rend le segment perpendiculaire à la direction centrale.
     float d_bord = d / cos(demi_angle);
 
-    std_msgs::ColorRGBA color = get_color(d < SEUIL_OBSTACLE);
+    ColorRGBA color = get_color(d < SEUIL_OBSTACLE);
     line.points.push_back(polar_to_point(d_bord, centre - demi_angle));
     line.colors.push_back(color);
     line.points.push_back(polar_to_point(d_bord, centre + demi_angle));
@@ -99,16 +105,14 @@ visualization_msgs::Marker make_stripline() {
   return line;
 }
 
-const float LONGUEUR_RAYON = 10.5f; // m
-
 // 8 rayons gris partant du robot, aux jonctions entre régions
-visualization_msgs::Marker make_rays() {
-  visualization_msgs::Marker rays = init_marker("rays", 0, visualization_msgs::Marker::LINE_LIST);
+Marker make_rays() {
+  Marker rays = init_marker("rays", 0, Marker::LINE_LIST);
   rays.scale.x = 0.03;
   rays.color.r = rays.color.g = rays.color.b = 0.5;
   rays.color.a = 0.6;
 
-  geometry_msgs::Point origine = polar_to_point(0.0f, 0.0f);
+  Point origine = polar_to_point(0.0f, 0.0f);
   for (int i = 0; i < NBR_REGION; i++) {
     float angle = (i * ANGLE_REGION) * M_PI / 180.0f;
     rays.points.push_back(origine);
@@ -118,11 +122,11 @@ visualization_msgs::Marker make_rays() {
 }
 
 // Angle de la jonction écrit au bout de chaque rayon
-vector<visualization_msgs::Marker> make_ray_labels() {
-  vector<visualization_msgs::Marker> labels;
+vector<Marker> make_ray_labels() {
+  vector<Marker> labels;
   for (int i = 0; i < NBR_REGION; i++) {
     int angle_deg = i * ANGLE_REGION;
-    visualization_msgs::Marker txt = init_marker("ray_labels", i, visualization_msgs::Marker::TEXT_VIEW_FACING);
+    Marker txt = init_marker("ray_labels", i, Marker::TEXT_VIEW_FACING);
 
     txt.pose.position = polar_to_point(LONGUEUR_RAYON + 0.8f, angle_deg * M_PI / 180.0f);
     txt.scale.z = 0.6;
@@ -135,11 +139,11 @@ vector<visualization_msgs::Marker> make_ray_labels() {
 }
 
 // Distance écrite au milieu de chaque segment, côté extérieur (même direction que le centre de la région)
-vector<visualization_msgs::Marker> make_labels() {
-  vector<visualization_msgs::Marker> labels;
+vector<Marker> make_labels() {
+  vector<Marker> labels;
   for (int i = 0; i < NBR_REGION; i++) {
     float d = min_distances[i];
-    visualization_msgs::Marker txt = init_marker("labels", i, visualization_msgs::Marker::TEXT_VIEW_FACING);
+    Marker txt = init_marker("labels", i, Marker::TEXT_VIEW_FACING);
 
     txt.pose.position = polar_to_point(d + OFFSET_LABEL, angle_region_rad(i));
     txt.scale.z = d < 1.0f ? 0.15 : 0.3;
@@ -152,22 +156,22 @@ vector<visualization_msgs::Marker> make_labels() {
 }
 
 void update_markers() {
-  visualization_msgs::MarkerArray markers;
+  MarkerArray markers;
 
   markers.markers.push_back(make_rays());
   markers.markers.push_back(make_stripline());
 
-  vector<visualization_msgs::Marker> labels = make_labels();
+  vector<Marker> labels = make_labels();
   markers.markers.insert(markers.markers.end(), labels.begin(), labels.end());
 
-  vector<visualization_msgs::Marker> ray_labels = make_ray_labels();
+  vector<Marker> ray_labels = make_ray_labels();
   markers.markers.insert(markers.markers.end(), ray_labels.begin(), ray_labels.end());
 
   marker_pub.publish(markers);
 }
 
 // FONCTION CALLBACK
-void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan) {
+void scanCallback(const LaserScan::ConstPtr& scan) {
   ROS_INFO(" --- Mesures a 360 LIDAR --- ");
 
   distances = scan->ranges;
@@ -202,7 +206,7 @@ int main(int argc, char **argv) {
   Rate loop_rate(5); //Hz
 
   Subscriber scan_sub = nh.subscribe("/scan", 1, scanCallback);
-  marker_pub = nh.advertise<visualization_msgs::MarkerArray>("/lidar_visualization", 0);
+  marker_pub = nh.advertise<MarkerArray>("/lidar_visualization", 0);
 
   spin();
 

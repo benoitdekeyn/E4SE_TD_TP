@@ -16,7 +16,7 @@ void execute(const MoveGoalConstPtr &goal, Server *as) {
   ROS_INFO("goal = %f ! ", goal->pos_x);
 
   int count = 0;
-  ros::Rate loop_rate(1); // 1 hz
+  Rate loop_rate(1); // 1 hz
 
   bool success = true;
   while (count < goal->pos_x) {
@@ -39,8 +39,8 @@ void execute(const MoveGoalConstPtr &goal, Server *as) {
 }
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "serveur_action");
-  ros::NodeHandle nh;
+  init(argc, argv, "serveur_action");
+  NodeHandle nh;
 
   Server server(nh, "moving", boost::bind(&execute, _1, &server), false);
 

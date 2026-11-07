@@ -7,10 +7,12 @@
 
 #include <cmath>
 #include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Pose2D.h>
 #include <ros/ros.h>
 
 using namespace ros;
 using geometry_msgs::Twist;
+using geometry_msgs::Pose2D;
 
 // Cibles courantes des différents modes de déplacement
 struct Targets {
@@ -118,7 +120,7 @@ public:
    * @param x La position cible sur l'axe x.
    */
   void reachPositionX(double x) {
-    double error = x - odom->pose.x;
+    double error = x - odom->position.x;
     double soft_linear_speed = fabs(Kp_linear * error);
     soft_linear_speed = soft_linear_speed > linear_speed ? linear_speed : soft_linear_speed;
 
@@ -137,7 +139,7 @@ public:
    * @param angle L'angle cible.
    */
   void reachAngle(double angle) {
-    double error = cal_delta_Theta(angle, odom->pose.rotation);
+    double error = cal_delta_Theta(angle, odom->position.theta);
     double soft_linear_speed = fabs(Kp_angular * error);
     soft_linear_speed = soft_linear_speed > angular_speed ? angular_speed : soft_linear_speed;
 
@@ -162,11 +164,11 @@ public:
    * @return void
    */
   void reachPosition(double x, double y) {
-    debug.delta_x = x - odom->pose.x;
-    debug.delta_y = y - odom->pose.y;
+    debug.delta_x = x - odom->position.x;
+    debug.delta_y = y - odom->position.y;
     debug.angle_target = atan2(debug.delta_y, debug.delta_x);
     debug.erreur_distance = sqrt(pow(debug.delta_x, 2) + pow(debug.delta_y, 2));
-    debug.erreur_angle = cal_delta_Theta(debug.angle_target, odom->pose.rotation);
+    debug.erreur_angle = cal_delta_Theta(debug.angle_target, odom->position.theta);
 
     // Si l'erreur angulaire est supérieure au seuil, pivoter pour s'aligner avec la cible.
     if (fabs(debug.erreur_angle) > precision_angular) {
@@ -210,11 +212,11 @@ public:
    * @return void
    */
   void reachPositionSmooth(double x, double y) {
-    debug.delta_x = x - odom->pose.x;
-    debug.delta_y = y - odom->pose.y;
+    debug.delta_x = x - odom->position.x;
+    debug.delta_y = y - odom->position.y;
     debug.angle_target = atan2(debug.delta_y, debug.delta_x);
     debug.erreur_distance = sqrt(pow(debug.delta_x, 2) + pow(debug.delta_y, 2));
-    debug.erreur_angle = cal_delta_Theta(debug.angle_target, odom->pose.rotation);
+    debug.erreur_angle = cal_delta_Theta(debug.angle_target, odom->position.theta);
 
     if (debug.erreur_distance < precision_linear && debug.erreur_distance > -precision_linear) {
       stop();

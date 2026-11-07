@@ -13,6 +13,7 @@
 #include <string>
 
 using namespace ros;
+using std::string;
 
 enum RobotState {
   FORWARD,
@@ -70,18 +71,19 @@ public:
     resetFSM();
   }
 
+  // Fonctions appelées par le client des services (dans l'instance de la classe)
   const char *modeCourant() const {
     return mode_to_string(current_mode_);
   }
 
-  bool changerMode(const std::string &mode) {
+  bool changerMode(const string &mode) {
     if (mode != "manual" && mode != "auto" && mode != "toggle") {
       ROS_WARN("Mode inconnu : %s", mode.c_str());
       return false;
     }
 
-    const RobotMode base_mode = current_mode_ == PAUSE ? previous_mode_ : current_mode_;
-    const RobotMode requested_mode = mode == "toggle"
+    RobotMode base_mode = current_mode_ == PAUSE ? previous_mode_ : current_mode_;
+    RobotMode requested_mode = mode == "toggle"
         ? (base_mode == AUTO ? MANUAL : AUTO)
         : (mode == "manual" ? MANUAL : AUTO);
 
@@ -96,7 +98,7 @@ public:
     return true;
   }
 
-  bool commandeGlobale(const std::string &command) {
+  bool commandeGlobale(const string &command) {
     if (command == "pause") {
       pauseRobot();
     } else if (command == "play") {
@@ -307,7 +309,7 @@ private:
     }
     
     void logStatus() {
-      /*     ROS_INFO_THROTTLE(1, "x=%.4f y=%.4f rotation=%.4f deg", odom_.pose.x, odom_.pose.y, rad_to_deg(odom_.pose.rotation));
+      /*     ROS_INFO_THROTTLE(1, "x=%.4f y=%.4f rotation=%.4f deg", odom_.position.x, odom_.position.y, rad_to_deg(odom_.position.theta));
       ROS_INFO_THROTTLE(1, "target_x=%.4f target_y=%.4f", mouvements_.targets.x, mouvements_.targets.y);
       ROS_INFO_THROTTLE(1, "angle_target=%.4f deg, erreur_angle=%.4f deg, erreur_distance=%.4f",
       rad_to_deg(mouvements_.debug.angle_target), rad_to_deg(mouvements_.debug.erreur_angle), mouvements_.debug.erreur_distance);

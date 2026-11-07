@@ -172,8 +172,7 @@ void update_markers() {
 
 // FONCTION CALLBACK
 void scanCallback(const LaserScan::ConstPtr& scan) {
-  ROS_INFO(" --- Mesures a 360 LIDAR --- ");
-
+  // ROS_INFO(" --- Mesures a 360 LIDAR --- ");
   distances = scan->ranges;
   int angle_deg_increment = scan->angle_increment * 180 / M_PI;
   filtrer_distances(distances, scan->range_min, scan->range_max);
@@ -189,12 +188,12 @@ void scanCallback(const LaserScan::ConstPtr& scan) {
     min_region_i = FLT_MAX;
     min_region_i = get_minimum(distances, angle_debut / angle_deg_increment, angle_fin / angle_deg_increment -1, &indice_min_i);
     min_distances.push_back(min_region_i);
-
+    /*
     ROS_INFO("Region %d: min distance = %f a %d deg", i, min_region_i, indice_min_i * angle_deg_increment);
-
     if (min_region_i < SEUIL_OBSTACLE) {
       ROS_WARN("Obstacle detecte dans la region %d! (entre %d et %d deg)", i, angle_debut, angle_fin);
     }
+    */
   }
   update_markers();
 }

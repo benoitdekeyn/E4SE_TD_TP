@@ -23,7 +23,6 @@ int main(int argc, char **argv) {
     const int key = getch();
     keyboard_input.data = key;
     key_input_pub.publish(keyboard_input);
-    ROS_INFO("keyb = %d", keyboard_input.data);
     spinOnce();
     loop_rate.sleep();
   }

@@ -66,7 +66,7 @@ void activeCb() {
 }
 
 void feedbackCallback(const MoveFeedbackConstPtr &feedback) {
-  ROS_INFO("Position : x=%f, y=%f, distance restante=%f, mode=%s, pause=%d",
+  ROS_INFO("Position : x=%f\ny=%f\ndistance restante=%f\nmode=%s\npause=%d",
            feedback->position.x, feedback->position.y,
            feedback->distance_restante, feedback->mode.c_str(),
            feedback->pause);

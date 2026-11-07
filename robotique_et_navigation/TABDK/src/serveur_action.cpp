@@ -28,8 +28,6 @@ public:
     server->registerGoalCallback([this]() { execute(); });
     server->registerPreemptCallback([this]() { preempter(); });
     server->start();
-    
-    ROS_INFO("Serveur d'action 'moving' démarré et connecté à la FSM !");
   }
 
   // Destructeur pcq on a utilisé 'new' dans init()
@@ -68,7 +66,6 @@ public:
       res.atteint = true;
       res.position = odometry->position;
       server->setSucceeded(res);
-      ROS_INFO("Nouveau waypoint atteint.");
       goal.reset();
     }
   }
@@ -95,7 +92,6 @@ private:
     mouvements->targets.y = goal->position_y;
     mouvements->position_atteinte = false;
     states->waypoint_active = true;
-    ROS_INFO("Nouveau waypoint transmis à la FSM : x = %f, y = %f", goal->position_x, goal->position_y);
   }
 
   // Déclenché si le client annule l'action
@@ -108,7 +104,6 @@ private:
     }
     server->setPreempted();
     goal.reset();
-    ROS_INFO("Action de déplacement préemptée.");
   }
 };
 

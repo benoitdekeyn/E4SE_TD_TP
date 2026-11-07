@@ -146,7 +146,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/TABDK_node.cpp)
-add_executable(controleur src/main.cpp)
+add_executable(controleur src/controleur.cpp)
 add_executable(keyboard_input src/nodes/keyboard_input.cpp)
 add_executable(detector src/nodes/detector.cpp)
 add_executable(client_services src/nodes/client_services.cpp)

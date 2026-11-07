@@ -1,41 +1,70 @@
 #ifndef SERVEUR_SERVICES_CPP
 #define SERVEUR_SERVICES_CPP
 
-#include "controleur.cpp"
-
 #include <TABDK/global_control.h>
 #include <TABDK/set_mode.h>
 #include <ros/ros.h>
+#include <std_msgs/Empty.h>
+#include <std_srvs/Empty.h>
+#include <string>
 
 using namespace ros;
 using namespace TABDK;
 
 class ServeurServices {
 public:
-  ServeurServices(NodeHandle &nh, Controleur &controleur)
-      : controleur_(controleur) {
+  ServeurServices(NodeHandle &nh, Controleur &controleur,
+                  Mouvements &mouvements, Publisher &pub_reset,
+                  ServiceClient &client_reset_sim)
+      : controleur_(controleur), mouvements_(mouvements),
+        pub_reset_(pub_reset), client_reset_sim_(client_reset_sim) {
     srv_set_mode_ = nh.advertiseService(
         "/set_mode", &ServeurServices::setModeCallback, this);
     srv_global_control_ = nh.advertiseService(
         "/global_control", &ServeurServices::globalControlCallback, this);
   }
 
+  void resetRobot() {
+    pub_reset_.publish(std_msgs::Empty());
+
+    std_srvs::Empty service;
+    if (!client_reset_sim_.call(service)) {
+      ROS_WARN("Echec de l'appel au service /gazebo/reset_simulation");
+    }
+
+    mouvements_.reset();
+    controleur_.reset();
+  }
+
 private:
   Controleur &controleur_;
+  Mouvements &mouvements_;
+  Publisher &pub_reset_;
+  ServiceClient &client_reset_sim_;
   ServiceServer srv_set_mode_;
   ServiceServer srv_global_control_;
 
-  bool setModeCallback(set_mode::Request &request,
-                       set_mode::Response &response) {
-    response.success = controleur_.changerMode(request.mode);
-    response.mode_courant = controleur_.modeCourant();
+  bool setModeCallback(set_mode::Request &request, set_mode::Response &response) {
+    response.success = controleur_.set_mode(request.mode);
+    if (!response.success) {
+      ROS_WARN("Mode inconnu : %s", request.mode.c_str());
+    }
+    response.mode_courant = controleur_.mode();
     return true;
   }
 
   bool globalControlCallback(global_control::Request &request,
                              global_control::Response &response) {
-    response.success = controleur_.commandeGlobale(request.command);
-    response.mode_courant = controleur_.modeCourant();
+    if (request.command == "reset") {
+      resetRobot();
+      response.success = true;
+    } else {
+      response.success = controleur_.set_pause(request.command);
+      if (!response.success) {
+        ROS_WARN("Commande globale inconnue : %s", request.command.c_str());
+      }
+    }
+    response.mode_courant = controleur_.mode();
     return true;
   }
 };

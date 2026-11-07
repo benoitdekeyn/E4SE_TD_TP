@@ -4,6 +4,8 @@
 #include <ros/ros.h>
 #include <std_msgs/Int8.h>
 
+using std_msgs::Int8;
+
 #define KEY_UP 65
 #define KEY_DOWN 66
 #define KEY_RIGHT 67
@@ -34,7 +36,7 @@ public:
 private:
   Subscriber sub_;
 
-  void callback(const std_msgs::Int8::ConstPtr &msg) {
+  void callback(const Int8::ConstPtr &msg) {
     switch (msg->data) {
       case KEY_UP:
         ROS_INFO("UP key received");

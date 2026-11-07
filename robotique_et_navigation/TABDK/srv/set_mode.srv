@@ -1,5 +1,5 @@
 # requete
-string mode   # "manual", "auto" ou "toggle"
+string mode   # "manual" ou "auto"
 ---
 # reponse
 bool success

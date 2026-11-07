@@ -1,5 +1,5 @@
 # requete
-string command   # "play", "pause", "play_pause" ou "reset"
+string command   # "play", "pause" ou "reset"
 ---
 # reponse
 bool success

@@ -3,18 +3,19 @@
 #include "termios.h"
 
 using namespace ros;
+using std_msgs::Int8;
 
 const int FREQ_ACTUALISATION = 5; // Hz
 
 int getch();
-std_msgs::Int8 keyboard_input;
+Int8 keyboard_input;
 
 int main(int argc, char **argv) {
   init(argc, argv, "keyboard_input");
 
   NodeHandle nh;
   Publisher key_input_pub =
-      nh.advertise<std_msgs::Int8>("/keyboard_input", 1000);
+      nh.advertise<Int8>("/keyboard_input", 1000);
 
   Rate loop_rate(FREQ_ACTUALISATION);
 

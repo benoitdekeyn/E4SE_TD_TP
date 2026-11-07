@@ -25,9 +25,9 @@ MoveGoal goal;
     trajectoire[0] : permet l'accès au premier élement du vecteur (position
                      de type Pose2D)
 **/
-std::vector<Pose2D> trajectoire;
+vector<Pose2D> trajectoire;
 
-void spinThread() { ros::spin(); }
+void spinThread() { spin(); }
 
 /*
 This method is called when the goal completes
@@ -52,8 +52,8 @@ void feedback_callback(const MoveFeedbackConstPtr &feedback) {
 }
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "planner");
-  ros::NodeHandle nh;
+  init(argc, argv, "planner");
+  NodeHandle nh;
 
   boost::thread spin_thread(&spinThread);
 
@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
 
   // A compléter...
   client.sendGoal(goal, &doneCb, &activeCb, &feedback_callback);
-  client.waitForResult(ros::Duration(15.0));
+  client.waitForResult(Duration(15.0));
 
   if (client.getState() == SimpleClientGoalState::SUCCEEDED)
     ROS_INFO("L'objectif est maintenant atteint !");

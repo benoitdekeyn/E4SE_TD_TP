@@ -1,9 +1,5 @@
-#ifndef STATES_MODES_CPP
-#define STATES_MODES_CPP
-
-#include <string>
-
-using std::string;
+#ifndef STATES_CPP
+#define STATES_CPP
 
 enum RobotState {
   FORWARD,
@@ -17,58 +13,42 @@ enum RobotState {
   REACH_ANGLE
 };
 
-enum RobotMode { AUTO, MANUAL };
-
 #define DEFAULT_STATE STOP
-#define DEFAULT_MODE MANUAL
 
-class Controleur {
+class States {
 public:
-  Controleur(Params &params, Clavier &clavier, Mouvements &mouvements)
+  States(Params &params, Clavier &clavier, Mouvements &mouvements)
       : params_(params), clavier_(clavier), mouvements_(mouvements) {}
 
-  void step() {
-    updateFSM();
-  }
-
-  bool set_mode(const string &mode) {
-    if (mode != "manual" && mode != "auto") {
-      return false;
-    }
-
-    RobotMode requested_mode = mode == "auto" ? AUTO : MANUAL;
-    if (requested_mode != current_mode_) {
-      current_mode_ = requested_mode;
-      initModeState();
-    }
-    return true;
-  }
-
-  bool set_pause(const string &state) {
-    if (state == "pause") {
-      paused_ = true;
-    } else if (state == "play") {
-      paused_ = false;
-    } else {
-      return false;
-    }
-    return true;
-  }
-
-  void reset() {
-    current_state_ = DEFAULT_STATE;
-    current_mode_ = DEFAULT_MODE;
-    paused_ = false;
-    ticks_counter_ = 0;
+  void initManual() {
+    current_state_ = STOP;
     clavier_.inputs.direction = NONE;
   }
 
-  string mode() const {
-    return current_mode_ == AUTO ? "auto" : "manual";
+  void initAuto() {
+    current_state_ = DEFAULT_STATE;
+    ticks_counter_ = 0;
   }
 
-  bool paused() const {
-    return paused_;
+  void stepAuto() {
+    updateFSMAuto();
+    applyState();
+  }
+
+  void stepManual() {
+    updateFSMManual();
+    applyState();
+  }
+
+  void stop() {
+    mouvements_.stop();
+  }
+
+  void reset() {
+    mouvements_.reset();
+    current_state_ = DEFAULT_STATE;
+    ticks_counter_ = 0;
+    clavier_.reset();
   }
 
 private:
@@ -77,22 +57,7 @@ private:
   Mouvements &mouvements_;
 
   RobotState current_state_ = DEFAULT_STATE;
-  RobotMode current_mode_ = DEFAULT_MODE;
-  bool paused_ = false;
   int ticks_counter_ = 0;
-
-  void initModeState() {
-    switch (current_mode_) {
-    case MANUAL:
-      current_state_ = STOP;
-      clavier_.inputs.direction = NONE;
-      break;
-    case AUTO:
-      current_state_ = DEFAULT_STATE;
-      ticks_counter_ = 0;
-      break;
-    }
-  }
 
   void applyState() {
     switch (current_state_) {
@@ -181,23 +146,6 @@ private:
     clavier_.inputs.direction = NONE;
   }
 
-  void updateFSM() {
-    if (paused_) {
-      mouvements_.stop();
-      return;
-    }
-
-    switch (current_mode_) {
-    case AUTO:
-      updateFSMAuto();
-      applyState();
-      break;
-    case MANUAL:
-      updateFSMManual();
-      applyState();
-      break;
-    }
-  }
 };
 
 #endif

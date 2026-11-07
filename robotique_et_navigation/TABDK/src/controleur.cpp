@@ -10,7 +10,8 @@
 #include "odometry.cpp"
 #include "clavier.cpp"
 #include "mouvements.cpp"
-#include "states_modes.cpp"
+#include "states.cpp"
+#include "modes.cpp"
 #include "serveur_services.cpp"
 
 using namespace ros;
@@ -26,14 +27,14 @@ void sigintHandler(int) {
   arret_demande = true;
 }
 
-void publishStatus(const Controleur &controleur, Publisher &pub_mode,
+void publishStatus(const Modes &modes, Publisher &pub_mode,
                    Publisher &pub_pause) {
   String mode_message;
-  mode_message.data = controleur.mode();
+  mode_message.data = modes.mode();
   pub_mode.publish(mode_message);
 
   Bool pause_message;
-  pause_message.data = controleur.paused();
+  pause_message.data = modes.paused();
   pub_pause.publish(pause_message);
 }
 
@@ -61,23 +62,23 @@ int main(int argc, char **argv) {
   ServiceClient client_reset_sim =
       nh.serviceClient<ResetService>("/gazebo/reset_simulation");
 
-  Controleur controleur(params, clavier, mouvements);
-  ServeurServices services(nh, controleur, mouvements, pub_reset,
-                           client_reset_sim);
+  States states(params, clavier, mouvements);
+  Modes modes(states);
+  ServeurServices services(nh, modes, pub_reset, client_reset_sim);
 
-  publishStatus(controleur, pub_mode, pub_pause);
+  publishStatus(modes, pub_mode, pub_pause);
   Rate loop_rate(params.frequence);
 
   while (ok() && !arret_demande) {
-    controleur.step();
+    modes.step();
     spinOnce();
-    publishStatus(controleur, pub_mode, pub_pause);
+    publishStatus(modes, pub_mode, pub_pause);
     loop_rate.sleep();
   }
 
   ROS_INFO("Exiting program gracefully ...");
   services.resetRobot();
-  publishStatus(controleur, pub_mode, pub_pause);
+  publishStatus(modes, pub_mode, pub_pause);
   shutdown();
   return 0;
 }

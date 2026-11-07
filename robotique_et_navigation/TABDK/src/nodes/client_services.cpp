@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "../modes.cpp"
+
 using namespace ros;
 using namespace TABDK;
 using std::string;
@@ -68,11 +70,11 @@ void keyboardCallback(const Int8::ConstPtr &message) {
       ROS_WARN("Le mode courant n'a pas encore été reçu sur /mode");
       break;
     }
-    if (current_mode != "auto" && current_mode != "manual") {
+    if (!is_a_mode(current_mode)) {
       ROS_WARN("Mode courant inconnu sur /mode : %s", current_mode.c_str());
       break;
     }
-    string requested_mode = current_mode == "auto" ? "manual" : "auto";
+    string requested_mode = current_mode == MODE_AUTO ? MODE_MANUAL : MODE_AUTO;
     if (callSetMode(requested_mode)) {
       current_mode = requested_mode;
     }
@@ -89,7 +91,7 @@ void keyboardCallback(const Int8::ConstPtr &message) {
     break;
   case KEY_R:
     if (callGlobalControl("reset")) {
-      current_mode = "manual";
+      current_mode = DEFAULT_MODE;
       is_paused = false;
     }
     break;

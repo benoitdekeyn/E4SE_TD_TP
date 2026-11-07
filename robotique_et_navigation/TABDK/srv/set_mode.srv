@@ -1,5 +1,5 @@
 # requete
-string mode   # "manual" ou "auto"
+string mode   # "auto" ou "manual" (Cf. modes.cpp)
 ---
 # reponse
 bool success

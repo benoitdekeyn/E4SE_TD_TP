@@ -17,12 +17,15 @@ enum RobotState {
 
 class States {
 public:
-  States(Params &params, Clavier &clavier, Mouvements &mouvements)
-      : params_(params), clavier_(clavier), mouvements_(mouvements) {}
+  void init(Params &params, Clavier &clavier, Mouvements &mouvements) {
+    params_ = &params;
+    clavier_ = &clavier;
+    mouvements_ = &mouvements;
+  }
 
   void initManual() {
     current_state_ = STOP;
-    clavier_.inputs.direction = NONE;
+    clavier_->inputs.direction = NONE;
   }
 
   void initAuto() {
@@ -41,20 +44,20 @@ public:
   }
 
   void stop() {
-    mouvements_.stop();
+    mouvements_->stop();
   }
 
   void reset() {
-    mouvements_.reset();
+    mouvements_->reset();
     current_state_ = DEFAULT_STATE;
     ticks_counter_ = 0;
-    clavier_.reset();
+    clavier_->reset();
   }
 
 private:
-  Params &params_;
-  Clavier &clavier_;
-  Mouvements &mouvements_;
+  Params *params_ = nullptr;
+  Clavier *clavier_ = nullptr;
+  Mouvements *mouvements_ = nullptr;
 
   RobotState current_state_ = DEFAULT_STATE;
   int ticks_counter_ = 0;
@@ -62,35 +65,35 @@ private:
   void applyState() {
     switch (current_state_) {
     case FORWARD:
-      mouvements_.forward(params_.linear_speed);
+      mouvements_->forward(params_->linear_speed);
       break;
     case PIVOTER_GAUCHE:
-      mouvements_.pivoter(params_.angular_speed);
+      mouvements_->pivoter(params_->angular_speed);
       break;
     case PIVOTER_DROITE:
-      mouvements_.pivoter(-params_.angular_speed);
+      mouvements_->pivoter(-params_->angular_speed);
       break;
     case STOP:
-      mouvements_.stop();
+      mouvements_->stop();
       break;
     case BACKWARD:
-      mouvements_.backward(params_.linear_speed);
+      mouvements_->backward(params_->linear_speed);
       break;
     case REACH_POSITION:
-      mouvements_.reachPosition(mouvements_.targets.x, mouvements_.targets.y);
+      mouvements_->reachPosition(mouvements_->targets.x, mouvements_->targets.y);
       break;
     case REACH_POSITION_SMOOTH:
-      mouvements_.reachPositionSmooth(mouvements_.targets.x,
-                                      mouvements_.targets.y);
+      mouvements_->reachPositionSmooth(mouvements_->targets.x,
+                                       mouvements_->targets.y);
       break;
     case REACH_POSITION_X:
-      mouvements_.reachPositionX(mouvements_.targets.position_x);
+      mouvements_->reachPositionX(mouvements_->targets.position_x);
       break;
     case REACH_ANGLE:
-      mouvements_.reachAngle(mouvements_.targets.angle);
+      mouvements_->reachAngle(mouvements_->targets.angle);
       break;
     default:
-      mouvements_.stop();
+      mouvements_->stop();
       break;
     }
   }
@@ -98,19 +101,19 @@ private:
   void updateFSMAuto() {
     switch (current_state_) {
     case FORWARD:
-      if (params_.msToTicks(params_.move_fwd_tm) == ticks_counter_) {
+      if (params_->msToTicks(params_->move_fwd_tm) == ticks_counter_) {
         ticks_counter_ = 0;
         current_state_ = STOP;
       }
       break;
     case STOP:
-      if (params_.msToTicks(params_.move_stp_tm) == ticks_counter_) {
+      if (params_->msToTicks(params_->move_stp_tm) == ticks_counter_) {
         ticks_counter_ = 0;
         current_state_ = BACKWARD;
       }
       break;
     case BACKWARD:
-      if (params_.msToTicks(params_.move_bwd_tm) == ticks_counter_) {
+      if (params_->msToTicks(params_->move_bwd_tm) == ticks_counter_) {
         ticks_counter_ = 0;
         current_state_ = FORWARD;
       }
@@ -123,27 +126,27 @@ private:
   }
 
   void updateFSMManual() {
-    switch (clavier_.inputs.direction) {
+    switch (clavier_->inputs.direction) {
     case UP:
-      mouvements_.targets.x += 0.1;
+      mouvements_->targets.x += 0.1;
       current_state_ = REACH_POSITION_SMOOTH;
       break;
     case DOWN:
-      mouvements_.targets.x -= 0.1;
+      mouvements_->targets.x -= 0.1;
       current_state_ = REACH_POSITION_SMOOTH;
       break;
     case LEFT:
-      mouvements_.targets.y -= 0.1;
+      mouvements_->targets.y -= 0.1;
       current_state_ = REACH_POSITION_SMOOTH;
       break;
     case RIGHT:
-      mouvements_.targets.y += 0.1;
+      mouvements_->targets.y += 0.1;
       current_state_ = REACH_POSITION_SMOOTH;
       break;
     default:
       break;
     }
-    clavier_.inputs.direction = NONE;
+    clavier_->inputs.direction = NONE;
   }
 
 };

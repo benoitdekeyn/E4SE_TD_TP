@@ -3,48 +3,61 @@
 
 #include <string>
 
-enum RobotMode { AUTO, MANUAL };
+#include "parametres.cpp"
+#include "clavier.cpp"
+#include "mouvements.cpp"
+#include "states.cpp"
 
+using std::string;
+
+#define AUTO "auto"
+#define MANUAL "manual"
 #define DEFAULT_MODE MANUAL
+const string MODES[] = {AUTO, MANUAL};
+const int NBR_MODES = sizeof(MODES) / sizeof(MODES[0]);
 
 class Modes {
 public:
-  explicit Modes(States &states) : states_(states) {}
+  void init(States &states) {
+    states_ = &states;
+  }
 
   void step() {
     if (paused_) {
-      states_.stop();
+      states_->stop();
       return;
     }
 
-    switch (current_mode_) {
-    case AUTO:
-      states_.stepAuto();
-      break;
-    case MANUAL:
-      states_.stepManual();
-      break;
+    if (current_mode_ == AUTO) {
+      states_->stepAuto();
+    } else if (current_mode_ == MANUAL) {
+      states_->stepManual();
+    } else {
+      ROS_ERROR("Mode non pris en charge : %s", current_mode_.c_str());
+      states_->stop();
     }
   }
 
-  bool set_mode(const std::string &mode) {
-    if (mode != "manual" && mode != "auto") {
+  bool set_mode(string &mode) {
+    if (!is_a_mode(mode)) {
       return false;
     }
 
-    RobotMode requested_mode = mode == "auto" ? AUTO : MANUAL;
-    if (requested_mode != current_mode_) {
-      current_mode_ = requested_mode;
-      if (current_mode_ == AUTO) {
-        states_.initAuto();
+    if (mode != current_mode_) {
+      if (mode == AUTO) {
+        states_->initAuto();
+      } else if (mode == MANUAL) {
+        states_->initManual();
       } else {
-        states_.initManual();
+        ROS_ERROR("Mode non pris en charge : %s", mode.c_str());
+        return false;
       }
+      current_mode_ = mode;
     }
     return true;
   }
 
-  bool set_pause(const std::string &state) {
+  bool set_pause(string &state) {
     if (state == "pause") {
       paused_ = true;
     } else if (state == "play") {
@@ -58,11 +71,11 @@ public:
   void reset() {
     current_mode_ = DEFAULT_MODE;
     paused_ = false;
-    states_.reset();
+    states_->reset();
   }
 
-  std::string mode() const {
-    return current_mode_ == AUTO ? "auto" : "manual";
+  string mode() const {
+    return current_mode_;
   }
 
   bool paused() const {
@@ -70,9 +83,18 @@ public:
   }
 
 private:
-  States &states_;
-  RobotMode current_mode_ = DEFAULT_MODE;
+  States *states_ = nullptr;
+  string current_mode_ = DEFAULT_MODE;
   bool paused_ = false;
+
+  bool is_a_mode(const string &mode) {
+    for (int i = 0; i < NBR_MODES; i++) {
+      if (mode == MODES[i]) {
+        return true;
+      }
+    }
+    return false;
+  }
 };
 
 #endif

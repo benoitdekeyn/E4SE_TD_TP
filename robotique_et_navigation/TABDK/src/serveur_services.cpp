@@ -13,10 +13,11 @@ using namespace TABDK;
 
 class ServeurServices {
 public:
-  ServeurServices(NodeHandle &nh, Modes &modes, Publisher &pub_reset,
-                  ServiceClient &client_reset_sim)
-      : modes_(modes), pub_reset_(pub_reset),
-        client_reset_sim_(client_reset_sim) {
+  void init(NodeHandle &nh, Modes &modes, Publisher &pub_reset,
+            ServiceClient &client_reset_sim) {
+    modes_ = &modes;
+    pub_reset_ = &pub_reset;
+    client_reset_sim_ = &client_reset_sim;
     srv_set_mode_ = nh.advertiseService(
         "/set_mode", &ServeurServices::setModeCallback, this);
     srv_global_control_ = nh.advertiseService(
@@ -24,29 +25,29 @@ public:
   }
 
   void resetRobot() {
-    pub_reset_.publish(std_msgs::Empty());
+    pub_reset_->publish(std_msgs::Empty());
 
     std_srvs::Empty service;
-    if (!client_reset_sim_.call(service)) {
+    if (!client_reset_sim_->call(service)) {
       ROS_WARN("Echec de l'appel au service /gazebo/reset_simulation");
     }
 
-    modes_.reset();
+    modes_->reset();
   }
 
 private:
-  Modes &modes_;
-  Publisher &pub_reset_;
-  ServiceClient &client_reset_sim_;
+  Modes *modes_ = nullptr;
+  Publisher *pub_reset_ = nullptr;
+  ServiceClient *client_reset_sim_ = nullptr;
   ServiceServer srv_set_mode_;
   ServiceServer srv_global_control_;
 
   bool setModeCallback(set_mode::Request &request, set_mode::Response &response) {
-    response.success = modes_.set_mode(request.mode);
+    response.success = modes_->set_mode(request.mode);
     if (!response.success) {
       ROS_WARN("Mode inconnu : %s", request.mode.c_str());
     }
-    response.mode_courant = modes_.mode();
+    response.mode_courant = modes_->mode();
     return true;
   }
 
@@ -56,12 +57,12 @@ private:
       resetRobot();
       response.success = true;
     } else {
-      response.success = modes_.set_pause(request.command);
+      response.success = modes_->set_pause(request.command);
       if (!response.success) {
         ROS_WARN("Commande globale inconnue : %s", request.command.c_str());
       }
     }
-    response.mode_courant = modes_.mode();
+    response.mode_courant = modes_->mode();
     return true;
   }
 };

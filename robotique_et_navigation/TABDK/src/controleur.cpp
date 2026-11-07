@@ -62,9 +62,12 @@ int main(int argc, char **argv) {
   ServiceClient client_reset_sim =
       nh.serviceClient<ResetService>("/gazebo/reset_simulation");
 
-  States states(params, clavier, mouvements);
-  Modes modes(states);
-  ServeurServices services(nh, modes, pub_reset, client_reset_sim);
+  States states;
+  states.init(params, clavier, mouvements);
+  Modes modes;
+  modes.init(states);
+  ServeurServices services;
+  services.init(nh, modes, pub_reset, client_reset_sim);
 
   publishStatus(modes, pub_mode, pub_pause);
   Rate loop_rate(params.frequence);

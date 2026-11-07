@@ -46,9 +46,9 @@ int main(int argc, char **argv) {
         break;
       }
       case KEY_P: {
-        // Appel du service /global_control avec la commande "toggle_play"
+        // Appel du service /global_control avec la commande "play_pause"
         global_control service;
-        service.request.command = "toggle_play";
+        service.request.command = "play_pause";
         if (!client_global_control.call(service)) {
           ROS_WARN("Impossible d'appeler le service /global_control");
         } else if (!service.response.success) {

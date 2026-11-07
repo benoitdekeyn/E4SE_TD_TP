@@ -100,20 +100,7 @@ private:
         return "manual";
     }
   }
-
-  void applyMode(RobotMode mode) {
-    if (mode == current_mode_) {
-      ROS_INFO("Déjà en mode %s", mode_to_string(current_mode_));
-      return;
-    }
-    
-    if (current_mode_ != PAUSE) {
-      previous_mode_ = current_mode_;
-    }
-    current_mode_ = mode;
-    initModeState(mode);
-  }
-
+  
   // Remet l'état et les compteurs à leur valeur de départ pour ce mode
   void initModeState(RobotMode mode) {
     switch (mode) {
@@ -130,6 +117,39 @@ private:
       case PAUSE:
         break;
     }
+  }
+
+  // Applique le mode spécifié au robot
+  void applyMode(RobotMode mode) {
+    if (mode == current_mode_) {
+      ROS_INFO("Déjà en mode %s", mode_to_string(current_mode_));
+      return;
+    }
+    
+    if (current_mode_ != PAUSE) {
+      previous_mode_ = current_mode_;
+    }
+    current_mode_ = mode;
+    initModeState(mode);
+  }
+
+  // Conserve l'état et les compteurs pour reprendre exactement au même point
+  void pauseRobot() {
+    if (current_mode_ == PAUSE) {
+      return;
+    }
+    ROS_INFO("Switching to PAUSE mode");
+    previous_mode_ = current_mode_;
+    current_mode_ = PAUSE;
+  }
+
+  // Reprend le robot là où il s'était arrêté après une pause
+  void resumeRobot() {
+    if (current_mode_ != PAUSE) {
+      return;
+    }
+    ROS_INFO("Resuming from PAUSE");
+    current_mode_ = previous_mode_;
   }
   
   void resetFSM() {
@@ -255,7 +275,7 @@ private:
       ROS_INFO_THROTTLE(1, "pivot_en_cours=%d", mouvements_.debug.pivot_en_cours);
       ROS_INFO_THROTTLE(1, " --- "); */
     }
-  
+    
     bool setModeCallback(set_mode::Request &request,
                          set_mode::Response &response) {
       RobotMode requested_mode;
@@ -317,24 +337,6 @@ private:
       response.success = true;
       response.mode_courant = mode_to_string(current_mode_);
       return true;
-    }
-
-    // Conserve l'état et les compteurs pour reprendre exactement au même point
-    void pauseRobot() {
-      if (current_mode_ == PAUSE) {
-        return;
-      }
-      ROS_INFO("Switching to PAUSE mode");
-      previous_mode_ = current_mode_;
-      current_mode_ = PAUSE;
-    }
-
-    void resumeRobot() {
-      if (current_mode_ != PAUSE) {
-        return;
-      }
-      ROS_INFO("Resuming from PAUSE");
-      current_mode_ = previous_mode_;
     }
   };
   

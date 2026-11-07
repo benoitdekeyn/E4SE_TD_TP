@@ -16,9 +16,9 @@ using namespace std;
 int NBR_REGION = 8;
 int SCAN_SAMPLE = 360;
 int ANGLE_REGION = SCAN_SAMPLE / NBR_REGION;
-std::vector<float> distances;
-std::vector<float> min_distances;
-ros::Publisher marker_pub;
+vector<float> distances;
+vector<float> min_distances;
+Publisher marker_pub;
 
 #define SEUIL_OBSTACLE 1 //m
 
@@ -53,7 +53,7 @@ geometry_msgs::Point polar_to_point(float distance, float angle_rad) {
 }
 
 // "32 cm" si < 1 m, "1.25 m" sinon
-std::string format_label(float distance) {
+string format_label(float distance) {
   char buf[32];
   if (distance < 1.0f)
     snprintf(buf, sizeof(buf), "%.0f cm", distance * 100.0f);
@@ -62,10 +62,10 @@ std::string format_label(float distance) {
   return buf;
 }
 
-visualization_msgs::Marker init_marker(const std::string& ns, int id, int type) {
+visualization_msgs::Marker init_marker(const string& ns, int id, int type) {
   visualization_msgs::Marker m;
   m.header.frame_id = FRAME_MARKERS;
-  m.header.stamp = ros::Time();
+  m.header.stamp = Time();
   m.ns = ns;
   m.id = id;
   m.type = type;
@@ -118,8 +118,8 @@ visualization_msgs::Marker make_rays() {
 }
 
 // Angle de la jonction écrit au bout de chaque rayon
-std::vector<visualization_msgs::Marker> make_ray_labels() {
-  std::vector<visualization_msgs::Marker> labels;
+vector<visualization_msgs::Marker> make_ray_labels() {
+  vector<visualization_msgs::Marker> labels;
   for (int i = 0; i < NBR_REGION; i++) {
     int angle_deg = i * ANGLE_REGION;
     visualization_msgs::Marker txt = init_marker("ray_labels", i, visualization_msgs::Marker::TEXT_VIEW_FACING);
@@ -128,15 +128,15 @@ std::vector<visualization_msgs::Marker> make_ray_labels() {
     txt.scale.z = 0.6;
     txt.color.r = txt.color.g = txt.color.b = 0.7;
     txt.color.a = 1.0;
-    txt.text = std::to_string(angle_deg);
+    txt.text = to_string(angle_deg);
     labels.push_back(txt);
   }
   return labels;
 }
 
 // Distance écrite au milieu de chaque segment, côté extérieur (même direction que le centre de la région)
-std::vector<visualization_msgs::Marker> make_labels() {
-  std::vector<visualization_msgs::Marker> labels;
+vector<visualization_msgs::Marker> make_labels() {
+  vector<visualization_msgs::Marker> labels;
   for (int i = 0; i < NBR_REGION; i++) {
     float d = min_distances[i];
     visualization_msgs::Marker txt = init_marker("labels", i, visualization_msgs::Marker::TEXT_VIEW_FACING);
@@ -157,10 +157,10 @@ void update_markers() {
   markers.markers.push_back(make_rays());
   markers.markers.push_back(make_stripline());
 
-  std::vector<visualization_msgs::Marker> labels = make_labels();
+  vector<visualization_msgs::Marker> labels = make_labels();
   markers.markers.insert(markers.markers.end(), labels.begin(), labels.end());
 
-  std::vector<visualization_msgs::Marker> ray_labels = make_ray_labels();
+  vector<visualization_msgs::Marker> ray_labels = make_ray_labels();
   markers.markers.insert(markers.markers.end(), ray_labels.begin(), ray_labels.end());
 
   marker_pub.publish(markers);
@@ -211,15 +211,15 @@ int main(int argc, char **argv) {
 
 float get_minimum(vector<float> data, int debut, int fin, int *indice_min) {
 
-  float min = FLT_MAX;
+  float distance_min = FLT_MAX;
 
   for (int i = debut; i <= fin; i++) {
-    if (data[i]<min && data[i]> 0.0) {
-      min = data[i];
+    if (data[i] < distance_min && data[i] > 0.0) {
+      distance_min = data[i];
       *indice_min = i;
     }
   }
-  return std::min(10.0f, min);
+  return min(10.0f, distance_min);
 }
 
 void filtrer_distances(vector<float>& data, float seuil_min, float seuil_max) {

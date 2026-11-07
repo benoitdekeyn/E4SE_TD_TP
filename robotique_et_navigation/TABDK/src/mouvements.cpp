@@ -9,6 +9,7 @@
 #include <geometry_msgs/Twist.h>
 #include <ros/ros.h>
 
+using namespace ros;
 using geometry_msgs::Twist;
 
 // Cibles courantes des différents modes de déplacement
@@ -36,7 +37,7 @@ public:
   PositionDebug debug;
 
   // params et odom appartiennent au contrôleur, on garde juste leur adresse
-  void init(ros::NodeHandle &nh, Params *params, Odometry *odom) {
+  void init(NodeHandle &nh, Params *params, Odometry *odom) {
     this->odom = odom;
     pub_vel = nh.advertise<Twist>("/cmd_vel", 1000);
 
@@ -291,7 +292,7 @@ private:
   double linear_speed;
   double angular_speed;
   Odometry *odom;
-  ros::Publisher pub_vel;
+  Publisher pub_vel;
 };
 
 #endif

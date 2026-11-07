@@ -3,6 +3,8 @@
 #include <csignal>
 #include <ros/ros.h>
 
+using namespace ros;
+
 bool arret_demande = false;
 
 // Ctrl+C : on lève juste un flag, la boucle principale fait le reset
@@ -12,22 +14,22 @@ void sigintHandler(int sig) {
 
 int main(int argc, char **argv) {
   signal(SIGINT, sigintHandler);
-  ros::init(argc, argv, "controleur", ros::init_options::NoSigintHandler);
+  init(argc, argv, "controleur", init_options::NoSigintHandler);
 
-  ros::NodeHandle nh;
+  NodeHandle nh;
   Controleur controleur;
   controleur.init(nh);
 
-  ros::Rate loop_rate(controleur.frequence());
+  Rate loop_rate(controleur.frequence());
 
-  while (ros::ok() && !arret_demande) {
+  while (ok() && !arret_demande) {
     controleur.step();
-    ros::spinOnce();
+    spinOnce();
     loop_rate.sleep();
   }
 
   ROS_INFO("Exiting program gracefully ...");
   controleur.resetRobot();
-  ros::shutdown();
+  shutdown();
   return 0;
 }

@@ -7,11 +7,14 @@
 #include "mouvements.cpp"
 #include "odometry.cpp"
 
-#include <TABDK/SetMode.h>
-#include <TABDK/SetGlobalControl.h>
+#include <TABDK/set_mode.h>
+#include <TABDK/global_control.h>
 #include <ros/ros.h>
 #include <std_msgs/Empty.h>
 #include <std_srvs/Empty.h>
+
+using namespace TABDK;
+using namespace ros;
 
 enum RobotState {
   FORWARD,
@@ -33,7 +36,7 @@ enum RobotMode { AUTO, MANUAL, PAUSE };
 // Possède tous les modules, la machine à états et le reset
 class Controleur {
 public:
-  void init(ros::NodeHandle &nh) {
+  void init(NodeHandle &nh) {
     params_.load(nh);
     odom_.init(nh);
     clavier_.init(nh);
@@ -41,8 +44,8 @@ public:
 
     pub_reset_ = nh.advertise<std_msgs::Empty>("/reset", 1);
     client_reset_sim_ = nh.serviceClient<std_srvs::Empty>("/gazebo/reset_simulation");
-    srv_set_mode_ = nh.advertiseService("/set_mode", setModeCallback);
-    srv_global_control_ = nh.advertiseService("/set_global_control", setGlobalControlCallback);
+    srv_set_mode_ = nh.advertiseService("/set_mode", &Controleur::setModeCallback, this);
+    srv_global_control_ = nh.advertiseService("/global_control", &Controleur::globalControlCallback, this);
   }
 
   double frequence() {
@@ -77,10 +80,10 @@ private:
   Clavier clavier_;
   Mouvements mouvements_;
 
-  ros::Publisher pub_reset_;
-  ros::ServiceClient client_reset_sim_;
-  ros::ServiceServer srv_set_mode_;
-  ros::ServiceServer srv_global_control_;
+  Publisher pub_reset_;
+  ServiceClient client_reset_sim_;
+  ServiceServer srv_set_mode_;
+  ServiceServer srv_global_control_;
 
   RobotState current_state_ = DEFAULT_STATE;
   RobotMode current_mode_ = DEFAULT_MODE;
@@ -88,7 +91,14 @@ private:
   int ticks_counter_ = 0;
 
   const char* mode_to_string(RobotMode mode) {
-    return mode == AUTO ? "auto" : "manual";
+    switch (mode) {
+      case AUTO:
+        return "auto";
+      case PAUSE:
+        return "pause";
+      default:
+        return "manual";
+    }
   }
 
   void applyMode(RobotMode mode) {
@@ -101,7 +111,11 @@ private:
       previous_mode_ = current_mode_;
     }
     current_mode_ = mode;
-    
+    initModeState(mode);
+  }
+
+  // Remet l'état et les compteurs à leur valeur de départ pour ce mode
+  void initModeState(RobotMode mode) {
     switch (mode) {
       case MANUAL:
         ROS_INFO("Switching to MANUAL mode");
@@ -114,8 +128,6 @@ private:
         ticks_counter_ = 0;
         break;
       case PAUSE:
-        ROS_INFO("Switching to PAUSE mode");
-        current_state_ = STOP;
         break;
     }
   }
@@ -232,13 +244,6 @@ private:
         default:
           break;
       }
-
-      if (current_mode_ == PAUSE) {
-        mouvements_.stop();
-      } else {
-        updateFSM();
-        applyState();
-      }
     }
     
     void logStatus() {
@@ -251,8 +256,8 @@ private:
       ROS_INFO_THROTTLE(1, " --- "); */
     }
   
-    bool setModeCallback(TABDK::SetMode::Request &request,
-                        TABDK::SetMode::Response &response) {
+    bool setModeCallback(set_mode::Request &request,
+                         set_mode::Response &response) {
       RobotMode requested_mode;
   
       if (request.mode != "manual" && request.mode != "auto" && request.mode != "toggle") {
@@ -262,20 +267,24 @@ private:
         return true;
       }
   
-      // Si on demande le mode toggle, on fait comme si on demandait 
-      // le mode inverse au mode courant
+      // En PAUSE, "toggle" inverse le mode à reprendre, pas PAUSE lui-même
+      const RobotMode base_mode = current_mode_ == PAUSE ? previous_mode_ : current_mode_;
       if (request.mode == "toggle") {
-        requested_mode = current_mode_ == AUTO ? MANUAL : AUTO;
+        requested_mode = base_mode == AUTO ? MANUAL : AUTO;
+      } else {
+        requested_mode = request.mode == "manual" ? MANUAL : AUTO;
       }
   
       // Si on est en mode PAUSE, on change 
       // le prochain mode à appliquer après la sortie de PAUSE
       if (current_mode_ == PAUSE) {
-        previous_mode_ = requested_mode;
+        if (requested_mode != previous_mode_) {
+          previous_mode_ = requested_mode;
+          initModeState(requested_mode);
+        }
       }
       // Sinon, on applique le mode demandé directement
       else {
-        requested_mode = request.mode == "manual" ? MANUAL : AUTO;
         applyMode(requested_mode);
       }
   
@@ -285,18 +294,47 @@ private:
       return true;
     }
   
-    bool setGlobalControlCallback(TABDK::SetGlobalControl::Request &request,
-                                  TABDK::SetGlobalControl::Response &response) {
+    bool globalControlCallback(global_control::Request &request,
+                               global_control::Response &response) {
   
       if (request.command == "pause") {
-        applyMode(PAUSE);
+        pauseRobot();
       } else if (request.command == "play") {
-        applyMode(previous_mode_);
+        resumeRobot();
+      } else if (request.command == "play_pause") {
+        if (current_mode_ == PAUSE) {
+          resumeRobot();
+        } else {
+          pauseRobot();
+        }
       } else if (request.command == "reset") {
         resetRobot();
+      } else {
+        response.success = false;
+        response.mode_courant = mode_to_string(current_mode_);
+        return true;
       }
       response.success = true;
+      response.mode_courant = mode_to_string(current_mode_);
       return true;
+    }
+
+    // Conserve l'état et les compteurs pour reprendre exactement au même point
+    void pauseRobot() {
+      if (current_mode_ == PAUSE) {
+        return;
+      }
+      ROS_INFO("Switching to PAUSE mode");
+      previous_mode_ = current_mode_;
+      current_mode_ = PAUSE;
+    }
+
+    void resumeRobot() {
+      if (current_mode_ != PAUSE) {
+        return;
+      }
+      ROS_INFO("Resuming from PAUSE");
+      current_mode_ = previous_mode_;
     }
   };
   

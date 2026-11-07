@@ -23,7 +23,7 @@ class Clavier {
 public:
   KeyboardInputs inputs;
 
-  void init(ros::NodeHandle &nh) {
+  void init(NodeHandle &nh) {
     sub_ = nh.subscribe("/keyboard_input", 1000, &Clavier::callback, this);
   }
 
@@ -32,7 +32,7 @@ public:
   }
 
 private:
-  ros::Subscriber sub_;
+  Subscriber sub_;
 
   void callback(const std_msgs::Int8::ConstPtr &msg) {
     switch (msg->data) {

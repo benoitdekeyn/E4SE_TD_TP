@@ -3,6 +3,7 @@
 
 #include <ros/ros.h>
 #include "calculs.cpp"
+using namespace ros;
 
 // Paramètres du contrôleur : valeurs par défaut, écrasées par params.yaml dans load()
 class Params {
@@ -22,7 +23,7 @@ public:
   int move_bwd_tm = 4000; // ms
   int move_stp_tm = 2000; // ms
 
-  void load(ros::NodeHandle &nh) {
+  void load(NodeHandle &nh) {
     nh.getParam("frequence", frequence);
     nh.getParam("linear_speed", linear_speed);
     nh.getParam("angular_speed", angular_speed);

@@ -5,6 +5,8 @@
 #include <ros/ros.h>
 #include <tf/tf.h>
 
+using namespace ros;
+
 struct Pose2D {
   double x = 0.0;
   double y = 0.0;
@@ -16,12 +18,12 @@ class Odometry {
 public:
   Pose2D pose;
 
-  void init(ros::NodeHandle &nh) {
+  void init(NodeHandle &nh) {
     sub_ = nh.subscribe("/odom", 1000, &Odometry::callback, this);
   }
 
 private:
-  ros::Subscriber sub_;
+  Subscriber sub_;
 
   void callback(const nav_msgs::Odometry::ConstPtr &msg) {
     pose.x = msg->pose.pose.position.x;

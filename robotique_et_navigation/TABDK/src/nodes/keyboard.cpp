@@ -5,9 +5,10 @@
 #include "termios.h"
 
 using namespace ros;
+using namespace TABDK;
 
 const int KEY_M = 109;
-const int KEY_SPACE = 32;
+const int KEY_P = 112;
 const int KEY_R = 114;
 
 const int FREQ_ACTUALISATION = 5; // Hz
@@ -17,20 +18,20 @@ std_msgs::Int8 keyboard_input;
 Publisher KeyInput_Pub;
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "key_input_node");
+  init(argc, argv, "key_input_node");
 
-  ros::NodeHandle nh;
+  NodeHandle nh;
 
   // Publishers
   KeyInput_Pub = nh.advertise<std_msgs::Int8>("/keyboard_input", 1000);
-  ros::ServiceClient client_set_mode =
+  ServiceClient client_set_mode =
       nh.serviceClient<set_mode>("/set_mode");
-  ros::ServiceClient client_global_control =
+  ServiceClient client_global_control =
       nh.serviceClient<global_control>("/global_control");
 
-  ros::Rate loop_rate(FREQ_ACTUALISATION);
+  Rate loop_rate(FREQ_ACTUALISATION);
 
-  while (ros::ok()) {
+  while (ok()) {
     const int key = getch();
     switch (key) {
       case KEY_M: {
@@ -40,18 +41,18 @@ int main(int argc, char **argv) {
         if (!client_set_mode.call(service)) {
           ROS_WARN("Impossible d'appeler le service /set_mode");
         } else if (!service.response.success) {
-          ROS_WARN("Le service /set_mode a échoué : %s", service.response.message.c_str());
+          ROS_WARN("Le service /set_mode a échoué");
         }
         break;
       }
-      case KEY_SPACE: {
+      case KEY_P: {
         // Appel du service /global_control avec la commande "toggle_play"
         global_control service;
         service.request.command = "toggle_play";
         if (!client_global_control.call(service)) {
           ROS_WARN("Impossible d'appeler le service /global_control");
         } else if (!service.response.success) {
-          ROS_WARN("Le service /global_control a échoué : %s", service.response.message.c_str());
+          ROS_WARN("Le service /global_control a échoué");
         }
         break;
       }
@@ -62,7 +63,7 @@ int main(int argc, char **argv) {
         if (!client_global_control.call(service)) {
           ROS_WARN("Impossible d'appeler le service /global_control");
         } else if (!service.response.success) {
-          ROS_WARN("Le service /global_control a échoué : %s", service.response.message.c_str());
+          ROS_WARN("Le service /global_control a échoué");
         }
         break;
       }
@@ -74,7 +75,7 @@ int main(int argc, char **argv) {
       }
     }
 
-    ros::spinOnce();
+    spinOnce();
     loop_rate.sleep();
   }
   return 0;

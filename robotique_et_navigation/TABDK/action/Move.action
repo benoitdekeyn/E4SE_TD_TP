@@ -1,8 +1,16 @@
 # attributs de MoveGoal
-float64 pos_x
+float64 position_x
+float64 position_y
 ---
 # attributs de MoveResult
-bool reached
+bool atteint
+float64 temps_pris           # secondes, hors temps de pause
+float64 distance_parcourue   # mètres
+geometry_msgs/Pose2D position
 ---
 # attributs de MoveFeedback
-float64 pos_x_intermediaire
+geometry_msgs/Pose2D position
+geometry_msgs/Twist vitesse
+float64 distance_restante   # mètres
+string mode                 # "manual" ou "auto"
+bool pause

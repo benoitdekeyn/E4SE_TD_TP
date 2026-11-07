@@ -1,6 +1,6 @@
 <launch>
     <rosparam command="load" file="$(find TABDK)/config/params.yaml" />
     <node name = "keyboard" pkg = "TABDK" type = "keyboard" output = "screen" />
-    <node name = "lidar" pkg = "TABDK" type = "lidar" output = "screen" />
+    <node name = "detector" pkg = "TABDK" type = "detector" output = "screen" />
     <node name = "controleur" pkg = "TABDK" type = "controleur" output = "screen" />
 </launch>

@@ -5,7 +5,7 @@
 			"path": "./"
 		},
 		{
-			"name": "SSH FS - turtle_bot_3",
+			"name": "SSH Robot TABDK/",
 			"uri": "ssh://turtle_bot_3/home/ubuntu/catkin_ws/src/TABDK"
 		}
 	],

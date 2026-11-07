@@ -1,0 +1,8 @@
+# attributs de MoveGoal
+float64 pos_x
+---
+# attributs de MoveResult
+bool reached
+---
+# attributs de MoveFeedback
+float64 pos_x_intermediaire

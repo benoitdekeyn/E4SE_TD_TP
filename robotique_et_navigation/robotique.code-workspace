@@ -5,8 +5,8 @@
 			"path": "./"
 		},
 		{
-			"name": "SSH Robot TABDK/",
-			"uri": "ssh://turtle_bot_3/home/ubuntu/catkin_ws/src/TABDK"
+			"name": "SSH Robot src/",
+			"uri": "ssh://turtle_bot_3/home/ubuntu/catkin_ws/src/"
 		}
 	],
 	"extensions": {

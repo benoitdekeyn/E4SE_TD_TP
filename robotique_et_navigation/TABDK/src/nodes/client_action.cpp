@@ -88,7 +88,7 @@ void printNouvelleTrajectoire() {
   ROS_INFO("%s", msg.c_str());
 }
 
-void trajectoireCallback(const Path::ConstPtr &message) {
+void robotPathCallback(const Path::ConstPtr &message) {
   ROS_INFO("\n##    Nouvelle trajectoire recue    ##\n");
 
   if (!mode_received || !mode_auto) {
@@ -219,7 +219,7 @@ int main(int argc, char **argv) {
   Subscriber keyboard_sub = nh.subscribe("/keyboard_input", 1000, keyboardCallback);
   Subscriber reset_sub = nh.subscribe("/reset", 10, resetCallback);
   Subscriber mode_sub = nh.subscribe("/mode", 10, modeCallback);
-  Subscriber trajectoire_sub = nh.subscribe("/trajectoire", 1, trajectoireCallback);
+  Subscriber robot_path_sub = nh.subscribe("/robot_path", 1, robotPathCallback);
   
   if (!attendreServeur(client)) return 0;
 

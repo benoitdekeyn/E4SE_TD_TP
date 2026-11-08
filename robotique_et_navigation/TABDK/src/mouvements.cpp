@@ -202,7 +202,7 @@ public:
 
     // Si l'erreur angulaire est supérieure au seuil de pivot bloquant, 
     // on pivote pour s'aligner avec la cible.
-    
+
     if (fabs(erreur_angle) > trigger_pivot) {
       pivot_en_cours = true;
     }
@@ -255,7 +255,7 @@ private:
 
   // Erreur angulaire vers la cible ; en marche arrière, l'angle visé est décalé de π.
   double calculerErreurAngle(double x, double y, bool arriere) {
-    double angle_cible = atan2(y_cible - odom->position.y, x_cible - odom->position.x);
+    double angle_cible = atan2(y - odom->position.y, x - odom->position.x);
 
     // si on est en marche arriere, on retourne à 180° la cible
     if (arriere) {

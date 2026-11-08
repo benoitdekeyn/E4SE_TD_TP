@@ -11,14 +11,25 @@ using std::string;
 
 #define AUTO "auto"
 #define MANUAL "manual"
-#define DEFAULT_MODE MANUAL
 const string MODES[] = {AUTO, MANUAL};
 const int NBR_MODES = sizeof(MODES) / sizeof(MODES[0]);
 
 class Modes {
 public:
-  void init(States &states) {
+  void init(States &states, const string &default_mode) {
     this->states = &states;
+    this->default_mode = default_mode;
+    if (!is_a_mode(this->default_mode)) {
+      ROS_WARN("Mode par defaut invalide '%s', utilisation de '%s'",
+               default_mode.c_str(), MANUAL);
+      this->default_mode = MANUAL;
+    }
+    current_mode = this->default_mode;
+    if (current_mode == AUTO) {
+      states.initAuto();
+    } else {
+      states.initManual();
+    }
   }
 
   void step() {
@@ -74,9 +85,12 @@ public:
   }
 
   void reset() {
-    current_mode = DEFAULT_MODE;
+    current_mode = default_mode;
     pause_active = false;
     states->reset();
+    if (current_mode == AUTO) {
+      states->initAuto();
+    }
   }
 
   string mode() const {
@@ -89,7 +103,8 @@ public:
 
 private:
   States *states = nullptr;
-  string current_mode = DEFAULT_MODE;
+  string default_mode = MANUAL;
+  string current_mode = MANUAL;
   bool pause_active = false;
   bool is_a_mode(const string &mode) {
     for (int i = 0; i < NBR_MODES; i++) {

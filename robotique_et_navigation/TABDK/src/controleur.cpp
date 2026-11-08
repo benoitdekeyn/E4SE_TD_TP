@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
   states.init(params, mouvements);
 
   Modes modes;
-  modes.init(states);
+  modes.init(states, params.default_mode);
 
   ServeurAction serveur_action;
   serveur_action.init(nh, params, mouvements, modes, odometry, states);

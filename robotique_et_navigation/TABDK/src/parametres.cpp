@@ -2,6 +2,7 @@
 #define PARAMETRES_CPP
 
 #include <cstdint>
+#include <string>
 #include <ros/ros.h>
 #include "calculs.cpp"
 using namespace ros;
@@ -20,6 +21,9 @@ public:
   double trigger_pivot      = 10; // deg
   double precision_angular  = 1; // deg
 
+  double waypoint_step      = 0.1; // m
+  std::string default_mode  = "manual";
+
   int move_fwd_tm = 3000; // ms
   int move_bwd_tm = 4000; // ms
   int move_stp_tm = 2000; // ms
@@ -34,6 +38,8 @@ public:
     nh.getParam("Kp_angular", Kp_angular);
     nh.getParam("trigger_pivot", trigger_pivot);
     nh.getParam("precision_angular", precision_angular);
+    nh.getParam("waypoint_step", waypoint_step);
+    nh.getParam("default_mode", default_mode);
     nh.getParam("move_fwd_tm", move_fwd_tm);
     nh.getParam("move_bwd_tm", move_bwd_tm);
     nh.getParam("move_stp_tm", move_stp_tm);

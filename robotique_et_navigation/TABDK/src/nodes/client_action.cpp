@@ -26,7 +26,7 @@ const int KEY_DOWN = 66;
 const int KEY_RIGHT = 67;
 const int KEY_LEFT = 68;
 const int KEY_W = 119;
-const double WAYPOINT_STEP = 0.1; // m
+double WAYPOINT_STEP = 0.1; // m, surchargé par le paramètre waypoint_step
 
 Pose2D waypoint_virtuel;
 vector<Pose2D> trajectoire;
@@ -154,6 +154,7 @@ bool attendreServeur(Client &client) {
 int main(int argc, char **argv) {
   init(argc, argv, "planner");
   NodeHandle nh;
+  nh.getParam("waypoint_step", WAYPOINT_STEP);
 
   Subscriber keyboard_sub = nh.subscribe("/keyboard_input", 1000, keyboardCallback);
 

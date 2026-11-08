@@ -9,6 +9,9 @@
   Kp_angular        : 1.0
   precision_angular : 1.0
 
+  waypoint_step     : 0.1
+  default_mode      : manual
+
   move_fwd_tm       : 3000
   move_bwd_tm       : 4000
   move_stp_tm       : 2000

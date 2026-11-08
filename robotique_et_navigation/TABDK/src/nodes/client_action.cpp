@@ -122,19 +122,33 @@ void activeCb() {
 }
 
 void feedbackCallback(const MoveFeedbackConstPtr &feedback) {
-  // Le résultat et le feedback passent par des topics distincts.
   if (!goal_active || goal_termine) return;
 
-  ROS_INFO("\nFeedback :\n > Position (x=%.2f, y=%.2f)\n > orientation : %.2f\n > vitesse lineaire (x=%.2f, y=%.2f, z=%.2f)\n > vitesse angulaire (x=%.2f, y=%.2f, z=%.2f)\n > distance restante=%.2f\n > temps ecoule=%.0f ms\n > mode=%s\n%s\n ---- \n",
+  if (feedback->pause) {
+    ROS_INFO_THROTTLE(1.0, "\n### EN PAUSE ###");
+    return;
+  }
+  ROS_INFO("\nFeedback :\n > Position (x=%.2f, y=%.2f)\n > orientation : %.2f\n > vitesse lineaire (x=%.2f, y=%.2f, z=%.2f)\n > vitesse angulaire (x=%.2f, y=%.2f, z=%.2f)\n > distance restante=%.2f\n > temps ecoule=%.0f ms\n > mode=%s\n",
     feedback->position.x, feedback->position.y,
     feedback->position.theta,
     feedback->vitesse.linear.x, feedback->vitesse.linear.y, feedback->vitesse.linear.z,
     feedback->vitesse.angular.x, feedback->vitesse.angular.y, feedback->vitesse.angular.z,
     feedback->distance_restante,
     feedback->temps_ecoule,
-    feedback->mode.c_str(),
-    feedback->pause ? "EN PAUSE\n" : ""
+    feedback->mode.c_str()
   );
+}
+
+bool attendreServeur(Client &client) {
+  Rate attente_serveur(5); // 5 Hz
+  while (ok() && !client.isServerConnected()) {
+    spinOnce();
+    attente_serveur.sleep();
+  }
+  if (!ok()) return false; // si c'est ros ok qui a fait sortir de la while
+
+  ROS_INFO("\n\nServeur 'moving' detecte.\nPret pour la saisie des waypoints.\n");
+  return true;
 }
 
 int main(int argc, char **argv) {
@@ -149,17 +163,15 @@ int main(int argc, char **argv) {
       "/reset", 10, boost::bind(&resetCallback, _1, &client));
   Subscriber mode_sub = nh.subscribe<String>(
       "/mode", 10, boost::bind(&modeCallback, _1, &client));
-  Rate attente_serveur(5);
-  while (ok() && !client.isServerConnected()) {
-    spinOnce();
-    attente_serveur.sleep();
-  }
-  if (!ok()) return 0;
-  ROS_INFO("\n\nServeur 'moving' detecte.\nPret pour la saisie des waypoints.\n");
+  
+  if (!attendreServeur(client)) return 0;
 
+  // Boucle principale du noeud
   Rate loop_rate(5); // 5 Hz
   while (ok()) {
     spinOnce(); // Maj keyboard
+
+    if (!client.isServerConnected() && !attendreServeur(client)) break;
 
     if (mode_received && mode_manual && !goal_active && !sequence_blocked &&
         !trajectoire.empty()) {

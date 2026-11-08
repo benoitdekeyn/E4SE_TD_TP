@@ -19,17 +19,14 @@ public:
   typedef SimpleActionServer<MoveAction> Server;
 
   void init(NodeHandle &nh, Params &params, Mouvements &mouvements, Modes &modes, Odometry &odometry, States &states) {
+    this->nh = &nh;
     this->params = &params;
     this->mouvements = &mouvements;
     this->modes = &modes;
     this->odometry = &odometry;
     this->states = &states;
 
-    // Enregistrement des callbacks d'action
-    server = new Server(nh, "moving", false);
-    server->registerGoalCallback(boost::bind(&ServeurAction::execute, this));
-    server->registerPreemptCallback(boost::bind(&ServeurAction::preempter, this));
-    server->start();
+    demarrer();
   }
 
   // Destructeur pcq on a utilisé 'new' dans init()
@@ -53,6 +50,13 @@ public:
       server->acceptNewGoal();
       server->setPreempted(MoveResult(), "Robot reset");
     }
+  }
+
+  // Actionlib conserve les dates des anciens goals même après leur préemption.
+  void redemarrer() {
+    delete server;
+    server = nullptr;
+    demarrer();
   }
 
   // Appelee achaque tour de la while(ok) de ros
@@ -90,6 +94,7 @@ public:
 
 private:
   Server *server = nullptr;
+  NodeHandle *nh = nullptr;
   Params *params = nullptr;
   Mouvements *mouvements = nullptr;
   Modes *modes = nullptr;
@@ -99,6 +104,13 @@ private:
   MoveGoalConstPtr goal;
   std::uint64_t ticks_ecoules = 0;
   double distance_depart = 0.0;
+
+  void demarrer() {
+    server = new Server(*nh, "moving", false);
+    server->registerGoalCallback(boost::bind(&ServeurAction::execute, this));
+    server->registerPreemptCallback(boost::bind(&ServeurAction::preempter, this));
+    server->start();
+  }
 
   // Déclenché automatiquement quand le client_action envoie un nouveau goal
   void execute() {

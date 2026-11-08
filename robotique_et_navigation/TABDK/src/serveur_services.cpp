@@ -31,12 +31,14 @@ public:
   void resetRobot() {
     action_server->reset();
     modes->reset();
-    pub_reset->publish(std_msgs::Empty());
 
     std_srvs::Empty service;
     if (!client_reset_sim->call(service)) {
       ROS_WARN("Echec de l'appel au service /gazebo/reset_simulation");
     }
+    // Oublie les dates des goals précédents après le reset de l'horloge.
+    action_server->redemarrer();
+    pub_reset->publish(std_msgs::Empty());
   }
 
 private:

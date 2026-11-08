@@ -24,6 +24,9 @@ public:
   void step() {
     if (pause_active) {
       states->stop();
+      if (current_mode == AUTO) {
+        ROS_INFO_THROTTLE(1.0, "\n### EN PAUSE ###");
+      }
       return;
     }
 

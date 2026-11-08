@@ -1,1 +1,1 @@
-ecart_obstacle: 2
+ecart_obstacle: 2  # marge autour des obstacles, en cases de la carte

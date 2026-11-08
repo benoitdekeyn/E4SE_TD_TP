@@ -33,5 +33,5 @@ catkin_package(
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_executable(${PROJECT_NAME} src/path_generator.cpp src/a_star.cpp)
+add_executable(${PROJECT_NAME} src/path_generator.cpp src/a_star.cpp src/path_simplifier.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})

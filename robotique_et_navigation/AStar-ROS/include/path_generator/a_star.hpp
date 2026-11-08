@@ -63,7 +63,7 @@ private:
   CoordinateList direction, walls;
   Vec2i worldSize;
   uint directions;
-  int ecart_obstacle;
+  int ecart_obstacle = 1;
 };
 
 class Heuristic {

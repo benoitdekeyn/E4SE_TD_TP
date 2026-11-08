@@ -31,7 +31,7 @@ private:
 
   AStar::Generator map_generator_;
   nav_msgs::MapMetaData map_info_;
-  bool map_exsit_;
+  bool map_exsit_ = false;
 };
 
 #endif // PATH_GENERATOR_H

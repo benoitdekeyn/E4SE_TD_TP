@@ -27,3 +27,21 @@ $ source ~/catkin_ws/devel/setup.bash
 $ roslaunch path_generator run.launch
 ```
 4. Send goal pose by rviz tool `2D Nav Goal`
+
+### Path simplification
+
+The planner simplifies the A* path into the minimum number of straight
+segments whose endpoints are on the original path. This allows diagonal
+segments while checking every touched map cell, including cells at corners.
+The published waypoints are at the centers of the selected cells. The robot
+still stops at each waypoint.
+
+`ecart_obstacle` in `config/params.yaml` sets the clearance in map cells for
+both A* and simplification. For example, 2 cells on a 0.05 m resolution map
+correspond to 0.10 m; choose a value that includes the robot's radius and a
+safety margin. Occupied and unknown cells, as well as map boundaries, are
+treated as obstacles. Reload the map to apply a changed parameter.
+
+This checks the static map only: it does not avoid newly detected obstacles or
+guarantee that the controller's actual curved trajectory remains on the
+checked segments.

@@ -1,4 +1,6 @@
 #include "../include/path_generator/path_generator.h"
+#include "../include/path_generator/path_simplifier.h"
+#include <algorithm>
 #include <cmath>
 #include <csignal>
 #include <geometry_msgs/Pose2D.h>
@@ -43,9 +45,16 @@ void PathGenerator::gridMapHandler(const nav_msgs::OccupancyGrid map_msg) {
 
   ROS_INFO("map size => w = %d h = %d", (int)map_info_.width,
            (int)map_info_.height);
+  int ecart_obstacle;
+  nh_.param("ecart_obstacle", ecart_obstacle, 2);
+  if (ecart_obstacle < 0) {
+    ROS_ERROR("ecart_obstacle doit etre positif ou nul (en cases)");
+    return;
+  }
   // Generate Map, Options
   map_generator_.setWorldSize(
       {(int)map_info_.width, (int)map_info_.height}); //{x, y}
+  map_generator_.setEcart_obstacle(ecart_obstacle);
   map_generator_.setHeuristic(AStar::Heuristic::manhattan);
   map_generator_.setDiagonalMovement(false);
   map_generator_.ocg = map_msg;
@@ -99,17 +108,26 @@ void PathGenerator::navGoalHandler(
     return;
   }
 
+  std::reverse(path.begin(), path.end());
+  size_t path_size = path.size();
+  path = simplifyPath(path, map_generator_);
+  if (path.empty()) {
+    ROS_ERROR("Impossible de simplifier le chemin avec la marge d'obstacle");
+    return;
+  }
+  ROS_INFO("Chemin simplifie : %zu points -> %zu waypoints", path_size,
+           path.size());
+
   ROS_INFO("\033[1;31m generate path OK !\033[0m");
   int i = 0;
-  for (auto coordinate = path.end() - 1; coordinate >= path.begin();
-       --coordinate) {
+  for (const auto &coordinate : path) {
     geometry_msgs::PoseStamped point_pose;
 
     // Remmaping coordinate
     geometry_msgs::Pose2D pos =
-        map_generator_.ij_to_xy(coordinate->x, coordinate->y, map_info_);
-    point_pose.pose.position.x = pos.x;
-    point_pose.pose.position.y = pos.y;
+        map_generator_.ij_to_xy(coordinate.x, coordinate.y, map_info_);
+    point_pose.pose.position.x = pos.x + map_info_.resolution / 2.0;
+    point_pose.pose.position.y = pos.y + map_info_.resolution / 2.0;
     path_msg.poses.push_back(point_pose);
     ROS_INFO("pos i=%d x =%f y=%f", i++, point_pose.pose.position.x,
              point_pose.pose.position.y);

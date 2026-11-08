@@ -77,28 +77,16 @@ bool AStar::Generator::isCollision_in_OCG(Vec2i coordinates_) {
       coordinates_.y < 0 || coordinates_.y >= worldSize.y)
     return true;
 
-  if (ocg.data[coordinates_.x + coordinates_.y * worldSize.x] != 0)
-    return true;
-  else {
-
-    for (int i = 0; i < 8; i++) {
-      Vec2i new_coord = coordinates_ + direction[i];
-
-      if (new_coord.x < 0 || new_coord.x >= worldSize.x || new_coord.y < 0 ||
-          new_coord.y >= worldSize.y) {
-        // ROS_INFO("\033[1;31m collision in x=%d y=%d  \033[0m", new_coord.x,
-        //  new_coord.y);
-        return true;
-      }
-
-      if (ocg.data[new_coord.x + new_coord.y * worldSize.x] != 0) {
-        // ROS_INFO("\033[1;31m collision in x=%d y=%d  \033[0m", new_coord.x,
-        //  new_coord.y);
+  for (int dy = -ecart_obstacle; dy <= ecart_obstacle; ++dy) {
+    for (int dx = -ecart_obstacle; dx <= ecart_obstacle; ++dx) {
+      int x = coordinates_.x + dx;
+      int y = coordinates_.y + dy;
+      if (x < 0 || x >= worldSize.x || y < 0 || y >= worldSize.y ||
+          ocg.data[x + y * worldSize.x] != 0) {
         return true;
       }
     }
   }
-
   return false;
 }
 

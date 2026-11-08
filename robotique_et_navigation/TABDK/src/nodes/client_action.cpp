@@ -1,11 +1,13 @@
 #include <actionlib/client/simple_action_client.h>
 #include <geometry_msgs/Pose2D.h>
+#include <nav_msgs/Path.h>
 #include <ros/ros.h>
 #include <std_msgs/Empty.h>
 #include <std_msgs/Int8.h>
 #include <std_msgs/String.h>
 #include <TABDK/MoveAction.h>
 
+#include <cmath>
 #include <vector>
 
 using namespace actionlib;
@@ -17,6 +19,8 @@ using std::to_string;
 using std::string;
 using std_msgs::Empty;
 using std_msgs::Int8;
+using std_msgs::String;
+using nav_msgs::Path;
 using std_msgs::String;
 
 typedef SimpleActionClient<MoveAction> Client;
@@ -33,6 +37,7 @@ vector<Pose2D> trajectoire;
 bool goal_active = false;
 bool sequence_blocked = false;
 bool mode_manual = false;
+bool mode_auto = false;
 bool mode_received = false;
 bool goal_termine = false;
 
@@ -53,13 +58,36 @@ void resetCallback(const Empty::ConstPtr &, Client *client) {
 }
 
 void modeCallback(const String::ConstPtr &message, Client *client) {
-  const bool nouveau_mode_manual = message->data == "manual";
-  // Ne remettre à zéro qu'à la première réception ou à la sortie du manuel.
-  if (!nouveau_mode_manual && (!mode_received || mode_manual)) {
-    resetClient(client);
+  if (message->data == "manual") {
+    mode_manual = true;
+    mode_auto = false;
+  } else if (message->data == "auto") {
+    mode_manual = false;
+    mode_auto = true;
   }
-  mode_manual = nouveau_mode_manual;
   mode_received = true;
+  if (!mode_manual && !mode_auto) {
+    ROS_WARN_THROTTLE(1.0, "Mode inconnu : %s", message->data.c_str());
+  }
+}
+
+void trajectoireCallback(const Path::ConstPtr &message, Client *client) {
+  if (!mode_received || !mode_auto) {
+    ROS_WARN("Trajectoire ignoree : mode automatique non actif");
+    return;
+  }
+
+  vector<Pose2D> nouvelle_trajectoire;
+  for (const auto &pose : message->poses) {
+    Pose2D waypoint;
+    waypoint.x = pose.pose.position.x;
+    waypoint.y = pose.pose.position.y;
+    nouvelle_trajectoire.push_back(waypoint);
+  }
+
+  resetClient(client);
+  trajectoire = nouvelle_trajectoire;
+  ROS_INFO("Trajectoire automatique remplacee : %zu waypoint(s)", trajectoire.size());
 }
 
 // Les flèches déplacent la cible virtuelle
@@ -164,6 +192,8 @@ int main(int argc, char **argv) {
       "/reset", 10, boost::bind(&resetCallback, _1, &client));
   Subscriber mode_sub = nh.subscribe<String>(
       "/mode", 10, boost::bind(&modeCallback, _1, &client));
+  Subscriber trajectoire_sub = nh.subscribe<nav_msgs::Path>(
+      "/trajectoire", 1, boost::bind(&trajectoireCallback, _1, &client));
   
   if (!attendreServeur(client)) return 0;
 
@@ -174,11 +204,11 @@ int main(int argc, char **argv) {
 
     if (!client.isServerConnected() && !attendreServeur(client)) break;
 
-    if (mode_received && mode_manual && !goal_active && !sequence_blocked &&
+    if (mode_received && (mode_manual || mode_auto) && !goal_active && !sequence_blocked &&
         !trajectoire.empty()) {
       MoveGoal goal;
-      goal.position_x = trajectoire.front().x;
-      goal.position_y = trajectoire.front().y;
+      goal.position_x = trajectoire[0].x;
+      goal.position_y = trajectoire[0].y;
 
       goal_termine = false;
       goal_active = true;

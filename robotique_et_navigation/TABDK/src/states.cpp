@@ -30,7 +30,7 @@ public:
   void initManual() {
     current_state = STOP;
     if (waypoint_active) {
-      // La position peut avoir changé pendant le mode automatique.
+      // La position peut avoir changé depuis le dernier contrôle du waypoint.
       mouvements->position_atteinte = false;
     }
   }
@@ -59,7 +59,7 @@ private:
   int ticks_counter = 0;
 
 public:
-  // Les FSM choisissent l'état ; applyState() exécute ensuite son action.
+  // Le suivi des waypoints est utilisé dans les deux modes.
   void updateFSMManual() {
     switch (current_state) {
     case STOP:

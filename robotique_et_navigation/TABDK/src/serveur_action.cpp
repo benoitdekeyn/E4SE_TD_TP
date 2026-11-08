@@ -142,9 +142,7 @@ private:
     if (!goal) return;
     
     states->waypoint_active = false;
-    if (modes->mode() == MANUAL) {
-      mouvements->stop();
-    }
+    mouvements->stop();
     MoveResult res;
     res.temps_total = params->ticksToMs(ticks_ecoules);
     res.distance_parcourue = odometry->distanceParcourue() - distance_depart;

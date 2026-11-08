@@ -25,11 +25,7 @@ public:
       this->default_mode = MANUAL;
     }
     current_mode = this->default_mode;
-    if (current_mode == AUTO) {
-      states.initAuto();
-    } else {
-      states.initManual();
-    }
+    states.initManual();
   }
 
   void step() {
@@ -41,9 +37,7 @@ public:
       return;
     }
 
-    if (current_mode == AUTO) {
-      states->updateFSMAuto();
-    } else if (current_mode == MANUAL) {
+    if (current_mode == AUTO || current_mode == MANUAL) {
       states->updateFSMManual();
     } else {
       ROS_ERROR("Mode non pris en charge : %s", current_mode.c_str());
@@ -59,14 +53,7 @@ public:
     }
 
     if (mode != current_mode) {
-      if (mode == AUTO) {
-        states->initAuto();
-      } else if (mode == MANUAL) {
-        states->initManual();
-      } else {
-        ROS_ERROR("Mode non pris en charge : %s", mode.c_str());
-        return false;
-      }
+      states->initManual();
       current_mode = mode;
     }
     return true;
@@ -88,9 +75,6 @@ public:
     current_mode = default_mode;
     pause_active = false;
     states->reset();
-    if (current_mode == AUTO) {
-      states->initAuto();
-    }
   }
 
   string mode() const {

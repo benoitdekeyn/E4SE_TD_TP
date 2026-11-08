@@ -23,7 +23,12 @@
 <node pkg="map_server" type="map_server" name="map_server" args="$(arg map_file)" />
 
 <!-- AMCL -->
-  <include file="$(find turtlebot3_navigation)/launch/amcl.launch"/> 
+<!-- AMCL -->
+<include file="$(find turtlebot3_navigation)/launch/amcl.launch">
+  <arg name="initial_pose_x" value="-3.0"/>
+  <arg name="initial_pose_y" value="1.0"/>
+  <arg name="initial_pose_a" value="0.0"/>
+</include>
 
 <!-- rviz -->
   <group if="$(arg open_rviz)"> 

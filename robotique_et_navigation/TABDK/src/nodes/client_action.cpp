@@ -70,23 +70,23 @@ void keyboardCallback(const Int8::ConstPtr &message) {
   switch (message->data) {
   case KEY_UP:
     waypoint_virtuel.x += WAYPOINT_STEP;
-    ROS_INFO("\nWaypoint virtuel deplace en avant\n > x=%.2f\n > y=%.2f\n",
-             waypoint_virtuel.x, waypoint_virtuel.y);
+    ROS_INFO("\nWaypoint virtuel deplace de +%.0fcm en x\n > x=%.2f\n > y=%.2f\n",
+             WAYPOINT_STEP * 100, waypoint_virtuel.x, waypoint_virtuel.y);
     break;
   case KEY_DOWN:
     waypoint_virtuel.x -= WAYPOINT_STEP;
-    ROS_INFO("\nWaypoint virtuel deplace en arriere\n > x=%.2f\n > y=%.2f\n",
-             waypoint_virtuel.x, waypoint_virtuel.y);
+    ROS_INFO("\nWaypoint virtuel deplace de -%.0fcm en x\n > x=%.2f\n > y=%.2f\n",
+             WAYPOINT_STEP * 100, waypoint_virtuel.x, waypoint_virtuel.y);
     break;
   case KEY_LEFT:
-    waypoint_virtuel.y -= WAYPOINT_STEP;
-    ROS_INFO("\nWaypoint virtuel deplace à gauche\n > x=%.2f\n > y=%.2f\n",
-             waypoint_virtuel.x, waypoint_virtuel.y);
+    waypoint_virtuel.y += WAYPOINT_STEP;
+    ROS_INFO("\nWaypoint virtuel deplace de +%.0fcm en y\n > x=%.2f\n > y=%.2f\n",
+             WAYPOINT_STEP * 100, waypoint_virtuel.x, waypoint_virtuel.y);
     break;
   case KEY_RIGHT:
-    waypoint_virtuel.y += WAYPOINT_STEP;
-    ROS_INFO("\nWaypoint virtuel deplace à droite\n > x=%.2f\n > y=%.2f\n",
-             waypoint_virtuel.x, waypoint_virtuel.y);
+    waypoint_virtuel.y -= WAYPOINT_STEP;
+    ROS_INFO("\nWaypoint virtuel deplace de -%.0fcm en y\n > x=%.2f\n > y=%.2f\n",
+             WAYPOINT_STEP * 100, waypoint_virtuel.x, waypoint_virtuel.y);
     break;
   case KEY_W: {
     trajectoire.push_back(waypoint_virtuel);
@@ -128,7 +128,7 @@ void feedbackCallback(const MoveFeedbackConstPtr &feedback) {
     ROS_INFO_THROTTLE(1.0, "\n### EN PAUSE ###");
     return;
   }
-  ROS_INFO("\nFeedback :\n > Position (x=%.2f, y=%.2f)\n > orientation : %.2f\n > vitesse lineaire (x=%.2f, y=%.2f, z=%.2f)\n > vitesse angulaire (x=%.2f, y=%.2f, z=%.2f)\n > distance restante=%.2f\n > temps ecoule=%.0f ms\n > mode=%s\n",
+  ROS_INFO_THROTTLE(1.0, "\nFeedback :\n > Position (x=%.2f, y=%.2f)\n > orientation : %.2f\n > vitesse lineaire (x=%.2f, y=%.2f, z=%.2f)\n > vitesse angulaire (x=%.2f, y=%.2f, z=%.2f)\n > distance restante=%.2f\n > temps ecoule=%.0f ms\n > mode=%s\n",
     feedback->position.x, feedback->position.y,
     feedback->position.theta,
     feedback->vitesse.linear.x, feedback->vitesse.linear.y, feedback->vitesse.linear.z,

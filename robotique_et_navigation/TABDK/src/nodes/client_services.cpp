@@ -54,7 +54,7 @@ bool callSetMode(const string &mode) {
     ROS_WARN("Impossible d'appeler le service /set_mode");
     return false;
   } else if (!service.response.success) {
-    ROS_WARN("Le service /set_mode a échoué");
+    ROS_WARN("Le service /set_mode a echoue");
     return false;
   }
   return true;
@@ -67,7 +67,7 @@ bool callGlobalControl(const string &state) {
     ROS_WARN("Impossible d'appeler le service /global_control");
     return false;
   } else if (!service.response.success) {
-    ROS_WARN("Le service /global_control a échoué");
+    ROS_WARN("Le service /global_control a echoue");
     return false;
   }
   return true;
@@ -76,8 +76,9 @@ bool callGlobalControl(const string &state) {
 void keyboardCallback(const Int8::ConstPtr &message) {
   switch (message->data) {
   case KEY_M: {
+    ROS_INFO("##    Touche 'm' pressée    ##");
     if (!mode_received) {
-      ROS_WARN("Le mode courant n'a pas encore été reçu sur /mode");
+      ROS_WARN("Le mode courant n'a pas encore ete recu sur /mode");
       break;
     }
     string requested_mode;
@@ -90,26 +91,31 @@ void keyboardCallback(const Int8::ConstPtr &message) {
     if (!requested_mode.empty()) {
       if (callSetMode(requested_mode)) {
         current_mode = requested_mode;
-        ROS_INFO("\n\n###    Mode %s active    ###\n", requested_mode.c_str());
+        ROS_INFO("\n\n###    Basculement en MODE %s    ###\n", current_mode.c_str());
       } else {
-        ROS_WARN("Échec du changement de mode vers : %s", requested_mode.c_str());
+        ROS_WARN("Echec du changement de mode vers : %s", requested_mode.c_str());
       }
     } else {
-      ROS_WARN("Mode courant non implémenté : %s", current_mode.c_str());
+      ROS_WARN("Mode courant non implemente : %s", current_mode.c_str());
     }
     break;
   }
   case KEY_P:
+    ROS_INFO("##    Touche 'p' pressee    ##");
     if (!pause_received) {
-      ROS_WARN("L'état de pause n'a pas encore été reçu sur /pause");
+      ROS_WARN("L'etat de pause n'a pas encore ete recu sur /pause");
       break;
     }
     if (callGlobalControl(is_paused ? "play" : "pause")) {
       is_paused = !is_paused;
+      ROS_INFO("##    Mise en %s    ##", is_paused ? "pause" : "play");
     }
     break;
   case KEY_R:
-    callGlobalControl("reset");
+    ROS_INFO("##    Touche 'r' pressee    ##");
+    if (callGlobalControl("reset")) {
+      ROS_INFO("###    Reinitialisation du Robot    ###");
+    }
     break;
   default:
     break;

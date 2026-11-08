@@ -12,7 +12,7 @@
   waypoint_step     : 0.1
   move_smooth       : true
   move_back         : true
-  default_mode      : manual
+  default_mode      : auto
 
   move_fwd_tm       : 3000
   move_bwd_tm       : 4000

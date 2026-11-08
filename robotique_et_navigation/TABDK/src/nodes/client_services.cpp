@@ -76,7 +76,7 @@ bool callGlobalControl(const string &state) {
 void keyboardCallback(const Int8::ConstPtr &message) {
   switch (message->data) {
   case KEY_M: {
-    ROS_INFO("##    Touche 'm' pressée    ##");
+    ROS_INFO("\n##    Touche 'm' pressee    ##\n");
     if (!mode_received) {
       ROS_WARN("Le mode courant n'a pas encore ete recu sur /mode");
       break;
@@ -101,7 +101,7 @@ void keyboardCallback(const Int8::ConstPtr &message) {
     break;
   }
   case KEY_P:
-    ROS_INFO("##    Touche 'p' pressee    ##");
+    ROS_INFO("\n##    Touche 'p' pressee    ##\n");
     if (!pause_received) {
       ROS_WARN("L'etat de pause n'a pas encore ete recu sur /pause");
       break;
@@ -112,9 +112,9 @@ void keyboardCallback(const Int8::ConstPtr &message) {
     }
     break;
   case KEY_R:
-    ROS_INFO("##    Touche 'r' pressee    ##");
+    ROS_INFO("\n##    Touche 'r' pressee    ##\n");
     if (callGlobalControl("reset")) {
-      ROS_INFO("###    Reinitialisation du Robot    ###");
+      ROS_INFO("\n###    Reinitialisation du Robot    ###\n");
     }
     break;
   default:

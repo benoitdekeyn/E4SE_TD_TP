@@ -67,7 +67,6 @@ public:
     case REACH_POSITION_SMOOTH:
       if (!waypoint_active || mouvements->position_atteinte) {
         waypoint_active = false;
-        // Réinitialise l'indicateur lorsque la FSM quitte le suivi.
         mouvements->position_atteinte = false;
         current_state = STOP;
       }
@@ -120,18 +119,21 @@ public:
       if (params->msToTicks(params->move_fwd_tm) == ticks_counter) {
         ticks_counter = 0;
         current_state = STOP;
+        ROS_INFO("\n###    STOP pour %d ms    ###\n", params->move_stp_tm);
       }
       break;
     case STOP:
       if (params->msToTicks(params->move_stp_tm) == ticks_counter) {
         ticks_counter = 0;
         current_state = BACKWARD;
+        ROS_INFO("\n###    BACKWARD pour %d ms    ###\n", params->move_bwd_tm);
       }
       break;
     case BACKWARD:
       if (params->msToTicks(params->move_bwd_tm) == ticks_counter) {
         ticks_counter = 0;
         current_state = FORWARD;
+        ROS_INFO("\n###    FORWARD pour %d ms    ###\n", params->move_fwd_tm);
       }
       break;
     default:

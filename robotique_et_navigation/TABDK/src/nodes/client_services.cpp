@@ -1,5 +1,6 @@
 #include "ros/ros.h"
 #include "std_msgs/Bool.h"
+#include "std_msgs/Empty.h"
 #include "std_msgs/Int8.h"
 #include "std_msgs/String.h"
 #include "TABDK/global_control.h"
@@ -13,6 +14,7 @@ using namespace ros;
 using namespace TABDK;
 using std::string;
 using std_msgs::Bool;
+using std_msgs::Empty;
 using std_msgs::Int8;
 using std_msgs::String;
 
@@ -26,6 +28,14 @@ string current_mode;
 bool is_paused = false;
 bool mode_received = false;
 bool pause_received = false;
+
+void resetCallback(const Empty::ConstPtr &) {
+  current_mode.clear();
+  is_paused = false;
+  // Attendre les prochains états publiés par le contrôleur.
+  mode_received = false;
+  pause_received = false;
+}
 
 void modeCallback(const String::ConstPtr &message) {
   current_mode = message->data;
@@ -71,15 +81,16 @@ void keyboardCallback(const Int8::ConstPtr &message) {
       break;
     }
     string requested_mode;
-    if (current_mode == "auto") {
-      requested_mode = "manual";
+    if (current_mode == AUTO) {
+      requested_mode = MANUAL;
     }
-    if (current_mode == "manual") {
-      requested_mode = "auto";
+    if (current_mode == MANUAL) {
+      requested_mode = AUTO;
     }
     if (!requested_mode.empty()) {
       if (callSetMode(requested_mode)) {
         current_mode = requested_mode;
+        ROS_INFO("\n\n###    Mode %s active    ###\n", requested_mode.c_str());
       } else {
         ROS_WARN("Échec du changement de mode vers : %s", requested_mode.c_str());
       }
@@ -98,10 +109,7 @@ void keyboardCallback(const Int8::ConstPtr &message) {
     }
     break;
   case KEY_R:
-    if (callGlobalControl("reset")) {
-      current_mode = DEFAULT_MODE;
-      is_paused = false;
-    }
+    callGlobalControl("reset");
     break;
   default:
     break;
@@ -116,6 +124,7 @@ int main(int argc, char **argv) {
   client_global_control     = nh.serviceClient<global_control>("/global_control");
   Subscriber mode_sub       = nh.subscribe("/mode", 10, modeCallback);
   Subscriber pause_sub      = nh.subscribe("/pause", 10, pauseCallback);
+  Subscriber reset_sub      = nh.subscribe("/reset", 10, resetCallback);
   Subscriber key_input_sub  = nh.subscribe("/keyboard_input", 1000, keyboardCallback);
 
   spin();

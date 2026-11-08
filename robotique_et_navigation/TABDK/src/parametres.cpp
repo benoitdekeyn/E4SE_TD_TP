@@ -1,6 +1,7 @@
 #ifndef PARAMETRES_CPP
 #define PARAMETRES_CPP
 
+#include <cstdint>
 #include <ros/ros.h>
 #include "calculs.cpp"
 using namespace ros;
@@ -44,6 +45,11 @@ public:
   // Convertit un temps en millisecondes en nombre de tics de la boucle
   int msToTicks(int ms) {
     return frequence * ms / 1000;
+  }
+
+  // Convertit les tics de la boucle en millisecondes.
+  double ticksToMs(std::uint64_t ticks) const {
+    return ticks * 1000.0 / frequence;
   }
 };
 

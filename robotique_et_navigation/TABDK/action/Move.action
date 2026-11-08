@@ -4,13 +4,14 @@ float64 position_y
 ---
 # attributs de MoveResult
 bool atteint
-float64 temps_pris           # secondes, hors temps de pause
-float64 distance_parcourue   # mètres
+float64 temps_total            # millisecondes, hors temps de pause
+float64 distance_parcourue     # mètres
 geometry_msgs/Pose2D position
 ---
 # attributs de MoveFeedback
 geometry_msgs/Pose2D position
 geometry_msgs/Twist vitesse
 float64 distance_restante   # mètres
+float64 temps_ecoule        # millisecondes, hors temps de pause
 string mode                 # "manual" ou "auto"
 bool pause

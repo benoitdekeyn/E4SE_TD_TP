@@ -4,6 +4,7 @@
 #include <actionlib/server/simple_action_server.h>
 #include <TABDK/MoveAction.h>
 #include <ros/ros.h>
+#include "parametres.cpp"
 #include "mouvements.cpp"
 #include "modes.cpp"
 #include "states.cpp"
@@ -17,19 +18,33 @@ class ServeurAction {
 public:
   typedef SimpleActionServer<MoveAction> Server;
 
-  void init(NodeHandle &nh, Mouvements &mouvements, Modes &modes, Odometry &odometry, States &states) {
+  void init(NodeHandle &nh, Params &params, Mouvements &mouvements, Modes &modes, Odometry &odometry, States &states) {
+    this->nh = &nh;
+    this->params = &params;
     this->mouvements = &mouvements;
     this->modes = &modes;
     this->odometry = &odometry;
     this->states = &states;
 
-    // Enregistrement des callbacks d'action
-    server = new Server(nh, "moving", false);
-    server->registerGoalCallback([this]() { execute(); });
-    server->registerPreemptCallback([this]() { preempter(); });
+    demarrer();
+  }
+
+  // Recree actionlib après une remise à zéro de l'horloge de simulation.
+  void redemarrer() {
+    delete server;
+    server = nullptr;
+    demarrer();
+  }
+
+private:
+  void demarrer() {
+    server = new Server(*nh, "moving", false);
+    server->registerGoalCallback(boost::bind(&ServeurAction::execute, this));
+    server->registerPreemptCallback(boost::bind(&ServeurAction::preempter, this));
     server->start();
   }
 
+public:
   // Destructeur pcq on a utilisé 'new' dans init()
   ~ServeurAction() {
     if (server) delete server;
@@ -39,32 +54,48 @@ public:
   void reset() {
     states->waypoint_active = false;
     if (server->isActive()) {
-      server->setPreempted(MoveResult(), "Robot reset");
+      MoveResult res;
+      res.temps_total = params->ticksToMs(ticks_ecoules);
+      res.distance_parcourue = odometry->distanceParcourue() - distance_depart;
+      res.position = odometry->position;
+      server->setPreempted(res, "Robot reset");
     }
     goal.reset();
+    ticks_ecoules = 0;
     if (server->isNewGoalAvailable()) {
       server->acceptNewGoal();
       server->setPreempted(MoveResult(), "Robot reset");
     }
   }
 
-  // Appelee  chaque tour de la while(ok) de ros
+  // Appelee achaque tour de la while(ok) de ros
   void step() {
     if (!goal) return;
 
-    // Feedback
+    // Un tick représente une période de la boucle, sauf pendant la pause.
+    if (!modes->paused()) {
+      ++ticks_ecoules;
+    }
+
+    // Publication du feedback
     MoveFeedback fb;
     fb.position = odometry->position;
+    fb.vitesse = odometry->vitesse;
     fb.distance_restante = odometry->distanceToPosition(goal->position_x, goal->position_y);
+    fb.temps_ecoule = params->ticksToMs(ticks_ecoules);
     fb.mode = modes->mode();
     fb.pause = modes->paused();
     server->publishFeedback(fb);
 
-    // Check de l'atteinte du goal en cours
-    if (!states->waypoint_active) {
+    // Si on a atteint le goal, on publie le résultat
+    if (mouvements->position_atteinte) {
       MoveResult res;
       res.atteint = true;
+      res.temps_total = params->ticksToMs(ticks_ecoules);
+      res.distance_parcourue = odometry->distanceParcourue() - distance_depart;
       res.position = odometry->position;
+      // Ne pas reprendre un waypoint terminé après un changement de mode.
+      states->waypoint_active = false;
       server->setSucceeded(res);
       goal.reset();
     }
@@ -72,16 +103,23 @@ public:
 
 private:
   Server *server = nullptr;
+  NodeHandle *nh = nullptr;
+  Params *params = nullptr;
   Mouvements *mouvements = nullptr;
   Modes *modes = nullptr;
   Odometry *odometry = nullptr;
   States *states = nullptr;
   
   MoveGoalConstPtr goal;
+  std::uint64_t ticks_ecoules = 0;
+  double distance_depart = 0.0;
 
   // Déclenché automatiquement quand le client_action envoie un nouveau goal
   void execute() {
     goal = server->acceptNewGoal();
+    ticks_ecoules = 0;
+    // Le compteur d'odométrie est cumulé ; on mémorise son début pour ce goal.
+    distance_depart = odometry->distanceParcourue();
     
     if (server->isPreemptRequested()) {
       preempter();
@@ -102,7 +140,11 @@ private:
     if (modes->mode() == MANUAL) {
       mouvements->stop();
     }
-    server->setPreempted();
+    MoveResult res;
+    res.temps_total = params->ticksToMs(ticks_ecoules);
+    res.distance_parcourue = odometry->distanceParcourue() - distance_depart;
+    res.position = odometry->position;
+    server->setPreempted(res);
     goal.reset();
   }
 };

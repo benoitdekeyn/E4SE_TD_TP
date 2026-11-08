@@ -19,32 +19,19 @@ public:
   typedef SimpleActionServer<MoveAction> Server;
 
   void init(NodeHandle &nh, Params &params, Mouvements &mouvements, Modes &modes, Odometry &odometry, States &states) {
-    this->nh = &nh;
     this->params = &params;
     this->mouvements = &mouvements;
     this->modes = &modes;
     this->odometry = &odometry;
     this->states = &states;
 
-    demarrer();
-  }
-
-  // Recree actionlib après une remise à zéro de l'horloge de simulation.
-  void redemarrer() {
-    delete server;
-    server = nullptr;
-    demarrer();
-  }
-
-private:
-  void demarrer() {
-    server = new Server(*nh, "moving", false);
+    // Enregistrement des callbacks d'action
+    server = new Server(nh, "moving", false);
     server->registerGoalCallback(boost::bind(&ServeurAction::execute, this));
     server->registerPreemptCallback(boost::bind(&ServeurAction::preempter, this));
     server->start();
   }
 
-public:
   // Destructeur pcq on a utilisé 'new' dans init()
   ~ServeurAction() {
     if (server) delete server;
@@ -103,7 +90,6 @@ public:
 
 private:
   Server *server = nullptr;
-  NodeHandle *nh = nullptr;
   Params *params = nullptr;
   Mouvements *mouvements = nullptr;
   Modes *modes = nullptr;

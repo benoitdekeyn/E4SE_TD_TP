@@ -36,9 +36,9 @@ bool mode_manual = false;
 bool mode_received = false;
 bool goal_termine = false;
 
-void resetClient(Client *client, bool annuler_goal) {
+void resetClient(Client *client) {
   if (goal_active) {
-    if (annuler_goal) client->cancelGoal();
+    client->cancelGoal();
     client->stopTrackingGoal();
   }
   waypoint_virtuel = Pose2D();
@@ -49,15 +49,14 @@ void resetClient(Client *client, bool annuler_goal) {
 }
 
 void resetCallback(const Empty::ConstPtr &, Client *client) {
-  // Le serveur a déjà préempté le goal lors du reset global.
-  resetClient(client, false);
+  resetClient(client);
 }
 
 void modeCallback(const String::ConstPtr &message, Client *client) {
   const bool nouveau_mode_manual = message->data == "manual";
   // Ne remettre à zéro qu'à la première réception ou à la sortie du manuel.
   if (!nouveau_mode_manual && (!mode_received || mode_manual)) {
-    resetClient(client, true);
+    resetClient(client);
   }
   mode_manual = nouveau_mode_manual;
   mode_received = true;
@@ -162,8 +161,7 @@ int main(int argc, char **argv) {
   while (ok()) {
     spinOnce(); // Maj keyboard
 
-    if (mode_received && mode_manual && client.isServerConnected() &&
-        !goal_active && !sequence_blocked &&
+    if (mode_received && mode_manual && !goal_active && !sequence_blocked &&
         !trajectoire.empty()) {
       MoveGoal goal;
       goal.position_x = trajectoire.front().x;

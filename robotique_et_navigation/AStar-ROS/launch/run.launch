@@ -28,7 +28,8 @@
 <!-- rviz -->
   <group if="$(arg open_rviz)"> 
     <node pkg="rviz" type="rviz" name="rviz" required="true"
-          args="-d $(find turtlebot3_navigation)/rviz/turtlebot3_navigation.rviz"/>
+          args="-d $(find path_generator)/rviz/turtlebot3_navigation_tabdk.rviz"/>
+<!--      args="-d $(find turtlebot3_navigation)/rviz/turtlebot3_navigation.rviz"/> -->
   </group>
 
 <node pkg="$(arg project)" type="$(arg project)" name="$(arg project)" output="screen" respawn="true" />

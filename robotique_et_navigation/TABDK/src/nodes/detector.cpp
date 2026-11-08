@@ -25,7 +25,8 @@ vector<float> distances;
 vector<float> min_distances;
 Publisher marker_pub;
 
-#define SEUIL_OBSTACLE 1 //m
+#define SEUIL_OBSTACLE 0.3 //m
+#define SEUIL_MAX 3.5f // m
 
 // PROTOTYPE DES FONCTIONS
 float get_minimum(vector<float> data, int debut, int fin, int *indiceMin);
@@ -35,7 +36,7 @@ void filtrer_distances(vector<float>& data, float seuil_min, float seuil_max);
 // FONCTIONS MARKERS
 const char* FRAME_MARKERS = "base_scan";
 const float OFFSET_LABEL = 0.18; // m, décalage du texte vers l'extérieur
-const float LONGUEUR_RAYON = 10.5; // m
+const float LONGUEUR_RAYON = SEUIL_MAX + 0.5; // m, longueur des rayons pour la visualisation
 
 float angle_region_rad(int i) {
   return ((i + 0.5) * ANGLE_REGION) * M_PI / 180.0;
@@ -132,7 +133,7 @@ vector<Marker> make_ray_labels() {
     txt.scale.z = 0.6;
     txt.color.r = txt.color.g = txt.color.b = 0.7;
     txt.color.a = 1.0;
-    txt.text = to_string(angle_deg);
+    txt.text = to_string(angle_deg) + "°";
     labels.push_back(txt);
   }
   return labels;
@@ -175,7 +176,7 @@ void scanCallback(const LaserScan::ConstPtr& scan) {
   // ROS_INFO(" --- Mesures a 360 LIDAR --- ");
   distances = scan->ranges;
   int angle_deg_increment = scan->angle_increment * 180 / M_PI;
-  filtrer_distances(distances, scan->range_min, scan->range_max);
+  filtrer_distances(distances, scan->range_min, SEUIL_MAX);
 
   float min_region_i;
   int indice_min_i;
@@ -205,7 +206,7 @@ int main(int argc, char **argv) {
   Rate loop_rate(5); //Hz
 
   Subscriber scan_sub = nh.subscribe("/scan", 1, scanCallback);
-  marker_pub = nh.advertise<MarkerArray>("/lidar_visualization", 0);
+  marker_pub = nh.advertise<MarkerArray>("/obstacles_markers", 0);
 
   spin();
 
@@ -222,7 +223,7 @@ float get_minimum(vector<float> data, int debut, int fin, int *indice_min) {
       *indice_min = i;
     }
   }
-  return min(10.0f, distance_min);
+  return min(SEUIL_MAX, distance_min);
 }
 
 void filtrer_distances(vector<float>& data, float seuil_min, float seuil_max) {

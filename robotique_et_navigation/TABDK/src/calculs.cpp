@@ -21,6 +21,12 @@ double cal_angle_offset(double current_angle, double offset) {
   return new_angle;
 }
 
+// Commande proportionnelle en valeur absolue, bridée à vitesse_max.
+double commande_proportionnelle(double Kp, double erreur, double vitesse_max) {
+  const double commande = fabs(Kp * erreur);
+  return commande > vitesse_max ? vitesse_max : commande;
+}
+
 // Différence angulaire signée entre deux angles, normalisée entre -π et π (radians).
 float cal_delta_Theta(float _theta, float _theta0) {
   float theta, theta0, delta_theta;

@@ -22,6 +22,8 @@ public:
   double precision_angular  = 1; // deg
 
   double waypoint_step      = 0.1; // m
+  bool move_smooth          = true;
+  bool move_back            = true; // sans effet si move_smooth est false
   std::string default_mode  = "manual";
 
   int move_fwd_tm = 3000; // ms
@@ -39,6 +41,8 @@ public:
     nh.getParam("trigger_pivot", trigger_pivot);
     nh.getParam("precision_angular", precision_angular);
     nh.getParam("waypoint_step", waypoint_step);
+    nh.getParam("move_smooth", move_smooth);
+    nh.getParam("move_back", move_back);
     nh.getParam("default_mode", default_mode);
     nh.getParam("move_fwd_tm", move_fwd_tm);
     nh.getParam("move_bwd_tm", move_bwd_tm);

@@ -22,21 +22,10 @@ struct Targets {
   double y = 0.0;
 };
 
-// Valeurs intermédiaires de reachPosition, utiles pour le debug
-struct PositionDebug {
-  double angle_target = 0.0;
-  double erreur_angle = 0.0;
-  double erreur_distance = 0.0;
-  double delta_x = 0.0;
-  double delta_y = 0.0;
-  bool pivot_en_cours = false;
-};
-
 // Commande des moteurs via /cmd_vel
 class Mouvements {
 public:
   Targets targets;
-  PositionDebug debug;
   // Mis à true par reachPositionSmooth() quand la cible est dans la tolérance.
   bool position_atteinte = false;
 
@@ -58,7 +47,7 @@ public:
   void reset() {
     stop();
     targets = Targets();
-    debug = PositionDebug();
+    pivot_en_cours = false;
     position_atteinte = false;
   }
 
@@ -167,38 +156,22 @@ public:
    * @return void
    */
   void reachPosition(double x, double y) {
-    debug.delta_x = x - odom->position.x;
-    debug.delta_y = y - odom->position.y;
-    debug.angle_target = atan2(debug.delta_y, debug.delta_x);
-    debug.erreur_distance = sqrt(pow(debug.delta_x, 2) + pow(debug.delta_y, 2));
-    debug.erreur_angle = cal_delta_Theta(debug.angle_target, odom->position.theta);
+    position_atteinte = false;
+    double erreur_distance = odom->distanceToPosition(x, y);
+    double erreur_angle = calculerErreurAngle(x, y, false);
 
     // Si l'erreur angulaire est supérieure au seuil, pivoter pour s'aligner avec la cible.
-    if (fabs(debug.erreur_angle) > precision_angular) {
-
-      // Calcul de la commande de contrôle angulaire proportionnelle à l'erreur angulaire.
-      double soft_angular_speed = fabs(Kp_angular * debug.erreur_angle);
-      soft_angular_speed = soft_angular_speed > angular_speed ? angular_speed : soft_angular_speed;
-
-      // Pivoter dans la direction appropriée en fonction du signe de l'erreur angulaire.
-      if (debug.erreur_angle > precision_angular) {
-        pivoter(soft_angular_speed);
-      } else if (debug.erreur_angle < -precision_angular) {
-        pivoter(-soft_angular_speed);
-      }
+    if (fabs(erreur_angle) > precision_angular) {
+      pivoterVersCible(Kp_angular, erreur_angle);
     }
     // Si l'erreur angulaire est dans le seuil, contrôler la distance vers la cible.
     else
     {
-      // Calcul de la commande de contrôle proportionnelle à l'erreur de distance.
-      double soft_linear_speed = fabs(Kp_linear * debug.erreur_distance);
-      soft_linear_speed = soft_linear_speed > linear_speed ? linear_speed : soft_linear_speed;
-
-      // Déterminer la direction du mouvement en fonction de l'erreur de distance.
-      if (debug.erreur_distance > precision_linear) {
-        forward(soft_linear_speed);
+      if (erreur_distance > precision_linear) {
+        forward(commande_proportionnelle(Kp_linear, erreur_distance, linear_speed));
       } else {
         stop();
+        position_atteinte = true;
       }
     }
   }
@@ -212,76 +185,54 @@ public:
    * Correcteur PROPORTIONNEL -> Kp_ANG pour l'angle.
    * @param x La position cible sur l'axe x.
    * @param y La position cible sur l'axe y.
+   * @param arriere Si vrai, vise l'angle opposé (cible + π) et recule.
    * @return void
    */
-  void reachPositionSmooth(double x, double y) {
+  void reachPositionSmooth(double x, double y, bool arriere = false) {
     position_atteinte = false;
-    debug.delta_x = x - odom->position.x;
-    debug.delta_y = y - odom->position.y;
-    debug.angle_target = atan2(debug.delta_y, debug.delta_x);
-    debug.erreur_distance = sqrt(pow(debug.delta_x, 2) + pow(debug.delta_y, 2));
-    debug.erreur_angle = cal_delta_Theta(debug.angle_target, odom->position.theta);
+    double erreur_distance = odom->distanceToPosition(x, y);
+    double erreur_angle = calculerErreurAngle(x, y, arriere);
 
-    if (debug.erreur_distance < precision_linear && debug.erreur_distance > -precision_linear) {
+    // Si la distance à la cible est déjà dans la précision, on s'arrête immédiatement.
+    if (erreur_distance < precision_linear) {
       stop();
       position_atteinte = true;
       return;
     }
 
-    // Si l'erreur angulaire est supérieure au seuil de pivot bloquant, on pivote pour s'aligner avec la cible.
-    if (fabs(debug.erreur_angle) > trigger_pivot) {
-      debug.pivot_en_cours = true;
+    // Si l'erreur angulaire est supérieure au seuil de pivot bloquant, 
+    // on pivote pour s'aligner avec la cible.
+    
+    if (fabs(erreur_angle) > trigger_pivot) {
+      pivot_en_cours = true;
     }
 
-    if (debug.pivot_en_cours == true) 
+    if (pivot_en_cours)
     {
-      // Calcul de la commande de contrôle angulaire proportionnelle à l'erreur angulaire.
-      double soft_angular_speed = fabs(Kp_pivot * debug.erreur_angle);
-      // Limitation de la vitesse angulaire pour ne pas dépasser la vitesse maximale autorisée.
-      soft_angular_speed = soft_angular_speed > angular_speed ? angular_speed : soft_angular_speed;
-
-      // Pivoter dans la direction appropriée en fonction du signe de l'erreur angulaire.
-      if (debug.erreur_angle > precision_angular) {
-        pivoter(soft_angular_speed);
-      } else if (debug.erreur_angle < -precision_angular) {
-        pivoter(-soft_angular_speed);
-      } else {
-        debug.pivot_en_cours = false;
+      if (!pivoterVersCible(Kp_pivot, erreur_angle)) {
+        pivot_en_cours = false;
       }
     }
+
     // Si l'erreur angulaire est dans le seuil de correction en parallèle de l'avancement,
     // on avance ou recule en fonction de l'erreur de distance, tout en ajustant l'angle en parallèle si nécessaire.
     else
     {
-      // Calcul de la commande de contrôle proportionnelle à l'erreur de distance.
-      double soft_linear_speed = fabs(Kp_linear * debug.erreur_distance);
-      // Bridage de la vitesse linéaire pour ne pas dépasser la vitesse maximale autorisée.
-      soft_linear_speed = soft_linear_speed > linear_speed ? linear_speed : soft_linear_speed;
+      double soft_linear_speed = commande_proportionnelle(Kp_linear, erreur_distance, linear_speed);
+      double soft_angular_speed = commande_proportionnelle(Kp_angular, erreur_angle, angular_speed);
 
-      // Calcul de la commande de contrôle angulaire proportionnelle à l'erreur angulaire
-      double soft_angular_speed = fabs(Kp_angular * debug.erreur_angle);
-      soft_angular_speed = soft_angular_speed > angular_speed ? angular_speed : soft_angular_speed;
-
-      // Déterminer le mouvement linéaire en fonction de l'erreur de distance.
-      if (debug.erreur_distance > precision_linear) {
-        soft_linear_speed = soft_linear_speed;
-      } else if (debug.erreur_distance < -precision_linear) {
+      // Si on doit aller en arrière, on inverse la vitesse linéaire 
+      if (arriere) {
         soft_linear_speed = -soft_linear_speed;
-      } else {
-        soft_linear_speed = 0;
       }
 
-      // Déterminer la rotation angulaire en fonction de l'erreur angulaire.
-      if (soft_linear_speed != 0) {
-        if (debug.erreur_angle > precision_angular) {
-          soft_angular_speed = soft_angular_speed;
-        } else if (debug.erreur_angle < -precision_angular) {
-          soft_angular_speed = -soft_angular_speed;
-        } else {
-          soft_angular_speed = 0;
-        }
-      } else {
+      // Si l'erreur angulaire est dans la précision, on ne tourne pas.
+      if (fabs(erreur_angle) <= precision_angular) {
         soft_angular_speed = 0;
+      }
+      // Si l'erreur angulaire est négative, on inverse la vitesse angulaire.
+      else if (erreur_angle < 0) {
+        soft_angular_speed = -soft_angular_speed;
       }
 
       // Appliquer les vitesses linéaire et angulaire calculées.
@@ -289,7 +240,46 @@ public:
     }
   }
 
+  /**
+   * Comme reachPositionSmooth, mais choisit la marche arrière quand la cible
+   * est à plus de 90° de l'axe avant du robot (derrière lui).
+   */
+  void reachPositionSmoothBack(double x, double y) {
+    double erreur_angle_abs = fabs(calculerErreurAngle(x, y, false));
+    bool arriere = erreur_angle_abs > M_PI / 2;
+
+    reachPositionSmooth(x, y, arriere);
+  }
+
 private:
+
+  // Erreur angulaire vers la cible ; en marche arrière, l'angle visé est décalé de π.
+  double calculerErreurAngle(double x, double y, bool arriere) {
+    double angle_cible = atan2(y_cible - odom->position.y, x_cible - odom->position.x);
+
+    // si on est en marche arriere, on retourne à 180° la cible
+    if (arriere) {
+      angle_cible = cal_angle_offset(angle_cible, M_PI);
+    }
+    return cal_delta_Theta(angle_cible, odom->position.theta);
+  }
+
+  // Pivote vers la cible avec le gain Kp. Retourne false si l'erreur est dans la précision angulaire.
+  bool pivoterVersCible(double Kp, double erreur_angle) {
+    double vitesse = commande_proportionnelle(Kp, erreur_angle, angular_speed);
+    if (erreur_angle > precision_angular) {
+      pivoter(vitesse);
+      return true;
+    }
+    if (erreur_angle < -precision_angular) {
+      pivoter(-vitesse);
+      return true;
+    }
+    return false;
+  }
+
+  // Mémorise qu'un pivot bloquant est en cours entre deux appels.
+  bool pivot_en_cours = false;
   double Kp_linear;
   double precision_linear;
   double Kp_pivot;

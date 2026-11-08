@@ -127,6 +127,13 @@ private:
     mouvements->targets.x = goal->position_x;
     mouvements->targets.y = goal->position_y;
     mouvements->position_atteinte = false;
+    if (!params->move_smooth) {
+      states->waypoint_state = REACH_POSITION;
+    } else if (params->move_back) {
+      states->waypoint_state = REACH_POSITION_SMOOTH_BACK;
+    } else {
+      states->waypoint_state = REACH_POSITION_SMOOTH;
+    }
     states->waypoint_active = true;
   }
 

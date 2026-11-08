@@ -10,6 +10,8 @@
   precision_angular : 1.0
 
   waypoint_step     : 0.1
+  move_smooth       : true
+  move_back         : true
   default_mode      : manual
 
   move_fwd_tm       : 3000

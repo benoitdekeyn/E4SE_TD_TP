@@ -7,9 +7,10 @@ enum RobotState {
   PIVOTER_GAUCHE,
   PIVOTER_DROITE,
   STOP,
+  REACH_POSITION_X,
   REACH_POSITION,
   REACH_POSITION_SMOOTH,
-  REACH_POSITION_X,
+  REACH_POSITION_SMOOTH_BACK,
   REACH_ANGLE
 };
 
@@ -18,6 +19,8 @@ enum RobotState {
 class States {
 public:
   bool waypoint_active = false;
+  // État utilisé pour rejoindre un waypoint, choisi par le serveur d'action.
+  RobotState waypoint_state = REACH_POSITION_SMOOTH;
 
   void init(Params &params, Mouvements &mouvements) {
     this->params = &params;
@@ -61,10 +64,12 @@ public:
     switch (current_state) {
     case STOP:
       if (waypoint_active) {
-        current_state = REACH_POSITION_SMOOTH;
+        current_state = waypoint_state;
       }
       break;
+    case REACH_POSITION:
     case REACH_POSITION_SMOOTH:
+    case REACH_POSITION_SMOOTH_BACK:
       if (!waypoint_active || mouvements->position_atteinte) {
         waypoint_active = false;
         mouvements->position_atteinte = false;
@@ -94,15 +99,19 @@ public:
     case BACKWARD:
       mouvements->backward(params->linear_speed);
       break;
+      case REACH_POSITION_X:
+        mouvements->reachPositionX(mouvements->targets.position_x);
+        break;
     case REACH_POSITION:
       mouvements->reachPosition(mouvements->targets.x, mouvements->targets.y);
       break;
     case REACH_POSITION_SMOOTH:
       mouvements->reachPositionSmooth(mouvements->targets.x,
-                                       mouvements->targets.y);
+                                      mouvements->targets.y);
       break;
-    case REACH_POSITION_X:
-      mouvements->reachPositionX(mouvements->targets.position_x);
+    case REACH_POSITION_SMOOTH_BACK:
+      mouvements->reachPositionSmoothBack(mouvements->targets.x,
+                                          mouvements->targets.y);
       break;
     case REACH_ANGLE:
       mouvements->reachAngle(mouvements->targets.angle);

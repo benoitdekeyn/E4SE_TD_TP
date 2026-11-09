@@ -336,7 +336,6 @@ void prevent_collision() {
         callGlobalControl("play");
       }
     }
-    was_obstacle_on_back = false;
     return;
   }
 
@@ -346,6 +345,7 @@ void prevent_collision() {
     int delay_before_collision = fabs(min_distances[REGION_FACE] / linear_speed);
     if (delay_before_collision < MIN_DELAY_COLLISION) {
       distance_to_last_obstacle = min_distances[REGION_FACE];
+      was_obstacle_on_back = false;
       collision_pause = true;
       ROS_WARN("Collision imminente! Arret du robot.");
       callGlobalControl("pause");
@@ -355,6 +355,7 @@ void prevent_collision() {
     int delay_before_collision = fabs(min_distances[REGION_DOS]  / linear_speed);
     if (delay_before_collision < MIN_DELAY_COLLISION) {
       distance_to_last_obstacle = min_distances[REGION_DOS];
+      was_obstacle_on_back = true;
       collision_pause = true;
       ROS_WARN("Collision imminente! Arret du robot.");
       callGlobalControl("pause");

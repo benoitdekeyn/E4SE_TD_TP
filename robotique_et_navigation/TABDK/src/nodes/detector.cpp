@@ -9,20 +9,30 @@
 #include <cfloat>
 #include <cmath>
 #include "TABDK/global_control.h"
+#include <geometry_msgs/Twist.h>
+#include <std_msgs/Bool.h>
 
 using namespace ros;
 using namespace std;
+using namespace TABDK;
 using std_msgs::ColorRGBA;
 using geometry_msgs::Point;
 using visualization_msgs::Marker;
 using visualization_msgs::MarkerArray;
+using geometry_msgs::Twist;
 using sensor_msgs::LaserScan;
+using std_msgs::Bool;
 
 // VARIABLES GLOBALES
 int NBR_REGION = 8;
 int SCAN_SAMPLE = 360;
 int OFFSET_REGIONS = -22.5f;
 int ANGLE_REGION = SCAN_SAMPLE / NBR_REGION;
+float linear_speed = 0.0f;
+bool robot_pause = false;
+bool collision_pause = false;
+bool was_obstacle_on_back = false;
+float distance_to_last_obstacle = FLT_MAX;
 vector<float> distances;
 vector<float> min_distances;
 Publisher marker_pub;
@@ -30,7 +40,7 @@ ServiceClient client_global_control;
 
 #define SEUIL_OBSTACLE 0.3 //m
 #define SEUIL_MAX 3.5f // m
-#define MIN_DELAY_COLLISION 2f //s
+#define MIN_DELAY_COLLISION 2.0f //s
 #define REGION_FACE 0
 #define REGION_DOS 4
 
@@ -39,7 +49,7 @@ ServiceClient client_global_control;
 void filtrer_distances(vector<float>& data, float seuil_min, float seuil_max);
 void get_region_angle_limites(int indice_region, int *angle_debut, int *angle_fin);
 float get_minimum(vector<float> data, double angle_debut, double angle_fin, int *indice_min, int angle_per_index);
-
+void prevent_collision();
 
 // FONCTIONS MARKERS
 const char* FRAME_MARKERS = "base_scan";
@@ -204,16 +214,24 @@ void scanCallback(const LaserScan::ConstPtr& scan) {
 
     min_region_i = get_minimum(distances, angle_debut, angle_fin, &indice_min_i, angle_deg_increment);
     min_distances.push_back(min_region_i);
-    
+    /*
     ROS_INFO("Region %d: min distance = %f a %d deg", i, min_region_i, indice_min_i * angle_deg_increment);
     if (min_region_i < SEUIL_OBSTACLE) {
       ROS_WARN("Obstacle detecte dans la region %d! (entre %d et %d deg)", i, angle_debut, angle_fin);
     }
+    */
     
   }
   update_markers();
   prevent_collision();
+}
 
+void cmdVelCallback(const Twist::ConstPtr& msg) {
+  linear_speed = msg->linear.x;
+}
+
+void pauseCallback(const Bool::ConstPtr& msg) {
+  robot_pause = msg->data;
 }
 
 int main(int argc, char **argv) {
@@ -225,6 +243,8 @@ int main(int argc, char **argv) {
   Rate loop_rate(5); //Hz
 
   Subscriber scan_sub = nh.subscribe("/scan", 1, scanCallback);
+  Subscriber cmd_sub = nh.subscribe("/cmd_vel", 1, cmdVelCallback);
+  Subscriber pause_sub = nh.subscribe("/pause", 1, pauseCallback);
   marker_pub = nh.advertise<MarkerArray>("/obstacles_markers", 0);
 
   spin();
@@ -297,24 +317,47 @@ bool callGlobalControl(const string &state) {
 }
 
 void prevent_collision() {
-  if (cmd.vel.linear.x > 0.001) {
-    int delay_before_collision = min_distances[REGION_FACE]/ cmd.vel.linear.x;
-      if (delay_before_collision < MIN_DELAY_COLLISION) {
-        ROS_WARN("Collision imminente! Arret du robot.");
-        callGlobalControl("pause");
-      } else {
-          ROS_INFO("Pas de collision imminente. Reprise du robot.");
-          callGlobalControl("play");
+  // Le robot est en pause indépendamment des obstacles
+  if (robot_pause && !collision_pause) {
+    return;
+  }
+
+  // On avait mis le robot en pause
+  if (robot_pause && collision_pause) {
+    // on play le robot des qu'on a plus d'obstacle sous la distance et dans la region où l'obastacle a declenché une pause
+    if (was_obstacle_on_back) {
+      if (min_distances[REGION_DOS] > distance_to_last_obstacle) {
+        collision_pause = false;
+        callGlobalControl("play");
+      }
+    } else {
+      if (min_distances[REGION_FACE] > distance_to_last_obstacle) {
+        collision_pause = false;
+        callGlobalControl("play");
       }
     }
-   else if (cmd.vel.linear.x < -0.001) {
-    int delay_before_collision = min_distances[REGION_DOS]  / (-cmd.vel.linear.x);
-      if (delay_before_collision < MIN_DELAY_COLLISION) {
-        ROS_WARN("Collision imminente! Arret du robot.");
-        callGlobalControl("pause");
-    } else {
-        ROS_INFO("Pas de collision imminente. Reprise du robot.");
-        callGlobalControl("play");
+    was_obstacle_on_back = false;
+    return;
+  }
+
+  // Le robot est ici en play 
+
+  if (linear_speed > 0.001) {
+    int delay_before_collision = fabs(min_distances[REGION_FACE] / linear_speed);
+    if (delay_before_collision < MIN_DELAY_COLLISION) {
+      distance_to_last_obstacle = min_distances[REGION_FACE];
+      collision_pause = true;
+      ROS_WARN("Collision imminente! Arret du robot.");
+      callGlobalControl("pause");
+    }
+  }
+  else if (linear_speed < -0.001) {
+    int delay_before_collision = fabs(min_distances[REGION_DOS]  / linear_speed);
+    if (delay_before_collision < MIN_DELAY_COLLISION) {
+      distance_to_last_obstacle = min_distances[REGION_DOS];
+      collision_pause = true;
+      ROS_WARN("Collision imminente! Arret du robot.");
+      callGlobalControl("pause");
     }
   }
 }

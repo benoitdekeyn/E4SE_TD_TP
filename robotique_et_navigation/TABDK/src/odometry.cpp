@@ -6,7 +6,6 @@
 #include <geometry_msgs/Twist.h>
 #include <ros/ros.h>
 #include <tf/tf.h>
-#include <tf/transform_listener.h>
 #include <cmath>
 
 using namespace ros;
@@ -40,40 +39,24 @@ private:
   bool position_recue = false;
 
   void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
-    // Additionne les déplacements (repère odom) entre deux mesures successives.
-    const double ox = msg->pose.pose.position.x;
-    const double oy = msg->pose.pose.position.y;
+    // Additionne les déplacements entre deux mesures successives.
     if (position_recue) {
-      distance_parcourue += std::hypot(ox - derniere_odom_x, oy - derniere_odom_y);
+      distance_parcourue += distanceToPosition(msg->pose.pose.position.x,
+                                              msg->pose.pose.position.y);
     }
-    derniere_odom_x = ox;
-    derniere_odom_y = oy;
     position_recue = true;
 
-    Transform pose_odom(
-      Quaternion(msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
-                 msg->pose.pose.orientation.z, msg->pose.pose.orientation.w),
-      Vector3(ox, oy, 0.0));
-
-    // Les chemins sont dans le repère "map" : on applique la correction map->odom d'AMCL.
-    try {
-      StampedTransform map_odom;
-      listener.lookupTransform("map", msg->header.frame_id, Time(0), map_odom);
-      pose_odom = map_odom * pose_odom;
-    } catch (const tf::TransformException &e) {
-      ROS_WARN_THROTTLE(2.0, "Odometry : transform map->%s indisponible, repère odom utilisé (%s)",
-                        msg->header.frame_id.c_str(), e.what());
-    }
-
-    position.x = pose_odom.getOrigin().x();
-    position.y = pose_odom.getOrigin().y();
-    position.theta = getYaw(pose_odom.getRotation());
+    Quaternion quaternion_odom = Quaternion(
+      msg->pose.pose.orientation.x,
+      msg->pose.pose.orientation.y,
+      msg->pose.pose.orientation.z,
+      msg->pose.pose.orientation.w
+    );
+    position.x = msg->pose.pose.position.x;
+    position.y = msg->pose.pose.position.y;
+    position.theta = getYaw(quaternion_odom);
     vitesse = msg->twist.twist;
   }
-
-  TransformListener listener;
-  double derniere_odom_x = 0.0;
-  double derniere_odom_y = 0.0;
 };
 
 #endif

@@ -148,7 +148,7 @@ Visualization Manager:
       Value: false
     - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /lidar_visualization
+      Marker Topic: /obstacles_markers
       Name: MarkerArray
       Namespaces:
         attractive_force: true

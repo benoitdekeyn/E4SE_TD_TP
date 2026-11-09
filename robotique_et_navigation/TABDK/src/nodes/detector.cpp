@@ -8,6 +8,7 @@
 #include <std_msgs/ColorRGBA.h>
 #include <cfloat>
 #include <cmath>
+#include "TABDK/global_control.h"
 
 using namespace ros;
 using namespace std;
@@ -25,9 +26,13 @@ int ANGLE_REGION = SCAN_SAMPLE / NBR_REGION;
 vector<float> distances;
 vector<float> min_distances;
 Publisher marker_pub;
+ServiceClient client_global_control;
 
 #define SEUIL_OBSTACLE 0.3 //m
 #define SEUIL_MAX 3.5f // m
+#define MIN_DELAY_COLLISION 2f //s
+#define REGION_FACE 0
+#define REGION_DOS 4
 
 // PROTOTYPE DES FONCTIONS
 
@@ -207,12 +212,15 @@ void scanCallback(const LaserScan::ConstPtr& scan) {
     
   }
   update_markers();
+  prevent_collision();
 
 }
 
 int main(int argc, char **argv) {
   init(argc, argv, "detector");
   NodeHandle nh;
+  
+  client_global_control = nh.serviceClient<global_control>("/global_control");
 
   Rate loop_rate(5); //Hz
 
@@ -274,3 +282,40 @@ void get_region_angle_limites(int indice_region, int *angle_debut, int *angle_fi
   }
   *angle_fin = (indice_region + 1) * ANGLE_REGION + OFFSET_REGIONS;
 }
+
+bool callGlobalControl(const string &state) {
+  global_control service;
+  service.request.command = state;
+  if (!client_global_control.call(service)) {
+    ROS_WARN("Impossible d'appeler le service /global_control");
+    return false;
+  } else if (!service.response.success) {
+    ROS_WARN("Le service /global_control a echoue");
+    return false;
+  }
+  return true;
+}
+
+void prevent_collision() {
+  if (cmd.vel.linear.x > 0.001) {
+    int delay_before_collision = min_distances[REGION_FACE]/ cmd.vel.linear.x;
+      if (delay_before_collision < MIN_DELAY_COLLISION) {
+        ROS_WARN("Collision imminente! Arret du robot.");
+        callGlobalControl("pause");
+      } else {
+          ROS_INFO("Pas de collision imminente. Reprise du robot.");
+          callGlobalControl("play");
+      }
+    }
+   else if (cmd.vel.linear.x < -0.001) {
+    int delay_before_collision = min_distances[REGION_DOS]  / (-cmd.vel.linear.x);
+      if (delay_before_collision < MIN_DELAY_COLLISION) {
+        ROS_WARN("Collision imminente! Arret du robot.");
+        callGlobalControl("pause");
+    } else {
+        ROS_INFO("Pas de collision imminente. Reprise du robot.");
+        callGlobalControl("play");
+    }
+  }
+}
+

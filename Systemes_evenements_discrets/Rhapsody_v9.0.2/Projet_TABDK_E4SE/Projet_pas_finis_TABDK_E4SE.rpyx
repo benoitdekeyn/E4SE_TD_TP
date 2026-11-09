@@ -427,8 +427,8 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">Projet_pas_finis_TABDK_E4SE</_name>
-			<_modifiedTimeWeak type="a">11.8.2026::15:45:8</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.8.2026::16:53:12</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.8.2026::23:53:19</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.9.2026::1:26:10</_modifiedTime>
 			<_lastID type="a">4</_lastID>
 			<_UserColors type="w">
 				<IRPYRawContainer type="e">
@@ -966,8 +966,8 @@
 			</_properties>
 			<_name type="a">ClassDiagram</_name>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.8.2026::15:45:8</_modifiedTime>
-			<_lastModifiedTime type="a">11.8.2026::15:45:8</_lastModifiedTime>
+			<_modifiedTime type="a">11.9.2026::1:29:44</_modifiedTime>
+			<_lastModifiedTime type="a">11.9.2026::1:29:44</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -1223,7 +1223,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2152</m_drawBehavior>
-			<m_transform type="a">1.05769 0 0 2.97949 218.091 -776.75 </m_transform>
+			<m_transform type="a">1.05769 0 0 4.83244 214.091 -1437.37 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -1827,9 +1827,29 @@
 							<_hid type="a">GUID d86237fc-8e93-4ee0-b485-514ff63ac5e6</_hid>
 						</IHandle>
 					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">nbr_sms_telephone</_hname>
+							<_hid type="a">GUID ccce68cb-a798-46e6-97f4-a2c9bcd39381</_hid>
+						</IHandle>
+					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IAttribute</_hm2Class>
+							<_hsubsystem type="a">_MonPkg</_hsubsystem>
+							<_hclass type="a">_SysVehicule</_hclass>
+							<_hname type="a">nbr_sms_kit</_hname>
+							<_hid type="a">GUID 9f709806-8257-42af-820f-62a87965d465</_hid>
+						</IHandle>
+					
 				</IRPYRawContainer>
 			</Items>
-			<_itemValueOfFontPropertiesMapCount type="a">62</_itemValueOfFontPropertiesMapCount>
+			<_itemValueOfFontPropertiesMapCount type="a">64</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
@@ -1899,7 +1919,19 @@
 			<m_displayOption type="a">All</m_displayOption>
 			<m_bShowInherited type="a">0</m_bShowInherited>
 			<m_bOrdered type="a">0</m_bOrdered>
-			<_itemValueOfFontPropertiesMapCount type="a">89</_itemValueOfFontPropertiesMapCount>
+			<_itemValueOfFontPropertiesMapCount type="a">101</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>

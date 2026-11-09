@@ -13,12 +13,17 @@ try {
         throw "Synchronisation impossible : une autre synchronisation est toujours en cours."
     }
 
-    # Miroir complet : le dossier distant est vidé puis remplacé par le contenu local.
-    cmd /c "tar -C `"$src`" --exclude=.git --exclude=.vscode -cf - . | ssh -o BatchMode=yes $robot `"mkdir -p $remoteDir && find $remoteDir -mindepth 1 -delete && tar -xf - -C $remoteDir`""
-    if ($LASTEXITCODE -ne 0) {
-        throw "Sync ECHEC (code $LASTEXITCODE)"
+    # Miroir complet de chaque package : le dossier distant est vidé puis remplacé par le contenu local.
+    foreach ($pkg in @($cfg.package, 'AStar-ROS')) {
+        $pkgSrc = Join-Path $src $pkg
+        if (-not (Test-Path $pkgSrc)) { continue }
+        $pkgDir = "$($cfg.catkinSrc)/$pkg"
+        cmd /c "tar -C `"$pkgSrc`" --exclude=.git -cf - . | ssh -o BatchMode=yes $robot `"mkdir -p $pkgDir && find $pkgDir -mindepth 1 -delete && tar -xf - -C $pkgDir`""
+        if ($LASTEXITCODE -ne 0) {
+            throw "Sync ECHEC de $pkg (code $LASTEXITCODE)"
+        }
+        Write-Host "Sync OK -> $robot`:$pkgDir"
     }
-    Write-Host "Sync OK -> $robot`:$remoteDir"
 } finally {
     if ($locked) {
         $mutex.ReleaseMutex()

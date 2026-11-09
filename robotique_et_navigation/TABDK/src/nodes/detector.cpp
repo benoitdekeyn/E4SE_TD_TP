@@ -20,6 +20,7 @@ using sensor_msgs::LaserScan;
 // VARIABLES GLOBALES
 int NBR_REGION = 8;
 int SCAN_SAMPLE = 360;
+int OFFSET_REGIONS = -22.5f;
 int ANGLE_REGION = SCAN_SAMPLE / NBR_REGION;
 vector<float> distances;
 vector<float> min_distances;
@@ -29,8 +30,10 @@ Publisher marker_pub;
 #define SEUIL_MAX 3.5f // m
 
 // PROTOTYPE DES FONCTIONS
-float get_minimum(vector<float> data, int debut, int fin, int *indiceMin);
+
 void filtrer_distances(vector<float>& data, float seuil_min, float seuil_max);
+void get_region_angle_limites(int indice_region, int *angle_debut, int *angle_fin);
+float get_minimum(vector<float> data, double angle_debut, double angle_fin, int *indice_min, int angle_per_index);
 
 
 // FONCTIONS MARKERS
@@ -39,7 +42,9 @@ const float OFFSET_LABEL = 0.18; // m, décalage du texte vers l'extérieur
 const float LONGUEUR_RAYON = SEUIL_MAX + 0.5; // m, longueur des rayons pour la visualisation
 
 float angle_region_rad(int i) {
-  return ((i + 0.5) * ANGLE_REGION) * M_PI / 180.0;
+  int debut, fin;
+  get_region_angle_limites(i, &debut, &fin);
+  return ((debut + fin) / 2.0) * M_PI / 180.0;
 }
 
 ColorRGBA get_color(bool is_danger) {
@@ -115,7 +120,9 @@ Marker make_rays() {
 
   Point origine = polar_to_point(0.0f, 0.0f);
   for (int i = 0; i < NBR_REGION; i++) {
-    float angle = (i * ANGLE_REGION) * M_PI / 180.0f;
+    int angle_debut, angle_fin;
+    get_region_angle_limites(i, &angle_debut, &angle_fin);
+    float angle = angle_debut * M_PI / 180.0f;
     rays.points.push_back(origine);
     rays.points.push_back(polar_to_point(LONGUEUR_RAYON, angle));
   }
@@ -126,7 +133,8 @@ Marker make_rays() {
 vector<Marker> make_ray_labels() {
   vector<Marker> labels;
   for (int i = 0; i < NBR_REGION; i++) {
-    int angle_deg = i * ANGLE_REGION;
+    int angle_deg, angle_fin;
+    get_region_angle_limites(i, &angle_deg, &angle_fin);
     Marker txt = init_marker("ray_labels", i, Marker::TEXT_VIEW_FACING);
 
     txt.pose.position = polar_to_point(LONGUEUR_RAYON + 0.8f, angle_deg * M_PI / 180.0f);
@@ -183,20 +191,23 @@ void scanCallback(const LaserScan::ConstPtr& scan) {
   min_distances.clear();
 
   for (int i = 0; i < NBR_REGION; i++) {
-    int angle_debut = i * ANGLE_REGION;
-    int angle_fin = (i + 1) * ANGLE_REGION;
+    int angle_debut;
+    int angle_fin;
+    get_region_angle_limites(i, &angle_debut, &angle_fin);
     indice_min_i = -1;
     min_region_i = FLT_MAX;
-    min_region_i = get_minimum(distances, angle_debut / angle_deg_increment, angle_fin / angle_deg_increment -1, &indice_min_i);
+
+    min_region_i = get_minimum(distances, angle_debut, angle_fin, &indice_min_i, angle_deg_increment);
     min_distances.push_back(min_region_i);
-    /*
+    
     ROS_INFO("Region %d: min distance = %f a %d deg", i, min_region_i, indice_min_i * angle_deg_increment);
     if (min_region_i < SEUIL_OBSTACLE) {
       ROS_WARN("Obstacle detecte dans la region %d! (entre %d et %d deg)", i, angle_debut, angle_fin);
     }
-    */
+    
   }
   update_markers();
+
 }
 
 int main(int argc, char **argv) {
@@ -213,14 +224,36 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-float get_minimum(vector<float> data, int debut, int fin, int *indice_min) {
+float get_minimum(vector<float> data, double angle_debut, double angle_fin, int *indice_min, int angle_per_index) {
 
   float distance_min = FLT_MAX;
 
-  for (int i = debut; i <= fin; i++) {
-    if (data[i] < distance_min && data[i] > 0.0) {
-      distance_min = data[i];
-      *indice_min = i;
+  int index_debut = angle_debut / angle_per_index;
+  int index_fin = angle_fin / angle_per_index;
+  // CAS 1 ou on demande le minimum sur un intervalle qui traverse le 0 deg (ex: 350° à 10°)
+  if (index_fin < index_debut) 
+  {
+    for (int i = index_debut; i < data.size(); i++) {
+      if (data[i] < distance_min && data[i] > 0.0) {
+        distance_min = data[i];
+        *indice_min = i;
+      }
+    }
+    for (int i = 0; i <= index_fin; i++) {
+      if (data[i] < distance_min && data[i] > 0.0) {
+        distance_min = data[i];
+        *indice_min = i;
+      }
+    }
+  }
+  // CAS 2 ou l'intervalle ne traverse pas le 0 deg (ex: 30° à 60°) on a pas changé
+  else 
+  {
+    for (int i = index_debut; i <= index_fin; i++) {
+      if (data[i] < distance_min && data[i] > 0.0) {
+        distance_min = data[i];
+        *indice_min = i;
+      }
     }
   }
   return min(SEUIL_MAX, distance_min);
@@ -232,4 +265,12 @@ void filtrer_distances(vector<float>& data, float seuil_min, float seuil_max) {
       data[i] = FLT_MAX;
     }
   }
+}
+
+void get_region_angle_limites(int indice_region, int *angle_debut, int *angle_fin){
+  *angle_debut = indice_region * ANGLE_REGION + OFFSET_REGIONS;
+  if (*angle_debut < 0){
+    *angle_debut+=360;
+  }
+  *angle_fin = (indice_region + 1) * ANGLE_REGION + OFFSET_REGIONS;
 }

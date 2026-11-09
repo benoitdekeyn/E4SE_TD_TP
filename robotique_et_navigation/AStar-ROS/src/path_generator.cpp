@@ -104,7 +104,7 @@ void PathGenerator::navGoalHandler(
 
   nav_msgs::Path path_msg;
   if (path.empty()) {
-    ROS_INFO("\033[1;31mFail generate path!\033[0m");
+    ROS_ERROR("Echec de la generation du chemin ; voir le diagnostic A*");
     return;
   }
 

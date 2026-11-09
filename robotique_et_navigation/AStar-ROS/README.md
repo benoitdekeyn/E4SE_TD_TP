@@ -28,6 +28,10 @@ $ roslaunch path_generator run.launch
 ```
 4. Send goal pose by rviz tool `2D Nav Goal`
 
+The A* search explores the accessible map until it finds the goal or exhausts
+the reachable cells; it no longer stops after one second. A blocked start or
+goal, or an unreachable goal, is reported in the ROS logs.
+
 ### Path simplification
 
 The planner simplifies the A* path into the minimum number of straight

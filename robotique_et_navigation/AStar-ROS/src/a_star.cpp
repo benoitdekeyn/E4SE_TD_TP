@@ -1,8 +1,11 @@
 #include "../include/path_generator/a_star.hpp"
 #include <algorithm>
+#include <cstdint>
 #include <geometry_msgs/Pose2D.h>
+#include <limits>
 #include <nav_msgs/MapMetaData.h>
 #include <nav_msgs/OccupancyGrid.h>
+#include <queue>
 
 using namespace std::placeholders;
 
@@ -106,77 +109,92 @@ bool AStar::Generator::isCollision_in_OCG(Vec2i coordinates_, int size) {
 }
 
 AStar::CoordinateList AStar::Generator::findPath(Vec2i source_, Vec2i target_) {
-  Node *current = nullptr;
-  NodeSet openSet, closedSet;
-  openSet.reserve(100);
-  closedSet.reserve(100);
-  openSet.push_back(new Node(source_));
-
-  struct timespec start, end;
-  clock_gettime(CLOCK_MONOTONIC, &start);
-
-  while (!openSet.empty()) {
-    auto current_it = openSet.begin();
-    current = *current_it;
-
-    for (auto it = openSet.begin(); it != openSet.end(); it++) {
-      auto node = *it;
-      if (node->getScore() <= current->getScore()) {
-        current = node;
-        current_it = it;
-      }
-    }
-
-    clock_gettime(CLOCK_MONOTONIC, &end);
-    double time_result =
-        end.tv_sec - start.tv_sec + (end.tv_nsec - start.tv_nsec) * 1e-9;
-
-    if (time_result > 1.0) { // time failure limit
-      printf("time: %lf\n", time_result);
-      break;
-    }
-
-    if (current->coordinates == target_) {
-      break;
-    }
-
-    closedSet.push_back(current);
-    openSet.erase(current_it);
-
-    for (uint i = 0; i < directions; ++i) {
-      Vec2i newCoordinates(current->coordinates + direction[i]);
-      if (isCollision_in_OCG(newCoordinates) ||
-          findNodeOnList(closedSet, newCoordinates)) {
-        continue;
-      }
-
-      uint totalCost = current->G + ((i < 4) ? 10 : 14);
-
-      Node *successor = findNodeOnList(openSet, newCoordinates);
-      if (successor == nullptr) {
-        successor = new Node(newCoordinates, current);
-        successor->G = totalCost;
-        successor->H = heuristic(successor->coordinates, target_);
-        openSet.push_back(successor);
-      } else if (totalCost < successor->G) {
-        successor->parent = current;
-        successor->G = totalCost;
-      }
-    }
-  }
-
   CoordinateList path;
+  if (worldSize.x <= 0 || worldSize.y <= 0 ||
+      ocg.data.size() != static_cast<size_t>(worldSize.x) *
+                             static_cast<size_t>(worldSize.y)) {
+    ROS_ERROR("A* : carte invalide ou dimensions incompatibles");
+    return path;
+  }
+  if (isCollision_in_OCG(source_)) {
+    ROS_ERROR("A* : depart hors carte ou trop proche d'un obstacle");
+    return path;
+  }
+  if (isCollision_in_OCG(target_)) {
+    ROS_ERROR("A* : destination hors carte ou trop proche d'un obstacle");
+    return path;
+  }
 
-  if (current->coordinates == target_) {
-    while (current != nullptr) {
-      path.push_back(current->coordinates);
-      current = current->parent;
+  struct OpenEntry {
+    size_t index;
+    std::uint64_t cost;
+    std::uint64_t estimate;
+    uint remaining;
+  };
+  struct CompareEntry {
+    bool operator()(const OpenEntry &left, const OpenEntry &right) const {
+      if (left.estimate != right.estimate)
+        return left.estimate > right.estimate;
+      return left.remaining > right.remaining;
+    }
+  };
+
+  const size_t width = static_cast<size_t>(worldSize.x);
+  const size_t count = ocg.data.size();
+  const std::uint64_t infinity = std::numeric_limits<std::uint64_t>::max();
+  std::vector<std::uint64_t> costs(count, infinity);
+  std::vector<size_t> parents(count, count);
+  std::priority_queue<OpenEntry, std::vector<OpenEntry>, CompareEntry> open;
+  const size_t source = static_cast<size_t>(source_.y) * width + source_.x;
+  const size_t target = static_cast<size_t>(target_.y) * width + target_.x;
+  uint initial_estimate = heuristic(source_, target_);
+  costs[source] = 0;
+  open.push({source, 0, initial_estimate, initial_estimate});
+
+  while (!open.empty() && ros::ok()) {
+    OpenEntry current = open.top();
+    open.pop();
+    if (current.cost != costs[current.index])
+      continue;
+
+    if (current.index == target) {
+      size_t index = target;
+      while (true) {
+        path.push_back({static_cast<int>(index % width),
+                        static_cast<int>(index / width)});
+        if (index == source)
+          break;
+        index = parents[index];
+      }
+      return path;
+    }
+
+    Vec2i position = {static_cast<int>(current.index % width),
+                      static_cast<int>(current.index / width)};
+    for (uint i = 0; i < directions; ++i) {
+      Vec2i next = position + direction[i];
+      if (isCollision_in_OCG(next))
+        continue;
+      if (i >= 4 &&
+          (isCollision_in_OCG({position.x + direction[i].x, position.y}) ||
+           isCollision_in_OCG({position.x, position.y + direction[i].y})))
+        continue;
+
+      size_t next_index = static_cast<size_t>(next.y) * width + next.x;
+      std::uint64_t next_cost = current.cost + ((i < 4) ? 10 : 14);
+      if (next_cost < costs[next_index]) {
+        costs[next_index] = next_cost;
+        parents[next_index] = current.index;
+        uint remaining = heuristic(next, target_);
+        open.push({next_index, next_cost, next_cost + remaining, remaining});
+      }
     }
   }
 
-  releaseNodes(openSet);
-  releaseNodes(closedSet);
-
+  if (ros::ok())
+    ROS_WARN("A* : aucun chemin accessible avec la marge d'obstacle actuelle");
+  else
+    ROS_WARN("A* : recherche interrompue");
   return path;
 }
 

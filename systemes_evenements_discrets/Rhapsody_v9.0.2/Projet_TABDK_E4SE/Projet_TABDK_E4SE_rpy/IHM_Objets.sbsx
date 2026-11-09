@@ -12,10 +12,10 @@
 			<_id type="a">GUID 01dd56fe-298e-423f-8f52-a5e5dff6dbdc</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">IHM_Objets</_name>
-			<_modifiedTimeWeak type="a">10.10.2026::13:49:51</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::13:49:51</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.9.2026::20:49:29</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.9.2026::20:49:29</_modifiedTime>
 			<_lastID type="a">2</_lastID>
-			<weakCGTime type="a">10.10.2026::13:49:51</weakCGTime>
+			<weakCGTime type="a">11.9.2026::20:49:29</weakCGTime>
 			<strongCGTime type="a">10.3.2016::22:41:54</strongCGTime>
 			<_defaultComposite type="s">GUID c6ebe487-749a-424c-8c16-94f16e9ee15a</_defaultComposite>
 			<_eventsBaseID type="a">-1</_eventsBaseID>
@@ -318,8 +318,8 @@
 			</_properties>
 			<_name type="a">MainDiagram</_name>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.10.2026::13:49:51</_modifiedTime>
-			<_lastModifiedTime type="a">10.10.2026::13:49:51</_lastModifiedTime>
+			<_modifiedTime type="a">11.9.2026::20:52:6</_modifiedTime>
+			<_lastModifiedTime type="a">11.9.2026::20:52:6</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -520,7 +520,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2152</m_drawBehavior>
-			<m_transform type="a">0.67114 0 0 0.469869 20.411 -110.27 </m_transform>
+			<m_transform type="a">3.03104 0 0 13.3668 16.1154 -3528.76 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -629,7 +629,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">527112</m_drawBehavior>
-			<m_transform type="a">0.46712 0 0 0.22193 93.015 270.464 </m_transform>
+			<m_transform type="a">0.681934 0 0 0.345299 56.7781 210.338 </m_transform>
 			<m_bIsPreferencesInitialized type="a">0</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -689,7 +689,9 @@
 			<m_displayOption type="a">Public</m_displayOption>
 			<m_bShowInherited type="a">0</m_bShowInherited>
 			<m_bOrdered type="a">0</m_bOrdered>
-			<_itemValueOfFontPropertiesMapCount type="a">64</_itemValueOfFontPropertiesMapCount>
+			<_itemValueOfFontPropertiesMapCount type="a">66</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
@@ -761,7 +763,10 @@
 			<m_displayOption type="a">Public</m_displayOption>
 			<m_bShowInherited type="a">0</m_bShowInherited>
 			<m_bOrdered type="a">0</m_bOrdered>
-			<_itemValueOfFontPropertiesMapCount type="a">101</_itemValueOfFontPropertiesMapCount>
+			<_itemValueOfFontPropertiesMapCount type="a">104</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>

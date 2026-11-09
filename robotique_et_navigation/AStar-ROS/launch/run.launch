@@ -10,7 +10,7 @@
 <!--arg name="map_file" default="$(find path_generator)/map/map_4105_3m_005.yaml"/-->
 <!--arg name="map_file" default="$(find path_generator)/map/map_4105_10m_10m_002.yaml"/-->
 <!--arg name="map_file" default="$(find path_generator)/map/map_tb3_house.yaml"/-->
-<arg name="map_file" default="$(find path_generator)/map/map_simu_tabdk.yaml"/>
+<arg name="map_file" default="$(find path_generator)/map/map_4105.yaml"/>
  <arg name="open_rviz" default="true"/>
 <rosparam command="load" file="$(find path_generator)/config/params.yaml" /> 
 
@@ -22,7 +22,6 @@
 <!-- Map server -->
 <node pkg="map_server" type="map_server" name="map_server" args="$(arg map_file)" />
 
-<!-- AMCL -->
 <!-- AMCL -->
 <include file="$(find turtlebot3_navigation)/launch/amcl.launch">
   <arg name="initial_pose_x" value="-3.0"/>

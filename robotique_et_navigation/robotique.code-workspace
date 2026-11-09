@@ -6,7 +6,7 @@
 		},
 		{
 			"name": "SSH Robot src/",
-			"uri": "ssh://turtle_bot_3/home/ubuntu/catkin_ws/src/"
+			"uri": "ssh://turtle_bot_3/home/ubuntu/"
 		}
 	],
 	"extensions": {

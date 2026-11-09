@@ -10,7 +10,7 @@
 <!--arg name="map_file" default="$(find path_generator)/map/map_4105_3m_005.yaml"/-->
 <!--arg name="map_file" default="$(find path_generator)/map/map_4105_10m_10m_002.yaml"/-->
 <!--arg name="map_file" default="$(find path_generator)/map/map_tb3_house.yaml"/-->
-<arg name="map_file" default="$(find path_generator)/map/map_4105.yaml"/>
+<arg name="map_file" default="$(find path_generator)/map/map_4105_00.yaml"/>
  <arg name="open_rviz" default="true"/>
 <rosparam command="load" file="$(find path_generator)/config/params.yaml" /> 
 

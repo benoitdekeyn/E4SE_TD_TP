@@ -12,10 +12,10 @@
 			<_id type="a">GUID 01dd56fe-298e-423f-8f52-a5e5dff6dbdc</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">IHM_Objets</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::14:5:58</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::14:5:58</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::14:50:50</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:50:50</_modifiedTime>
 			<_lastID type="a">2</_lastID>
-			<weakCGTime type="a">11.10.2026::14:5:58</weakCGTime>
+			<weakCGTime type="a">11.10.2026::14:50:50</weakCGTime>
 			<strongCGTime type="a">10.3.2016::22:41:54</strongCGTime>
 			<_defaultComposite type="s">GUID c6ebe487-749a-424c-8c16-94f16e9ee15a</_defaultComposite>
 			<_eventsBaseID type="a">-1</_eventsBaseID>
@@ -259,6 +259,56 @@
 									</IPropertyMetaclass>
 									
 									<IPropertyMetaclass type="e">
+										<_Name type="a">Operation</_Name>
+										<Properties type="c">
+											<IRPYRawContainer type="e">
+												<IProperty type="e">
+													<_Name type="a">DefaultSize</_Name>
+													<_Value type="a">0,0,108,73</_Value>
+													<_Type type="a">String</_Type>
+												</IProperty>
+												
+												<IProperty type="e">
+													<_Name type="a">Fill.FillColor</_Name>
+													<_Value type="a">255,255,255</_Value>
+													<_Type type="a">Color</_Type>
+												</IProperty>
+												
+												<IProperty type="e">
+													<_Name type="a">Font.Font</_Name>
+													<_Value type="a">Tahoma</_Value>
+													<_Type type="a">String</_Type>
+												</IProperty>
+												
+												<IProperty type="e">
+													<_Name type="a">Font.Size</_Name>
+													<_Value type="a">8</_Value>
+													<_Type type="a">Int</_Type>
+												</IProperty>
+												
+												<IProperty type="e">
+													<_Name type="a">Font.Weight@Child.NameCompartment@Name</_Name>
+													<_Value type="a">700</_Value>
+													<_Type type="a">Int</_Type>
+												</IProperty>
+												
+												<IProperty type="e">
+													<_Name type="a">Line.LineColor</_Name>
+													<_Value type="a">109,163,217</_Value>
+													<_Type type="a">Color</_Type>
+												</IProperty>
+												
+												<IProperty type="e">
+													<_Name type="a">Line.LineWidth</_Name>
+													<_Value type="a">1</_Value>
+													<_Type type="a">Int</_Type>
+												</IProperty>
+												
+											</IRPYRawContainer>
+										</Properties>
+									</IPropertyMetaclass>
+									
+									<IPropertyMetaclass type="e">
 										<_Name type="a">Port</_Name>
 										<Properties type="c">
 											<IRPYRawContainer type="e">
@@ -318,8 +368,8 @@
 			</_properties>
 			<_name type="a">MainDiagram</_name>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::14:10:28</_modifiedTime>
-			<_lastModifiedTime type="a">11.10.2026::14:10:28</_lastModifiedTime>
+			<_modifiedTime type="a">11.10.2026::14:31:6</_modifiedTime>
+			<_lastModifiedTime type="a">11.10.2026::14:31:6</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -520,7 +570,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2152</m_drawBehavior>
-			<m_transform type="a">3.03104 0 0 5.42707 16.1154 -1424.99 </m_transform>
+			<m_transform type="a">3.03104 0 0 5.42707 18.1154 -1420.99 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -629,7 +679,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">527112</m_drawBehavior>
-			<m_transform type="a">0.681934 0 0 0.885937 56.7781 118.75 </m_transform>
+			<m_transform type="a">0.681934 0 0 0.885937 64.3662 120.593 </m_transform>
 			<m_bIsPreferencesInitialized type="a">0</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -689,7 +739,14 @@
 			<m_displayOption type="a">Public</m_displayOption>
 			<m_bShowInherited type="a">0</m_bShowInherited>
 			<m_bOrdered type="a">0</m_bOrdered>
-			<_itemValueOfFontPropertiesMapCount type="a">70</_itemValueOfFontPropertiesMapCount>
+			<_itemValueOfFontPropertiesMapCount type="a">77</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
@@ -767,7 +824,9 @@
 			<m_displayOption type="a">Public</m_displayOption>
 			<m_bShowInherited type="a">0</m_bShowInherited>
 			<m_bOrdered type="a">0</m_bOrdered>
-			<_itemValueOfFontPropertiesMapCount type="a">103</_itemValueOfFontPropertiesMapCount>
+			<_itemValueOfFontPropertiesMapCount type="a">105</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
@@ -995,15 +1054,15 @@
 			<_id type="a">GUID 187c4360-fdb2-4b6f-996d-5c38ed7c9d37</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">Main</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::10:1:0</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">11.10.2026::14:50:50</_modifiedTimeWeak>
 			<_theMainDiagram type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IDiagram</_hm2Class>
 					<_hid type="a">GUID 157a46cf-adcc-4952-aec9-4db509148774</_hid>
 				</IHandle>
 			</_theMainDiagram>
-			<_modifiedTime type="a">11.10.2026::10:1:0</_modifiedTime>
-			<weakCGTime type="a">11.10.2026::10:1:0</weakCGTime>
+			<_modifiedTime type="a">11.10.2026::14:50:50</_modifiedTime>
+			<weakCGTime type="a">11.10.2026::14:50:50</weakCGTime>
 			<strongCGTime type="a">9.26.2017::14:35:36</strongCGTime>
 			<_itsStateChart type="r">
 				<IHandle type="e">
@@ -1120,8 +1179,8 @@ return done;</_bodyData>
 			<_id type="a">GUID 2731af7b-953d-4383-ac71-d3660a0ae942</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">objetSysVehicule</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::10:1:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::10:1:0</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::14:50:50</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:50:50</_modifiedTime>
 			<_multiplicity type="a">1</_multiplicity>
 			<_otherClass type="r">
 				<IClassifierHandle type="e">
@@ -1139,6 +1198,12 @@ return done;</_bodyData>
 			<AggregatesList type="e">
 				<value>GUID 2591b7da-141b-40a6-9b89-1e7a4ea79d31</value>
 				<value>GUID 07f0c3ab-cae1-4b74-b00f-5f9cf27bb46a</value>
+				<value>GUID 6a6e563e-f5a2-4392-b0ca-5cfecfe42424</value>
+				<value>GUID 1be8b196-c301-4b31-9ea1-6219ecfe9c8a</value>
+				<value>GUID d214b3c8-34cf-406c-8368-b21d6dbce9ed</value>
+				<value>GUID aa149c6e-c8ab-4d94-90a5-4f2db36d44c5</value>
+				<value>GUID 9001a0b4-b8ed-4c19-9ad7-6d0cb390cd4c</value>
+				<value>GUID a5fe93a1-da35-40fc-9d17-4d2a8debaa17</value>
 			</AggregatesList>
 		</IPart>
 		<ISlot type="e">
@@ -1172,6 +1237,108 @@ return done;</_bodyData>
 					<_hclass type="a">_SysVehicule</_hclass>
 					<_hname type="a">VOYANT_radio</_hname>
 					<_hid type="a">GUID 8e00c579-f871-424a-aa4c-bad4b46ed458</_hid>
+				</IHandle>
+			</_definingVar>
+		</ISlot>
+		<ISlot type="e">
+			<_id type="a">GUID 6a6e563e-f5a2-4392-b0ca-5cfecfe42424</_id>
+			<_name type="a">distance_voiture_devant_Value</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:23:15</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:23:15</_modifiedTime>
+			<_value type="a">0.0</_value>
+			<_definingVar type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IAttribute</_hm2Class>
+					<_hfilename type="a">.\..\Projet_TABDK_E4SE_rpy\_MonPkg.sbsx</_hfilename>
+					<_hsubsystem type="a">_MonPkg</_hsubsystem>
+					<_hclass type="a">_SysVehicule</_hclass>
+					<_hname type="a">distance_voiture_devant</_hname>
+					<_hid type="a">GUID 9f29b4f3-156e-4f61-aa19-e90ecd21b9c4</_hid>
+				</IHandle>
+			</_definingVar>
+		</ISlot>
+		<ISlot type="e">
+			<_id type="a">GUID 1be8b196-c301-4b31-9ea1-6219ecfe9c8a</_id>
+			<_name type="a">distance_entiere_voiture_devant_Value</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:50:50</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:50:50</_modifiedTime>
+			<_value type="a">0</_value>
+			<_definingVar type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IAttribute</_hm2Class>
+					<_hfilename type="a">.\..\Projet_TABDK_E4SE_rpy\_MonPkg.sbsx</_hfilename>
+					<_hsubsystem type="a">_MonPkg</_hsubsystem>
+					<_hclass type="a">_SysVehicule</_hclass>
+					<_hname type="a">distance_entiere_voiture_devant</_hname>
+					<_hid type="a">GUID a521d432-244e-4ac6-9fa2-615231d66d70</_hid>
+				</IHandle>
+			</_definingVar>
+		</ISlot>
+		<ISlot type="e">
+			<_id type="a">GUID d214b3c8-34cf-406c-8368-b21d6dbce9ed</_id>
+			<_name type="a">distance_inter_voiture_Value</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:24:19</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:24:19</_modifiedTime>
+			<_value type="a">0.0</_value>
+			<_definingVar type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IAttribute</_hm2Class>
+					<_hfilename type="a">.\..\Projet_TABDK_E4SE_rpy\_MonPkg.sbsx</_hfilename>
+					<_hsubsystem type="a">_MonPkg</_hsubsystem>
+					<_hclass type="a">_SysVehicule</_hclass>
+					<_hname type="a">distance_inter_voiture</_hname>
+					<_hid type="a">GUID 30cd327a-a5c5-4646-83ab-f7b72582ad29</_hid>
+				</IHandle>
+			</_definingVar>
+		</ISlot>
+		<ISlot type="e">
+			<_id type="a">GUID aa149c6e-c8ab-4d94-90a5-4f2db36d44c5</_id>
+			<_name type="a">distance_securite_Value</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:24:56</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:24:56</_modifiedTime>
+			<_value type="a">20.0</_value>
+			<_definingVar type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IAttribute</_hm2Class>
+					<_hfilename type="a">.\..\Projet_TABDK_E4SE_rpy\_MonPkg.sbsx</_hfilename>
+					<_hsubsystem type="a">_MonPkg</_hsubsystem>
+					<_hclass type="a">_SysVehicule</_hclass>
+					<_hname type="a">distance_securite</_hname>
+					<_hid type="a">GUID c1b8f285-28f3-42e3-9dbd-6101c2785926</_hid>
+				</IHandle>
+			</_definingVar>
+		</ISlot>
+		<ISlot type="e">
+			<_id type="a">GUID 9001a0b4-b8ed-4c19-9ad7-6d0cb390cd4c</_id>
+			<_name type="a">SWITCH_simulation_voiture_devant_Value</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:25:29</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:25:29</_modifiedTime>
+			<_value type="a">false</_value>
+			<_definingVar type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IAttribute</_hm2Class>
+					<_hfilename type="a">.\..\Projet_TABDK_E4SE_rpy\_MonPkg.sbsx</_hfilename>
+					<_hsubsystem type="a">_MonPkg</_hsubsystem>
+					<_hclass type="a">_SysVehicule</_hclass>
+					<_hname type="a">SWITCH_simulation_voiture_devant</_hname>
+					<_hid type="a">GUID 20d68c9f-3bfd-4822-973a-b2a0e3c5f4e3</_hid>
+				</IHandle>
+			</_definingVar>
+		</ISlot>
+		<ISlot type="e">
+			<_id type="a">GUID a5fe93a1-da35-40fc-9d17-4d2a8debaa17</_id>
+			<_name type="a">target_throttle_Value</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:26:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:26:0</_modifiedTime>
+			<_value type="a">0.0</_value>
+			<_definingVar type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IAttribute</_hm2Class>
+					<_hfilename type="a">.\..\Projet_TABDK_E4SE_rpy\_MonPkg.sbsx</_hfilename>
+					<_hsubsystem type="a">_MonPkg</_hsubsystem>
+					<_hclass type="a">_SysVehicule</_hclass>
+					<_hname type="a">target_throttle</_hname>
+					<_hid type="a">GUID c93f8d6b-3e39-4a6b-90a7-8c31f5447ea0</_hid>
 				</IHandle>
 			</_definingVar>
 		</ISlot>

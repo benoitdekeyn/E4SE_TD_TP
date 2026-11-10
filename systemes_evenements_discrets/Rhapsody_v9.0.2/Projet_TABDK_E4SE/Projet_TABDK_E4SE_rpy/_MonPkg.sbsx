@@ -111,10 +111,10 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">_MonPkg</_name>
-			<_modifiedTimeWeak type="a">11.9.2026::21:44:27</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.9.2026::21:41:26</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::7:25:6</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::7:43:40</_modifiedTime>
 			<_lastID type="a">15</_lastID>
-			<weakCGTime type="a">11.9.2026::21:44:27</weakCGTime>
+			<weakCGTime type="a">11.10.2026::7:25:6</weakCGTime>
 			<strongCGTime type="a">11.4.2026::7:41:26</strongCGTime>
 			<_defaultComposite type="s">GUID ce1ec9e6-dcba-46da-9bb8-b1ebb5c0fcc5</_defaultComposite>
 			<_eventsBaseID type="a">13401</_eventsBaseID>
@@ -525,9 +525,9 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">IHM</_name>
-			<_modifiedTimeWeak type="a">11.8.2026::23:56:28</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.9.2026::20:9:19</_modifiedTime>
-			<_lastModifiedTime type="a">11.9.2026::20:9:19</_lastModifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::7:25:6</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::7:45:0</_modifiedTime>
+			<_lastModifiedTime type="a">11.10.2026::7:45:0</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -570,7 +570,7 @@
 			</m_name>
 			<m_drawBehavior type="a">0</m_drawBehavior>
 			<m_bIsPreferencesInitialized type="a">0</m_bIsPreferencesInitialized>
-			<elementList type="a">88</elementList>
+			<elementList type="a">87</elementList>
 			
 			<m_access type="a">'Z'</m_access>
 			<m_modified type="a">'N'</m_modified>
@@ -633,7 +633,6 @@
 				<value>GUID 71572bf2-6746-4a61-80b7-30331a3016fd</value>
 				<value>GUID 4fa56c32-7802-4d49-9058-aac4fe6f18e5</value>
 				<value>GUID d600cc97-b488-4abb-a106-b17114055f0b</value>
-				<value>GUID bb4e56cd-3293-4082-a574-475d422c26a8</value>
 				<value>GUID e9e85533-629d-4382-a46f-5bc9122a4917</value>
 				<value>GUID c395a3de-2233-4cc4-b1c0-0fac01a0a6f6</value>
 				<value>GUID ab043c8b-7f12-4cdb-a833-040ffa15c210</value>
@@ -648,7 +647,6 @@
 				<value>GUID c0c05ae2-41be-43e3-89e5-d946fef6eb71</value>
 				<value>GUID b11aeb2e-a527-4e49-9d09-0b56ca47eb11</value>
 				<value>GUID 161ec2d8-0c9c-4ea2-89fd-9e47a7284510</value>
-				<value>GUID 0f0624d1-0005-40e4-a66e-ff1b25abd753</value>
 				<value>GUID 5fca6a89-96ea-46c5-8a81-285e0a864629</value>
 				<value>GUID 492b3e90-e64f-4751-8800-e9caa3ad66fc</value>
 				<value>GUID 58765e09-8c87-48ca-b3ed-21862f31f506</value>
@@ -671,6 +669,7 @@
 				<value>GUID 7f06cd1f-7f2f-4da1-a5e6-69c452301649</value>
 				<value>GUID c4f1654b-6591-48f4-be20-d2aedc6a0b93</value>
 				<value>GUID 51258f6f-ed83-4ca6-be53-0a248a8fe0d1</value>
+				<value>GUID 80d21294-7cc1-4ff5-9930-17bd676d14f9</value>
 			</AggregatesList>
 		</CGIClassChart>
 		<CGIBox type="e">
@@ -730,7 +729,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">1.58753 0 0 1.14686 99.494 5.3812 </m_transform>
+			<m_transform type="a">1.89729 0 0 1.14686 56.0782 5.3812 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_points type="a">4 140 150  734 150  734 579  140 579  </m_points>
 		</CGIFreeShape>
@@ -1068,7 +1067,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">0.486024 0 0 1.61 274.669 -88.7154 </m_transform>
+			<m_transform type="a">1.46273 0 0 1.61 179.553 -88.7154 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_points type="a">4 97 65  741 65  741 165  97 165  </m_points>
 		</CGIFreeShape>
@@ -5153,7 +5152,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">0.5 0 0 2.62136 727 -872.913 </m_transform>
+			<m_transform type="a">0.978365 0 0 3.60195 453.289 -1307.44 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_points type="a">4 568 436  984 436  984 539  568 539  </m_points>
 		</CGIFreeShape>
@@ -5236,7 +5235,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">8192</m_drawBehavior>
-			<m_transform type="a">0.000126238 0 0 0.000113298 1184 283.126 </m_transform>
+			<m_transform type="a">0.000126238 0 0 0.000113298 1385 287.126 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -5298,6 +5297,12 @@
 													<_Type type="a">Int</_Type>
 												</IProperty>
 												
+												<IProperty type="e">
+													<_Name type="a">Wordbreak</_Name>
+													<_Value type="a">True</_Value>
+													<_Type type="a">Bool</_Type>
+												</IProperty>
+												
 											</IRPYRawContainer>
 										</Properties>
 									</IPropertyMetaclass>
@@ -5333,10 +5338,10 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">1 0 0 1 3 -15 </m_transform>
+			<m_transform type="a">0.987654 0 0 1 4.55554 -12 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
-			<m_points type="a">4 1017 288  1162 288  1162 310  1017 310  </m_points>
-			<m_text type="a">Bluetooth</m_text>
+			<m_points type="a">4 1017 288  1422 288  1422 325  1017 325  </m_points>
+			<m_text type="a">Kit Mains libres - Bluetooth</m_text>
 		</CGIFreeText>
 		<CGIFreeText type="e">
 			<_id type="a">GUID 71572bf2-6746-4a61-80b7-30331a3016fd</_id>
@@ -5363,7 +5368,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">1 0 0 1 6 43 </m_transform>
+			<m_transform type="a">1 0 0 1 6 31 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_points type="a">4 1017 288  1162 288  1162 310  1017 310  </m_points>
 			<m_text type="a">T%E9l%E9phone connect%E9</m_text>
@@ -5447,7 +5452,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">8192</m_drawBehavior>
-			<m_transform type="a">0.000126238 0 0 0.000113298 1170 334.126 </m_transform>
+			<m_transform type="a">0.000126238 0 0 0.000113298 1170 322.126 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -5557,7 +5562,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">8192</m_drawBehavior>
-			<m_transform type="a">0.000126238 0 0 0.000113298 1184 334.126 </m_transform>
+			<m_transform type="a">0.000126238 0 0 0.000113298 1184 322.126 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -5589,35 +5594,6 @@
 			</m_PartsArray>
 		</CGIActiveX>
 		<CGIFreeShape type="e">
-			<_id type="a">GUID bb4e56cd-3293-4082-a574-475d422c26a8</_id>
-			<m_type type="a">185</m_type>
-			<m_pModelObject type="r">
-				<IHandle type="e">
-				</IHandle>
-			</m_pModelObject>
-			<m_pParent type="s">GUID ca6461bf-07cb-4851-a0e3-26e1c0e94d69</m_pParent>
-			<m_name type="p">
-				<CGIText type="e">
-					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
-					<m_color type="p">
-						<IColor type="e">
-							<m_fgColor type="a">0</m_fgColor>
-							<m_bgColor type="a">0</m_bgColor>
-							<m_bgFlag type="a">0</m_bgFlag>
-						</IColor>
-					</m_color>
-					<m_position type="a">1 0 0  </m_position>
-					<m_nIdent type="a">0</m_nIdent>
-					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
-					<m_nOrientationCtrlPt type="a">8</m_nOrientationCtrlPt>
-				</CGIText>
-			</m_name>
-			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">1 0 0 0.981595 0 3.27608 </m_transform>
-			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
-			<m_points type="a">4 636 15  1265 15  1265 178  636 178  </m_points>
-		</CGIFreeShape>
-		<CGIFreeShape type="e">
 			<_id type="a">GUID e9e85533-629d-4382-a46f-5bc9122a4917</_id>
 			<m_type type="a">185</m_type>
 			<m_pModelObject type="r">
@@ -5642,7 +5618,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">2.32314 0 0 1.22343 -1739.29 -59.2387 </m_transform>
+			<m_transform type="a">2.32314 0 0 1.22343 -1555.29 -88.2387 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_points type="a">4 1313 198  1542 198  1542 659  1313 659  </m_points>
 		</CGIFreeShape>
@@ -5674,7 +5650,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.178145 0 0 0.0263389 1331.73 250.04 </m_transform>
+			<m_transform type="a">0.178145 0 0 0.0263389 1515.73 221.04 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 -5 -25  -5 1114  1084 1114  1084 -25  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -5768,7 +5744,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">8192</m_drawBehavior>
-			<m_transform type="a">0.000514663 0 0 0.000261456 1402 287.291 </m_transform>
+			<m_transform type="a">0.000514663 0 0 0.000261456 1586 258.291 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -5879,7 +5855,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">8192</m_drawBehavior>
-			<m_transform type="a">0.000126238 0 0 0.000113298 1483 498.126 </m_transform>
+			<m_transform type="a">0.000126238 0 0 0.000113298 1667 469.126 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -5967,7 +5943,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.187328 0 0 0.0263389 1326.81 350.658 </m_transform>
+			<m_transform type="a">0.187328 0 0 0.0263389 1510.81 321.658 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 -5 -25  -5 1114  1084 1114  1084 -25  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -6061,7 +6037,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">8192</m_drawBehavior>
-			<m_transform type="a">0.00144688 0 0 0.000261456 1354 452.291 </m_transform>
+			<m_transform type="a">0.00144688 0 0 0.000261456 1538 423.291 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -6150,7 +6126,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.185491 0 0 0.0263389 1323.93 407.658 </m_transform>
+			<m_transform type="a">0.185491 0 0 0.0263389 1507.93 378.658 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 -5 -25  -5 1114  1084 1114  1084 -25  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -6206,7 +6182,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">1 0 0 1 8 -4 </m_transform>
+			<m_transform type="a">1 0 0 1 192 -33 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_points type="a">4 1326 499  1373 499  1373 521  1326 521  </m_points>
 			<m_text type="a">Appareil connect%E9</m_text>
@@ -6277,7 +6253,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">1 0 0 1 299 -105 </m_transform>
+			<m_transform type="a">1 0 0 1 483 -134 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_points type="a">4 1017 288  1179 288  1179 325  1017 325  </m_points>
 			<m_text type="a">T%E9l%E9phone</m_text>
@@ -6367,7 +6343,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.000485531 0 0 0.00043576 1490 187.485 </m_transform>
+			<m_transform type="a">0.000485531 0 0 0.00043576 1674 158.485 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -6417,6 +6393,12 @@
 													<_Type type="a">String</_Type>
 												</IProperty>
 												
+												<IProperty type="e">
+													<_Name type="a">ShowName</_Name>
+													<_Value type="a">None</_Value>
+													<_Type type="a">Enum</_Type>
+												</IProperty>
+												
 											</IRPYRawContainer>
 										</Properties>
 									</IPropertyMetaclass>
@@ -6439,7 +6421,6 @@
 			<m_pParent type="s">GUID ca6461bf-07cb-4851-a0e3-26e1c0e94d69</m_pParent>
 			<m_name type="p">
 				<CGIText type="e">
-					<m_str type="a">ev_btn_decrocher_kit</m_str>
 					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
 					<m_color type="p">
 						<IColor type="e">
@@ -6454,8 +6435,8 @@
 					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_name>
-			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.000650612 0 0 0.000261456 646 133.291 </m_transform>
+			<m_drawBehavior type="a">8192</m_drawBehavior>
+			<m_transform type="a">0.000951642 0 0 0.000261456 1035 514.291 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -6485,7 +6466,7 @@
 					
 				</IRPYRawContainer>
 			</m_PartsArray>
-			<m_csButtonCaption type="a">Ok</m_csButtonCaption>
+			<m_csButtonCaption type="a">D%E9crocher</m_csButtonCaption>
 		</CGIMFCCtrl>
 		<CGIMFCCtrl type="e">
 			<_id type="a">GUID c0c05ae2-41be-43e3-89e5-d946fef6eb71</_id>
@@ -6504,6 +6485,12 @@
 													<_Name type="a">ButtonFont</_Name>
 													<_Value type="a">Arial 10 NoBold NoItalic</_Value>
 													<_Type type="a">String</_Type>
+												</IProperty>
+												
+												<IProperty type="e">
+													<_Name type="a">ShowName</_Name>
+													<_Value type="a">None</_Value>
+													<_Type type="a">Enum</_Type>
 												</IProperty>
 												
 											</IRPYRawContainer>
@@ -6528,7 +6515,6 @@
 			<m_pParent type="s">GUID ca6461bf-07cb-4851-a0e3-26e1c0e94d69</m_pParent>
 			<m_name type="p">
 				<CGIText type="e">
-					<m_str type="a">ev_btn_raccrocher_kit</m_str>
 					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
 					<m_color type="p">
 						<IColor type="e">
@@ -6543,8 +6529,8 @@
 					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_name>
-			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.000961352 0 0 0.000261456 732 133.291 </m_transform>
+			<m_drawBehavior type="a">8192</m_drawBehavior>
+			<m_transform type="a">0.000961352 0 0 0.000261456 1144 516.291 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -6574,7 +6560,7 @@
 					
 				</IRPYRawContainer>
 			</m_PartsArray>
-			<m_csButtonCaption type="a">Annuler</m_csButtonCaption>
+			<m_csButtonCaption type="a">Raccrocher</m_csButtonCaption>
 		</CGIMFCCtrl>
 		<CGIActiveX type="e">
 			<_id type="a">GUID b11aeb2e-a527-4e49-9d09-0b56ca47eb11</_id>
@@ -6648,14 +6634,15 @@
 							<m_bgFlag type="a">0</m_bgFlag>
 						</IColor>
 					</m_color>
-					<m_position type="a">1 0 0  </m_position>
+					<m_position type="a">4 -8 -11  64 -11  64 11  -8 11  </m_position>
 					<m_nIdent type="a">0</m_nIdent>
 					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_transform type="a">1 0 0 1 945 925 </m_transform>
 					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">8192</m_drawBehavior>
-			<m_transform type="a">0.000126238 0 0 0.000113298 713 74.1262 </m_transform>
+			<m_transform type="a">0.000126238 0 0 0.000113298 1179 497.126 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -6688,36 +6675,6 @@
 		</CGIActiveX>
 		<CGIFreeText type="e">
 			<_id type="a">GUID 161ec2d8-0c9c-4ea2-89fd-9e47a7284510</_id>
-			<m_type type="a">189</m_type>
-			<m_pModelObject type="r">
-				<IHandle type="e">
-				</IHandle>
-			</m_pModelObject>
-			<m_pParent type="s">GUID ca6461bf-07cb-4851-a0e3-26e1c0e94d69</m_pParent>
-			<m_name type="p">
-				<CGIText type="e">
-					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
-					<m_color type="p">
-						<IColor type="e">
-							<m_fgColor type="a">0</m_fgColor>
-							<m_bgColor type="a">0</m_bgColor>
-							<m_bgFlag type="a">0</m_bgFlag>
-						</IColor>
-					</m_color>
-					<m_position type="a">1 0 0  </m_position>
-					<m_nIdent type="a">0</m_nIdent>
-					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
-					<m_nOrientationCtrlPt type="a">8</m_nOrientationCtrlPt>
-				</CGIText>
-			</m_name>
-			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">1 0 0 1 7 -1 </m_transform>
-			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
-			<m_points type="a">4 632 28  686 28  686 55  632 55  </m_points>
-			<m_text type="a">Appel T%E9l%E9phonique</m_text>
-		</CGIFreeText>
-		<CGIActiveX type="e">
-			<_id type="a">GUID 0f0624d1-0005-40e4-a66e-ff1b25abd753</_id>
 			<_properties type="p"><IPropertyContainer type="e">
 				<Subjects type="c">
 					<IRPYRawContainer type="e">
@@ -6726,13 +6683,13 @@
 							<Metaclasses type="c">
 								<IRPYRawContainer type="e">
 									<IPropertyMetaclass type="e">
-										<_Name type="a">Led</_Name>
+										<_Name type="a">FreeText</_Name>
 										<Properties type="c">
 											<IRPYRawContainer type="e">
 												<IProperty type="e">
-													<_Name type="a">ActiveXProperties@Child.ActiveXControl</_Name>
-													<_Value type="a">BackColor;16777215;BlackWhenOff;0;Blinking;0;BlinkingTimeMillisec;300;Color;2;State;0;Style;0;</_Value>
-													<_Type type="a">String</_Type>
+													<_Name type="a">Wordbreak</_Name>
+													<_Value type="a">True</_Value>
+													<_Type type="a">Bool</_Type>
 												</IProperty>
 												
 											</IRPYRawContainer>
@@ -6747,65 +6704,6 @@
 				</Subjects>
 			</IPropertyContainer>
 			</_properties>
-			<m_type type="a">219</m_type>
-			<m_pModelObject type="r">
-				<IHandle type="e">
-					<_hm2Class type="a">IAttribute</_hm2Class>
-					<_hid type="a">GUID 8bf67198-de1a-4709-a960-9a2633f2de8d</_hid>
-				</IHandle>
-			</m_pModelObject>
-			<m_pParent type="s">GUID ca6461bf-07cb-4851-a0e3-26e1c0e94d69</m_pParent>
-			<m_name type="p">
-				<CGIText type="e">
-					<m_str type="a">VOYANT_vehicule_sms</m_str>
-					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
-					<m_color type="p">
-						<IColor type="e">
-							<m_fgColor type="a">0</m_fgColor>
-							<m_bgColor type="a">0</m_bgColor>
-							<m_bgFlag type="a">0</m_bgFlag>
-						</IColor>
-					</m_color>
-					<m_position type="a">1 0 0  </m_position>
-					<m_nIdent type="a">0</m_nIdent>
-					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
-					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
-				</CGIText>
-			</m_name>
-			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.000126238 0 0 0.000113298 1140 479.126 </m_transform>
-			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
-			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
-			<m_nNameFormat type="a">0</m_nNameFormat>
-			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
-			<m_csModelObjPath type="a">IHM_Objets.Main[0].objetSysVehicule.VOYANT_vehicule_sms</m_csModelObjPath>
-			<m_csName type="a">led_13</m_csName>
-			<m_PartsArray type="c">
-				<IRPYRawContainer type="e">
-					
-						<IHandle type="e">
-							<_hm2Class type="a">IPart</_hm2Class>
-							<_hfilename type="a">.\IHM_Objets.sbsx</_hfilename>
-							<_hsubsystem type="a">IHM_Objets</_hsubsystem>
-							<_hclass type="a">Main</_hclass>
-							<_hname type="a">objetSysVehicule</_hname>
-							<_hid type="a">GUID 2731af7b-953d-4383-ac71-d3660a0ae942</_hid>
-						</IHandle>
-					
-					
-						<IHandle type="e">
-							<_hm2Class type="a">IClass</_hm2Class>
-							<_hfilename type="a">.\IHM_Objets.sbsx</_hfilename>
-							<_hsubsystem type="a">IHM_Objets</_hsubsystem>
-							<_hname type="a">Main</_hname>
-							<_hid type="a">GUID 187c4360-fdb2-4b6f-996d-5c38ed7c9d37</_hid>
-						</IHandle>
-					
-				</IRPYRawContainer>
-			</m_PartsArray>
-		</CGIActiveX>
-		<CGIFreeText type="e">
-			<_id type="a">GUID 5fca6a89-96ea-46c5-8a81-285e0a864629</_id>
 			<m_type type="a">189</m_type>
 			<m_pModelObject type="r">
 				<IHandle type="e">
@@ -6829,9 +6727,68 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">1 0 0 1 -297 -87 </m_transform>
+			<m_transform type="a">1.15882 0 0 1 295.623 463 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
-			<m_points type="a">4 1316 559  1370 559  1370 586  1316 586  </m_points>
+			<m_points type="a">4 632 28  802 28  802 50  632 50  </m_points>
+			<m_text type="a">Appel T%E9l%E9phonique</m_text>
+		</CGIFreeText>
+		<CGIFreeText type="e">
+			<_id type="a">GUID 5fca6a89-96ea-46c5-8a81-285e0a864629</_id>
+			<_properties type="p"><IPropertyContainer type="e">
+				<Subjects type="c">
+					<IRPYRawContainer type="e">
+						<IPropertySubject type="e">
+							<_Name type="a">Format</_Name>
+							<Metaclasses type="c">
+								<IRPYRawContainer type="e">
+									<IPropertyMetaclass type="e">
+										<_Name type="a">FreeText</_Name>
+										<Properties type="c">
+											<IRPYRawContainer type="e">
+												<IProperty type="e">
+													<_Name type="a">Wordbreak</_Name>
+													<_Value type="a">True</_Value>
+													<_Type type="a">Bool</_Type>
+												</IProperty>
+												
+											</IRPYRawContainer>
+										</Properties>
+									</IPropertyMetaclass>
+									
+								</IRPYRawContainer>
+							</Metaclasses>
+						</IPropertySubject>
+						
+					</IRPYRawContainer>
+				</Subjects>
+			</IPropertyContainer>
+			</_properties>
+			<m_type type="a">189</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s">GUID ca6461bf-07cb-4851-a0e3-26e1c0e94d69</m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">8</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4096</m_drawBehavior>
+			<m_transform type="a">0.877193 0 0 1.72727 -126.386 -385.545 </m_transform>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_points type="a">4 1316 559  1430 559  1430 581  1316 581  </m_points>
 			<m_text type="a">SMS non lus</m_text>
 		</CGIFreeText>
 		<CGIActiveX type="e">
@@ -6861,6 +6818,28 @@
 							</Metaclasses>
 						</IPropertySubject>
 						
+						<IPropertySubject type="e">
+							<_Name type="a">PanelDiagram</_Name>
+							<Metaclasses type="c">
+								<IRPYRawContainer type="e">
+									<IPropertyMetaclass type="e">
+										<_Name type="a">LevelIndicator</_Name>
+										<Properties type="c">
+											<IRPYRawContainer type="e">
+												<IProperty type="e">
+													<_Name type="a">ShowName</_Name>
+													<_Value type="a">Name</_Value>
+													<_Type type="a">Enum</_Type>
+												</IProperty>
+												
+											</IRPYRawContainer>
+										</Properties>
+									</IPropertyMetaclass>
+									
+								</IRPYRawContainer>
+							</Metaclasses>
+						</IPropertySubject>
+						
 					</IRPYRawContainer>
 				</Subjects>
 			</IPropertyContainer>
@@ -6875,7 +6854,7 @@
 			<m_pParent type="s">GUID ca6461bf-07cb-4851-a0e3-26e1c0e94d69</m_pParent>
 			<m_name type="p">
 				<CGIText type="e">
-					<m_str type="a">niveau_batterie_kit</m_str>
+					<m_str type="a">Batterie t%E9l%E9phone</m_str>
 					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
 					<m_color type="p">
 						<IColor type="e">
@@ -6890,14 +6869,14 @@
 					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_name>
-			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.000330161 0 0 0.000479336 1085 397.534 </m_transform>
+			<m_drawBehavior type="a">4096</m_drawBehavior>
+			<m_transform type="a">0.000330161 0 0 0.000479336 1096 365.534 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
 			<m_csModelObjPath type="a">IHM_Objets.Main[0].objetSysVehicule.niveau_batterie_kit</m_csModelObjPath>
-			<m_csName type="a">levelindicator_2</m_csName>
+			<m_csName type="a">Batterie t%E9l%E9phone</m_csName>
 			<m_PartsArray type="c">
 				<IRPYRawContainer type="e">
 					
@@ -6947,7 +6926,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">1 0 0 1 -300 -159 </m_transform>
+			<m_transform type="a">1 0 0 1 -281 -145 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_points type="a">4 1609 180  1853 180  1853 297  1609 297  </m_points>
 		</CGIFreeShape>
@@ -6976,7 +6955,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">1 0 0 1 -296 -159 </m_transform>
+			<m_transform type="a">1 0 0 1 -277 -145 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_points type="a">4 1620 196  1674 196  1674 223  1620 223  </m_points>
 			<m_text type="a">GEN ev telephone </m_text>
@@ -7038,7 +7017,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.000543795 0 0 0.000261456 1338 76.2913 </m_transform>
+			<m_transform type="a">0.000543795 0 0 0.000261456 1357 90.2913 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -7127,7 +7106,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.000611769 0 0 0.000261456 1462 78.2913 </m_transform>
+			<m_transform type="a">0.000611769 0 0 0.000261456 1481 92.2913 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -7174,7 +7153,7 @@
 											<IRPYRawContainer type="e">
 												<IProperty type="e">
 													<_Name type="a">ActiveXProperties@Child.ActiveXControl</_Name>
-													<_Value type="a">BackColor;16777215;IconSet;9;State;0;UserInteractionEnabled;-1;</_Value>
+													<_Value type="a">BackColor;16777215;IconSet;6;State;0;UserInteractionEnabled;-1;</_Value>
 													<_Type type="a">String</_Type>
 												</IProperty>
 												
@@ -7200,6 +7179,12 @@
 													<_Type type="a">Enum</_Type>
 												</IProperty>
 												
+												<IProperty type="e">
+													<_Name type="a">ShowName</_Name>
+													<_Value type="a">Name</_Value>
+													<_Type type="a">Enum</_Type>
+												</IProperty>
+												
 											</IRPYRawContainer>
 										</Properties>
 									</IPropertyMetaclass>
@@ -7222,7 +7207,7 @@
 			<m_pParent type="s">GUID ca6461bf-07cb-4851-a0e3-26e1c0e94d69</m_pParent>
 			<m_name type="p">
 				<CGIText type="e">
-					<m_str type="a">charge_vehicule_telephone</m_str>
+					<m_str type="a">Brancher T%E9l%E9phone </m_str>
 					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
 					<m_color type="p">
 						<IColor type="e">
@@ -7237,14 +7222,14 @@
 					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_name>
-			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.000485531 0 0 0.00043576 1197 46.4855 </m_transform>
+			<m_drawBehavior type="a">4096</m_drawBehavior>
+			<m_transform type="a">0.000485531 0 0 0.00043576 1253 365.485 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
 			<m_csModelObjPath type="a">IHM_Objets.Main[0].objetSysVehicule.charge_vehicule_telephone</m_csModelObjPath>
-			<m_csName type="a">onoffswitch_2</m_csName>
+			<m_csName type="a">Brancher T%E9l%E9phone </m_csName>
 			<m_PartsArray type="c">
 				<IRPYRawContainer type="e">
 					
@@ -7348,7 +7333,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">8192</m_drawBehavior>
-			<m_transform type="a">0.000388425 0 0 0.00061878 1562 187.689 </m_transform>
+			<m_transform type="a">0.000388425 0 0 0.00061878 1746 158.689 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -7458,7 +7443,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">8192</m_drawBehavior>
-			<m_transform type="a">0.000126238 0 0 0.000113298 1422 566.126 </m_transform>
+			<m_transform type="a">0.000126238 0 0 0.000113298 1606 537.126 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -7568,7 +7553,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">8192</m_drawBehavior>
-			<m_transform type="a">0.000126238 0 0 0.000113298 1374 709.126 </m_transform>
+			<m_transform type="a">0.000126238 0 0 0.000113298 1558 680.126 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -7662,7 +7647,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">8192</m_drawBehavior>
-			<m_transform type="a">0.000971062 0 0 0.00043576 1330 606.485 </m_transform>
+			<m_transform type="a">0.000971062 0 0 0.00043576 1514 577.485 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -7757,7 +7742,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">8192</m_drawBehavior>
-			<m_transform type="a">0.000971062 0 0 0.00043576 1484 606.485 </m_transform>
+			<m_transform type="a">0.000971062 0 0 0.00043576 1668 577.485 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -7868,7 +7853,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">8192</m_drawBehavior>
-			<m_transform type="a">0.000126238 0 0 0.000113298 1468 566.126 </m_transform>
+			<m_transform type="a">0.000126238 0 0 0.000113298 1652 537.126 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -7971,14 +7956,15 @@
 							<m_bgFlag type="a">0</m_bgFlag>
 						</IColor>
 					</m_color>
-					<m_position type="a">1 0 0  </m_position>
+					<m_position type="a">4 -8 -11  64 -11  64 11  -8 11  </m_position>
 					<m_nIdent type="a">0</m_nIdent>
 					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_transform type="a">1 0 0 1 986 927 </m_transform>
 					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">8192</m_drawBehavior>
-			<m_transform type="a">0.000126238 0 0 0.000113298 754 76.1262 </m_transform>
+			<m_transform type="a">0.000126238 0 0 0.000113298 1207 497.126 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -8034,7 +8020,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">1 0 0 1 109 -2 </m_transform>
+			<m_transform type="a">1 0 0 1 293 -31 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_points type="a">4 1293 531  1347 531  1347 558  1293 558  </m_points>
 			<m_text type="a">Appel re%E7u</m_text>
@@ -8064,7 +8050,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">1 0 0 1 -106 141 </m_transform>
+			<m_transform type="a">1 0 0 1 78 112 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_points type="a">4 1513 525  1567 525  1567 552  1513 552  </m_points>
 			<m_text type="a">SMS re%E7u</m_text>
@@ -8132,7 +8118,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">8192</m_drawBehavior>
-			<m_transform type="a">0.000971062 0 0 0.00043576 1427 692.485 </m_transform>
+			<m_transform type="a">0.000971062 0 0 0.00043576 1611 663.485 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -8191,6 +8177,28 @@
 							</Metaclasses>
 						</IPropertySubject>
 						
+						<IPropertySubject type="e">
+							<_Name type="a">PanelDiagram</_Name>
+							<Metaclasses type="c">
+								<IRPYRawContainer type="e">
+									<IPropertyMetaclass type="e">
+										<_Name type="a">Led</_Name>
+										<Properties type="c">
+											<IRPYRawContainer type="e">
+												<IProperty type="e">
+													<_Name type="a">ShowName</_Name>
+													<_Value type="a">None</_Value>
+													<_Type type="a">Enum</_Type>
+												</IProperty>
+												
+											</IRPYRawContainer>
+										</Properties>
+									</IPropertyMetaclass>
+									
+								</IRPYRawContainer>
+							</Metaclasses>
+						</IPropertySubject>
+						
 					</IRPYRawContainer>
 				</Subjects>
 			</IPropertyContainer>
@@ -8205,7 +8213,6 @@
 			<m_pParent type="s">GUID ca6461bf-07cb-4851-a0e3-26e1c0e94d69</m_pParent>
 			<m_name type="p">
 				<CGIText type="e">
-					<m_str type="a">VOYANT_vehicule_sms</m_str>
 					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
 					<m_color type="p">
 						<IColor type="e">
@@ -8220,8 +8227,8 @@
 					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_name>
-			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.000126238 0 0 0.000113298 984 74.1262 </m_transform>
+			<m_drawBehavior type="a">8192</m_drawBehavior>
+			<m_transform type="a">0.000126238 0 0 0.000113298 1137 582.126 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -8309,7 +8316,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.00172849 0 0 0.000261456 1590 683.291 </m_transform>
+			<m_transform type="a">0.00172849 0 0 0.000261456 1774 654.291 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -8359,6 +8366,12 @@
 													<_Type type="a">String</_Type>
 												</IProperty>
 												
+												<IProperty type="e">
+													<_Name type="a">ShowName</_Name>
+													<_Value type="a">None</_Value>
+													<_Type type="a">Enum</_Type>
+												</IProperty>
+												
 											</IRPYRawContainer>
 										</Properties>
 									</IPropertyMetaclass>
@@ -8381,7 +8394,6 @@
 			<m_pParent type="s">GUID ca6461bf-07cb-4851-a0e3-26e1c0e94d69</m_pParent>
 			<m_name type="p">
 				<CGIText type="e">
-					<m_str type="a">ev_btn_lire_sms_kit</m_str>
 					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
 					<m_color type="p">
 						<IColor type="e">
@@ -8396,8 +8408,8 @@
 					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_name>
-			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.00078656 0 0 0.000287602 961 123.32 </m_transform>
+			<m_drawBehavior type="a">8192</m_drawBehavior>
+			<m_transform type="a">0.00123325 0 0 0.000287602 1246 574.32 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -8456,6 +8468,28 @@
 							</Metaclasses>
 						</IPropertySubject>
 						
+						<IPropertySubject type="e">
+							<_Name type="a">PanelDiagram</_Name>
+							<Metaclasses type="c">
+								<IRPYRawContainer type="e">
+									<IPropertyMetaclass type="e">
+										<_Name type="a">MatrixDisplay</_Name>
+										<Properties type="c">
+											<IRPYRawContainer type="e">
+												<IProperty type="e">
+													<_Name type="a">ShowName</_Name>
+													<_Value type="a">None</_Value>
+													<_Type type="a">Enum</_Type>
+												</IProperty>
+												
+											</IRPYRawContainer>
+										</Properties>
+									</IPropertyMetaclass>
+									
+								</IRPYRawContainer>
+							</Metaclasses>
+						</IPropertySubject>
+						
 					</IRPYRawContainer>
 				</Subjects>
 			</IPropertyContainer>
@@ -8470,7 +8504,6 @@
 			<m_pParent type="s">GUID ca6461bf-07cb-4851-a0e3-26e1c0e94d69</m_pParent>
 			<m_name type="p">
 				<CGIText type="e">
-					<m_str type="a">nbr_sms_kit</m_str>
 					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
 					<m_color type="p">
 						<IColor type="e">
@@ -8485,8 +8518,8 @@
 					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_name>
-			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.00172849 0 0 0.000278887 1060 127.311 </m_transform>
+			<m_drawBehavior type="a">8192</m_drawBehavior>
+			<m_transform type="a">0.000718586 0 0 0.000278887 1163 574.311 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -8596,7 +8629,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.000485531 0 0 0.00043576 1700 226.485 </m_transform>
+			<m_transform type="a">0.000485531 0 0 0.00043576 1884 197.485 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -8627,6 +8660,65 @@
 				</IRPYRawContainer>
 			</m_PartsArray>
 		</CGIActiveX>
+		<CGIFreeText type="e">
+			<_id type="a">GUID 80d21294-7cc1-4ff5-9930-17bd676d14f9</_id>
+			<_properties type="p"><IPropertyContainer type="e">
+				<Subjects type="c">
+					<IRPYRawContainer type="e">
+						<IPropertySubject type="e">
+							<_Name type="a">Format</_Name>
+							<Metaclasses type="c">
+								<IRPYRawContainer type="e">
+									<IPropertyMetaclass type="e">
+										<_Name type="a">FreeText</_Name>
+										<Properties type="c">
+											<IRPYRawContainer type="e">
+												<IProperty type="e">
+													<_Name type="a">Font.Size</_Name>
+													<_Value type="a">14</_Value>
+													<_Type type="a">Int</_Type>
+												</IProperty>
+												
+											</IRPYRawContainer>
+										</Properties>
+									</IPropertyMetaclass>
+									
+								</IRPYRawContainer>
+							</Metaclasses>
+						</IPropertySubject>
+						
+					</IRPYRawContainer>
+				</Subjects>
+			</IPropertyContainer>
+			</_properties>
+			<m_type type="a">189</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s">GUID ca6461bf-07cb-4851-a0e3-26e1c0e94d69</m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">8</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4096</m_drawBehavior>
+			<m_transform type="a">1 0 0 1 -86 13 </m_transform>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_points type="a">4 1113 435  1160 435  1160 457  1113 457  </m_points>
+			<m_text type="a">T%E9l%E9communications</m_text>
+		</CGIFreeText>
 		<IFile type="e">
 			<_id type="a">GUID 77bdcfc7-26a9-48df-a730-4c5ee50714e8</_id>
 			<_myState type="a">139264</_myState>
@@ -8737,7 +8829,7 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">_SysVehicule</_name>
-			<_modifiedTimeWeak type="a">11.9.2026::21:44:27</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">11.10.2026::7:41:37</_modifiedTimeWeak>
 			<_theMainDiagram type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IDiagram</_hm2Class>
@@ -8745,9 +8837,9 @@
 					<_hid type="a">GUID 1d39c820-40df-4404-926c-8610a8ce4194</_hid>
 				</IHandle>
 			</_theMainDiagram>
-			<_modifiedTime type="a">11.9.2026::21:41:26</_modifiedTime>
+			<_modifiedTime type="a">11.10.2026::7:41:37</_modifiedTime>
 			<_lastID type="a">198</_lastID>
-			<weakCGTime type="a">11.9.2026::21:44:27</weakCGTime>
+			<weakCGTime type="a">11.10.2026::7:41:37</weakCGTime>
 			<strongCGTime type="a">11.4.2026::7:41:26</strongCGTime>
 			<_itsStateChart type="r">
 				<IHandle type="e">
@@ -13010,8 +13102,8 @@ appel_en_cours_telephone=false;</_bodyData>
 			<_id type="a">GUID 8bf67198-de1a-4709-a960-9a2633f2de8d</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">VOYANT_vehicule_sms</_name>
-			<_modifiedTimeWeak type="a">11.9.2026::1:23:52</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.9.2026::1:23:52</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::7:41:37</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::7:41:37</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IType</_hm2Class>
@@ -13039,8 +13131,8 @@ appel_en_cours_telephone=false;</_bodyData>
 			<_id type="a">GUID a1d35409-cd87-4c2f-b8cd-8d22e35da3fe</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">charge_vehicule_telephone</_name>
-			<_modifiedTimeWeak type="a">11.4.2026::9:41:44</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.4.2026::9:41:44</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::7:32:21</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::7:32:21</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IType</_hm2Class>
@@ -17908,10 +18000,10 @@ appel_en_cours_telephone=false;</_bodyData>
 			<_id type="a">GUID 4144beb1-cce6-4d0c-9a76-d5898dc24f44</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">statechart</_name>
-			<_modifiedTimeWeak type="a">11.9.2026::21:44:27</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">11.10.2026::7:24:8</_modifiedTimeWeak>
 			<_modifiedTime type="a">11.9.2026::21:42:17</_modifiedTime>
 			<_lastID type="a">302</_lastID>
-			<weakCGTime type="a">11.9.2026::21:44:27</weakCGTime>
+			<weakCGTime type="a">11.10.2026::7:24:8</weakCGTime>
 			<strongCGTime type="a">11.4.2026::7:41:26</strongCGTime>
 			<_itsStateChart type="r">
 				<IHandle type="e">
@@ -17919,7 +18011,7 @@ appel_en_cours_telephone=false;</_bodyData>
 			</_itsStateChart>
 			<_classModifier type="a">Unspecified</_classModifier>
 			<_defNumber type="a">217</_defNumber>
-			<_version type="a">11.9.2026::22:44:28</_version>
+			<_version type="a">11.10.2026::8:24:9</_version>
 			<_baseVersion type="a">1.2.1990::0:0:0</_baseVersion>
 			<_diagram type="s">GUID 3f57bb6d-c1d7-486b-81b5-20de9ab1601e</_diagram>
 			<AggregatesList type="e">
@@ -23504,7 +23596,7 @@ actualisation_sms_telephone(1);</_body>
 		<ILabel type="e">
 			<_id type="a">GUID 6b678351-8fdf-44fe-a466-71f618c907be</_id>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
+			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
 			<_itsTrigger>NULL</_itsTrigger>
 			<_itsGuard>NULL</_itsGuard>
 			<_itsAction>NULL</_itsAction>
@@ -25273,9 +25365,9 @@ GEN(ev_raccrocher_telephone);</_body>
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">statechartdiagram_0</_name>
-			<_modifiedTimeWeak type="a">11.9.2026::21:44:27</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">11.10.2026::7:24:8</_modifiedTimeWeak>
 			<_modifiedTime type="a">11.9.2026::21:37:8</_modifiedTime>
-			<_lastModifiedTime type="a">11.9.2026::21:44:28</_lastModifiedTime>
+			<_lastModifiedTime type="a">11.10.2026::7:24:15</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -32857,7 +32949,17 @@ IS_IN(moteur_off)%0D
 			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
 			<m_pDefaultComponentRelation type="s"></m_pDefaultComponentRelation>
 			<m_moveAndLineTimeStamp type="a">10.20.2026::10:46:36</m_moveAndLineTimeStamp>
+			<AggregatesList type="e">
+				<value>GUID 85fb3288-098f-4e0a-9312-10768d315e1c</value>
+			</AggregatesList>
 		</CGIState>
+		<CGICompartment type="e">
+			<_id type="a">GUID 85fb3288-098f-4e0a-9312-10768d315e1c</_id>
+			<m_name type="a">Reactions</m_name>
+			<m_displayOption type="a">All</m_displayOption>
+			<m_bShowInherited type="a">0</m_bShowInherited>
+			<m_bOrdered type="a">0</m_bOrdered>
+		</CGICompartment>
 		<CGIState type="e">
 			<_id type="a">GUID e32bd34b-47d8-455b-9746-895823d780c0</_id>
 			<m_type type="a">9</m_type>
@@ -34389,7 +34491,7 @@ vitesseConsigne+2]</m_str>
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.0501632 0 0 0.0645615 267.677 26.8119 </m_transform>
+			<m_transform type="a">0.0501632 0 0 0.0645615 268.37 26.2934 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -34573,7 +34675,7 @@ vitesseConsigne+2]</m_str>
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.127016 0 0 0.27732 369.109 129.877 </m_transform>
+			<m_transform type="a">0.127016 0 0 0.27732 343.31 154.244 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -34671,7 +34773,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1603 322  1590 322  </m_arrow>
+			<m_arrow type="a">2 1607 322  1590 322  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -34737,7 +34839,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2801 277  1814 277  </m_arrow>
+			<m_arrow type="a">2 2652 324  1818 324  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -34857,7 +34959,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">4 1597 504  1879 504  1879 307  2224 307  </m_arrow>
+			<m_arrow type="a">4 1597 504  1879 504  1879 354  2075 354  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -35227,7 +35329,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 2190 439  2190 376  2329 376  </m_arrow>
+			<m_arrow type="a">3 2041 486  2041 423  2180 423  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -35639,7 +35741,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2608 519  2583 519  </m_arrow>
+			<m_arrow type="a">2 2459 566  2434 566  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -35837,7 +35939,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2390 539  2397 539  </m_arrow>
+			<m_arrow type="a">2 2241 586  2248 586  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -36990,7 +37092,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2240 643  2239 643  </m_arrow>
+			<m_arrow type="a">2 2091 690  2090 690  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -37207,7 +37309,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2891 841  2891 641  </m_arrow>
+			<m_arrow type="a">2 2742 888  2742 688  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -38034,7 +38136,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 2552 822  2552 741  2420 741  </m_arrow>
+			<m_arrow type="a">3 2403 869  2403 788  2271 788  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>

@@ -29,6 +29,9 @@ public:
   int move_fwd_tm = 3000; // ms
   int move_bwd_tm = 4000; // ms
   int move_stp_tm = 2000; // ms
+  int delay_collision = 1000; // ms
+  float debut_collision_face = 0.12; // s
+  float debut_collision_dos = 0.12; // s
 
   void load(NodeHandle &nh) {
     nh.getParam("frequence", frequence);
@@ -47,6 +50,9 @@ public:
     nh.getParam("move_fwd_tm", move_fwd_tm);
     nh.getParam("move_bwd_tm", move_bwd_tm);
     nh.getParam("move_stp_tm", move_stp_tm);
+    nh.getParam("delay_collision", delay_collision);
+    nh.getParam("debut_collision_face", debut_collision_face);
+    nh.getParam("debut_collision_dos", debut_collision_dos);
 
     precision_angular = deg_to_rad(precision_angular);
     trigger_pivot = deg_to_rad(trigger_pivot);

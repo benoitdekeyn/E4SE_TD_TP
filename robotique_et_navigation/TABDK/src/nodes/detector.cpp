@@ -11,6 +11,7 @@
 #include "TABDK/global_control.h"
 #include <geometry_msgs/Twist.h>
 #include <std_msgs/Bool.h>
+#include "../parametres.cpp"
 
 using namespace ros;
 using namespace std;
@@ -33,14 +34,18 @@ bool robot_pause = false;
 bool collision_pause = false;
 bool was_obstacle_on_back = false;
 float distance_to_last_obstacle = FLT_MAX;
+int min_delay_before_collision; // ms
+float minimum_distance_lidar = 0.0f;
+float debut_collision_face;
+float debut_collision_dos;
 vector<float> distances;
 vector<float> min_distances;
 Publisher marker_pub;
 ServiceClient client_global_control;
+Params params;
 
 #define SEUIL_OBSTACLE 0.3 //m
 #define SEUIL_MAX 3.5f // m
-#define MIN_DELAY_COLLISION 2.0f //s
 #define REGION_FACE 0
 #define REGION_DOS 4
 
@@ -197,6 +202,7 @@ void update_markers() {
 // FONCTION CALLBACK
 void scanCallback(const LaserScan::ConstPtr& scan) {
   // ROS_INFO(" --- Mesures a 360 LIDAR --- ");
+  minimum_distance_lidar = scan->range_min;
   distances = scan->ranges;
   int angle_deg_increment = scan->angle_increment * 180 / M_PI;
   filtrer_distances(distances, scan->range_min, SEUIL_MAX);
@@ -237,10 +243,15 @@ void pauseCallback(const Bool::ConstPtr& msg) {
 int main(int argc, char **argv) {
   init(argc, argv, "detector");
   NodeHandle nh;
+
+  params.load(nh);
+  min_delay_before_collision = params.delay_collision;
+  debut_collision_face = params.debut_collision_face;
+  debut_collision_dos = params.debut_collision_dos;
+  Rate loop_rate(params.frequence); //Hz
   
   client_global_control = nh.serviceClient<global_control>("/global_control");
 
-  Rate loop_rate(5); //Hz
 
   Subscriber scan_sub = nh.subscribe("/scan", 1, scanCallback);
   Subscriber cmd_sub = nh.subscribe("/cmd_vel", 1, cmdVelCallback);
@@ -342,8 +353,9 @@ void prevent_collision() {
   // Le robot est ici en play 
 
   if (linear_speed > 0.001) {
-    int delay_before_collision = fabs(min_distances[REGION_FACE] / linear_speed);
-    if (delay_before_collision < MIN_DELAY_COLLISION) {
+    ROS_INFO_THROTTLE(1, "distance to obstacle: %f", min_distances[REGION_FACE]);
+    int delay_before_collision = fabs((min_distances[REGION_FACE] - debut_collision_face) / linear_speed * 1000); // ms
+    if (delay_before_collision < min_delay_before_collision) {
       distance_to_last_obstacle = min_distances[REGION_FACE];
       was_obstacle_on_back = false;
       collision_pause = true;
@@ -352,8 +364,9 @@ void prevent_collision() {
     }
   }
   else if (linear_speed < -0.001) {
-    int delay_before_collision = fabs(min_distances[REGION_DOS]  / linear_speed);
-    if (delay_before_collision < MIN_DELAY_COLLISION) {
+    ROS_INFO_THROTTLE(1, "distance to obstacle: %f", min_distances[REGION_DOS]);
+    int delay_before_collision = fabs((min_distances[REGION_DOS] - debut_collision_dos) / linear_speed * 1000); // ms
+    if (delay_before_collision < min_delay_before_collision) {
       distance_to_last_obstacle = min_distances[REGION_DOS];
       was_obstacle_on_back = true;
       collision_pause = true;

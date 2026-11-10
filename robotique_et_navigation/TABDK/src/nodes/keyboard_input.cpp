@@ -1,11 +1,12 @@
 #include "ros/ros.h"
 #include "std_msgs/Int8.h"
 #include "termios.h"
+#include "../parametres.cpp"
 
 using namespace ros;
 using std_msgs::Int8;
 
-const int FREQ_ACTUALISATION = 5; // Hz
+Params params;
 
 int getch();
 Int8 keyboard_input;
@@ -14,10 +15,11 @@ int main(int argc, char **argv) {
   init(argc, argv, "keyboard_input");
 
   NodeHandle nh;
+  params.load(nh);
   Publisher key_input_pub =
       nh.advertise<Int8>("/keyboard_input", 1000);
 
-  Rate loop_rate(FREQ_ACTUALISATION);
+  Rate loop_rate(params.frequence);
 
   while (ok()) {
     const int key = getch();

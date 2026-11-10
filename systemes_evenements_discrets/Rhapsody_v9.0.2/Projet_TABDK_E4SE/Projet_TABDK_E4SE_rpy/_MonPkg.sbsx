@@ -111,10 +111,10 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">_MonPkg</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::14:20:56</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::14:30:49</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::14:37:12</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::15:15:59</_modifiedTime>
 			<_lastID type="a">15</_lastID>
-			<weakCGTime type="a">11.10.2026::14:20:56</weakCGTime>
+			<weakCGTime type="a">11.10.2026::14:37:12</weakCGTime>
 			<strongCGTime type="a">11.4.2026::7:41:26</strongCGTime>
 			<_defaultComposite type="s">GUID ce1ec9e6-dcba-46da-9bb8-b1ebb5c0fcc5</_defaultComposite>
 			<_eventsBaseID type="a">13401</_eventsBaseID>
@@ -535,8 +535,8 @@
 			</_properties>
 			<_name type="a">IHM</_name>
 			<_modifiedTimeWeak type="a">11.10.2026::7:25:6</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::14:28:6</_modifiedTime>
-			<_lastModifiedTime type="a">11.10.2026::14:28:6</_lastModifiedTime>
+			<_modifiedTime type="a">11.10.2026::15:7:7</_modifiedTime>
+			<_lastModifiedTime type="a">11.10.2026::15:7:7</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -579,7 +579,7 @@
 			</m_name>
 			<m_drawBehavior type="a">0</m_drawBehavior>
 			<m_bIsPreferencesInitialized type="a">0</m_bIsPreferencesInitialized>
-			<elementList type="a">97</elementList>
+			<elementList type="a">98</elementList>
 			
 			<m_access type="a">'Z'</m_access>
 			<m_modified type="a">'N'</m_modified>
@@ -689,6 +689,7 @@
 				<value>GUID ee3ec814-4e77-4781-ac78-58e24024500d</value>
 				<value>GUID 2abf25af-070b-4d3f-9d9c-63a89dc0d0fb</value>
 				<value>GUID 347aabf1-0f10-481e-83a2-deac53f8bf17</value>
+				<value>GUID 41c5eed0-ce55-4d93-b37f-96f2f6a1cfff</value>
 			</AggregatesList>
 		</CGIClassChart>
 		<CGIBox type="e">
@@ -9434,13 +9435,13 @@
 			<m_pModelObject type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IAttribute</_hm2Class>
-					<_hid type="a">GUID 9f29b4f3-156e-4f61-aa19-e90ecd21b9c4</_hid>
+					<_hid type="a">GUID 71e8f35d-7607-4e58-afd9-e47909f8ec37</_hid>
 				</IHandle>
 			</m_pModelObject>
 			<m_pParent type="s">GUID ca6461bf-07cb-4851-a0e3-26e1c0e94d69</m_pParent>
 			<m_name type="p">
 				<CGIText type="e">
-					<m_str type="a">distance_voiture_devant</m_str>
+					<m_str type="a">vitesse_voiture_devant</m_str>
 					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
 					<m_color type="p">
 						<IColor type="e">
@@ -9456,12 +9457,12 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.00369004 0 0 0.000610064 730 104.68 </m_transform>
+			<m_transform type="a">0.00369004 0 0 0.000610064 730 102.68 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
-			<m_csModelObjPath type="a">IHM_Objets.Main[0].objetSysVehicule.distance_voiture_devant</m_csModelObjPath>
+			<m_csModelObjPath type="a">IHM_Objets.Main[0].objetSysVehicule.vitesse_voiture_devant</m_csModelObjPath>
 			<m_csName type="a">slider_4</m_csName>
 			<m_PartsArray type="c">
 				<IRPYRawContainer type="e">
@@ -9502,7 +9503,7 @@
 											<IRPYRawContainer type="e">
 												<IProperty type="e">
 													<_Name type="a">ActiveXProperties@Child.ActiveXControl</_Name>
-													<_Value type="a">BackColor;16777215;IconSet;3;State;0;UserInteractionEnabled;-1;</_Value>
+													<_Value type="a">BackColor;16777215;IconSet;4;State;0;UserInteractionEnabled;-1;</_Value>
 													<_Type type="a">String</_Type>
 												</IProperty>
 												
@@ -9566,7 +9567,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">2048</m_drawBehavior>
-			<m_transform type="a">0.000485531 0 0 0.00043576 1243 25.4855 </m_transform>
+			<m_transform type="a">0.000485531 0 0 0.00043576 1240 25.4855 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
@@ -9661,6 +9662,94 @@
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
 			<m_csModelObjPath type="a">IHM_Objets.Main[0].objetSysVehicule.distance_inter_voiture</m_csModelObjPath>
 			<m_csName type="a">matrixdisplay_2</m_csName>
+			<m_PartsArray type="c">
+				<IRPYRawContainer type="e">
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IPart</_hm2Class>
+							<_hfilename type="a">.\IHM_Objets.sbsx</_hfilename>
+							<_hsubsystem type="a">IHM_Objets</_hsubsystem>
+							<_hclass type="a">Main</_hclass>
+							<_hname type="a">objetSysVehicule</_hname>
+							<_hid type="a">GUID 2731af7b-953d-4383-ac71-d3660a0ae942</_hid>
+						</IHandle>
+					
+					
+						<IHandle type="e">
+							<_hm2Class type="a">IClass</_hm2Class>
+							<_hfilename type="a">.\IHM_Objets.sbsx</_hfilename>
+							<_hsubsystem type="a">IHM_Objets</_hsubsystem>
+							<_hname type="a">Main</_hname>
+							<_hid type="a">GUID 187c4360-fdb2-4b6f-996d-5c38ed7c9d37</_hid>
+						</IHandle>
+					
+				</IRPYRawContainer>
+			</m_PartsArray>
+		</CGIActiveX>
+		<CGIActiveX type="e">
+			<_id type="a">GUID 41c5eed0-ce55-4d93-b37f-96f2f6a1cfff</_id>
+			<_properties type="p"><IPropertyContainer type="e">
+				<Subjects type="c">
+					<IRPYRawContainer type="e">
+						<IPropertySubject type="e">
+							<_Name type="a">Format</_Name>
+							<Metaclasses type="c">
+								<IRPYRawContainer type="e">
+									<IPropertyMetaclass type="e">
+										<_Name type="a">MatrixDisplay</_Name>
+										<Properties type="c">
+											<IRPYRawContainer type="e">
+												<IProperty type="e">
+													<_Name type="a">ActiveXProperties@Child.ActiveXControl</_Name>
+													<_Value type="a">BackColor;16777215;Caption;;Style;0;</_Value>
+													<_Type type="a">String</_Type>
+												</IProperty>
+												
+											</IRPYRawContainer>
+										</Properties>
+									</IPropertyMetaclass>
+									
+								</IRPYRawContainer>
+							</Metaclasses>
+						</IPropertySubject>
+						
+					</IRPYRawContainer>
+				</Subjects>
+			</IPropertyContainer>
+			</_properties>
+			<m_type type="a">220</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IAttribute</_hm2Class>
+					<_hid type="a">GUID 9f29b4f3-156e-4f61-aa19-e90ecd21b9c4</_hid>
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s">GUID ca6461bf-07cb-4851-a0e3-26e1c0e94d69</m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_str type="a">distance_voiture_devant</m_str>
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">2048</m_drawBehavior>
+			<m_transform type="a">0.00189357 0 0 0.000261456 1201 79.2913 </m_transform>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_polygon type="a">4 0 -1114  0 113628  102980 113628  102980 -1114  </m_polygon>
+			<m_nNameFormat type="a">0</m_nNameFormat>
+			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
+			<m_csModelObjPath type="a">IHM_Objets.Main[0].objetSysVehicule.distance_voiture_devant</m_csModelObjPath>
+			<m_csName type="a">matrixdisplay_3</m_csName>
 			<m_PartsArray type="c">
 				<IRPYRawContainer type="e">
 					
@@ -9795,7 +9884,7 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">_SysVehicule</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::14:32:5</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">11.10.2026::15:7:7</_modifiedTimeWeak>
 			<_theMainDiagram type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IDiagram</_hm2Class>
@@ -9803,9 +9892,9 @@
 					<_hid type="a">GUID 1d39c820-40df-4404-926c-8610a8ce4194</_hid>
 				</IHandle>
 			</_theMainDiagram>
-			<_modifiedTime type="a">11.10.2026::14:32:5</_modifiedTime>
+			<_modifiedTime type="a">11.10.2026::15:7:7</_modifiedTime>
 			<_lastID type="a">212</_lastID>
-			<weakCGTime type="a">11.10.2026::14:32:5</weakCGTime>
+			<weakCGTime type="a">11.10.2026::15:7:7</weakCGTime>
 			<strongCGTime type="a">11.4.2026::7:41:26</strongCGTime>
 			<_itsStateChart type="r">
 				<IHandle type="e">
@@ -10124,8 +10213,8 @@ niveau_batterie -= 10;</_bodyData>
 			<_id type="a">GUID b750e185-5fe5-4be4-bfc9-d01fcced9d75</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">calcul_vitesse_distance</_name>
-			<_modifiedTimeWeak type="a">11.4.2026::7:41:26</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.11.2026::14:12:10</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::14:58:36</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:58:36</_modifiedTime>
 			<_lastID type="a">6</_lastID>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
@@ -10158,7 +10247,7 @@ const double AIR_DRAG             = PARAM_SIMU_frottement_air;           // en k
 const double DELTA_T_MS           = (double)(1000/PARAM_SIMU_freq_rafraichissement);%0D
 %0D
 // --- CONSTANTES PHYSIQUES ET MATHEMATIQUES ---%0D
-const double CST_COEFF_ROULEMENT   = 0.015;%0D
+const double CST_COEFF_ROULEMENT   = 0.05;%0D
 const double CST_MULTIPLICATEUR_F  = 10.0;%0D
 const double CST_GRAVITE           = 9.81;%0D
 const double CST_PI_SUR_180        = 3.14159 / 180.0;%0D
@@ -10834,8 +10923,8 @@ if (actif == 0) {%0D
 		<IConstructor type="e">
 			<_id type="a">GUID 1264a0c9-8b88-4cbe-98ea-f9b217bed344</_id>
 			<_myState type="a">8192</_myState>
-			<_modifiedTimeWeak type="a">11.4.2026::7:41:26</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.3.2026::20:36:57</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::14:59:30</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:59:30</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
 				<IRPYRawContainer type="e">
@@ -10857,6 +10946,7 @@ brakePedal=0;   %0D
 accelPedal=0;%0D
 float_speed=(double)speed;%0D
 float_distance=(double)distance;%0D
+distance_voiture_devant = distance;%0D
 %0D
 const double MASSE                = (double)PARAM_SIMU_masse;%0D
 const double PUISSANCE            = (double)PARAM_SIMU_puissance_moteur;%0D
@@ -12555,9 +12645,9 @@ appel_en_cours_telephone=false;</_bodyData>
 		<IPrimitiveOperation type="e">
 			<_id type="a">GUID 21a6f075-12c9-4428-b697-22da4d969d7e</_id>
 			<_myState type="a">8192</_myState>
-			<_name type="a">calcul_vitesse_voiture_devant</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::14:29:43</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::14:29:43</_modifiedTime>
+			<_name type="a">calcul_distance_voiture_devant</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:49:57</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:49:57</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
 				<IRPYRawContainer type="e">
@@ -13159,8 +13249,8 @@ throttle = commande;</_bodyData>
 			<_id type="a">GUID 1cf82922-6da4-463a-a661-be932b5d33f7</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">PARAM_SIMU_masse</_name>
-			<_modifiedTimeWeak type="a">11.4.2026::7:41:26</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::10:45:8</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::14:58:13</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:58:13</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IType</_hm2Class>
@@ -14633,8 +14723,8 @@ throttle = commande;</_bodyData>
 			<_id type="a">GUID 71e8f35d-7607-4e58-afd9-e47909f8ec37</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">vitesse_voiture_devant</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::14:22:40</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::14:22:40</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::15:7:7</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::15:7:7</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IType</_hm2Class>
@@ -14662,8 +14752,8 @@ throttle = commande;</_bodyData>
 			<_id type="a">GUID 9f29b4f3-156e-4f61-aa19-e90ecd21b9c4</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">distance_voiture_devant</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::14:27:27</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::14:27:27</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::15:5:11</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::15:5:11</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IType</_hm2Class>
@@ -14681,9 +14771,9 @@ throttle = commande;</_bodyData>
 		<IAttribute type="e">
 			<_id type="a">GUID a521d432-244e-4ac6-9fa2-615231d66d70</_id>
 			<_myState type="a">8192</_myState>
-			<_name type="a">distance_entire_voiture_devant</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::14:23:54</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::14:23:54</_modifiedTime>
+			<_name type="a">distance_entiere_voiture_devant</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:50:50</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:50:50</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IType</_hm2Class>
@@ -14722,8 +14812,8 @@ throttle = commande;</_bodyData>
 			<_id type="a">GUID c1b8f285-28f3-42e3-9dbd-6101c2785926</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">distance_securite</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::14:24:56</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::14:24:56</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::14:57:24</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:57:24</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IType</_hm2Class>
@@ -14742,8 +14832,8 @@ throttle = commande;</_bodyData>
 			<_id type="a">GUID 20d68c9f-3bfd-4822-973a-b2a0e3c5f4e3</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">SWITCH_simulation_voiture_devant</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::14:27:38</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::14:27:38</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::15:6:12</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::15:6:12</_modifiedTime>
 			<_typeOf type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IType</_hm2Class>
@@ -19332,18 +19422,18 @@ throttle = commande;</_bodyData>
 			<_id type="a">GUID 4144beb1-cce6-4d0c-9a76-d5898dc24f44</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">statechart</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::14:3:20</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::14:3:20</_modifiedTime>
-			<_lastID type="a">348</_lastID>
-			<weakCGTime type="a">11.10.2026::14:3:20</weakCGTime>
+			<_modifiedTimeWeak type="a">11.10.2026::14:53:28</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:53:28</_modifiedTime>
+			<_lastID type="a">356</_lastID>
+			<weakCGTime type="a">11.10.2026::14:53:28</weakCGTime>
 			<strongCGTime type="a">11.4.2026::7:41:26</strongCGTime>
 			<_itsStateChart type="r">
 				<IHandle type="e">
 				</IHandle>
 			</_itsStateChart>
 			<_classModifier type="a">Unspecified</_classModifier>
-			<_defNumber type="a">252</_defNumber>
-			<_version type="a">11.10.2026::15:3:20</_version>
+			<_defNumber type="a">260</_defNumber>
+			<_version type="a">11.10.2026::15:53:28</_version>
 			<_baseVersion type="a">1.2.1990::0:0:0</_baseVersion>
 			<_diagram type="s">GUID 3f57bb6d-c1d7-486b-81b5-20de9ab1601e</_diagram>
 			<AggregatesList type="e">
@@ -19536,6 +19626,13 @@ throttle = commande;</_bodyData>
 				<value>GUID cb4e8926-9561-4cf2-8845-ea56c82a0988</value>
 				<value>GUID 181cea12-3334-4847-9694-ee27939717e0</value>
 				<value>GUID 8683d7df-5fd5-43e0-b150-04a2bc50dc44</value>
+				<value>GUID 7332ec8f-dcaf-4d40-87b0-802ed0b69151</value>
+				<value>GUID 245466b0-7364-4f99-8d8c-ffe4f83360fb</value>
+				<value>GUID 990f2772-c590-4827-886a-09dc870dee6c</value>
+				<value>GUID 20f956e8-4fe4-4c1f-8581-9d047c65c2f1</value>
+				<value>GUID e0d03c45-8e66-435b-a1ca-4de8e55b431f</value>
+				<value>GUID 9aff0224-c4fd-4d3f-a9a7-cbaaa8a69c60</value>
+				<value>GUID 7f930002-5469-4465-b28d-e37600709dbe</value>
 				<value>GUID 3fee351d-0b72-45ee-9a04-2e92c799003c</value>
 				<value>GUID a39e0420-9600-4d7e-9cc0-1513e758ebff</value>
 				<value>GUID 34e3885d-8cc7-4d59-a333-1020b00f188c</value>
@@ -19570,7 +19667,6 @@ throttle = commande;</_bodyData>
 				<value>GUID d80f25b0-da57-4432-80c7-139f8f83a2b4</value>
 				<value>GUID d1e6c5eb-734f-4147-af36-2f5a79489371</value>
 				<value>GUID c876dff7-5edf-45de-829d-b928f6926f27</value>
-				<value>GUID f0c0b94f-6213-4678-af57-8b7fb25be75c</value>
 				<value>GUID 9e03d6ec-bd64-4fe5-91f6-bc60c900c318</value>
 				<value>GUID 84410647-dc08-4b7c-a3d0-c99b9537961e</value>
 				<value>GUID 924da9e0-facd-4df5-8e2d-276425be2100</value>
@@ -19683,6 +19779,14 @@ throttle = commande;</_bodyData>
 				<value>GUID 109396b9-8e6f-4cf0-9abb-c2128111c2c6</value>
 				<value>GUID 1a106b30-0f78-40a2-ab9d-754d6f236659</value>
 				<value>GUID 617e97aa-992f-48ea-bc6a-9c428ac41ac8</value>
+				<value>GUID 69bdb3f7-3aca-48d6-8b2b-3b59b8d4b7d1</value>
+				<value>GUID 2750f8c9-6ba7-4de2-b892-91096ef0526c</value>
+				<value>GUID 03091419-a145-419e-b9df-4ba4ec5460e1</value>
+				<value>GUID 5b1b68ca-3a15-4c86-a661-b8324967c324</value>
+				<value>GUID 4bc752f5-f341-4420-8044-d8543dcc8025</value>
+				<value>GUID 0a4fe435-37b1-43d0-9707-dd005e23b9c7</value>
+				<value>GUID 710025e3-5e40-495f-8f4c-f16b33c49b78</value>
+				<value>GUID 8d4c5f40-f7ee-4a0a-91a7-aaf5a1a69ccd</value>
 				<value>GUID 3f57bb6d-c1d7-486b-81b5-20de9ab1601e</value>
 			</AggregatesList>
 		</IStateChart>
@@ -20600,13 +20704,13 @@ speed == 0 &amp;&amp; IS_IN(contact_off)</_body>
 			<_id type="a">GUID a30a48c3-577a-4608-ac20-8ec66fb52796</_id>
 			<_myState type="a">2048</_myState>
 			<_name type="a">defaulttransition_59</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::8:21:38</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::8:21:38</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::14:37:59</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:37:59</_modifiedTime>
 			<_errorStatus type="a">ErrorItem</_errorStatus>
 			<_itsTarget type="s">GUID eca7c2e8-ee33-49d0-9573-d3d88d978492</_itsTarget>
 			<_staticReaction type="a">0</_staticReaction>
 			<_itsSource type="s"></_itsSource>
-			<_ofState type="s">GUID f0c0b94f-6213-4678-af57-8b7fb25be75c</_ofState>
+			<_ofState type="s">GUID 69bdb3f7-3aca-48d6-8b2b-3b59b8d4b7d1</_ofState>
 			<AggregatesList type="e">
 				<value>GUID 8c82a8d9-cac8-49f9-8b79-f734fe4287b5</value>
 			</AggregatesList>
@@ -26041,6 +26145,231 @@ actualisation_sms_telephone(1);</_body>
 			<_itsGuard>NULL</_itsGuard>
 			<_itsAction>NULL</_itsAction>
 		</ILabel>
+		<IDefaultDrvdTrans type="e">
+			<_id type="a">GUID 7332ec8f-dcaf-4d40-87b0-802ed0b69151</_id>
+			<_myState type="a">2048</_myState>
+			<_name type="a">defaulttransition_348</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:39:12</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:39:12</_modifiedTime>
+			<_itsTarget type="s">GUID 2750f8c9-6ba7-4de2-b892-91096ef0526c</_itsTarget>
+			<_staticReaction type="a">0</_staticReaction>
+			<_itsSource type="s"></_itsSource>
+			<_ofState type="s">GUID e1e7a9b9-51c0-49e9-869e-53f113030df7</_ofState>
+			<AggregatesList type="e">
+				<value>GUID dfb079a8-bbda-4955-961a-584b27b22942</value>
+			</AggregatesList>
+		</IDefaultDrvdTrans>
+		<ILabel type="e">
+			<_id type="a">GUID dfb079a8-bbda-4955-961a-584b27b22942</_id>
+			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
+			<_itsTrigger>NULL</_itsTrigger>
+			<_itsGuard>NULL</_itsGuard>
+			<_itsAction>NULL</_itsAction>
+		</ILabel>
+		<ITransition type="e">
+			<_id type="a">GUID 245466b0-7364-4f99-8d8c-ffe4f83360fb</_id>
+			<_myState type="a">2048</_myState>
+			<_name type="a">transition_350</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:52:35</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:52:35</_modifiedTime>
+			<_itsTarget type="s">GUID 03091419-a145-419e-b9df-4ba4ec5460e1</_itsTarget>
+			<_staticReaction type="a">0</_staticReaction>
+			<_itsSource type="s">GUID 2750f8c9-6ba7-4de2-b892-91096ef0526c</_itsSource>
+			<AggregatesList type="e">
+				<value>GUID d8b5d070-1726-4e77-93b5-f93dc66ba63e</value>
+			</AggregatesList>
+		</ITransition>
+		<ILabel type="e">
+			<_id type="a">GUID d8b5d070-1726-4e77-93b5-f93dc66ba63e</_id>
+			<_modifiedTimeWeak type="a">11.10.2026::14:52:35</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:52:35</_modifiedTime>
+			<_itsTrigger>NULL</_itsTrigger>
+			<_itsAction>NULL</_itsAction>
+			<AggregatesList type="e">
+				<value>GUID 521135d2-c52c-4dc5-aa49-2a599a536385</value>
+			</AggregatesList>
+		</ILabel>
+		<IGuard type="e">
+			<_id type="a">GUID 521135d2-c52c-4dc5-aa49-2a599a536385</_id>
+			<_modifiedTimeWeak type="a">11.10.2026::14:52:35</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:52:35</_modifiedTime>
+			<_body type="a">distance_inter_voiture &lt; distance_securite &amp;&amp; IS_IN(simulation_voiture_devant)</_body>
+		</IGuard>
+		<ITransition type="e">
+			<_id type="a">GUID 990f2772-c590-4827-886a-09dc870dee6c</_id>
+			<_myState type="a">2048</_myState>
+			<_name type="a">transition_351</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:51:29</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:51:29</_modifiedTime>
+			<_itsTarget type="s">GUID 5b1b68ca-3a15-4c86-a661-b8324967c324</_itsTarget>
+			<_staticReaction type="a">0</_staticReaction>
+			<_itsSource type="s">GUID 2750f8c9-6ba7-4de2-b892-91096ef0526c</_itsSource>
+			<AggregatesList type="e">
+				<value>GUID 9f440182-54f5-40d0-93a5-e14cb74d5100</value>
+			</AggregatesList>
+		</ITransition>
+		<ILabel type="e">
+			<_id type="a">GUID 9f440182-54f5-40d0-93a5-e14cb74d5100</_id>
+			<_modifiedTimeWeak type="a">11.10.2026::14:51:29</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:51:29</_modifiedTime>
+			<_itsTrigger>NULL</_itsTrigger>
+			<_itsAction>NULL</_itsAction>
+			<AggregatesList type="e">
+				<value>GUID e45f77ef-5879-4f4b-81af-11ea999d2627</value>
+			</AggregatesList>
+		</ILabel>
+		<IGuard type="e">
+			<_id type="a">GUID e45f77ef-5879-4f4b-81af-11ea999d2627</_id>
+			<_modifiedTimeWeak type="a">11.10.2026::14:51:29</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:51:29</_modifiedTime>
+			<_body type="a">distance_inter_voiture &gt; distance_securite &amp;&amp; !IS_IN(simulation_voiture_devant)</_body>
+		</IGuard>
+		<ITransition type="e">
+			<_id type="a">GUID 20f956e8-4fe4-4c1f-8581-9d047c65c2f1</_id>
+			<_myState type="a">2048</_myState>
+			<_name type="a">transition_352</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:46:6</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:46:6</_modifiedTime>
+			<_itsTarget type="s">GUID 710025e3-5e40-495f-8f4c-f16b33c49b78</_itsTarget>
+			<_staticReaction type="a">0</_staticReaction>
+			<_itsSource type="s">GUID 710025e3-5e40-495f-8f4c-f16b33c49b78</_itsSource>
+			<AggregatesList type="e">
+				<value>GUID 87580c85-25c9-40c6-b01d-55cba3525772</value>
+			</AggregatesList>
+		</ITransition>
+		<ILabel type="e">
+			<_id type="a">GUID 87580c85-25c9-40c6-b01d-55cba3525772</_id>
+			<_modifiedTimeWeak type="a">11.10.2026::14:46:6</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:46:6</_modifiedTime>
+			<_itsAction>NULL</_itsAction>
+			<AggregatesList type="e">
+				<value>GUID 15cc29cb-31b5-4f26-817d-99ef2d9bef8f</value>
+				<value>GUID b49d239f-ae2d-4167-bc74-508b5d2ff0b4</value>
+			</AggregatesList>
+		</ILabel>
+		<IInterfaceItemTrigger type="e">
+			<_id type="a">GUID 15cc29cb-31b5-4f26-817d-99ef2d9bef8f</_id>
+			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
+			<_body type="a">EVAL</_body>
+			<_itsInterfaceItem type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IEvent</_hm2Class>
+					<_hid type="a">GUID 5e7ca910-c385-4868-9aa8-14d0e58491c1</_hid>
+				</IHandle>
+			</_itsInterfaceItem>
+		</IInterfaceItemTrigger>
+		<IGuard type="e">
+			<_id type="a">GUID b49d239f-ae2d-4167-bc74-508b5d2ff0b4</_id>
+			<_modifiedTimeWeak type="a">11.10.2026::14:46:6</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:46:6</_modifiedTime>
+			<_body type="a">SWITCH_simulation_voiture_devant</_body>
+		</IGuard>
+		<ITransition type="e">
+			<_id type="a">GUID e0d03c45-8e66-435b-a1ca-4de8e55b431f</_id>
+			<_myState type="a">2048</_myState>
+			<_name type="a">transition_353</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:46:17</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:46:17</_modifiedTime>
+			<_itsTarget type="s">GUID 0a4fe435-37b1-43d0-9707-dd005e23b9c7</_itsTarget>
+			<_staticReaction type="a">0</_staticReaction>
+			<_itsSource type="s">GUID 8d4c5f40-f7ee-4a0a-91a7-aaf5a1a69ccd</_itsSource>
+			<AggregatesList type="e">
+				<value>GUID c4c58a96-2f02-46ff-8171-8727fd1e8595</value>
+			</AggregatesList>
+		</ITransition>
+		<ILabel type="e">
+			<_id type="a">GUID c4c58a96-2f02-46ff-8171-8727fd1e8595</_id>
+			<_modifiedTimeWeak type="a">11.10.2026::14:46:17</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:46:17</_modifiedTime>
+			<_itsAction>NULL</_itsAction>
+			<AggregatesList type="e">
+				<value>GUID 91be71bf-7712-4966-8890-9e44a929db1b</value>
+				<value>GUID fb9839bb-1b98-4232-9ca1-4a89b9ce538b</value>
+			</AggregatesList>
+		</ILabel>
+		<IInterfaceItemTrigger type="e">
+			<_id type="a">GUID 91be71bf-7712-4966-8890-9e44a929db1b</_id>
+			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
+			<_body type="a">EVAL</_body>
+			<_itsInterfaceItem type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IEvent</_hm2Class>
+					<_hid type="a">GUID 5e7ca910-c385-4868-9aa8-14d0e58491c1</_hid>
+				</IHandle>
+			</_itsInterfaceItem>
+		</IInterfaceItemTrigger>
+		<IGuard type="e">
+			<_id type="a">GUID fb9839bb-1b98-4232-9ca1-4a89b9ce538b</_id>
+			<_modifiedTimeWeak type="a">11.10.2026::14:46:17</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:46:17</_modifiedTime>
+			<_body type="a">SWITCH_simulation_voiture_devant</_body>
+		</IGuard>
+		<ITransition type="e">
+			<_id type="a">GUID 9aff0224-c4fd-4d3f-a9a7-cbaaa8a69c60</_id>
+			<_myState type="a">2048</_myState>
+			<_name type="a">transition_354</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:46:24</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:46:24</_modifiedTime>
+			<_itsTarget type="s">GUID 8d4c5f40-f7ee-4a0a-91a7-aaf5a1a69ccd</_itsTarget>
+			<_staticReaction type="a">0</_staticReaction>
+			<_itsSource type="s">GUID 0a4fe435-37b1-43d0-9707-dd005e23b9c7</_itsSource>
+			<AggregatesList type="e">
+				<value>GUID 6109af2c-7c28-40a5-9577-b90f2172a46a</value>
+			</AggregatesList>
+		</ITransition>
+		<ILabel type="e">
+			<_id type="a">GUID 6109af2c-7c28-40a5-9577-b90f2172a46a</_id>
+			<_modifiedTimeWeak type="a">11.10.2026::14:46:24</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:46:24</_modifiedTime>
+			<_itsAction>NULL</_itsAction>
+			<AggregatesList type="e">
+				<value>GUID 37836ef2-fc8b-438d-a767-0d2cca14fd08</value>
+				<value>GUID 4339566b-2845-4ded-ac70-60822d1eb4b0</value>
+			</AggregatesList>
+		</ILabel>
+		<IInterfaceItemTrigger type="e">
+			<_id type="a">GUID 37836ef2-fc8b-438d-a767-0d2cca14fd08</_id>
+			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
+			<_body type="a">EVAL</_body>
+			<_itsInterfaceItem type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IEvent</_hm2Class>
+					<_hid type="a">GUID 5e7ca910-c385-4868-9aa8-14d0e58491c1</_hid>
+				</IHandle>
+			</_itsInterfaceItem>
+		</IInterfaceItemTrigger>
+		<IGuard type="e">
+			<_id type="a">GUID 4339566b-2845-4ded-ac70-60822d1eb4b0</_id>
+			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
+			<_body type="a">SWITCH_simulation_voiture_devant == false</_body>
+		</IGuard>
+		<IDefaultDrvdTrans type="e">
+			<_id type="a">GUID 7f930002-5469-4465-b28d-e37600709dbe</_id>
+			<_myState type="a">2048</_myState>
+			<_name type="a">defaulttransition_355</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:46:35</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:46:35</_modifiedTime>
+			<_itsTarget type="s">GUID 8d4c5f40-f7ee-4a0a-91a7-aaf5a1a69ccd</_itsTarget>
+			<_staticReaction type="a">0</_staticReaction>
+			<_itsSource type="s"></_itsSource>
+			<_ofState type="s">GUID 4bc752f5-f341-4420-8044-d8543dcc8025</_ofState>
+			<AggregatesList type="e">
+				<value>GUID 5b70f010-6a0b-4a04-840b-c8b833a672de</value>
+			</AggregatesList>
+		</IDefaultDrvdTrans>
+		<ILabel type="e">
+			<_id type="a">GUID 5b70f010-6a0b-4a04-840b-c8b833a672de</_id>
+			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+			<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
+			<_itsTrigger>NULL</_itsTrigger>
+			<_itsGuard>NULL</_itsGuard>
+			<_itsAction>NULL</_itsAction>
+		</ILabel>
 		<IHistoryConnector type="e">
 			<_id type="a">GUID 3fee351d-0b72-45ee-9a04-2e92c799003c</_id>
 			<_name type="a">historyconnector_81</_name>
@@ -26067,8 +26396,8 @@ actualisation_sms_telephone(1);</_body>
 		<IState type="e">
 			<_id type="a">GUID 3ef3890b-986a-41e5-b5bb-f219151670b3</_id>
 			<_name type="a">Systeme</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::9:39:22</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::9:39:22</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::14:42:39</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:42:39</_modifiedTime>
 			<_parent type="s">GUID 34e3885d-8cc7-4d59-a333-1020b00f188c</_parent>
 			<_stateType type="a">And</_stateType>
 			<_defaultTrans type="s"></_defaultTrans>
@@ -26132,9 +26461,9 @@ actualisation_sms_telephone(1);</_body>
 		<IState type="e">
 			<_id type="a">GUID eca7c2e8-ee33-49d0-9573-d3d88d978492</_id>
 			<_name type="a">fonctionelle</_name>
-			<_modifiedTimeWeak type="a">11.9.2026::18:6:49</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:37:42</_modifiedTime>
-			<_parent type="s">GUID f0c0b94f-6213-4678-af57-8b7fb25be75c</_parent>
+			<_modifiedTimeWeak type="a">11.10.2026::14:37:59</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:37:59</_modifiedTime>
+			<_parent type="s">GUID 69bdb3f7-3aca-48d6-8b2b-3b59b8d4b7d1</_parent>
 			<_defaultTrans type="s"></_defaultTrans>
 		</IState>
 		<IState type="e">
@@ -26196,18 +26525,10 @@ actualisation_sms_telephone(1);</_body>
 		<IState type="e">
 			<_id type="a">GUID e1e7a9b9-51c0-49e9-869e-53f113030df7</_id>
 			<_name type="a">regulateur</_name>
-			<_modifiedTimeWeak type="a">11.9.2026::18:6:49</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:36:22</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::14:39:54</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:39:54</_modifiedTime>
 			<_parent type="s">GUID 81c8e36c-1782-4a07-93dd-f6038c7c9259</_parent>
-			<_defaultTrans type="s"></_defaultTrans>
-			<_entryAction type="p"><IAction type="e">
-				<_id type="a">GUID 67845278-a03c-4a6b-9d45-4ba2f66063fb</_id>
-				<_myState type="a">4096</_myState>
-				<_modifiedTimeWeak type="a">10.11.2026::12:59:50</_modifiedTimeWeak>
-				<_modifiedTime type="a">10.11.2026::12:59:50</_modifiedTime>
-				<_body type="a">calcul_regulateur_vitesse();</_body>
-			</IAction>
-			</_entryAction>
+			<_defaultTrans type="s">GUID 7332ec8f-dcaf-4d40-87b0-802ed0b69151</_defaultTrans>
 		</IState>
 		<IState type="e">
 			<_id type="a">GUID 6ee84b66-0e2b-43dc-a589-8bbf56d7cb77</_id>
@@ -26292,9 +26613,9 @@ steady = throttle;</_body>
 		<IState type="e">
 			<_id type="a">GUID 91ed4f8a-f929-413b-8d99-203ec08d91db</_id>
 			<_name type="a">panne_carburant</_name>
-			<_modifiedTimeWeak type="a">11.9.2026::18:6:49</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::20:56:22</_modifiedTime>
-			<_parent type="s">GUID f0c0b94f-6213-4678-af57-8b7fb25be75c</_parent>
+			<_modifiedTimeWeak type="a">11.10.2026::14:37:59</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:37:59</_modifiedTime>
+			<_parent type="s">GUID 69bdb3f7-3aca-48d6-8b2b-3b59b8d4b7d1</_parent>
 			<_defaultTrans type="s"></_defaultTrans>
 			<_entryAction type="p"><IAction type="e">
 				<_id type="a">GUID c6953b05-fed8-4f23-91eb-19da70c7195d</_id>
@@ -26315,9 +26636,9 @@ steady = throttle;</_body>
 		<IState type="e">
 			<_id type="a">GUID 4a0b6fdd-43cd-4ed5-a3f5-9c27e307a83d</_id>
 			<_name type="a">panne_batterie</_name>
-			<_modifiedTimeWeak type="a">11.9.2026::18:6:49</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::20:58:48</_modifiedTime>
-			<_parent type="s">GUID f0c0b94f-6213-4678-af57-8b7fb25be75c</_parent>
+			<_modifiedTimeWeak type="a">11.10.2026::14:37:59</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:37:59</_modifiedTime>
+			<_parent type="s">GUID 69bdb3f7-3aca-48d6-8b2b-3b59b8d4b7d1</_parent>
 			<_defaultTrans type="s"></_defaultTrans>
 			<_entryAction type="p"><IAction type="e">
 				<_id type="a">GUID 282e8042-b51d-4b28-af78-254c415389cc</_id>
@@ -26338,9 +26659,9 @@ steady = throttle;</_body>
 		<IState type="e">
 			<_id type="a">GUID 2aa84e6a-1fe3-468f-a63b-65e8b9f0814f</_id>
 			<_name type="a">remplir_carburant</_name>
-			<_modifiedTimeWeak type="a">11.9.2026::18:6:49</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:37:42</_modifiedTime>
-			<_parent type="s">GUID f0c0b94f-6213-4678-af57-8b7fb25be75c</_parent>
+			<_modifiedTimeWeak type="a">11.10.2026::14:37:59</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:37:59</_modifiedTime>
+			<_parent type="s">GUID 69bdb3f7-3aca-48d6-8b2b-3b59b8d4b7d1</_parent>
 			<_defaultTrans type="s"></_defaultTrans>
 			<_entryAction type="p"><IAction type="e">
 				<_id type="a">GUID cee0e3dc-6f09-472b-bbad-f89b040956f5</_id>
@@ -26354,9 +26675,9 @@ steady = throttle;</_body>
 		<IState type="e">
 			<_id type="a">GUID 0c8bd841-5e1d-4e5b-90b3-42cdebd1b245</_id>
 			<_name type="a">depanner_batterie</_name>
-			<_modifiedTimeWeak type="a">11.9.2026::18:6:49</_modifiedTimeWeak>
-			<_modifiedTime type="a">10.13.2026::17:37:42</_modifiedTime>
-			<_parent type="s">GUID f0c0b94f-6213-4678-af57-8b7fb25be75c</_parent>
+			<_modifiedTimeWeak type="a">11.10.2026::14:37:59</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:37:59</_modifiedTime>
+			<_parent type="s">GUID 69bdb3f7-3aca-48d6-8b2b-3b59b8d4b7d1</_parent>
 			<_defaultTrans type="s"></_defaultTrans>
 			<_entryAction type="p"><IAction type="e">
 				<_id type="a">GUID 14904011-7c2c-4eb4-8aad-60e039542905</_id>
@@ -26443,8 +26764,8 @@ alerte_depassement(0);</_body>
 			<_id type="a">GUID 81c8e36c-1782-4a07-93dd-f6038c7c9259</_id>
 			<_myState type="a">2048</_myState>
 			<_name type="a">state_60</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::8:21:38</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::8:21:38</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::14:39:8</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:39:8</_modifiedTime>
 			<_parent type="s">GUID 3ef3890b-986a-41e5-b5bb-f219151670b3</_parent>
 			<_defaultTrans type="s">GUID 4b371e09-3242-483a-b098-8fe37f7fa2b4</_defaultTrans>
 		</IState>
@@ -26499,15 +26820,6 @@ alerte_depassement(0);</_body>
 			<_modifiedTime type="a">10.13.2026::17:22:29</_modifiedTime>
 			<_parent type="s">GUID 3ef3890b-986a-41e5-b5bb-f219151670b3</_parent>
 			<_defaultTrans type="s"></_defaultTrans>
-		</IState>
-		<IState type="e">
-			<_id type="a">GUID f0c0b94f-6213-4678-af57-8b7fb25be75c</_id>
-			<_myState type="a">2048</_myState>
-			<_name type="a">state_75</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::8:21:38</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::8:21:38</_modifiedTime>
-			<_parent type="s">GUID 3ef3890b-986a-41e5-b5bb-f219151670b3</_parent>
-			<_defaultTrans type="s">GUID a30a48c3-577a-4608-ac20-8ec66fb52796</_defaultTrans>
 		</IState>
 		<IState type="e">
 			<_id type="a">GUID 9e03d6ec-bd64-4fe5-91f6-bc60c900c318</_id>
@@ -27909,6 +28221,113 @@ affichage_titre_musique = &quot;&quot;;</_body>
 			</IAction>
 			</_entryAction>
 		</IState>
+		<IState type="e">
+			<_id type="a">GUID 69bdb3f7-3aca-48d6-8b2b-3b59b8d4b7d1</_id>
+			<_myState type="a">2048</_myState>
+			<_name type="a">state_252</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:37:59</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:37:59</_modifiedTime>
+			<_parent type="s">GUID 3ef3890b-986a-41e5-b5bb-f219151670b3</_parent>
+			<_defaultTrans type="s">GUID a30a48c3-577a-4608-ac20-8ec66fb52796</_defaultTrans>
+		</IState>
+		<IState type="e">
+			<_id type="a">GUID 2750f8c9-6ba7-4de2-b892-91096ef0526c</_id>
+			<_name type="a">verif_distance_secu</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:41:17</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:41:17</_modifiedTime>
+			<_parent type="s">GUID e1e7a9b9-51c0-49e9-869e-53f113030df7</_parent>
+			<_defaultTrans type="s"></_defaultTrans>
+		</IState>
+		<IState type="e">
+			<_id type="a">GUID 03091419-a145-419e-b9df-4ba4ec5460e1</_id>
+			<_name type="a">suivi_distance_consigne</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:41:55</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:52:0</_modifiedTime>
+			<_parent type="s">GUID e1e7a9b9-51c0-49e9-869e-53f113030df7</_parent>
+			<_defaultTrans type="s"></_defaultTrans>
+			<_entryAction type="p"><IAction type="e">
+				<_id type="a">GUID 68f0dade-84ba-44f5-b17c-a308530bd065</_id>
+				<_myState type="a">4096</_myState>
+				<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+				<_modifiedTime type="a">11.10.2026::14:52:0</_modifiedTime>
+				<_body type="a">calcul_regulateur_distance();</_body>
+			</IAction>
+			</_entryAction>
+		</IState>
+		<IState type="e">
+			<_id type="a">GUID 5b1b68ca-3a15-4c86-a661-b8324967c324</_id>
+			<_name type="a">suivi_vitesse_consigne</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:41:17</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:41:17</_modifiedTime>
+			<_parent type="s">GUID e1e7a9b9-51c0-49e9-869e-53f113030df7</_parent>
+			<_defaultTrans type="s"></_defaultTrans>
+			<_entryAction type="p"><IAction type="e">
+				<_id type="a">GUID 7c88d289-06b7-4f72-9428-8caca01803be</_id>
+				<_myState type="a">4096</_myState>
+				<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+				<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
+				<_body type="a">calcul_regulateur_vitesse();</_body>
+			</IAction>
+			</_entryAction>
+		</IState>
+		<IState type="e">
+			<_id type="a">GUID 4bc752f5-f341-4420-8044-d8543dcc8025</_id>
+			<_myState type="a">2048</_myState>
+			<_name type="a">state_256</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:46:35</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:46:35</_modifiedTime>
+			<_parent type="s">GUID 3ef3890b-986a-41e5-b5bb-f219151670b3</_parent>
+			<_defaultTrans type="s">GUID 7f930002-5469-4465-b28d-e37600709dbe</_defaultTrans>
+		</IState>
+		<IState type="e">
+			<_id type="a">GUID 0a4fe435-37b1-43d0-9707-dd005e23b9c7</_id>
+			<_name type="a">simulation_voiture_devant</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:53:28</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:53:28</_modifiedTime>
+			<_parent type="s">GUID 4bc752f5-f341-4420-8044-d8543dcc8025</_parent>
+			<_defaultTrans type="s"></_defaultTrans>
+			<_entryAction type="p"><IAction type="e">
+				<_id type="a">GUID 91464f9e-ab3a-4374-b771-167009d71863</_id>
+				<_myState type="a">4096</_myState>
+				<_modifiedTimeWeak type="a">11.10.2026::14:53:28</_modifiedTimeWeak>
+				<_modifiedTime type="a">11.10.2026::14:53:28</_modifiedTime>
+				<_body type="a">distance_voiture_devant = distance + distance_inter_voiture;</_body>
+			</IAction>
+			</_entryAction>
+		</IState>
+		<IState type="e">
+			<_id type="a">GUID 710025e3-5e40-495f-8f4c-f16b33c49b78</_id>
+			<_name type="a">loop_simulation</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:44:49</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:44:49</_modifiedTime>
+			<_parent type="s">GUID 0a4fe435-37b1-43d0-9707-dd005e23b9c7</_parent>
+			<_defaultTrans type="s"></_defaultTrans>
+			<_entryAction type="p"><IAction type="e">
+				<_id type="a">GUID c56745dd-3eaa-45f8-8834-4fc4845e89b1</_id>
+				<_myState type="a">4096</_myState>
+				<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+				<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
+				<_body type="a">calcul_distance_voiture_devant();%0D
+distance_inter_voiture = distance_voiture_devant - distance;</_body>
+			</IAction>
+			</_entryAction>
+		</IState>
+		<IState type="e">
+			<_id type="a">GUID 8d4c5f40-f7ee-4a0a-91a7-aaf5a1a69ccd</_id>
+			<_name type="a">reglage_voiture_devant</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:48:3</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:48:3</_modifiedTime>
+			<_parent type="s">GUID 4bc752f5-f341-4420-8044-d8543dcc8025</_parent>
+			<_defaultTrans type="s"></_defaultTrans>
+			<_entryAction type="p"><IAction type="e">
+				<_id type="a">GUID 7709cd83-b91d-4596-be6e-e1dad12eb70e</_id>
+				<_myState type="a">4096</_myState>
+				<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
+				<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
+				<_body type="a">distance_inter_voiture = 0;</_body>
+			</IAction>
+			</_entryAction>
+		</IState>
 		<IStateChartDiagram type="e">
 			<_id type="a">GUID 3f57bb6d-c1d7-486b-81b5-20de9ab1601e</_id>
 			<_myState type="a">10240</_myState>
@@ -28276,9 +28695,9 @@ affichage_titre_musique = &quot;&quot;;</_body>
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">statechartdiagram_0</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::13:32:14</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::13:55:31</_modifiedTime>
-			<_lastModifiedTime type="a">11.10.2026::14:3:20</_lastModifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::14:37:12</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:46:35</_modifiedTime>
+			<_lastModifiedTime type="a">11.10.2026::15:0:58</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -28315,7 +28734,7 @@ affichage_titre_musique = &quot;&quot;;</_body>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
-			<elementList type="a">365</elementList>
+			<elementList type="a">379</elementList>
 			
 			<m_access type="a">'Z'</m_access>
 			<m_modified type="a">'N'</m_modified>
@@ -28418,7 +28837,6 @@ affichage_titre_musique = &quot;&quot;;</_body>
 				<value>GUID 86ae1fdd-a875-4af9-bc60-acbcbb9535e0</value>
 				<value>GUID 2f6155b4-b2b7-4f3f-9cd8-c5d2af2ed9a5</value>
 				<value>GUID feaceea9-626b-490e-9caf-3dafb72ad4d8</value>
-				<value>GUID e32bd34b-47d8-455b-9746-895823d780c0</value>
 				<value>GUID 2b89c0c6-fcf8-4474-9467-3ed5bd55ca10</value>
 				<value>GUID b63b8762-8fc8-44b3-83a7-79a7d7c27db2</value>
 				<value>GUID 867a22ab-8a89-452c-8c75-64f2072f258e</value>
@@ -28697,6 +29115,21 @@ affichage_titre_musique = &quot;&quot;;</_body>
 				<value>GUID 2e67cc12-5e90-4cc1-9ba2-2b7ac76105da</value>
 				<value>GUID 14e8bc06-fe80-4774-9cad-a336962d855b</value>
 				<value>GUID 87abf6f7-1be3-4344-a36b-d1cea051067f</value>
+				<value>GUID 7b1b715d-f5ec-4310-a532-0d64f6746ad4</value>
+				<value>GUID ca2a1f32-7957-41b6-8b43-78f0b916a6e1</value>
+				<value>GUID dfbd5323-0acf-4a12-80b0-ad0622261a1a</value>
+				<value>GUID 9cb2adcf-dd5a-4463-affc-01b5d6e0d680</value>
+				<value>GUID dc7a1583-e38f-4ccd-bc09-bcbbe1bbe442</value>
+				<value>GUID 5dda94b8-e83b-4a79-99e1-f7b64bf15e32</value>
+				<value>GUID 85d5ac8b-9087-4201-baaf-7c695fc8783e</value>
+				<value>GUID 590b2a73-3c24-4b60-b803-ef898cf95eb9</value>
+				<value>GUID 8669b683-d2b5-4f04-b9f3-cfd68ff86d03</value>
+				<value>GUID 43072066-3ca8-4e65-b4fe-19311c22427e</value>
+				<value>GUID 774db3b0-c8b7-4d97-afc7-70ed1cef4f89</value>
+				<value>GUID 0673a7ac-95d4-4564-854c-3cd4aad7cba9</value>
+				<value>GUID eceb5afc-8b60-4b24-8c65-984789401b55</value>
+				<value>GUID 375941f1-7f49-41a6-974d-e62b1f19c882</value>
+				<value>GUID 428fff48-0913-46e8-99bb-802c24be5d2b</value>
 			</AggregatesList>
 		</CGIStateChart>
 		<CGIState type="e">
@@ -28813,7 +29246,7 @@ affichage_titre_musique = &quot;&quot;;</_body>
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">5.7755 0 0 3.97786 0 74.1002 </m_transform>
+			<m_transform type="a">5.7755 0 0 3.97786 0 64.1002 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -28834,10 +29267,16 @@ affichage_titre_musique = &quot;&quot;;</_body>
 			<m_polygon type="a">4 0 0  0 1060  1096 1060  1096 0  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
-			<nAndLineCount type="a">33</nAndLineCount>
+			<nAndLineCount type="a">37</nAndLineCount>
+			<andLinePoly type="a">2 73 322  73 244  </andLinePoly>
+			<andLinePoly type="a">2 255 322  255 515  </andLinePoly>
+			<andLinePoly type="a">2 73 322  255 322  </andLinePoly>
+			<andLinePoly type="a">2 73 515  73 322  </andLinePoly>
+			<andLinePoly type="a">2 255 222  255 322  </andLinePoly>
+			<andLinePoly type="a">2 73 244  73 136  </andLinePoly>
+			<andLinePoly type="a">2 0 244  73 244  </andLinePoly>
 			<andLinePoly type="a">2 73 515  73 1060  </andLinePoly>
 			<andLinePoly type="a">2 255 1060  255 515  </andLinePoly>
-			<andLinePoly type="a">2 73 515  73 136  </andLinePoly>
 			<andLinePoly type="a">2 0 515  73 515  </andLinePoly>
 			<andLinePoly type="a">2 73 515  255 515  </andLinePoly>
 			<andLinePoly type="a">2 517 515  517 1060  </andLinePoly>
@@ -28845,7 +29284,6 @@ affichage_titre_musique = &quot;&quot;;</_body>
 			<andLinePoly type="a">2 634 515  634 1060  </andLinePoly>
 			<andLinePoly type="a">2 517 515  634 515  </andLinePoly>
 			<andLinePoly type="a">2 634 515  1096 515  </andLinePoly>
-			<andLinePoly type="a">2 255 222  255 515  </andLinePoly>
 			<andLinePoly type="a">2 517 222  517 515  </andLinePoly>
 			<andLinePoly type="a">2 634 222  634 515  </andLinePoly>
 			<andLinePoly type="a">2 1036 222  928 222  </andLinePoly>
@@ -28865,7 +29303,6 @@ affichage_titre_musique = &quot;&quot;;</_body>
 			<andLinePoly type="a">2 208 46  151 46  </andLinePoly>
 			<andLinePoly type="a">2 208 0  208 46  </andLinePoly>
 			<andLinePoly type="a">2 73 136  73 0  </andLinePoly>
-			<andLinePoly type="a">2 0 136  73 136  </andLinePoly>
 			<andLinePoly type="a">2 151 136  151 46  </andLinePoly>
 			<andLinePoly type="a">2 151 46  151 0  </andLinePoly>
 			<m_pInheritsFrom type="r">
@@ -29553,7 +29990,7 @@ cmd_contact==false]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 772 335  </m_arrow>
+			<m_arrow type="a">1 772 325  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -30659,7 +31096,7 @@ cmd_contact==false]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1238 161  1432 161  </m_arrow>
+			<m_arrow type="a">2 1238 151  1432 151  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -30942,7 +31379,7 @@ vitesseConsigne + 0.5)]</m_str>
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.0556494 0 0 0.0135181 5.49856 112.094 </m_transform>
+			<m_transform type="a">0.0556494 0 0 0.0988955 4.97912 111.905 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -30963,8 +31400,7 @@ vitesseConsigne + 0.5)]</m_str>
 			<m_polygon type="a">4 0 0  0 1060  1096 1060  1096 0  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
-			<frameset type="a">&lt;frameset rows=100%25&gt;
-&lt;frame name=ReactionsListCompartment&gt;</frameset>
+			<frameset type="a">&lt;frameset rows=&gt;</frameset>
 			<nAndLineCount type="a">0</nAndLineCount>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
@@ -30983,8 +31419,6 @@ vitesseConsigne + 0.5)]</m_str>
 			<m_displayOption type="a">All</m_displayOption>
 			<m_bShowInherited type="a">0</m_bShowInherited>
 			<m_bOrdered type="a">0</m_bOrdered>
-			<_itemValueOfFontPropertiesMapCount type="a">1</_itemValueOfFontPropertiesMapCount>
-			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 		</CGICompartment>
 		<CGITrans type="e">
 			<_id type="a">GUID f51d9031-9190-4f92-b577-e5f96a910a17</_id>
@@ -31041,11 +31475,12 @@ IS_IN(mode_regulateur)%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
+			<m_arrow type="a">2 51 478  48 478  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
 			<m_SourcePort type="a">66 1060 </m_SourcePort>
-			<m_TargetPort type="a">60 0 </m_TargetPort>
+			<m_TargetPort type="a">60 -1 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -31108,10 +31543,11 @@ IS_IN(mode_manuel) %0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
+			<m_arrow type="a">2 365 478  368 478  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
-			<m_SourcePort type="a">1046 0 </m_SourcePort>
+			<m_SourcePort type="a">1046 -1 </m_SourcePort>
 			<m_TargetPort type="a">1044 1060 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
@@ -31590,7 +32026,7 @@ IS_IN(mode_manuel) %0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1187 405  1187 467  </m_arrow>
+			<m_arrow type="a">2 1187 395  1187 457  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -31656,7 +32092,7 @@ IS_IN(mode_manuel) %0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1187 404  1187 573  </m_arrow>
+			<m_arrow type="a">2 1187 394  1187 563  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -31718,7 +32154,7 @@ IS_IN(mode_manuel) %0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1406 482  1406 408  </m_arrow>
+			<m_arrow type="a">2 1406 472  1406 398  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -31780,7 +32216,7 @@ IS_IN(mode_manuel) %0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1407 556  1407 386  </m_arrow>
+			<m_arrow type="a">2 1407 546  1407 376  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -31939,7 +32375,7 @@ speed &lt; 30 %0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 935 545  </m_arrow>
+			<m_arrow type="a">1 935 535  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -32405,7 +32841,7 @@ speed &lt; 30 %0D
 					<_hid type="a">GUID eca7c2e8-ee33-49d0-9573-d3d88d978492</_hid>
 				</IHandle>
 			</m_pModelObject>
-			<m_pParent type="s">GUID e32bd34b-47d8-455b-9746-895823d780c0</m_pParent>
+			<m_pParent type="s">GUID 7b1b715d-f5ec-4310-a532-0d64f6746ad4</m_pParent>
 			<m_name type="p">
 				<CGIText type="e">
 					<m_str type="a">fonctionelle</m_str>
@@ -32424,7 +32860,7 @@ speed &lt; 30 %0D
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.0598817 0 0 0.00901209 4.12238 154.55 </m_transform>
+			<m_transform type="a">0.0598817 0 0 0.00901209 4.12238 277.732 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -32514,7 +32950,7 @@ speed &lt; 30 %0D
 					<_hid type="a">GUID 91ed4f8a-f929-413b-8d99-203ec08d91db</_hid>
 				</IHandle>
 			</m_pModelObject>
-			<m_pParent type="s">GUID e32bd34b-47d8-455b-9746-895823d780c0</m_pParent>
+			<m_pParent type="s">GUID 7b1b715d-f5ec-4310-a532-0d64f6746ad4</m_pParent>
 			<m_name type="p">
 				<CGIText type="e">
 					<m_str type="a">panne_carburant</m_str>
@@ -32533,7 +32969,7 @@ speed &lt; 30 %0D
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.0266491 0 0 0.0201586 36.5952 193.397 </m_transform>
+			<m_transform type="a">0.0266491 0 0 0.0201586 36.7683 325.88 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -32638,7 +33074,7 @@ speed &lt; 30 %0D
 					<_hid type="a">GUID 4a0b6fdd-43cd-4ed5-a3f5-9c27e307a83d</_hid>
 				</IHandle>
 			</m_pModelObject>
-			<m_pParent type="s">GUID e32bd34b-47d8-455b-9746-895823d780c0</m_pParent>
+			<m_pParent type="s">GUID 7b1b715d-f5ec-4310-a532-0d64f6746ad4</m_pParent>
 			<m_name type="p">
 				<CGIText type="e">
 					<m_str type="a">panne_batterie</m_str>
@@ -32657,7 +33093,7 @@ speed &lt; 30 %0D
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.0266491 0 0 0.0201586 3.95149 193.145 </m_transform>
+			<m_transform type="a">0.0266491 0 0 0.0201586 4.12464 325.88 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -32762,7 +33198,7 @@ speed &lt; 30 %0D
 					<_hid type="a">GUID 2aa84e6a-1fe3-468f-a63b-65e8b9f0814f</_hid>
 				</IHandle>
 			</m_pModelObject>
-			<m_pParent type="s">GUID e32bd34b-47d8-455b-9746-895823d780c0</m_pParent>
+			<m_pParent type="s">GUID 7b1b715d-f5ec-4310-a532-0d64f6746ad4</m_pParent>
 			<m_name type="p">
 				<CGIText type="e">
 					<m_str type="a">remplir_carburant</m_str>
@@ -32781,7 +33217,7 @@ speed &lt; 30 %0D
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.0268059 0 0 0.0137553 36.4232 233.516 </m_transform>
+			<m_transform type="a">0.0268059 0 0 0.0137553 36.5963 372.787 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -32885,7 +33321,7 @@ speed &lt; 30 %0D
 					<_hid type="a">GUID 0c8bd841-5e1d-4e5b-90b3-42cdebd1b245</_hid>
 				</IHandle>
 			</m_pModelObject>
-			<m_pParent type="s">GUID e32bd34b-47d8-455b-9746-895823d780c0</m_pParent>
+			<m_pParent type="s">GUID 7b1b715d-f5ec-4310-a532-0d64f6746ad4</m_pParent>
 			<m_name type="p">
 				<CGIText type="e">
 					<m_str type="a">depanner_batterie</m_str>
@@ -32904,7 +33340,7 @@ speed &lt; 30 %0D
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4104</m_drawBehavior>
-			<m_transform type="a">0.0266491 0 0 0.0137553 4.1233 233.516 </m_transform>
+			<m_transform type="a">0.0266491 0 0 0.0137553 3.95015 372.787 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -33032,11 +33468,12 @@ reservoir_carburant %0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
+			<m_arrow type="a">2 361 1283  360 1283  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
 			<m_SourcePort type="a">975 1063 </m_SourcePort>
-			<m_TargetPort type="a">972 -5 </m_TargetPort>
+			<m_TargetPort type="a">959 -5 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -33099,11 +33536,12 @@ niveau_batterie %0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
+			<m_arrow type="a">2 36 1283  35 1283  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
 			<m_SourcePort type="a">35 1063 </m_SourcePort>
-			<m_TargetPort type="a">86 -5 </m_TargetPort>
+			<m_TargetPort type="a">73 -5 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -33231,6 +33669,7 @@ IS_IN(contact_off)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
+			<m_arrow type="a">2 36 1496  34 1496  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -33292,7 +33731,7 @@ IS_IN(contact_off)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 110 1083  394 1083  </m_arrow>
+			<m_arrow type="a">2 109 1655  394 1655  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -33354,7 +33793,7 @@ IS_IN(contact_off)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 299 1082  394 1082  </m_arrow>
+			<m_arrow type="a">2 300 1655  394 1655  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -33519,7 +33958,7 @@ cmd_contact==true]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 767 213  768 213  </m_arrow>
+			<m_arrow type="a">2 767 203  768 203  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -33586,7 +34025,7 @@ speed == 0 &amp;&amp; IS_IN(contact_off)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 58 766  201 766  201 1016  </m_arrow>
+			<m_arrow type="a">1 58 1560  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -33677,7 +34116,7 @@ speed == 0 &amp;&amp; IS_IN(contact_off)]</m_str>
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">2.29878 0 0 0.810811 -838.744 470.811 </m_transform>
+			<m_transform type="a">2.29878 0 0 0.810811 -845.744 902.811 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_points type="a">4 374 184  538 184  538 221  374 221  </m_points>
 		</CGIFreeShape>
@@ -33741,7 +34180,7 @@ speed == 0 &amp;&amp; IS_IN(contact_off)]</m_str>
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_transform type="a">2.63703 0 0 1.04545 -889.889 427.455 </m_transform>
+			<m_transform type="a">2.63703 0 0 1.04545 -953.889 856.455 </m_transform>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
 			<m_points type="a">4 375 188  510 188  510 210  375 210  </m_points>
 			<m_text type="a">Ressources et pannes</m_text>
@@ -33774,7 +34213,7 @@ speed == 0 &amp;&amp; IS_IN(contact_off)]</m_str>
 			</m_name>
 			<m_drawBehavior type="a">4096</m_drawBehavior>
 			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
-			<m_pSource type="s">GUID e32bd34b-47d8-455b-9746-895823d780c0</m_pSource>
+			<m_pSource type="s">GUID 7b1b715d-f5ec-4310-a532-0d64f6746ad4</m_pSource>
 			<m_sourceType type="a">'F'</m_sourceType>
 			<m_pTarget type="s">GUID 4a482d87-f05f-4c26-8fb8-140f1fef29d9</m_pTarget>
 			<m_targetType type="a">'T'</m_targetType>
@@ -33798,8 +34237,8 @@ speed == 0 &amp;&amp; IS_IN(contact_off)]</m_str>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">1</m_line_style>
-			<m_SourcePort type="a">9 150 </m_SourcePort>
-			<m_TargetPort type="a">206 3 </m_TargetPort>
+			<m_SourcePort type="a">11 259 </m_SourcePort>
+			<m_TargetPort type="a">220 3 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -34420,7 +34859,7 @@ IS_IN(moteur_off)%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 990 1250  </m_arrow>
+			<m_arrow type="a">1 990 1240  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -34515,7 +34954,7 @@ IS_IN(moteur_off)%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 1152 1001  </m_arrow>
+			<m_arrow type="a">1 1152 991  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -34581,7 +35020,7 @@ IS_IN(moteur_off)%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 999 1132  </m_arrow>
+			<m_arrow type="a">1 999 1122  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -34676,7 +35115,7 @@ IS_IN(moteur_off)%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 1083 1061  </m_arrow>
+			<m_arrow type="a">1 1083 1051  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -34742,7 +35181,7 @@ IS_IN(moteur_off)%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 1152 1030  </m_arrow>
+			<m_arrow type="a">1 1152 1020  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -34808,7 +35247,7 @@ IS_IN(moteur_off)%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 1083 1092  </m_arrow>
+			<m_arrow type="a">1 1083 1082  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -35137,7 +35576,7 @@ IS_IN(moteur_off)%0D
 					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_AdditionalLabel>
-			<m_polygon type="a">4 0 136  73 136  73 0  0 0  </m_polygon>
+			<m_polygon type="a">4 0 244  73 244  73 0  0 0  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
 			<nAndLineCount type="a">0</nAndLineCount>
@@ -35440,7 +35879,7 @@ IS_IN(moteur_off)%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 932 163  1142 163  </m_arrow>
+			<m_arrow type="a">2 932 153  1142 153  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -35714,12 +36153,12 @@ IS_IN(moteur_off)%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 54 599  369 599  </m_arrow>
+			<m_arrow type="a">2 51 978  367 978  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
-			<m_SourcePort type="a">69 1060 </m_SourcePort>
-			<m_TargetPort type="a">1049 1060 </m_TargetPort>
+			<m_SourcePort type="a">69 1059 </m_SourcePort>
+			<m_TargetPort type="a">1052 1059 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -35963,63 +36402,6 @@ IS_IN(moteur_off)%0D
 			<m_bOrdered type="a">0</m_bOrdered>
 		</CGICompartment>
 		<CGIState type="e">
-			<_id type="a">GUID e32bd34b-47d8-455b-9746-895823d780c0</_id>
-			<m_type type="a">9</m_type>
-			<m_pModelObject type="r">
-				<IHandle type="e">
-					<_hm2Class type="a">IState</_hm2Class>
-					<_hid type="a">GUID f0c0b94f-6213-4678-af57-8b7fb25be75c</_hid>
-				</IHandle>
-			</m_pModelObject>
-			<m_pParent type="s">GUID ec85470d-cf22-41fc-9a6d-cb1e342b446b</m_pParent>
-			<m_name type="p">
-				<CGIText type="e">
-					<m_str type="a">state_75</m_str>
-					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
-					<m_color type="p">
-						<IColor type="e">
-							<m_fgColor type="a">0</m_fgColor>
-							<m_bgColor type="a">0</m_bgColor>
-							<m_bgFlag type="a">0</m_bgFlag>
-						</IColor>
-					</m_color>
-					<m_position type="a">1 0 0  </m_position>
-					<m_nIdent type="a">0</m_nIdent>
-					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
-					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
-				</CGIText>
-			</m_name>
-			<m_drawBehavior type="a">4096</m_drawBehavior>
-			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
-			<m_AdditionalLabel type="p">
-				<CGIText type="e">
-					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
-					<m_color type="p">
-						<IColor type="e">
-							<m_fgColor type="a">0</m_fgColor>
-							<m_bgColor type="a">0</m_bgColor>
-							<m_bgFlag type="a">0</m_bgFlag>
-						</IColor>
-					</m_color>
-					<m_position type="a">1 0 0  </m_position>
-					<m_nIdent type="a">0</m_nIdent>
-					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
-					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
-				</CGIText>
-			</m_AdditionalLabel>
-			<m_polygon type="a">4 0 515  73 515  73 136  0 136  </m_polygon>
-			<m_nNameFormat type="a">0</m_nNameFormat>
-			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
-			<nAndLineCount type="a">0</nAndLineCount>
-			<m_pInheritsFrom type="r">
-				<IHandle type="e">
-				</IHandle>
-			</m_pInheritsFrom>
-			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
-			<m_pDefaultComponentRelation type="s"></m_pDefaultComponentRelation>
-			<m_pVirtualParent type="s">GUID 0bbf4059-e4b2-4f0d-b308-7d4ba63f7261</m_pVirtualParent>
-		</CGIState>
-		<CGIState type="e">
 			<_id type="a">GUID 2b89c0c6-fcf8-4474-9467-3ed5bd55ca10</_id>
 			<m_type type="a">9</m_type>
 			<m_pModelObject type="r">
@@ -36064,7 +36446,7 @@ IS_IN(moteur_off)%0D
 					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_AdditionalLabel>
-			<m_polygon type="a">4 73 515  255 515  255 136  73 136  </m_polygon>
+			<m_polygon type="a">4 73 322  255 322  255 136  73 136  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
 			<nAndLineCount type="a">0</nAndLineCount>
@@ -36129,7 +36511,7 @@ IS_IN(moteur_off)%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 59 450  365 450  </m_arrow>
+			<m_arrow type="a">2 59 440  365 440  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -36195,7 +36577,7 @@ IS_IN(moteur_off)%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 77 182  356 182  </m_arrow>
+			<m_arrow type="a">2 77 172  356 172  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -36261,7 +36643,7 @@ IS_IN(moteur_off)%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 506 463  </m_arrow>
+			<m_arrow type="a">1 506 453  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -36364,7 +36746,7 @@ IS_IN(moteur_off)%0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 935 586  </m_arrow>
+			<m_arrow type="a">1 935 576  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -36433,7 +36815,7 @@ speed &gt;= 30 %0D
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 1032 419  </m_arrow>
+			<m_arrow type="a">1 1032 409  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -37033,7 +37415,7 @@ vitesseConsigne+2]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 934 567  </m_arrow>
+			<m_arrow type="a">1 934 557  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -37775,7 +38157,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1604 330  1587 330  </m_arrow>
+			<m_arrow type="a">2 1604 320  1587 320  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -37841,7 +38223,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2649 332  1815 332  </m_arrow>
+			<m_arrow type="a">2 2649 322  1815 322  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -37961,7 +38343,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">4 1594 512  1876 512  1876 362  2072 362  </m_arrow>
+			<m_arrow type="a">4 1594 502  1876 502  1876 352  2072 352  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -38331,7 +38713,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 2038 494  2038 431  2177 431  </m_arrow>
+			<m_arrow type="a">3 2038 484  2038 421  2177 421  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -38545,7 +38927,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1599 1268  1718 1268  </m_arrow>
+			<m_arrow type="a">2 1599 1258  1718 1258  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -38611,7 +38993,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1896 1333  1896 1173  </m_arrow>
+			<m_arrow type="a">2 1896 1323  1896 1163  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -38677,7 +39059,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2633 1369  2699 1369  </m_arrow>
+			<m_arrow type="a">2 2633 1359  2699 1359  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -38743,7 +39125,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2456 574  2431 574  </m_arrow>
+			<m_arrow type="a">2 2456 564  2431 564  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -38809,7 +39191,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2537 1067  2773 1067  </m_arrow>
+			<m_arrow type="a">2 2537 1057  2773 1057  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -38875,7 +39257,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 1565 1578  </m_arrow>
+			<m_arrow type="a">1 1565 1568  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -38941,7 +39323,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2238 594  2245 594  </m_arrow>
+			<m_arrow type="a">2 2238 584  2245 584  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -39779,7 +40161,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 2745 1649  </m_arrow>
+			<m_arrow type="a">1 2745 1639  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -39845,7 +40227,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 1624 1652  </m_arrow>
+			<m_arrow type="a">1 1624 1642  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -40094,7 +40476,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2088 698  2087 698  </m_arrow>
+			<m_arrow type="a">2 2088 688  2087 688  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -40311,7 +40693,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2739 896  2739 696  </m_arrow>
+			<m_arrow type="a">2 2739 886  2739 686  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -40376,7 +40758,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1934 1390  1934 1482  </m_arrow>
+			<m_arrow type="a">2 1934 1380  1934 1472  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -40646,7 +41028,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2223 1360  2223 1363  </m_arrow>
+			<m_arrow type="a">2 2223 1350  2223 1353  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -40712,7 +41094,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2485 1491  2485 1260  </m_arrow>
+			<m_arrow type="a">2 2485 1481  2485 1250  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -40778,7 +41160,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2226 1320  2226 1303  </m_arrow>
+			<m_arrow type="a">2 2226 1310  2226 1293  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -40941,7 +41323,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2090 1421  2140 1421  </m_arrow>
+			<m_arrow type="a">2 2090 1411  2140 1411  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -41007,7 +41389,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2331 1532  2184 1532  </m_arrow>
+			<m_arrow type="a">2 2331 1522  2184 1522  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -41138,7 +41520,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 2400 877  2400 796  2268 796  </m_arrow>
+			<m_arrow type="a">3 2400 867  2400 786  2268 786  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -41448,7 +41830,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 3235 1343  3233 1343  </m_arrow>
+			<m_arrow type="a">2 3235 1333  3233 1333  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -41511,7 +41893,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 3315 1296  3371 1296  </m_arrow>
+			<m_arrow type="a">2 3315 1286  3371 1286  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -41574,7 +41956,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 3287 1571  3435 1571  3435 1492  </m_arrow>
+			<m_arrow type="a">3 3287 1561  3435 1561  3435 1482  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -41987,7 +42369,7 @@ IS_IN(contact_on)]</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 3530 353  3530 165  </m_arrow>
+			<m_arrow type="a">2 3530 343  3530 155  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -42054,7 +42436,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 3464 431  3464 461  3360 461  </m_arrow>
+			<m_arrow type="a">3 3464 421  3464 451  3360 451  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -42239,7 +42621,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 3650 345  4059 345  4059 297  </m_arrow>
+			<m_arrow type="a">3 3650 335  4059 335  4059 287  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -43059,7 +43441,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 5617 478  5632 478  </m_arrow>
+			<m_arrow type="a">2 5617 468  5632 468  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -43154,7 +43536,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 5609 696  5694 696  </m_arrow>
+			<m_arrow type="a">2 5609 686  5694 686  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -43818,7 +44200,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 3933 1228  3933 1227  </m_arrow>
+			<m_arrow type="a">2 3933 1218  3933 1217  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -44007,7 +44389,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 3761 1531  </m_arrow>
+			<m_arrow type="a">1 3761 1521  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -44073,7 +44455,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 4096 1534  4096 1546  </m_arrow>
+			<m_arrow type="a">2 4096 1524  4096 1536  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -44139,7 +44521,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 3967 1623  4241 1623  4241 1237  </m_arrow>
+			<m_arrow type="a">3 3967 1613  4241 1613  4241 1227  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -44205,7 +44587,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 3773 1516  </m_arrow>
+			<m_arrow type="a">1 3773 1506  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -44271,7 +44653,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 3785 1496  </m_arrow>
+			<m_arrow type="a">1 3785 1486  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -44337,7 +44719,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 4117 1369  </m_arrow>
+			<m_arrow type="a">1 4117 1359  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -44555,7 +44937,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 4981 1281  4981 1270  </m_arrow>
+			<m_arrow type="a">2 4981 1271  4981 1260  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -44621,7 +45003,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 4981 1394  4981 1406  </m_arrow>
+			<m_arrow type="a">2 4981 1384  4981 1396  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -45095,7 +45477,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 5379 1225  5379 1226  </m_arrow>
+			<m_arrow type="a">2 5379 1215  5379 1216  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -45226,7 +45608,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 5196 1525  </m_arrow>
+			<m_arrow type="a">1 5196 1515  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -45292,7 +45674,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 5533 1493  5533 1515  </m_arrow>
+			<m_arrow type="a">2 5533 1483  5533 1505  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -45358,7 +45740,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 5222 1500  </m_arrow>
+			<m_arrow type="a">1 5222 1490  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -45424,7 +45806,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 5268 1500  </m_arrow>
+			<m_arrow type="a">1 5268 1490  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -45490,7 +45872,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 5431 1575  5722 1575  5722 1268  </m_arrow>
+			<m_arrow type="a">3 5431 1565  5722 1565  5722 1258  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -45556,7 +45938,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 5564 1342  </m_arrow>
+			<m_arrow type="a">1 5564 1332  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -45797,7 +46179,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 3567 535  3733 535  </m_arrow>
+			<m_arrow type="a">2 3567 525  3733 525  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -45981,7 +46363,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 3818 538  3984 538  </m_arrow>
+			<m_arrow type="a">2 3818 528  3984 528  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -46104,7 +46486,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 3554 703  3604 703  </m_arrow>
+			<m_arrow type="a">2 3554 693  3604 693  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -46170,7 +46552,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 3897 609  3897 673  </m_arrow>
+			<m_arrow type="a">2 3897 599  3897 663  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -46236,7 +46618,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 4051 894  </m_arrow>
+			<m_arrow type="a">1 4051 884  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -46302,7 +46684,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 4024 881  3885 881  3885 626  </m_arrow>
+			<m_arrow type="a">3 4024 871  3885 871  3885 616  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -46368,7 +46750,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 3697 690  3597 690  </m_arrow>
+			<m_arrow type="a">2 3697 680  3597 680  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -46434,7 +46816,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">4 5797 571  5797 720  5697 720  5697 910  </m_arrow>
+			<m_arrow type="a">4 5797 561  5797 710  5697 710  5697 900  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -46557,7 +46939,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 5848 636  5859 636  </m_arrow>
+			<m_arrow type="a">2 5848 626  5859 626  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -46741,7 +47123,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 5804 538  </m_arrow>
+			<m_arrow type="a">1 5804 528  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -46921,7 +47303,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 5893 395  </m_arrow>
+			<m_arrow type="a">1 5893 385  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -46987,7 +47369,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 6139 436  6194 436  </m_arrow>
+			<m_arrow type="a">2 6139 426  6194 426  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -47441,7 +47823,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 4554 1290  4554 1228  4479 1228  </m_arrow>
+			<m_arrow type="a">3 4554 1280  4554 1218  4479 1218  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -47507,7 +47889,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 4365 1395  4327 1395  </m_arrow>
+			<m_arrow type="a">2 4365 1385  4327 1385  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -47573,7 +47955,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 4429 1526  4477 1526  </m_arrow>
+			<m_arrow type="a">2 4429 1516  4477 1516  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -47639,7 +48021,7 @@ nbr_sms_kit=0;</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 4403 1628  4543 1628  4543 1320  </m_arrow>
+			<m_arrow type="a">3 4403 1618  4543 1618  4543 1310  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -48172,7 +48554,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 6039 1250  6039 1286  </m_arrow>
+			<m_arrow type="a">2 6039 1240  6039 1276  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -48238,7 +48620,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 5900 1405  5908 1405  </m_arrow>
+			<m_arrow type="a">2 5900 1395  5908 1395  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -48303,7 +48685,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 5933 1584  5981 1584  </m_arrow>
+			<m_arrow type="a">2 5933 1574  5981 1574  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -48698,7 +49080,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 4240 553  4469 553  4469 493  </m_arrow>
+			<m_arrow type="a">3 4240 543  4469 543  4469 483  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -48821,7 +49203,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 4180 714  4433 714  </m_arrow>
+			<m_arrow type="a">2 4180 704  4433 704  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -49066,7 +49448,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 4764 797  4764 812  </m_arrow>
+			<m_arrow type="a">2 4764 787  4764 802  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -49132,7 +49514,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 4765 840  4765 829  </m_arrow>
+			<m_arrow type="a">2 4765 830  4765 819  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -49373,7 +49755,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 4596 869  4638 869  </m_arrow>
+			<m_arrow type="a">2 4596 859  4638 859  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -49680,7 +50062,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2297 1841  2300 1841  </m_arrow>
+			<m_arrow type="a">2 2297 1831  2300 1831  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -49905,7 +50287,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 4524 1780  4526 1780  </m_arrow>
+			<m_arrow type="a">2 4524 1770  4526 1770  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -49968,7 +50350,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 4999 1780  4998 1780  </m_arrow>
+			<m_arrow type="a">2 4999 1770  4998 1770  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -50088,7 +50470,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 3270 1054  </m_arrow>
+			<m_arrow type="a">1 3270 1044  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -50151,7 +50533,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 3434 1124  3494 1124  </m_arrow>
+			<m_arrow type="a">2 3434 1114  3494 1114  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -50217,7 +50599,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 2343 2053  2243 2053  </m_arrow>
+			<m_arrow type="a">2 2343 2043  2243 2043  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -50604,7 +50986,7 @@ actualisation_sms_telephone(1);</m_str>
 			</m_pInheritsFrom>
 			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
 			<m_pDefaultComponentRelation type="s"></m_pDefaultComponentRelation>
-			<m_pVirtualParent type="s">GUID e32bd34b-47d8-455b-9746-895823d780c0</m_pVirtualParent>
+			<m_pVirtualParent type="s">GUID 0bbf4059-e4b2-4f0d-b308-7d4ba63f7261</m_pVirtualParent>
 		</CGIState>
 		<CGIState type="e">
 			<_id type="a">GUID e7f7e6cc-0742-4c40-a406-1044f7c0c91f</_id>
@@ -51828,7 +52210,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 656 2523  584 2523  </m_arrow>
+			<m_arrow type="a">2 656 2513  584 2513  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -51891,7 +52273,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 815 2486  802 2486  </m_arrow>
+			<m_arrow type="a">2 815 2476  802 2476  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -52044,7 +52426,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">4 1362 2732  1362 2568  1098 2568  1098 2324  </m_arrow>
+			<m_arrow type="a">4 1362 2722  1362 2558  1098 2558  1098 2314  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -52110,7 +52492,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1081 2337  1081 2571  </m_arrow>
+			<m_arrow type="a">2 1081 2327  1081 2561  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -52620,7 +53002,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 857 2273  566 2273  </m_arrow>
+			<m_arrow type="a">2 857 2263  566 2263  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -53033,7 +53415,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 696 2786  </m_arrow>
+			<m_arrow type="a">1 696 2776  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -53099,7 +53481,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">1 550 2870  </m_arrow>
+			<m_arrow type="a">1 550 2860  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -53309,7 +53691,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 575 2438  576 2438  </m_arrow>
+			<m_arrow type="a">2 575 2428  576 2428  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -53525,7 +53907,7 @@ actualisation_sms_telephone(1);</m_str>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">1</m_line_style>
 			<m_SourcePort type="a">232 370 </m_SourcePort>
-			<m_TargetPort type="a">366 2 </m_TargetPort>
+			<m_TargetPort type="a">365 2 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -53883,7 +54265,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 4178 1575  4217 1575  4217 1516  </m_arrow>
+			<m_arrow type="a">3 4178 1565  4217 1565  4217 1506  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -54303,7 +54685,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 5616 1532  5655 1532  5655 1473  </m_arrow>
+			<m_arrow type="a">3 5616 1522  5655 1522  5655 1463  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -54902,7 +55284,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">3 3798 897  3837 897  3837 838  </m_arrow>
+			<m_arrow type="a">3 3798 887  3837 887  3837 828  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -55090,7 +55472,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 3718 852  3718 864  </m_arrow>
+			<m_arrow type="a">2 3718 842  3718 854  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -55156,7 +55538,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1081 2771  1081 2571  </m_arrow>
+			<m_arrow type="a">2 1081 2761  1081 2561  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -55222,7 +55604,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 1013 2296  1013 2790  </m_arrow>
+			<m_arrow type="a">2 1013 2286  1013 2780  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -55524,7 +55906,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 4035 1495  4017 1495  </m_arrow>
+			<m_arrow type="a">2 4035 1485  4017 1485  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -55738,7 +56120,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 5702 478  5691 478  </m_arrow>
+			<m_arrow type="a">2 5702 468  5691 468  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -55804,7 +56186,7 @@ actualisation_sms_telephone(1);</m_str>
 					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_rpn>
-			<m_arrow type="a">2 3787 696  3734 696  </m_arrow>
+			<m_arrow type="a">2 3787 686  3734 686  </m_arrow>
 			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
 			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
 			<m_line_style type="a">2</m_line_style>
@@ -56172,6 +56554,1169 @@ actualisation_sms_telephone(1);</m_str>
 			<m_line_style type="a">1</m_line_style>
 			<m_SourcePort type="a">172 832 </m_SourcePort>
 			<m_TargetPort type="a">682 1059 </m_TargetPort>
+			<m_pInheritsFrom type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pInheritsFrom>
+			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
+			<m_bShowName type="a">1</m_bShowName>
+		</CGITrans>
+		<CGIState type="e">
+			<_id type="a">GUID 7b1b715d-f5ec-4310-a532-0d64f6746ad4</_id>
+			<m_type type="a">9</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IState</_hm2Class>
+					<_hid type="a">GUID 69bdb3f7-3aca-48d6-8b2b-3b59b8d4b7d1</_hid>
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s">GUID ec85470d-cf22-41fc-9a6d-cb1e342b446b</m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_str type="a">state_252</m_str>
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4096</m_drawBehavior>
+			<m_transform type="a">1 0 0 1 0 0 </m_transform>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_AdditionalLabel type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_AdditionalLabel>
+			<m_polygon type="a">4 0 244  73 244  73 515  0 515  </m_polygon>
+			<m_nNameFormat type="a">0</m_nNameFormat>
+			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
+			<nAndLineCount type="a">0</nAndLineCount>
+			<m_pInheritsFrom type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pInheritsFrom>
+			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
+			<m_pDefaultComponentRelation type="s"></m_pDefaultComponentRelation>
+			<m_pVirtualParent type="s">GUID 0bbf4059-e4b2-4f0d-b308-7d4ba63f7261</m_pVirtualParent>
+		</CGIState>
+		<CGIState type="e">
+			<_id type="a">GUID ca2a1f32-7957-41b6-8b43-78f0b916a6e1</_id>
+			<m_type type="a">8</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IState</_hm2Class>
+					<_hid type="a">GUID 2750f8c9-6ba7-4de2-b892-91096ef0526c</_hid>
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s">GUID 4be520b4-274e-4258-9fe6-186af9c15b39</m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_str type="a">verif_distance_secu</m_str>
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">5</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4104</m_drawBehavior>
+			<m_transform type="a">0.564927 0 0 0.153479 159.435 182.406 </m_transform>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_AdditionalLabel type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_AdditionalLabel>
+			<m_polygon type="a">4 0 0  0 1060  1096 1060  1096 0  </m_polygon>
+			<m_nNameFormat type="a">0</m_nNameFormat>
+			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
+			<nAndLineCount type="a">0</nAndLineCount>
+			<m_pInheritsFrom type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pInheritsFrom>
+			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
+			<m_pDefaultComponentRelation type="s"></m_pDefaultComponentRelation>
+		</CGIState>
+		<CGITrans type="e">
+			<_id type="a">GUID dfbd5323-0acf-4a12-80b0-ad0622261a1a</_id>
+			<m_type type="a">29</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">ITransition</_hm2Class>
+					<_hid type="a">GUID 7332ec8f-dcaf-4d40-87b0-802ed0b69151</_hid>
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s"></m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">8</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4096</m_drawBehavior>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_pSource type="s">GUID 4be520b4-274e-4258-9fe6-186af9c15b39</m_pSource>
+			<m_sourceType type="a">'F'</m_sourceType>
+			<m_pTarget type="s">GUID ca2a1f32-7957-41b6-8b43-78f0b916a6e1</m_pTarget>
+			<m_targetType type="a">'T'</m_targetType>
+			<m_direction type="a">' '</m_direction>
+			<m_rpn type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_rpn>
+			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
+			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
+			<m_line_style type="a">1</m_line_style>
+			<m_SourcePort type="a">934 170 </m_SourcePort>
+			<m_TargetPort type="a">887 0 </m_TargetPort>
+			<m_pInheritsFrom type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pInheritsFrom>
+			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
+			<m_bShowName type="a">1</m_bShowName>
+		</CGITrans>
+		<CGIState type="e">
+			<_id type="a">GUID 9cb2adcf-dd5a-4463-affc-01b5d6e0d680</_id>
+			<_properties type="p"><IPropertyContainer type="e">
+				<Subjects type="c">
+					<IRPYRawContainer type="e">
+						<IPropertySubject type="e">
+							<_Name type="a">StatechartDiagram</_Name>
+							<Metaclasses type="c">
+								<IRPYRawContainer type="e">
+									<IPropertyMetaclass type="e">
+										<_Name type="a">State</_Name>
+										<Properties type="c">
+											<IRPYRawContainer type="e">
+												<IProperty type="e">
+													<_Name type="a">ShowReactions</_Name>
+													<_Value type="a">True</_Value>
+													<_Type type="a">Bool</_Type>
+												</IProperty>
+												
+											</IRPYRawContainer>
+										</Properties>
+									</IPropertyMetaclass>
+									
+								</IRPYRawContainer>
+							</Metaclasses>
+						</IPropertySubject>
+						
+					</IRPYRawContainer>
+				</Subjects>
+			</IPropertyContainer>
+			</_properties>
+			<m_type type="a">8</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IState</_hm2Class>
+					<_hid type="a">GUID 03091419-a145-419e-b9df-4ba4ec5460e1</_hid>
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s">GUID 4be520b4-274e-4258-9fe6-186af9c15b39</m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_str type="a">suivi_distance_consigne</m_str>
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">5</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4104</m_drawBehavior>
+			<m_transform type="a">0.542216 0 0 0.148682 75.9509 492.528 </m_transform>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_AdditionalLabel type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_AdditionalLabel>
+			<m_polygon type="a">4 0 0  0 1060  1096 1060  1096 0  </m_polygon>
+			<m_nNameFormat type="a">0</m_nNameFormat>
+			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
+			<frameset type="a">&lt;frameset rows=100%25&gt;
+&lt;frame name=ReactionsListCompartment&gt;</frameset>
+			<nAndLineCount type="a">0</nAndLineCount>
+			<m_pInheritsFrom type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pInheritsFrom>
+			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
+			<m_pDefaultComponentRelation type="s"></m_pDefaultComponentRelation>
+			<AggregatesList type="e">
+				<value>GUID 5f9c761f-5e96-4739-981f-4c0e68472975</value>
+			</AggregatesList>
+		</CGIState>
+		<CGICompartment type="e">
+			<_id type="a">GUID 5f9c761f-5e96-4739-981f-4c0e68472975</_id>
+			<m_name type="a">Reactions</m_name>
+			<m_displayOption type="a">All</m_displayOption>
+			<m_bShowInherited type="a">0</m_bShowInherited>
+			<m_bOrdered type="a">0</m_bOrdered>
+			<_itemValueOfFontPropertiesMapCount type="a">1</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+		</CGICompartment>
+		<CGIState type="e">
+			<_id type="a">GUID dc7a1583-e38f-4ccd-bc09-bcbbe1bbe442</_id>
+			<_properties type="p"><IPropertyContainer type="e">
+				<Subjects type="c">
+					<IRPYRawContainer type="e">
+						<IPropertySubject type="e">
+							<_Name type="a">General</_Name>
+							<Metaclasses type="c">
+								<IRPYRawContainer type="e">
+									<IPropertyMetaclass type="e">
+										<_Name type="a">Graphics</_Name>
+										<Properties type="c">
+											<IRPYRawContainer type="e">
+												<IProperty type="e">
+													<_Name type="a">FitBoxToItsTextuals</_Name>
+													<_Value type="a">False</_Value>
+													<_Type type="a">Bool</_Type>
+												</IProperty>
+												
+											</IRPYRawContainer>
+										</Properties>
+									</IPropertyMetaclass>
+									
+								</IRPYRawContainer>
+							</Metaclasses>
+						</IPropertySubject>
+						
+						<IPropertySubject type="e">
+							<_Name type="a">StatechartDiagram</_Name>
+							<Metaclasses type="c">
+								<IRPYRawContainer type="e">
+									<IPropertyMetaclass type="e">
+										<_Name type="a">State</_Name>
+										<Properties type="c">
+											<IRPYRawContainer type="e">
+												<IProperty type="e">
+													<_Name type="a">ShowReactions</_Name>
+													<_Value type="a">True</_Value>
+													<_Type type="a">Bool</_Type>
+												</IProperty>
+												
+											</IRPYRawContainer>
+										</Properties>
+									</IPropertyMetaclass>
+									
+								</IRPYRawContainer>
+							</Metaclasses>
+						</IPropertySubject>
+						
+					</IRPYRawContainer>
+				</Subjects>
+			</IPropertyContainer>
+			</_properties>
+			<m_type type="a">8</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IState</_hm2Class>
+					<_hid type="a">GUID 5b1b68ca-3a15-4c86-a661-b8324967c324</_hid>
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s">GUID 4be520b4-274e-4258-9fe6-186af9c15b39</m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_str type="a">suivi_vitesse_consigne</m_str>
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">5</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4104</m_drawBehavior>
+			<m_transform type="a">0.510989 0 0 0.136692 508.791 845.645 </m_transform>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_AdditionalLabel type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_AdditionalLabel>
+			<m_polygon type="a">4 0 0  0 1060  1096 1060  1096 0  </m_polygon>
+			<m_nNameFormat type="a">0</m_nNameFormat>
+			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
+			<frameset type="a">&lt;frameset rows=100%25&gt;
+&lt;frame name=ReactionsListCompartment&gt;</frameset>
+			<nAndLineCount type="a">0</nAndLineCount>
+			<m_pInheritsFrom type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pInheritsFrom>
+			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
+			<m_pDefaultComponentRelation type="s"></m_pDefaultComponentRelation>
+			<AggregatesList type="e">
+				<value>GUID 1d48d3a3-3997-4db5-bf24-ffb878509ab9</value>
+			</AggregatesList>
+		</CGIState>
+		<CGICompartment type="e">
+			<_id type="a">GUID 1d48d3a3-3997-4db5-bf24-ffb878509ab9</_id>
+			<m_name type="a">Reactions</m_name>
+			<m_displayOption type="a">All</m_displayOption>
+			<m_bShowInherited type="a">0</m_bShowInherited>
+			<m_bOrdered type="a">0</m_bOrdered>
+			<_itemValueOfFontPropertiesMapCount type="a">1</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+		</CGICompartment>
+		<CGITrans type="e">
+			<_id type="a">GUID 5dda94b8-e83b-4a79-99e1-f7b64bf15e32</_id>
+			<m_type type="a">28</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">ITransition</_hm2Class>
+					<_hid type="a">GUID 245466b0-7364-4f99-8d8c-ffe4f83360fb</_hid>
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s"></m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">8</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4096</m_drawBehavior>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_pSource type="s">GUID ca2a1f32-7957-41b6-8b43-78f0b916a6e1</m_pSource>
+			<m_sourceType type="a">'F'</m_sourceType>
+			<m_pTarget type="s">GUID 9cb2adcf-dd5a-4463-affc-01b5d6e0d680</m_pTarget>
+			<m_targetType type="a">'T'</m_targetType>
+			<m_direction type="a">' '</m_direction>
+			<m_rpn type="p">
+				<CGIText type="e">
+					<m_str type="a">[distance_inter_voiture &lt; distance_securite &amp;&amp; IS_IN(simulation_voiture_devant)]</m_str>
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">4 -298 -9  333 -9  333 11  -298 11  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_transform type="a">1 0 0 1 351 654 </m_transform>
+					<m_nHorizontalSpacing type="a">-54</m_nHorizontalSpacing>
+					<m_nVerticalSpacing type="a">-29</m_nVerticalSpacing>
+					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_rpn>
+			<m_arrow type="a">2 88 674  95 674  </m_arrow>
+			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
+			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
+			<m_line_style type="a">2</m_line_style>
+			<m_SourcePort type="a">44 1060 </m_SourcePort>
+			<m_TargetPort type="a">240 0 </m_TargetPort>
+			<m_pInheritsFrom type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pInheritsFrom>
+			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
+			<m_bShowName type="a">1</m_bShowName>
+		</CGITrans>
+		<CGITrans type="e">
+			<_id type="a">GUID 85d5ac8b-9087-4201-baaf-7c695fc8783e</_id>
+			<m_type type="a">28</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">ITransition</_hm2Class>
+					<_hid type="a">GUID 990f2772-c590-4827-886a-09dc870dee6c</_hid>
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s"></m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">8</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4096</m_drawBehavior>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_pSource type="s">GUID ca2a1f32-7957-41b6-8b43-78f0b916a6e1</m_pSource>
+			<m_sourceType type="a">'F'</m_sourceType>
+			<m_pTarget type="s">GUID dc7a1583-e38f-4ccd-bc09-bcbbe1bbe442</m_pTarget>
+			<m_targetType type="a">'T'</m_targetType>
+			<m_direction type="a">' '</m_direction>
+			<m_rpn type="p">
+				<CGIText type="e">
+					<m_str type="a">[distance_inter_voiture &gt; distance_securite &amp;&amp; !IS_IN(simulation_voiture_devant)]</m_str>
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">4 -300 -9  337 -9  337 11  -300 11  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_transform type="a">1 0 0 1 291 809 </m_transform>
+					<m_nHorizontalSpacing type="a">-308</m_nHorizontalSpacing>
+					<m_nVerticalSpacing type="a">72</m_nVerticalSpacing>
+					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_rpn>
+			<m_arrow type="a">2 252 743  344 743  </m_arrow>
+			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
+			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
+			<m_line_style type="a">2</m_line_style>
+			<m_SourcePort type="a">947 1060 </m_SourcePort>
+			<m_TargetPort type="a">924 2 </m_TargetPort>
+			<m_pInheritsFrom type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pInheritsFrom>
+			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
+			<m_bShowName type="a">1</m_bShowName>
+		</CGITrans>
+		<CGIState type="e">
+			<_id type="a">GUID 590b2a73-3c24-4b60-b803-ef898cf95eb9</_id>
+			<m_type type="a">9</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IState</_hm2Class>
+					<_hid type="a">GUID 4bc752f5-f341-4420-8044-d8543dcc8025</_hid>
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s">GUID ec85470d-cf22-41fc-9a6d-cb1e342b446b</m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_str type="a">state_256</m_str>
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4096</m_drawBehavior>
+			<m_transform type="a">1 0 0 1 0 0 </m_transform>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_AdditionalLabel type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_AdditionalLabel>
+			<m_polygon type="a">4 73 322  255 322  255 515  73 515  </m_polygon>
+			<m_nNameFormat type="a">0</m_nNameFormat>
+			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
+			<nAndLineCount type="a">0</nAndLineCount>
+			<m_pInheritsFrom type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pInheritsFrom>
+			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
+			<m_pDefaultComponentRelation type="s"></m_pDefaultComponentRelation>
+			<m_pVirtualParent type="s">GUID 2b89c0c6-fcf8-4474-9467-3ed5bd55ca10</m_pVirtualParent>
+		</CGIState>
+		<CGIState type="e">
+			<_id type="a">GUID 8669b683-d2b5-4f04-b9f3-cfd68ff86d03</_id>
+			<_properties type="p"><IPropertyContainer type="e">
+				<Subjects type="c">
+					<IRPYRawContainer type="e">
+						<IPropertySubject type="e">
+							<_Name type="a">General</_Name>
+							<Metaclasses type="c">
+								<IRPYRawContainer type="e">
+									<IPropertyMetaclass type="e">
+										<_Name type="a">Graphics</_Name>
+										<Properties type="c">
+											<IRPYRawContainer type="e">
+												<IProperty type="e">
+													<_Name type="a">FitBoxToItsTextuals</_Name>
+													<_Value type="a">False</_Value>
+													<_Type type="a">Bool</_Type>
+												</IProperty>
+												
+											</IRPYRawContainer>
+										</Properties>
+									</IPropertyMetaclass>
+									
+								</IRPYRawContainer>
+							</Metaclasses>
+						</IPropertySubject>
+						
+						<IPropertySubject type="e">
+							<_Name type="a">StatechartDiagram</_Name>
+							<Metaclasses type="c">
+								<IRPYRawContainer type="e">
+									<IPropertyMetaclass type="e">
+										<_Name type="a">State</_Name>
+										<Properties type="c">
+											<IRPYRawContainer type="e">
+												<IProperty type="e">
+													<_Name type="a">ShowReactions</_Name>
+													<_Value type="a">True</_Value>
+													<_Type type="a">Bool</_Type>
+												</IProperty>
+												
+											</IRPYRawContainer>
+										</Properties>
+									</IPropertyMetaclass>
+									
+								</IRPYRawContainer>
+							</Metaclasses>
+						</IPropertySubject>
+						
+					</IRPYRawContainer>
+				</Subjects>
+			</IPropertyContainer>
+			</_properties>
+			<m_type type="a">8</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IState</_hm2Class>
+					<_hid type="a">GUID 0a4fe435-37b1-43d0-9707-dd005e23b9c7</_hid>
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s">GUID 590b2a73-3c24-4b60-b803-ef898cf95eb9</m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_str type="a">simulation_voiture_devant</m_str>
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">5</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4104</m_drawBehavior>
+			<m_transform type="a">0.144551 0 0 0.0640337 93.1521 340.09 </m_transform>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_AdditionalLabel type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_AdditionalLabel>
+			<m_polygon type="a">4 0 0  0 1060  1096 1060  1096 0  </m_polygon>
+			<m_nNameFormat type="a">0</m_nNameFormat>
+			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
+			<frameset type="a">&lt;frameset rows=100%25&gt;
+&lt;frame name=ReactionsListCompartment&gt;</frameset>
+			<nAndLineCount type="a">0</nAndLineCount>
+			<m_pInheritsFrom type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pInheritsFrom>
+			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
+			<m_pDefaultComponentRelation type="s"></m_pDefaultComponentRelation>
+			<AggregatesList type="e">
+				<value>GUID 207a5a6d-697a-400c-a592-7faf33643c36</value>
+			</AggregatesList>
+		</CGIState>
+		<CGICompartment type="e">
+			<_id type="a">GUID 207a5a6d-697a-400c-a592-7faf33643c36</_id>
+			<m_name type="a">Reactions</m_name>
+			<m_displayOption type="a">All</m_displayOption>
+			<m_bShowInherited type="a">0</m_bShowInherited>
+			<m_bOrdered type="a">0</m_bOrdered>
+			<_itemValueOfFontPropertiesMapCount type="a">1</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+		</CGICompartment>
+		<CGIState type="e">
+			<_id type="a">GUID 43072066-3ca8-4e65-b4fe-19311c22427e</_id>
+			<_properties type="p"><IPropertyContainer type="e">
+				<Subjects type="c">
+					<IRPYRawContainer type="e">
+						<IPropertySubject type="e">
+							<_Name type="a">StatechartDiagram</_Name>
+							<Metaclasses type="c">
+								<IRPYRawContainer type="e">
+									<IPropertyMetaclass type="e">
+										<_Name type="a">State</_Name>
+										<Properties type="c">
+											<IRPYRawContainer type="e">
+												<IProperty type="e">
+													<_Name type="a">ShowReactions</_Name>
+													<_Value type="a">True</_Value>
+													<_Type type="a">Bool</_Type>
+												</IProperty>
+												
+											</IRPYRawContainer>
+										</Properties>
+									</IPropertyMetaclass>
+									
+								</IRPYRawContainer>
+							</Metaclasses>
+						</IPropertySubject>
+						
+					</IRPYRawContainer>
+				</Subjects>
+			</IPropertyContainer>
+			</_properties>
+			<m_type type="a">8</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IState</_hm2Class>
+					<_hid type="a">GUID 710025e3-5e40-495f-8f4c-f16b33c49b78</_hid>
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s">GUID 8669b683-d2b5-4f04-b9f3-cfd68ff86d03</m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_str type="a">loop_simulation</m_str>
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">5</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4104</m_drawBehavior>
+			<m_transform type="a">0.881761 0 0 0.329114 64.1396 355.619 </m_transform>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_AdditionalLabel type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_AdditionalLabel>
+			<m_polygon type="a">4 0 0  0 1060  1096 1060  1096 0  </m_polygon>
+			<m_nNameFormat type="a">0</m_nNameFormat>
+			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
+			<frameset type="a">&lt;frameset rows=100%25&gt;
+&lt;frame name=ReactionsListCompartment&gt;</frameset>
+			<nAndLineCount type="a">0</nAndLineCount>
+			<m_pInheritsFrom type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pInheritsFrom>
+			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
+			<m_pDefaultComponentRelation type="s"></m_pDefaultComponentRelation>
+			<AggregatesList type="e">
+				<value>GUID 9ad67ca7-0a58-4a39-96e4-a26abc1331b0</value>
+			</AggregatesList>
+		</CGIState>
+		<CGICompartment type="e">
+			<_id type="a">GUID 9ad67ca7-0a58-4a39-96e4-a26abc1331b0</_id>
+			<m_name type="a">Reactions</m_name>
+			<m_displayOption type="a">All</m_displayOption>
+			<m_bShowInherited type="a">0</m_bShowInherited>
+			<m_bOrdered type="a">0</m_bOrdered>
+			<_itemValueOfFontPropertiesMapCount type="a">1</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+		</CGICompartment>
+		<CGITrans type="e">
+			<_id type="a">GUID 774db3b0-c8b7-4d97-afc7-70ed1cef4f89</_id>
+			<m_type type="a">28</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">ITransition</_hm2Class>
+					<_hid type="a">GUID 20f956e8-4fe4-4c1f-8581-9d047c65c2f1</_hid>
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s"></m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">8</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4096</m_drawBehavior>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_pSource type="s">GUID 43072066-3ca8-4e65-b4fe-19311c22427e</m_pSource>
+			<m_sourceType type="a">'F'</m_sourceType>
+			<m_pTarget type="s">GUID 43072066-3ca8-4e65-b4fe-19311c22427e</m_pTarget>
+			<m_targetType type="a">'T'</m_targetType>
+			<m_direction type="a">' '</m_direction>
+			<m_rpn type="p">
+				<CGIText type="e">
+					<m_str type="a">EVAL[SWITCH_simulation_voiture_devant]</m_str>
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">4 -193 -9  211 -9  211 11  -193 11  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_transform type="a">1 0 0 1 1025 1612 </m_transform>
+					<m_nHorizontalSpacing type="a">-174</m_nHorizontalSpacing>
+					<m_nVerticalSpacing type="a">-9</m_nVerticalSpacing>
+					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_rpn>
+			<m_arrow type="a">2 707 1625  1305 1625  </m_arrow>
+			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
+			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
+			<m_line_style type="a">2</m_line_style>
+			<m_SourcePort type="a">157 1056 </m_SourcePort>
+			<m_TargetPort type="a">969 1056 </m_TargetPort>
+			<m_pInheritsFrom type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pInheritsFrom>
+			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
+			<m_bShowName type="a">1</m_bShowName>
+		</CGITrans>
+		<CGIState type="e">
+			<_id type="a">GUID 0673a7ac-95d4-4564-854c-3cd4aad7cba9</_id>
+			<_properties type="p"><IPropertyContainer type="e">
+				<Subjects type="c">
+					<IRPYRawContainer type="e">
+						<IPropertySubject type="e">
+							<_Name type="a">StatechartDiagram</_Name>
+							<Metaclasses type="c">
+								<IRPYRawContainer type="e">
+									<IPropertyMetaclass type="e">
+										<_Name type="a">State</_Name>
+										<Properties type="c">
+											<IRPYRawContainer type="e">
+												<IProperty type="e">
+													<_Name type="a">ShowReactions</_Name>
+													<_Value type="a">True</_Value>
+													<_Type type="a">Bool</_Type>
+												</IProperty>
+												
+											</IRPYRawContainer>
+										</Properties>
+									</IPropertyMetaclass>
+									
+								</IRPYRawContainer>
+							</Metaclasses>
+						</IPropertySubject>
+						
+					</IRPYRawContainer>
+				</Subjects>
+			</IPropertyContainer>
+			</_properties>
+			<m_type type="a">8</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IState</_hm2Class>
+					<_hid type="a">GUID 8d4c5f40-f7ee-4a0a-91a7-aaf5a1a69ccd</_hid>
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s">GUID 590b2a73-3c24-4b60-b803-ef898cf95eb9</m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_str type="a">reglage_voiture_devant</m_str>
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">5</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4104</m_drawBehavior>
+			<m_transform type="a">0.130017 0 0 0.0277479 101.117 421.307 </m_transform>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_AdditionalLabel type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_AdditionalLabel>
+			<m_polygon type="a">4 0 0  0 1060  1096 1060  1096 0  </m_polygon>
+			<m_nNameFormat type="a">0</m_nNameFormat>
+			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
+			<frameset type="a">&lt;frameset rows=100%25&gt;
+&lt;frame name=ReactionsListCompartment&gt;</frameset>
+			<nAndLineCount type="a">0</nAndLineCount>
+			<m_pInheritsFrom type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pInheritsFrom>
+			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
+			<m_pDefaultComponentRelation type="s"></m_pDefaultComponentRelation>
+			<AggregatesList type="e">
+				<value>GUID a183a7d6-1d60-40cb-8db6-774789db266a</value>
+			</AggregatesList>
+		</CGIState>
+		<CGICompartment type="e">
+			<_id type="a">GUID a183a7d6-1d60-40cb-8db6-774789db266a</_id>
+			<m_name type="a">Reactions</m_name>
+			<m_displayOption type="a">All</m_displayOption>
+			<m_bShowInherited type="a">0</m_bShowInherited>
+			<m_bOrdered type="a">0</m_bOrdered>
+			<_itemValueOfFontPropertiesMapCount type="a">1</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+		</CGICompartment>
+		<CGITrans type="e">
+			<_id type="a">GUID eceb5afc-8b60-4b24-8c65-984789401b55</_id>
+			<m_type type="a">28</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">ITransition</_hm2Class>
+					<_hid type="a">GUID e0d03c45-8e66-435b-a1ca-4de8e55b431f</_hid>
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s"></m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">8</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4096</m_drawBehavior>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_pSource type="s">GUID 0673a7ac-95d4-4564-854c-3cd4aad7cba9</m_pSource>
+			<m_sourceType type="a">'F'</m_sourceType>
+			<m_pTarget type="s">GUID 8669b683-d2b5-4f04-b9f3-cfd68ff86d03</m_pTarget>
+			<m_targetType type="a">'T'</m_targetType>
+			<m_direction type="a">' '</m_direction>
+			<m_rpn type="p">
+				<CGIText type="e">
+					<m_str type="a">EVAL[SWITCH_simulation_voiture_devant]</m_str>
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_rpn>
+			<m_arrow type="a">2 650 1713  625 1713  </m_arrow>
+			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
+			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
+			<m_line_style type="a">2</m_line_style>
+			<m_SourcePort type="a">88 0 </m_SourcePort>
+			<m_TargetPort type="a">104 1060 </m_TargetPort>
+			<m_pInheritsFrom type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pInheritsFrom>
+			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
+			<m_bShowName type="a">1</m_bShowName>
+		</CGITrans>
+		<CGITrans type="e">
+			<_id type="a">GUID 375941f1-7f49-41a6-974d-e62b1f19c882</_id>
+			<m_type type="a">28</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">ITransition</_hm2Class>
+					<_hid type="a">GUID 9aff0224-c4fd-4d3f-a9a7-cbaaa8a69c60</_hid>
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s"></m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">8</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4096</m_drawBehavior>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_pSource type="s">GUID 8669b683-d2b5-4f04-b9f3-cfd68ff86d03</m_pSource>
+			<m_sourceType type="a">'F'</m_sourceType>
+			<m_pTarget type="s">GUID 0673a7ac-95d4-4564-854c-3cd4aad7cba9</m_pTarget>
+			<m_targetType type="a">'T'</m_targetType>
+			<m_direction type="a">' '</m_direction>
+			<m_rpn type="p">
+				<CGIText type="e">
+					<m_str type="a">EVAL[SWITCH_simulation_voiture_devant == false]</m_str>
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_rpn>
+			<m_arrow type="a">2 1231 1713  1180 1713  </m_arrow>
+			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
+			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
+			<m_line_style type="a">2</m_line_style>
+			<m_SourcePort type="a">830 1060 </m_SourcePort>
+			<m_TargetPort type="a">794 0 </m_TargetPort>
+			<m_pInheritsFrom type="r">
+				<IHandle type="e">
+				</IHandle>
+			</m_pInheritsFrom>
+			<m_nInheritanceMask type="a">0</m_nInheritanceMask>
+			<m_bShowName type="a">1</m_bShowName>
+		</CGITrans>
+		<CGITrans type="e">
+			<_id type="a">GUID 428fff48-0913-46e8-99bb-802c24be5d2b</_id>
+			<m_type type="a">29</m_type>
+			<m_pModelObject type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">ITransition</_hm2Class>
+					<_hid type="a">GUID 7f930002-5469-4465-b28d-e37600709dbe</_hid>
+				</IHandle>
+			</m_pModelObject>
+			<m_pParent type="s"></m_pParent>
+			<m_name type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">8</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_name>
+			<m_drawBehavior type="a">4096</m_drawBehavior>
+			<m_bIsPreferencesInitialized type="a">1</m_bIsPreferencesInitialized>
+			<m_pSource type="s">GUID 590b2a73-3c24-4b60-b803-ef898cf95eb9</m_pSource>
+			<m_sourceType type="a">'F'</m_sourceType>
+			<m_pTarget type="s">GUID 0673a7ac-95d4-4564-854c-3cd4aad7cba9</m_pTarget>
+			<m_targetType type="a">'T'</m_targetType>
+			<m_direction type="a">' '</m_direction>
+			<m_rpn type="p">
+				<CGIText type="e">
+					<m_style type="a">Arial; 10 0 0 0 1 </m_style>
+					<m_color type="p">
+						<IColor type="e">
+							<m_fgColor type="a">0</m_fgColor>
+							<m_bgColor type="a">0</m_bgColor>
+							<m_bgFlag type="a">0</m_bgFlag>
+						</IColor>
+					</m_color>
+					<m_position type="a">1 0 0  </m_position>
+					<m_nIdent type="a">0</m_nIdent>
+					<m_bImplicitSetRectPoints type="a">0</m_bImplicitSetRectPoints>
+					<m_nOrientationCtrlPt type="a">0</m_nOrientationCtrlPt>
+				</CGIText>
+			</m_rpn>
+			<m_anglePoint1 type="a">0 0 </m_anglePoint1>
+			<m_anglePoint2 type="a">0 0 </m_anglePoint2>
+			<m_line_style type="a">1</m_line_style>
+			<m_SourcePort type="a">251 438 </m_SourcePort>
+			<m_TargetPort type="a">1096 480 </m_TargetPort>
 			<m_pInheritsFrom type="r">
 				<IHandle type="e">
 				</IHandle>

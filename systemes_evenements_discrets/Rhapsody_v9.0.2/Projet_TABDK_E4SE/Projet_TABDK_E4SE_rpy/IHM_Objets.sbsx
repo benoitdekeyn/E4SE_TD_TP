@@ -12,10 +12,10 @@
 			<_id type="a">GUID 01dd56fe-298e-423f-8f52-a5e5dff6dbdc</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">IHM_Objets</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::14:23:15</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::14:30:49</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::14:50:50</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::15:15:59</_modifiedTime>
 			<_lastID type="a">2</_lastID>
-			<weakCGTime type="a">11.10.2026::14:23:15</weakCGTime>
+			<weakCGTime type="a">11.10.2026::14:50:50</weakCGTime>
 			<strongCGTime type="a">10.3.2016::22:41:54</strongCGTime>
 			<_defaultComposite type="s">GUID c6ebe487-749a-424c-8c16-94f16e9ee15a</_defaultComposite>
 			<_eventsBaseID type="a">-1</_eventsBaseID>
@@ -1054,15 +1054,15 @@
 			<_id type="a">GUID 187c4360-fdb2-4b6f-996d-5c38ed7c9d37</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">Main</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::14:26:0</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">11.10.2026::14:58:13</_modifiedTimeWeak>
 			<_theMainDiagram type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IDiagram</_hm2Class>
 					<_hid type="a">GUID 157a46cf-adcc-4952-aec9-4db509148774</_hid>
 				</IHandle>
 			</_theMainDiagram>
-			<_modifiedTime type="a">11.10.2026::14:26:0</_modifiedTime>
-			<weakCGTime type="a">11.10.2026::14:26:0</weakCGTime>
+			<_modifiedTime type="a">11.10.2026::14:58:13</_modifiedTime>
+			<weakCGTime type="a">11.10.2026::14:58:13</weakCGTime>
 			<strongCGTime type="a">9.26.2017::14:35:36</strongCGTime>
 			<_itsStateChart type="r">
 				<IHandle type="e">
@@ -1179,8 +1179,8 @@ return done;</_bodyData>
 			<_id type="a">GUID 2731af7b-953d-4383-ac71-d3660a0ae942</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">objetSysVehicule</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::14:26:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::14:26:0</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.10.2026::14:58:13</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:58:13</_modifiedTime>
 			<_multiplicity type="a">1</_multiplicity>
 			<_otherClass type="r">
 				<IClassifierHandle type="e">
@@ -1204,6 +1204,7 @@ return done;</_bodyData>
 				<value>GUID aa149c6e-c8ab-4d94-90a5-4f2db36d44c5</value>
 				<value>GUID 9001a0b4-b8ed-4c19-9ad7-6d0cb390cd4c</value>
 				<value>GUID a5fe93a1-da35-40fc-9d17-4d2a8debaa17</value>
+				<value>GUID 63d680d6-7f84-403b-8959-89c31817b15c</value>
 			</AggregatesList>
 		</IPart>
 		<ISlot type="e">
@@ -1259,9 +1260,9 @@ return done;</_bodyData>
 		</ISlot>
 		<ISlot type="e">
 			<_id type="a">GUID 1be8b196-c301-4b31-9ea1-6219ecfe9c8a</_id>
-			<_name type="a">distance_entire_voiture_devant_Value</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::14:23:54</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::14:23:54</_modifiedTime>
+			<_name type="a">distance_entiere_voiture_devant_Value</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:50:50</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:50:50</_modifiedTime>
 			<_value type="a">0</_value>
 			<_definingVar type="r">
 				<IHandle type="e">
@@ -1269,7 +1270,7 @@ return done;</_bodyData>
 					<_hfilename type="a">.\_MonPkg.sbsx</_hfilename>
 					<_hsubsystem type="a">_MonPkg</_hsubsystem>
 					<_hclass type="a">_SysVehicule</_hclass>
-					<_hname type="a">distance_entire_voiture_devant</_hname>
+					<_hname type="a">distance_entiere_voiture_devant</_hname>
 					<_hid type="a">GUID a521d432-244e-4ac6-9fa2-615231d66d70</_hid>
 				</IHandle>
 			</_definingVar>
@@ -1294,9 +1295,9 @@ return done;</_bodyData>
 		<ISlot type="e">
 			<_id type="a">GUID aa149c6e-c8ab-4d94-90a5-4f2db36d44c5</_id>
 			<_name type="a">distance_securite_Value</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::14:24:56</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::14:24:56</_modifiedTime>
-			<_value type="a">20.0</_value>
+			<_modifiedTimeWeak type="a">11.10.2026::14:57:24</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:57:24</_modifiedTime>
+			<_value type="a">30.0</_value>
 			<_definingVar type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IAttribute</_hm2Class>
@@ -1339,6 +1340,23 @@ return done;</_bodyData>
 					<_hclass type="a">_SysVehicule</_hclass>
 					<_hname type="a">target_throttle</_hname>
 					<_hid type="a">GUID c93f8d6b-3e39-4a6b-90a7-8c31f5447ea0</_hid>
+				</IHandle>
+			</_definingVar>
+		</ISlot>
+		<ISlot type="e">
+			<_id type="a">GUID 63d680d6-7f84-403b-8959-89c31817b15c</_id>
+			<_name type="a">PARAM_SIMU_masse_Value</_name>
+			<_modifiedTimeWeak type="a">11.10.2026::14:58:13</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.10.2026::14:58:13</_modifiedTime>
+			<_value type="a">1500</_value>
+			<_definingVar type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IAttribute</_hm2Class>
+					<_hfilename type="a">.\_MonPkg.sbsx</_hfilename>
+					<_hsubsystem type="a">_MonPkg</_hsubsystem>
+					<_hclass type="a">_SysVehicule</_hclass>
+					<_hname type="a">PARAM_SIMU_masse</_hname>
+					<_hid type="a">GUID 1cf82922-6da4-463a-a661-be932b5d33f7</_hid>
 				</IHandle>
 			</_definingVar>
 		</ISlot>

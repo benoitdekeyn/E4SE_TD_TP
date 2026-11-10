@@ -9,6 +9,7 @@
 #include <string>
 
 #include "../modes.cpp"
+#include "../parametres.cpp"
 
 using namespace ros;
 using namespace TABDK;
@@ -17,6 +18,8 @@ using std_msgs::Bool;
 using std_msgs::Empty;
 using std_msgs::Int8;
 using std_msgs::String;
+
+Params params;
 
 const int KEY_M = 109;
 const int KEY_P = 112;
@@ -125,6 +128,9 @@ void keyboardCallback(const Int8::ConstPtr &message) {
 int main(int argc, char **argv) {
   init(argc, argv, "client_services");
   NodeHandle nh;
+  params.load(nh);
+
+  Rate loop_rate(params.frequence);
 
   client_set_mode           = nh.serviceClient<set_mode>("/set_mode");
   client_global_control     = nh.serviceClient<global_control>("/global_control");

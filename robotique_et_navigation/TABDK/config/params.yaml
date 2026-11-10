@@ -1,5 +1,5 @@
   frequence         : 5
-  linear_speed      : 0.2
+  linear_speed      : 0.5
   angular_speed     : 0.5
 
   Kp_linear         : 1.0
@@ -17,3 +17,7 @@
   move_fwd_tm       : 3000
   move_bwd_tm       : 4000
   move_stp_tm       : 2000
+
+  delay_collision   : 500 #ms
+  debut_collision_face : 0.12 #m
+  debut_collision_face : 0.12 #m

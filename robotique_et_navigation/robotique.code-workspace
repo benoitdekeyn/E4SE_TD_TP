@@ -3,10 +3,6 @@
 		{
 			"name": "GitHub Local",
 			"path": "./"
-		},
-		{
-			"name": "SSH Robot src/",
-			"uri": "ssh://turtle_bot_3/home/ubuntu/"
 		}
 	],
 	"extensions": {

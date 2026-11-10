@@ -7,6 +7,9 @@
 #include <std_msgs/String.h>
 #include <TABDK/MoveAction.h>
 #include "../calculs.cpp"
+#include "../parametres.cpp"
+
+Params params;
 
 #include <cmath>
 #include <vector>
@@ -197,7 +200,7 @@ void traiterAnnulation(Client &client) {
 }
 
 bool attendreServeur(Client &client) {
-  Rate attente_serveur(5); // 5 Hz
+  Rate attente_serveur(params.frequence); // Hz
   while (ok() && !client.isServerConnected()) {
     spinOnce();
     traiterAnnulation(client);
@@ -213,6 +216,7 @@ int main(int argc, char **argv) {
   init(argc, argv, "planner");
   NodeHandle nh;
   nh.getParam("waypoint_step", WAYPOINT_STEP);
+  params.load(nh);
 
   // Les callbacks d'action, du clavier et du reset partagent spinOnce().
   Client client("moving", false);
@@ -224,7 +228,7 @@ int main(int argc, char **argv) {
   if (!attendreServeur(client)) return 0;
 
   // Boucle principale du noeud
-  Rate loop_rate(5); // 5 Hz
+  Rate loop_rate(params.frequence); // Hz
   while (ok()) {
     spinOnce(); // Maj keyboard
     traiterAnnulation(client);

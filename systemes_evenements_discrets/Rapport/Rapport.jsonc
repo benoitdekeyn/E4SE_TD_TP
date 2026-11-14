@@ -73,7 +73,7 @@
   // ---------------------------------------------------------------- Table des matières (`npm run edit:toc`)
   // Écrite dans le .md entre <!-- TOC --> et <!-- /TOC --> ; insérée en haut du document la première fois.
   "toc": {
-    "range": [2, 3],    // [niveau min, niveau max] listés
+    "range": [1, 3],    // [niveau min, niveau max] listés
     "collapsible": false,     // true : table repliable (HTML / Markdown uniquement)
     "summary": "Table des matières",
     "open": false,

@@ -1,0 +1,139 @@
+// Configuration du document doc/Rapport.md (JSON avec commentaires autorisés).
+// Ce fichier porte le même nom que le .md (Rapport.md ↔ Rapport.jsonc) ; un .md sans .jsonc est ignoré.
+// Les chemins éventuels (icon, logo, customCss) sont relatifs à ce dossier (doc/, ou le dossier réglé dans paths.jsonc). Toute clé omise prend sa valeur par défaut.
+// Référence complète de toutes les options : README.md à la racine du projet.
+{
+  // ---------------------------------------------------------------- Général (tous les formats : HTML, PDF)
+  // Titre de l'onglet / du sommaire HTML, de l'en-tête PDF ({title}) et des métadonnées du PDF (null = nom du fichier .md)
+  "global": {
+    "title": null,
+    // Icône de l'onglet (favicon) et logo affiché devant le titre du sommaire HTML : chemin d'une image de doc/ (ex. "media/logo.png"), null = aucune
+    "icon": null,
+    // Langue de la page et format de la date {date} du PDF
+    "language": "fr",
+
+    // POLICES. Taille : pourcentage proportionnel appliqué à TOUTES les polices du document (texte, titres, code, sommaire, boutons).
+    // 100 = taille actuelle (16 px de base) ; 120 agrandit tout de 20 %. Entre 25 et 400.
+    "fontScale": 100,
+    // Zoom global en % (10 à 200) : agrandit / réduit tous les éléments (texte, images, marges…) par rapport à l'espace d'affichage
+    // (fenêtre en HTML, zone imprimable en PDF). Le HTML applique global ; le PDF applique global puis pdf (voir plus bas).
+    "zoom": 100,
+    // Police de chaque type de contenu : liste CSS « font-family » (ex. "Georgia, serif"). La police doit être installée sur l'appareil qui lit la page.
+    //   headings : titres (null = même police que body) ;  body : texte ;  code : code ;
+    //   math : formules LaTeX (null = polices KaTeX intégrées ; les grands symboles et délimiteurs gardent toujours les polices KaTeX).
+    "fonts": {
+      "headings": null,
+      "body": "-apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      "code": "ui-monospace, 'Cascadia Code', Consolas, 'SFMono-Regular', monospace",
+      "math": null
+    }
+  },
+
+  // ---------------------------------------------------------------- Page HTML (`npm run build:html`, `npm run dev`)
+  "html": {
+    // Nom du fichier HTML généré (sans extension), dans output_html/Rapport/. Défaut : "index" => output_html/Rapport/index.html
+    "name": "index",
+
+    // MODE DE LA PAGE (pas celui du code) : "auto" suit le système, "light" reste clair, "dark" reste sombre.
+    // Le bouton de la page permet aussi de passer manuellement de Auto à Clair ou Sombre.
+    "theme": "auto",
+
+    // true : les images sont incorporées dans le HTML (fichier autonome mais lourd, rien à copier).
+    // false : les images utilisées sont copiées dans output_html/Rapport/ avec la même arborescence que dans doc/ (HTML léger).
+    "embedImages": false,
+
+    // Sommaire latéral : jusqu'à quel niveau de titre il est déplié à l'ouverture de la page (1 à 6).
+    // 2 = les titres « # » et « ## » sont visibles, les « ### » restent repliés ; 6 = tout déplié.
+    "tocOpenLevel": 2,
+
+    "sidebarWidth": 320,         // largeur initiale du sommaire en px (glisser sa bordure pour ajuster)
+    "sidebarMinWidth": 200,      // bornes du redimensionnement, en px
+    "sidebarMaxWidth": 700,
+    "contentWidthPercent": 90    // part de la largeur restante occupée par le contenu
+  },
+
+  // ---------------------------------------------------------------- Numérotation des titres
+  // `npm run edit:numbering` applique ce schéma au .md ; `edit:numbering:guess` le déduit du .md ; `edit:numbering:reset` l'enlève.
+  // Par niveau (1 = « # »…) : "style" =
+  //   ignore  : le niveau n'est jamais modifié ;
+  //   none    : pas d'indice, mais le "separator" sert de symbole devant le titre ("▪" => "## ▪ Titre") ;
+  //   decimal (1, 2) | alpha (a, b) | ALPHA (A, B) | roman (i, ii) | ROMAN (I, II) : numérotation.
+  // "separator" = texte placé après chaque indice (".", " ", "-"…). "cumulative" : true => "2.1." (indices des parents inclus).
+  "numbering": {
+    "levels": {
+      "1": { "style": "ignore" },
+      "2": { "style": "ignore" },
+      "3": { "style": "ignore" },
+      "4": { "style": "ignore" },
+      "5": { "style": "ignore" },
+      "6": { "style": "ignore" }
+    }
+  },
+
+  // ---------------------------------------------------------------- Table des matières (`npm run edit:toc`)
+  // Écrite dans le .md entre <!-- TOC --> et <!-- /TOC --> ; insérée en haut du document la première fois.
+  "toc": {
+    "range": [2, 3],    // [niveau min, niveau max] listés
+    "collapsible": false,     // true : table repliable (HTML / Markdown uniquement)
+    "summary": "Table des matières",
+    "open": false,
+    // Options par niveau (1 = « # »…) : symbol (texte devant), indent (demi-cadratins), bold, italic, size (em, null = taille du texte :
+    // suit donc global.fontScale), collapsible (repliable). Valeurs par défaut ci-dessous ; omettez un niveau ou une clé pour la garder.
+    "levels": {
+      "1": { "symbol": "•", "indent": 0,  "bold": true,  "italic": false, "size": null, "collapsible": false },
+      "2": { "symbol": "•", "indent": 0,  "bold": true,  "italic": false, "size": null, "collapsible": false },
+      "3": { "symbol": "◦", "indent": 4,  "bold": false, "italic": false, "size": null, "collapsible": false },
+      "4": { "symbol": "–", "indent": 8,  "bold": false, "italic": false, "size": null, "collapsible": false },
+      "5": { "symbol": "·", "indent": 12, "bold": false, "italic": false, "size": null, "collapsible": false },
+      "6": { "symbol": "·", "indent": 16, "bold": false, "italic": false, "size": null, "collapsible": false }
+    }
+  },
+
+  // ---------------------------------------------------------------- Export PDF (`npm run build:pdf`, Chrome ou Edge requis)
+  // Sauts de page dans le Markdown : une ligne `\newpage` ou <!-- newpage -->.
+  // Page sans en-tête ni pied (page de garde…) : <!-- nohf --> en toute première ligne, ou juste après un saut de page.
+  "pdf": {
+    "name": null,         // nom du fichier dans output_pdf/, sans extension (null = nom du .md)
+    "theme": "light",       // "light" ou "dark"
+    "format": "A4",        // A3, A4, A5, Letter, Legal, Tabloid
+    "landscape": false,
+    "zoom": 100,            // affinement du zoom en % (10 à 200), multiplié par global.zoom : 100 = identique au global, 90 = 10 % de moins que le global
+    // Affinement des polices pour le PDF seulement. fontScale : % multiplié par global.fontScale (100 = identique).
+    // fonts : null = reprend global.fonts ; une valeur la remplace pour le PDF (mêmes clés : headings, body, code, math).
+    "fontScale": 80,
+    "fonts": { "headings": null, "body": null, "code": null, "math": null },
+    "margins": { "top": "20mm", "right": "18mm", "bottom": "20mm", "left": "18mm" },      // mm, cm, in, pt ou px
+    "pageBreakBefore": [1, 2],   // niveaux de titres qui commencent une nouvelle page ; [] = aucun
+    "hideToc": false,      // true : retire du PDF la table des matières du .md
+    "keepSectionsTogether": true,  // une section qui tient sur une page n'est jamais coupée
+    "keepBlocksTogether": true,    // paragraphes, blocs de code… jamais coupés entre deux pages
+    "browser": null,             // chemin d'un chrome.exe / msedge.exe ; null = détection automatique
+
+    // En-tête / pied de page : null pour désactiver. Zones left / center / right, HTML autorisé.
+    // Variables : {page} {pages} {title} {date} {h1} … {h6}. Image : <img src="media/logo.png" style="height:8mm">
+    "header": { "left": "{title}", "right": "{h2}" },
+    "footer": { "center": "{page} / {pages}" }
+  },
+
+  // ---------------------------------------------------------------- Style (apparence HTML et PDF)
+  "style": {
+    // Couleurs de la page : choix indépendant pour le mode clair / sombre.
+    // Thèmes intégrés : "default" (gris/noir/blanc, liens bleus), "formal" (clair), "neon" (sombre). Pour en créer : voir pagePalettes ci-dessous.
+    "pageTheme": { "light": "default", "dark": "default" },
+    "pagePalettes": {},
+    // Mode des couleurs du code : "follow" suit la page, "auto" suit le système, "light" ou "dark" sont fixes.
+    "codeTheme": { "mode": "follow" },
+    // Étiquette des blocs de code : true = barre avec le nom du langage ; false = code seul (PDF) et boutons en colonne à droite (HTML).
+    // Par bloc, un commentaire juste avant le bloc : <!-- code:lang -->, <!-- code:nolang --> ou <!-- code:chemin/fichier.ext --> (texte libre).
+    "codeLanguage": true,
+    // Thème de coloration des balises : "default", nom highlight.js ("vs", "vs2015"...) ou fichier CSS dans template/ ou doc/.
+    "highlight": { "light": "default", "dark": "default" },
+    // Thème des diagrammes Mermaid : "auto", default, dark, forest ou neutral
+    "mermaidTheme": "auto",
+    // layout : "dagre" (hiérarchique) ou "elk" (adaptatif) ; direction : null, "TB", "BT", "LR" ou "RL".
+    // Modifiable par diagramme dans le .md : ```mermaid layout=elk direction=LR
+    "mermaid": { "layout": "elk", "direction": "TB" },
+    // Taille / retrait / couleur de chaque niveau de titre (« headings ») et du sommaire (« toc ») : voir README.md
+    "customCss": null            // fichier CSS supplémentaire (relatif à doc/), appliqué en dernier
+  }
+}

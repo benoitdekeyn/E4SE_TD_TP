@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../Rhapsody_v9.0.2/Projet_TABDK_E4SE"
+		}
+	],
+    "settings": {
+        "terminal.integrated.cwd": "${workspaceFolder:Rapport}\\MarkDownAble"
+    }
+}

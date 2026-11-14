@@ -1,0 +1,17 @@
+{
+    "folders": [
+        {
+            "path": ".",
+            "name": "Rapport"
+        },
+        {
+            "path": "../TABDK"
+        },
+        {
+            "path": "../AStar-ROS"
+        }
+    ],
+    "settings": {
+        "terminal.integrated.cwd": "${workspaceFolder:Rapport}\\MarkDownAble"
+    }
+}

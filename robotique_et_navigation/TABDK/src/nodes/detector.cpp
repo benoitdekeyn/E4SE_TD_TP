@@ -64,7 +64,7 @@ const float LONGUEUR_RAYON = SEUIL_MAX + 0.5; // m, longueur des rayons pour la 
 float angle_region_rad(int i) {
   int debut, fin;
   get_region_angle_limites(i, &debut, &fin);
-  return ((debut + fin) / 2.0) * M_PI / 180.0;
+  return (debut + ANGLE_REGION / 2.0) * M_PI / 180.0;
 }
 
 ColorRGBA get_color(bool is_danger) {

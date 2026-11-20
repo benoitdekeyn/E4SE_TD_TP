@@ -1,200 +1,310 @@
-# Rapport de Robotique Mobile et Navigation Autonome
+# Rapport — Projet robotique mobile et navigation autonome : Application au robot TurtleBot3
 
-> **Consigne de rédaction (à supprimer avant rendu).** Chaque titre est suivi d'une phrase en italique qui indique ce que la section doit contenir. Le rapport présente d'abord **l'approche** (choix, schémas, vue d'ensemble), puis descend ponctuellement dans les implémentations qui ne sont pas explicitement demandées par l'énoncé. Les emplacements `[Schéma : …]` / `[Capture : …]` marquent où insérer les figures.
->
-> Les schémas peuvent être écrits en Mermaid (rendu automatique par MarkDownAble) : bloc ` ```mermaid ` puis `flowchart LR` ou `stateDiagram-v2`, par exemple.
->
-> Sections à supprimer si le point n'a pas été traité : 9.4 (2D Nav Goal), 13.3 et 13.4 (améliorations A*), ou toute autre partie non réalisée.
+## 1. Environnement et outils
 
-## 1. Introduction
+### 1.1 VSCode
 
-*Contexte du projet (robotique mobile, ROS, TurtleBot3), objectifs du TP et annonce du plan. Rester bref : une page maximum.*
+### 1.2 Git et GitHub
 
-## 2. Plateforme et environnement de travail
 
-*Décrire les moyens utilisés avant d'entrer dans l'architecture.*
+## 2. Mise en place du package et du nœud contrôleur initial
 
-### 2.1 Le robot TurtleBot3 et sa chaîne matérielle
+### 2.1 Création du package
 
-*Capteurs et actionneurs, rôle de l'OpenCR (odométrie, IMU, pilotage des Dynamixel) et de la Raspberry Pi (pont série → ROS via `rosserial`). Expliquer pourquoi la commande passe par `/cmd_vel` et la mesure par `/odom`.*
+Utilisez la commande `catkin_create_pkg` (page 45 du cours) pour créer un nouveau package, nommé `tb3_projet_<vos_initiaux>`, avec les dépendances indiquées :
 
-### 2.2 Simulation Gazebo et robot réel
+`std_msgs geometry_msgs nav_msgs sensor_msgs message_generation actionlib_msgs actionlib tf tf2 tf2_ros rospy roscpp`
 
-*Ce qui change entre `turtlebot3_house.launch` et le TB3 du labo (horloge, réinitialisation, lidar LDS-01/02), et les précautions prises en conséquence.*
+* **Remarque :** la commande `roscd` permet de naviguer entre les packages.
 
-### 2.3 Outils et méthode de travail
+### 2.2 Création du nœud contrôleur et du topic `/log`
 
-*ROS/catkin, RViz, MobaXterm/SSH, scripts d'automatisation du dépôt (`tabdk.sh`, `.vscode/sync_robot.ps1`), workflow « coder → compiler → synchroniser → tester ». Justifier les choix d'outillage.*
+1. Dans le dossier `src` du package, importer ce fichier `controleur.cpp`, le nœud contrôleur.
+2. Dans le nœud contrôleur, créer un *publisher* qui produit toutes les 2 sec un message `String` sur un topic appelé `/log` :
+* Pour construire l'exécutable du nœud contrôleur, ajouter dans le `CMakeLists.txt` les directives correspondantes (cf. page 50 du cours).
+* Compiler votre workspace.
+* Lancer et tester le fonctionnement du node en utilisant `rosrun`.
 
-## 3. Architecture générale du projet
 
-*Le cœur du rapport : une vue d'ensemble avant tout détail. Toutes les figures de référence (graphe ROS, arborescence, TF) doivent être ici et être réutilisées dans les sections suivantes.*
+3. **Création d'un launcher de nodes :**
+* Créer dans votre package `tb3_projet_xx` un dossier appelé `launch`. Créer dans ce dernier le fichier `run.launch` permettant de lancer le nœud contrôleur.
+* Quitter `roscore` (`CTRL+C`) avant de lancer le contrôleur via la commande `roslaunch`.
+* **REMARQUE :** `roslaunch` lance automatiquement le master `roscore`.
 
-### 3.1 Vue d'ensemble des nœuds et de leurs échanges
 
-*[Schéma : graphe ROS complet (type `rqt_graph`) avec les 5 nœuds du package : `controleur`, `keyboard_input`, `client_services`, `client_action`, `detector`, et vis-à-vis des nœuds `turtlebot3_*`.] Pour chaque flux : nom du topic/service/action, type de message, sens et cadence. Un tableau récapitulatif est attendu.*
 
-### 3.2 Organisation du package `TABDK`
+### 2.3 Pilotage de base du TB3
 
-*[Schéma : arborescence `src/`, `src/nodes/`, `launch/`, `config/`, `srv/`, `action/`.] Justifier le découpage du contrôleur en modules (`parametres`, `odometry`, `mouvements`, `states`, `modes`, `serveur_action`, `serveur_services`) et l'intérêt de séparer les nœuds « clients » (`keyboard_input`, `client_services`, `client_action`, `detector`) du contrôleur.*
+On voudrait maintenant ajouter dans le nœud contrôleur un autre *publisher* qui permet de générer une commande en vitesse pour déplacer le robot TB3.
 
-### 3.3 Repères et arbre des transformations (TF)
+1. Identifier le topic concerné, la librairie `.h` nécessaire, son *namespace* ainsi que le type de message véhiculé par le topic (cf. page 53 du cours).
+2. Réaliser la fonction `void avancer(double vitesse)` permettant d'avancer le robot. Tester son fonctionnement. **REMARQUE :** la publication du topic doit s'effectuer dans le `main`.
+3. Réaliser la fonction `void arreter()`, la publication du topic doit également s'effectuer dans le `main`. Tester son fonctionnement.
+4. Ajouter dans `sigintHandler` l'arrêt du robot + la publication du topic afin que le robot s'arrête lors du `CTRL+C`.
+5. Appeler maintenant les fonctions précédentes (`avancer` et `arreter`) depuis la fonction `void move()` afin de réaliser au robot les mouvements suivants : avancer pendant une certaine durée, puis s'arrêter pour une autre durée. Ces durées doivent être basées sur la période du contrôleur (valeurs multiples de la période de contrôle).
+* Intégrer la fonction `void reculer(double vitesse)` pour réaliser les mouvements suivants : avancer-arreter-reculer périodiquement.
 
-*[Schéma : arbre `map → odom → base_footprint → base_link → base_scan`.] Expliquer quels nœuds publient quoi et pourquoi le contrôleur travaille dans le repère `odom`.*
 
-### 3.4 Boucle de contrôle et cadencement
 
-*[Schéma : organigramme de la boucle `while(ok())` du `main` : `modes.step()` → `serveur_action.step()` → `spinOnce()` → `publishStatus()` → `loop_rate.sleep()`.] Expliquer le choix d'une boucle unique à fréquence paramétrable, le rôle de `spinOnce`, et pourquoi toute la publication de `/cmd_vel` est centralisée dans `mouvements`.*
+### 2.4 Paramètres de l'application
 
-### 3.5 Diagramme de séquence d'un déplacement complet
+On voudrait maintenant rendre l'application plus générique en indiquant des paramètres (la fréquence de contrôle par exemple), au lancement des nœuds. Deux possibilités :
 
-*[Schéma : séquence depuis l'envoi de l'ordre (clavier, action ou consigne) jusqu'à l'arrêt du robot, en montrant la traversée machine à états → mouvements → `/cmd_vel` → OpenCR → `/odom` → contrôleur.] Ce schéma sert de fil conducteur pour les sections 7 à 11.*
+1. **Via les arguments du fichier launch :**
+Modifier le fichier de lancement `run.launch` afin d'y inclure en argument un paramètre `freq`, qui précisera au lancement du nœud contrôleur la fréquence de la boucle de contrôle.
+2. **Ou bien via les fichiers de configuration YAML :**
+Créer dans le dossier de votre package un sous-dossier `/config`, il contiendra les paramètres de configuration de l'application sous forme de fichier `.yaml`.
 
-## 4. Mise en place du package et du nœud contrôleur
+Tester le fonctionnement du contrôleur avec différentes fréquences.
 
-*Création du package (dépendances), topic `/log` publié toutes les 2 s, compilation via `CMakeLists.txt` et validation avec `rosrun`, puis fichier `run.launch`. Expliquer le passage de `rosrun` à `roslaunch` (master automatique, chargement des paramètres) sans rédiger de tutoriel.*
+---
 
-## 5. Pilotage du TB3 en vitesse
+## 3. Contrôle et navigation du TB3
 
-*Premier niveau d'action sur le robot.*
+### 3.1 Les modes de navigation
 
-### 5.1 Commande de vitesse
+Le robot TB3 peut naviguer selon deux modes : **mode manuel** ou **mode navigation autonome**.
 
-*Topic (`/cmd_vel`), namespace (`geometry_msgs`), type (`Twist`), signification des composantes `linear.x` et `angular.z`. Justifier la centralisation de la publication dans une classe `Mouvements` (`forward`, `backward`, `pivoter`, `move`, `stop`) plutôt que dans le `main` : un seul point de vérité sur `/cmd_vel`.*
+Proposer une solution à base de machine à états finis (usage de l'instruction `switch` par exemple) permettant au robot de basculer d'un mode à un autre. Le mode par défaut peut être indiqué au lancement de l'application.
 
-### 5.2 Arrêt d'urgence et sécurité
+### 3.2 Mode navigation manuelle
 
-*Stratégie de gestion du `SIGINT` (`init_options::NoSigintHandler` + `sigintHandler` qui lève `arret_demande`), arrêt propre du robot en fin de boucle et réinitialisation de la position. Expliquer pourquoi l'arrêt est traité dans la boucle et non dans le handler.*
+1. À l'aide de ce nouveau nœud `key_input_node.cpp`, modifier votre contrôleur afin de piloter le robot via des touches clavier (cf. tableau des codes ASCII sur la page). Il est possible alors de faire les actions suivantes :
+* Avancer/reculer/pivoter le robot avec une certaine vitesse, paramètres de l'application, sans dépasser les valeurs max supportées par le TB3 (cf. `MAX_LINEAR_SPEED` `MAX_ANGULAR_SPEED` dans le `controleur.cpp`).
+* Changer en temps réel la vitesse linéaire et/ou angulaire du robot.
 
-## 6. Paramétrage de l'application
 
-*Rendre le contrôleur générique : fréquence de contrôle, vitesses, gains, durées, mode par défaut. Comparer arguments de `launch` et fichier `params.yaml`, expliquer le choix du YAML chargé par `rosparam`, la classe `Params::load()` et les conversions `msToTicks`/`ticksToMs`. Mentionner l'intérêt d'exprimer les durées en multiples de la période.*
+2. Évaluer la réactivité du robot aux touches clavier, et proposer une implémentation minimisant les éventuelles latences d'E/S.
 
-## 7. Gestion des modes : machine à états
+### 3.3 Mode navigation autonome
 
-*Le pilotage est structuré autour de modes et d'états, et non d'une suite de `if`.*
+#### 3.3.1 Localisation du TB3
 
-### 7.1 Architecture de la machine à états
+La position du TB3 est calculée au niveau de la carte OpenCR puis transmise à la carte Rpi où cette position est restituée sous forme de topic. Identifier le nom et le rythme de ce topic, ainsi que le type de message associé.
 
-*[Schéma : diagramme d'états (`stateDiagram-v2`) avec les états `STOP`, `FORWARD`, `BACKWARD`, `PIVOTER_*`, `REACH_POSITION*`, `REACH_ANGLE` et les transitions automatiques ou commandées.] Expliquer la séparation entre `Modes` (mode courant, pause, mode par défaut) et `States` (état interne et application de la commande), et le rôle des deux fonctions `updateFSM…()` / `applyState()`.*
+Étendre le nœud contrôleur afin de lire et afficher en temps réel la position du robot.
 
-### 7.2 Mode manuel
+Utiliser les structures de données adéquates pour le stockage de la position : `[http://wiki.ros.org/common_msgs](http://wiki.ros.org/common_msgs)`.
 
-*Nœud `keyboard_input` (lecture clavier non canonique via `termios`, publication de `std_msgs/Int8` sur `/keyboard_input`), décodage dans le contrôleur, changement de vitesse à la volée et bornage aux valeurs maximales. Analyser la latence des E/S et justifier le découpage nœud clavier / nœud contrôleur (un nœud bloquant sur `getchar` ne doit pas bloquer la boucle de contrôle).*
+* **Remarque 1 :** pour une meilleure efficacité et une bonne stabilité numérique des calculs odométriques, l'orientation du robot est représentée dans une unité de mesure appelée quaternion. Pour la conversion des positions angulaires vers l'unité angles d'Euler (Roll (x), Pitch (y), Yaw (z)), utiliser la fonction `tf::getYaw(geometry_msgs::Quaternion orientation_quaternion)`. Elle retourne l'orientation sur l'axe z (Yaw) du robot.
+* **Remarque 2 :**
+* Pour réinitialiser la position du robot TB3 réel, il suffit de publier un message (vide) vers le topic `/reset`. Associer une touche clavier pour déclencher cette opération.
+* Pour réinitialiser la position du robot TB3 simulé, appeler le service `/gazebo/reset_simulation` (ou bien utiliser ce fichier `reset_gazebo.sh`).
 
-### 7.3 Mode automatique et pause
 
-*Mouvements périodiques `FORWARD`/`STOP`/`BACKWARD` cadencés en tics, mode par défaut choisi dans `params.yaml`, et état de pause global. Expliquer comment le mode courant est exposé aux autres nœuds (`/mode`, `/pause`).*
 
-## 8. Localisation
+#### 3.3.2 Navigation vers un but
 
-*Comment le contrôleur obtient la position du robot.*
+##### Parcours de distance (asservissement en position sur un axe)
 
-### 8.1 Odométrie et structures de données
+En mode navigation autonome, le contrôleur doit pouvoir déplacer le robot en ligne droite sur une distance `d` (m) donnée.
 
-*Topic `/odom`, fréquence, type `nav_msgs/Odometry`, structure `geometry_msgs/Pose2D` retenue. Rôle de `tf::getYaw` pour convertir le quaternion, calcul de la distance parcourue par accumulation, et intérêt des données de `twist`. [Schéma : flux OpenCR → rosserial → `/odom` → `Odometry` → contrôleur.]*
+Réaliser ce contrôle, sur l'axe `x` par exemple, pour assurer un déplacement de la position `x0` à la position cible `x1`. La vitesse de déplacement doit diminuer lorsque le robot se rapproche de la position cible. La commande en vitesse linéaire doit donc être proportionnelle à la distance restante `x1-x0`. Pour calculer cette commande, utiliser un asservissement PID :
 
-### 8.2 Réinitialisation de la position
+* Déterminer tout d'abord le gain proportionnel `Kp_pos` (puis si nécessaire le gain dérivé `Kd_pos`, puis (si nécessaire) le gain intégral `Ki_pos` pour une meilleure précision).
+* Afin que ce processus itératif converge, l'asservissement s'achève lorsque l'amplitude de dépassement (tolérance) autour de la position cible devient faible (`+/- 0.02` au maximum).
+* Tester le comportement du robot pour des positions `x1` positives et négatives.
+* **Fonctions utiles :** `fabs(float var_float)` : retourne la valeur absolue d'un `float` ou d'un `double`.
 
-*Topic `/reset` pour le robot réel, service `/gazebo/reset_simulation` pour la simulation, et remise à zéro cohérente de l'état interne (odométrie, cible, action en cours). Expliquer pourquoi les deux mécanismes coexistent et comment le contrôleur choisit (`ServiceClient` et repli sur la publication).*
+##### Asservissement en position angulaire
 
-## 9. Navigation autonome : asservissements
+Le contrôleur doit être maintenant en mesure de pivoter périodiquement le robot pour atteindre une position angulaire `theta`.
 
-*Du cas le plus simple (une distance) au plus général (un point dans le plan). Présenter les principes de régulation avant les formules.*
+* Réaliser un autre correcteur PID pour asservir le robot en position angulaire.
+* Déterminer tout d'abord le gain proportionnel `Kp_angle` (puis si nécessaire le gain dérivé `Kd_angle`, puis (si nécessaire) le gain intégral `Ki_angle` pour une meilleure précision).
+* L'amplitude de dépassement (tolérance) autour de l'angle cible doit être au maximum égale à `+/-0.05 radian`.
+* Valider le fonctionnement du correcteur en gardant le robot immobile.
+* **REMARQUE :** dans le cas où la position angulaire serait entre `[-PI, +PI]`, utiliser la fonction `cal_delta_Theta` fournie afin de calculer l'écart entre deux positions angulaires (calcul de delta theta avec les conversions trigonométriques).
 
-### 9.1 Asservissement en distance (axe x)
+##### Cinématique inverse
 
-*Principe du correcteur proportionnel sur l'erreur de position, saturation de la commande à `linear_speed`, tolérance d'arrêt `precision_linear`. [Schéma : bloc de régulation.] [Courbes : x(t) et v(t) pour x1 > 0 et x1 < 0.] Discuter l'écart résiduel à l'arrêt et la nécessité (ou non) d'un terme intégral.*
+Le robot doit maintenant atteindre un but, une position `(x,y)` sur un espace cartésien. Pour cela, le contrôleur doit déterminer les suites d'actions à appliquer sur le robot pour atteindre cet objectif. Utiliser les fonctionnalités développées précédemment pour réaliser ce contrôle.
 
-### 9.2 Asservissement en orientation
+* **Aides :**
+1. La distance entre deux points dans un plan cartésien : `distance = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));`
+2. L'angle de rotation entre deux points dans un plan cartésien : `angle = atan2((y2 - y1), (x2 - x1));`
 
-*Régulateur proportionnel sur l'erreur angulaire, normalisation du `delta_theta` dans [-π, +π] (fonction `cal_delta_Theta`), tolérance `precision_angular`, saturation à `angular_speed`. [Courbes : θ(t) pour plusieurs consignes, dont ±π.]*
 
-### 9.3 Cinématique inverse : atteindre un point (x, y)
 
-*Distance euclidienne et `atan2`, puis combinaison d'une rotation et d'une translation (ou commande simultanée). Expliquer le seuil `trigger_pivot` (pivot bloquant versus correction d'angle pendant l'avancement) et le fonctionnement de `reachPosition`, `reachPositionSmooth` et `reachPositionSmoothBack`. [Schéma : géométrie du problème (erreur de distance, erreur de cap).]*
+##### BONUS (en simulation uniquement)
 
-### 9.4 Consigne de navigation interactive (2D Nav Goal)
+La consigne de navigation (position désirée du robot) peut être maintenant envoyée depuis RViz en utilisant `2D Nav Goal` :
 
-*Topic de la consigne envoyée depuis RViz et intégration au contrôleur pour permettre une nouvelle cible en temps réel. Préciser comment une nouvelle consigne interrompt le déplacement en cours.*
+* Déterminer le topic associé.
+* Adapter votre contrôleur afin de lire en temps réel cette consigne de navigation (position désirée). Cela vous permet ainsi d'indiquer au robot, de manière interactive, une nouvelle position cible.
 
-## 10. Perception de l'environnement au Lidar
+---
 
-*Chaîne de détection, du message `sensor_msgs/LaserScan` jusqu'à l'affichage RViz.*
+## 4. Perception de l'environnement à l'aide du Lidar (Capteur de distance Laser 360 LDS-01 - LDS-02)
 
-### 10.1 Données du Lidar
+Vous devez développer un système de détection d'obstacles pour le robot TurtleBot 3 équipé d'un capteur LIDAR (LDS-01 ou LDS-02). L'objectif est de créer un nœud ROS capable de traiter les données du LIDAR, de détecter la présence d'obstacles dans l'environnement proche, et de visualiser les résultats de manière intuitive dans RVIZ.
 
-*Topic, type, caractéristiques du LDS-01/02 (360°, 3,5 m) et sémantique des champs `ranges`, `angle_min`, `angle_increment`… Traitement des mesures non valides (`< range_min`, `> range_max`, `inf`).*
+Le capteur LDS-01 ou LDS-02 permet théoriquement une mesure sur 360 degrés avec une résolution angulaire de 1° au mieux. Il permet de restituer la distance séparant le robot des obstacles présents à proximité (3.5m max). Chacun des deux types de lidar renvoie les informations suivantes :
 
-### 10.2 Détection par 8 régions
+* `angle_min` (`float32`) : angle de départ du scan [rad]
+* `angle_max` (`float32`) : angle de fin du scan [rad]
+* `angle_increment` (`float32`) : distance angulaire entre les mesures [rad]
+* `range_min` (`float32`) : valeur minimale de la mesure [m]
+* `range_max` (`float32`) : valeur maximale de la mesure [m]
+* `ranges` (`float32[]`) : données mesurées par le scan (distances par rapport au centre du robot) [m]
 
-*[Schéma : découpage angulaire en 8 secteurs autour du robot.] Principe : affectation des indices de `ranges` à chaque secteur, filtrage, recherche du minimum (fonction fournie dans `detector.cpp`), comparaison à un seuil et stockage du résultat par région.*
+**Important :** les valeurs dans le tableau `ranges` qui sont inférieures à `range_min` ou supérieures à `range_max` doivent être ignorées car elles sont considérées comme non valides.
 
-### 10.3 Visualisation dans RViz
+1. Identifier le topic sur lequel sont publiées les données lidar, ainsi que le type de message associé.
+2. Intégrer dans votre package le nœud `detector.cpp`, puis réaliser la détection d'obstacle selon les exigences suivantes :
+* L'environnement autour du robot est divisé en 8 régions égales.
+* Pour chaque région :
+1. collecter toutes les mesures
+2. filtrer les valeurs non valides
+3. calculer la distance minimale parmi les points valides
+4. détecter si un obstacle est présent (comparaison avec un seuil)
+5. stocker les résultats pour visualisation
 
-*`visualization_msgs/MarkerArray` : marqueurs d'obstacles, labels textuels, code couleur rouge / vert-bleu. Expliquer le fichier `config/tb3_lidar.rviz` et le launch `rviz_tb3.launch`. [Capture : RViz avec détection active.]*
 
-## 11. Services et actions
+* **DOC :** `[http://wiki.ros.org/sensor_msgs](http://wiki.ros.org/sensor_msgs)`
+* **AIDE :** pour déterminer le minimum des valeurs d'un tableau (`vector`), utiliser la fonction fournie dans le fichier `detector.cpp`. La recherche du minimum s'effectue de l'indice `debut` à l'indice `fin` du tableau, et elle retourne la valeur minimale ainsi que sa position dans le tableau (`indice_min`).
 
-*Choisir le bon mécanisme de communication pour chaque besoin. Commencer par un tableau comparatif topic / service / action.*
 
-### 11.1 Service de changement de mode (`/set_mode`)
+3. Créer un système de visualisation dans RVIZ, à l'aide de `visualization_msgs/MarkerArray`, comprenant par exemple :
+* **Ressources :**
+* `rviz_tb3.launch` (préciser le nom de votre package `tb3_projet_vos_initiales` dans la balise `node`)
+* `tb3_lidar.rviz` (placer le fichier dans le dossier `config`, à créer au même niveau que le dossier `src` de votre package)
 
-*Format `.srv` (requête `mode`, réponse `success` et `mode_courant`), validation côté serveur et application via la machine à états. Justifier un service (configuration ponctuelle et synchrone) plutôt qu'un topic.*
 
-### 11.2 Service de contrôle global (`/global_control`)
+* Labels textuels indiquant l'état de chaque région.
+* Marqueurs d'obstacles sur les obstacles détectés.
+* Code couleur : rouge pour zones dangereuses, vert/bleu pour zones sûres.
+* **Documentations :** documentation `sensor_msgs/LaserScan`, tutorial `visualization_msgs/Marker`.
 
-*Commandes `play`, `pause` et `reset` : rôle, cohérence avec la machine à états et orchestration du reset (annulation de l'action, remise à zéro, réinitialisation de l'odométrie et de la simulation).*
 
-### 11.3 Action de déplacement (`Move.action`)
 
-*[Schéma : séquence `client_action` → serveur `move` (`SimpleActionServer`) → machine à états → `/cmd_vel`, avec goal / feedback / result.] Détail du `.action` (cible x, y ; feedback position, vitesse, distance restante, temps, mode, pause ; résultat atteint, temps, distance, position) et justification de l'action : déplacement long, retour d'avancement continu, annulation.*
+---
 
-### 11.4 Annulation, préemption et cas limites
+## 5. Services, actions et gestion de trajectoires
 
-*Comment le serveur traite une nouvelle cible pendant un déplacement, une annulation ou un reset global ; pourquoi le compteur de tics s'arrête pendant la pause et pourquoi le serveur d'action est recréé après un reset (horloge Gazebo). [Schéma : états d'un goal côté actionlib.]*
+Pour interagir de manière fluide et sécurisée avec le robot, vous allez mettre en place une architecture reposant sur trois mécanismes de communication ROS complémentaires :
 
-## 12. Cartographie (SLAM)
+* **Un service ROS (`/set_behavior`) :** permet à un opérateur de configurer à tout moment le comportement du robot (mode manuel, `auto_standard`, `auto_turbo`, ...).
+* **Une action ROS (`Move.action`) :** pilote la navigation et les « déplacements longs » du robot vers une position cible, en utilisant votre nœud contrôleur.
+* **Un topic (`/consigne_trajectoire`) :** transmet le plan de route global que doit suivre le robot.
 
-*Le SLAM sert à produire la carte utilisée ensuite par la navigation.*
+### 5.1 Configuration à la volée du comportement du robot — Service
 
-### 12.1 Construction de la carte avec Gmapping
+L'objectif est de créer un service pour changer à la volée le mode et le comportement du robot. Ce format convient à une configuration ponctuelle et synchrone. Le clavier reste un canal local, le service est le point de passage centralisé qui valide et applique les changements de manière coordonnée sécurisée.
 
-*Méthode SLAM, conditions d'exploration (téléopération lente, balayage des recoins) et résultats en simulation et en réel. [Capture : carte en cours de construction dans RViz.]*
+Ce service permet de basculer entre les différents modes du robot : `manuel`, `auto_standard`, `auto_turbo`, ainsi qu'entre les politiques d'évitement d'obstacle (arrêt simple, contournement, etc.). Il garantit un comportement sécurisé : il peut par exemple refuser le passage en `auto_turbo` si la batterie est inférieure à 20 % ou si un obstacle est trop proche. La réponse indique `success` et, en cas de refus, un message explicatif.
 
-### 12.2 Sauvegarde et format de la carte
+#### Configuration du fichier de service
 
-*`map_server` / `map_saver`, fichiers `.pgm` et `.yaml`, grille d'occupation (OGM) : zones libres, occupées et inconnues.*
+* Dans le dossier `src` de votre package `tb3_projet_<vos_initiaux>`, créer un sous-dossier `srv`. Puis, copier dans ce dossier le fichier de service `set_behavior.srv` permettant de définir les arguments du service et sa valeur de retour.
+* Dans le fichier `CMakeLists.txt`, « décommenter » les directives correspondantes (`add_service_files` avec `FILES set_behavior.srv`) afin de créer le service.
+* Première compilation (`cm`) est nécessaire pour générer d'abord les messages et les fichiers associés au service.
 
-## 13. Navigation autonome basée sur la carte
+#### Implémentation du service dans le nœud contrôleur du TurtleBot3
 
-*Chaîne complète : carte → planification A* → suivi par le contrôleur.*
+* Implémenter le service `/set_behavior` dans votre nœud contrôleur du TurtleBot3.
+* Tester le service : lancer votre nœud, puis testez le fonctionnement du service depuis un terminal à l'aide de la commande d'appel de service `rosservice call /set_behavior <argument>` — les arguments se complètent automatiquement avec la touche Tabulation.
 
-### 13.1 Planification de trajectoire (package `AStar-ROS`)
+### 5.2 Navigation — Serveur d'action
 
-*[Schéma : chaîne `map_server` → `path_generator` (A*) → `/robotic_path` → contrôleur.] Principe de l'algorithme, entrées (carte, pose initiale, objectif), sortie `nav_msgs/Path` et paramètres de `AStar-ROS/config/params.yaml`.*
+Pour les déplacements longs et la navigation, un service bloquerait l'appelant pendant toute la durée du trajet et ne permettrait pas d'en suivre l'avancement. Nous allons donc créer une action : l'appelant envoie un objectif (`goal`), reçoit des feedbacks réguliers sur l'état du robot (position, progression, batterie), et obtient un résultat final (`result`). Le robot est ainsi guidé de manière asynchrone, sans bloquer le client.
 
-### 13.2 Suivi de trajectoire par le contrôleur
+#### Configuration de la messagerie de l'action
 
-*Comment le chemin reçu est transformé en suite de waypoints : extraction des poses, avancement d'un waypoint à l'autre selon `waypoint_step`, passage par la machine à états (`REACH_POSITION_SMOOTH`, `REACH_POSITION_SMOOTH_BACK`) et gestion de l'arrêt final. [Schéma : boucle de suivi.]*
+Création d'un serveur d'action — exemple introductif :
 
-### 13.3 Amélioration : trajectoire plus lisse
+* Dans le dossier `src` de votre package `tb3_projet_<vos_initiaux>`, créer un sous-dossier `action`. Puis, copier dans ce dossier le fichier d'action `Move.action` permettant de définir la messagerie de l'action (`goal`, `result`, `feedback`).
+* Puis dans le fichier `CMakeLists.txt`, « décommenter » les directives correspondantes (`add_action_files` avec `FILES Move.action` et `generate_messages` avec les dépendances `actionlib_msgs`, `geometry_msgs`, `nav_msgs`, `sensor_msgs`, `std_msgs`) afin de créer l'action `Move.action`.
+* **COMPILATION EN DEUX TEMPS :** première compilation (`cm`) est nécessaire pour générer d'abord les messages et les fichiers d'action associés à `Move.action`.
 
-*Principe de l'amélioration apportée (`path_simplifier.cpp` : simplification du chemin puis lissage) et son effet sur le suivi. [Schéma ou capture : chemin A* brut versus chemin simplifié.] Justifier les gains : moins de pivots, mouvement plus continu, meilleure précision.*
+#### Implémentation du client et du serveur d'action
 
-### 13.4 Amélioration : contournement d'obstacles dynamiques
+* Copier dans le dossier `src` de votre package les fichiers suivants : `client_action.cpp`, `serveur_action.cpp` (dans ces fichiers, remplacer `tb3_projet_vos_initiales` par le nom de votre package).
+* Ajouter à la fin du fichier `CMakeLists.txt` la déclaration de ces deux nouveaux nœuds (`serveur_action` et `client_action`, avec leurs dépendances et liens vers `${catkin_LIBRARIES}`).
+* Deuxième compilation (`cm`) permet la construction complète du projet utilisant les actions.
+* **Test unitaire :** vérifier le fonctionnement du serveur d'actions en définissant des objectifs depuis le client d'actions.
 
-*Stratégie retenue (détection lidar, seuils `debut_collision_face` / `debut_collision_dos`, temporisation `delay_collision`), déclenchement d'un évitement ou d'une replanification, puis reprise du chemin. [Schéma : logique d'évitement intégrée à la machine à états.]*
+#### Intégration du contrôleur dans le serveur d'action
 
-## 14. Résultats et validation
+On souhaite maintenant intégrer le serveur d'action dans le contrôleur du turtlebot afin de gérer la navigation de celui-ci :
 
-*Scénarios testés (simulation et robot réel), protocole, mesures (précision d'arrêt, temps de parcours, réactivité) et captures. Mentionner les difficultés rencontrées et comment elles ont été traitées.*
+1. Adapter la messagerie d'action (le fichier `Move.action`) pour construire un objectif de navigation, un feedback et un résultat.
+2. Intégrer le serveur d'action dans le contrôleur du turtlebot. Ce serveur sera chargé de gérer le processus de navigation du robot conformément aux objectifs transmis par le client.
+3. Étendre le serveur d'action avec les éléments suivants :
+* Dans les feedbacks : position actuelle, vitesse actuelle, distance restante, niveau de batterie restant.
+* Dans le result : distance totale parcourue, temps écoulé.
 
-## 15. Bilan et perspectives
 
-*Bilan des objectifs atteints, limites connues (erreur statique des correcteurs, portée de l'évitement local) et pistes d'amélioration : terme intégral, planificateur plus lisse, perception 3D, etc.*
 
-## Annexes
+### 5.3 Gestion des trajectoires — Path
 
-*Arborescence complète du package, `params.yaml`, `run.launch`, liste des topics/services/actions, commandes de lancement (simulation et robot) et tout schéma complémentaire.*
+Le nœud `client_action` devient le gestionnaire de mission : il s'abonne à un topic externe pour recevoir un itinéraire complet sous la forme d'un message standardisé de type `nav_msgs/Path`.
 
+1. **Topic de Trajectoire :**
+Modifier le nœud `client_action.cpp` pour qu'il s'abonne à un nouveau topic nommé par exemple `/consigne_trajectoire`. Le type de message à utiliser est `nav_msgs/Path`. Consulter l'API officielle (`nav_msgs/Path`) pour comprendre son agencement interne.
+2. **Extraction et gestion du Vecteur dans le Client :**
+Contrairement à un simple tableau plat, `nav_msgs/Path` contient un champ `poses`, qui est un tableau d'objets `geometry_msgs/PoseStamped`. Chaque `PoseStamped` contient à son tour un objet `pose` contenant la position `(x, y, z)`.
+Dans la fonction callback de votre *subscriber*, vous devez itérer sur le message pour extraire les positions 2D `(x, y)` utiles à votre action `Move`, puis les stocker dans votre file d'attente (`std::vector`).
+* **Déclaration :** `std::vector<Pose2D> trajectoire;`
+* **Opérations :**
+* `trajectoire.size()` : retourne la taille du vecteur.
+* `trajectoire.push_back(position)` : insère un élément à la fin du vecteur.
+* `trajectoire.erase(trajectoire.begin())` : supprime le premier élément du vecteur.
+* `trajectoire[0]` : permet l'accès au premier élément du vecteur.
+Dès que le serveur d'action valide l'objectif actuel, le client extrait le point suivant (`trajectoire.erase(trajectoire.begin())`) pour relancer l'action `Move`, jusqu'à ce que la file d'attente soit vide.
+
+
+
+
+3. **Test de validation final :**
+Lancer l'ensemble de vos nœuds ainsi que la simulation du TurtleBot. Envoyer une trajectoire complète de plusieurs points via le topic `/consigne_trajectoire` de type `nav_msgs/Path` (en utilisant la touche Tabulation pour pré-remplir la structure complexe du message).
+Pendant que le robot se déplace de position en position, appeler le service depuis un autre terminal pour basculer en mode `auto_turbo` par exemple.
+
+---
+
+## 6. Évitement d'obstacle et planification de trajectoire — SLAM
+
+### 6.1 SLAM (Cartographie et Localisation simultanées)
+
+* **VERSION SIMU :** `roslaunch turtlebot3_gazebo turtlebot3_house.launch`
+* **VERSION RÉELLE :** robot TB3 dans le labyrinthe du labo 4105.
+
+#### Exécution du nœud SLAM
+
+Lancez le nœud SLAM. Le Gmapping est utilisé comme méthode SLAM par défaut. Le paramètre `TURTLEBOT3_MODEL` indique le type du robot `burger` (`export TURTLEBOT3_MODEL=burger` puis `roslaunch turtlebot3_slam turtlebot3_slam.launch`).
+
+#### Exécution du nœud Téléopération
+
+Une fois le nœud SLAM correctement opérationnel, TurtleBot3 explorera une zone inconnue de la carte à l'aide de la téléopération. Il est important d'éviter les mouvements vigoureux tels que le changement trop rapide de la vitesse linéaire et angulaire. Lors de la création d'une carte à l'aide de TurtleBot3, il est recommandé de scanner chaque recoin de la carte.
+
+Ouvrez un nouveau terminal et exécutez le nœud de téléopération (`export TURTLEBOT3_MODEL=burger` puis `roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch` avec les commandes `w`/`x`, `a`/`d`, espace/`s`, `CTRL-C`).
+
+Commencez à explorer et à construire la carte de l'environnement. La carte est dessinée en fonction de l'odométrie, du tf et des informations de scan du robot. Ces données cartographiques sont dessinées dans la fenêtre RViz pendant que le TurtleBot3 se déplace.
+
+#### Enregistrement de la carte
+
+Après avoir créé une carte complète de la zone souhaitée, enregistrez les données cartographiques sur le disque local pour une utilisation ultérieure.
+
+Lancez le nœud `map_saver` dans le package `map_server` pour créer des fichiers de carte. Le fichier de carte est enregistré dans le répertoire où le nœud `map_saver` est lancé. À moins qu'un nom de fichier spécifique ne soit fourni, `map` sera utilisé comme nom de fichier par défaut et créera `map.pgm` et `map.yaml` (`rosrun map_server map_saver -f ~/map`).
+
+L'option `-f` spécifie un emplacement de dossier et un nom de fichier où les fichiers doivent être enregistrés. Avec `~/map`, `map.pgm` et `map.yaml` seront enregistrés dans le dossier personnel `~` (`/home/ubuntu`).
+
+#### La carte
+
+La carte utilise une grille d'occupation bidimensionnelle (OGM), couramment utilisée dans ROS. La carte enregistrée ressemblera à la figure ci-dessous, où la zone blanche est une zone sans collision tandis que la zone noire est une zone occupée et inaccessible, et la zone grise représente la zone inconnue. Cette carte est utilisée pour la navigation.
+
+### 6.2 Navigation à base de SLAM
+
+Importer le package suivant : `AStar-ROS.zip`.
+
+Compilez-le puis lancez le nœud correspondant : `roslaunch path_generator run.launch`.
+
+* Calibrer la position initiale du robot à l'aide de la flèche « 2D Pose Estimate ».
+* Spécifier la destination du robot à l'aide de la flèche « 2D Nav Goal ».
+
+Une fois la planification de trajectoire effectuée (diffusion du topic `/robotic_path` (`Path`)), votre contrôleur doit piloter le robot afin d'atteindre la position finale désirée.
+
+Améliorer la navigation afin de réaliser :
+
+* une trajectoire plus « lisse »
+* le contournement d'éventuels obstacles dynamiques.

@@ -1,5 +1,45 @@
 # Rapport — Projet robotique mobile et navigation autonome : Application au robot TurtleBot3
 
+**Binôme :** Benoît de Keyn & Thibault Agueh  
+**Date :** 26 novembre 2026
+
+## Introduction
+
+Ce rapport présente la conception, l'implémentation et la validation de notre projet de **robotique mobile et navigation autonome** sous **ROS Noetic**, appliqué au robot **TurtleBot3 Burger** (en simulation Gazebo et en conditions réelles dans le labyrinthe de la salle 4105).
+
+L'objectif du projet est de bâtir progressivement une architecture logicielle complète et modulaire — regroupée dans le package **`TABDK`** puis couplée au planificateur **`AStar-ROS`** — couvrant l'ensemble de la chaîne robotique :
+
+- le pilotage bas niveau (`/cmd_vel`) et le paramétrage global via YAML ;
+- la gestion des modes (`manual`/`auto`), de la pause et de la localisation odométrique (`/odom`) ;
+- l'asservissement en position et en orientation, étendu vers des déplacements fluides avant/arrière ;
+- la perception 360° par LiDAR (`/scan`), la visualisation dans RViz et la prévention active de collision ;
+- la supervision par services ROS (`/set_mode`, `/global_control`), le suivi asynchrone de waypoints par action (`/moving`) et la gestion de trajectoires `nav_msgs/Path` ;
+- la cartographie SLAM (Gmapping) et la planification de chemin A\* améliorée avec lissage de trajectoire.
+
+Au-delà des exigences de l'énoncé, nous détaillons également notre démarche d'ingénierie : nos choix fonctionnels, les versions intermédiaires, les difficultés rencontrées sur simulateur et sur robot réel, ainsi que la migration d'un nœud monolithique vers une architecture orientée objet en classes.
+
+## Environnement de développement
+
+Pour gagner en efficacité tout au long du projet et travailler de manière fiable en binôme, nous nous sommes appuyés sur deux environnements complémentaires : la simulation en ligne **TheConstructSim** et un **workspace VS Code automatisé** couplé à GitHub pour le robot physique.
+
+### Simulation en ligne : TheConstructSim
+
+Pour développer à distance depuis chez nous, prototyper rapidement nos nœuds ROS et **économiser la batterie du TurtleBot3 réel** (dont l'autonomie en séance était limitée), nous avons utilisé la plateforme en ligne **TheConstructSim**. Elle fournit directement dans le navigateur un environnement prêt à l'emploi combinant un **VS Code en ligne**, **Gazebo** et **RViz** pour tester nos packages dans un monde virtuel.
+
+La principale contrainte de cette plateforme était la réinitialisation des paquets non préinstallés (`ros-noetic-turtlebot3-slam` et `ros-noetic-turtlebot3-navigation`) et le bridage d'`apt` lié à la clé GPG ROS — problème entièrement automatisé par notre script `tabdk.sh` (détaillé en § 6.1).
+
+### Développement local et déploiement sur le robot : VS Code, GitHub et SSH
+
+Sur nos postes personnels, plutôt que d'utiliser **MobaXterm** — qui impose de conserver le code directement sur le robot, d'ouvrir et d'agencer manuellement plusieurs fenêtres SSH et de ressaisir régulièrement le mot de passe — nous avons privilégié un flux de travail familier et sécurisé basé sur **VS Code**, **GitHub** et **GitHub Desktop**. Le code reste versionné localement (collaboration propre en binôme, historique des versions, retour arrière sans risque), puis synchronisé sur le robot.
+
+Après une première phase où il fallait recopier manuellement chaque fichier modifié vers le robot, nous avons conçu un **workspace VS Code dédié** (`robotique.code-workspace` et `.vscode/`) qui automatise toute la chaîne :
+
+- **Explorateur épuré** : seuls nos dossiers utiles (`TABDK/` puis `AStar-ROS/`) apparaissent directement dans VS Code, évitant de naviguer dans toute l'arborescence Ubuntu du TurtleBot3.
+- **Synchronisation automatique à la sauvegarde (`sync_robot.ps1` + extension *Run on Save*)** : à chaque enregistrement local, un script PowerShell (protégé par mutex) recopie en miroir `TABDK/` et `AStar-ROS/` vers `~/catkin_ws/src/` sur le robot via `tar | ssh`, sans saisie de mot de passe grâce à la clé SSH configurée par `setup.ps1`.
+- **Ouverture automatique des terminaux et de l'affichage RViz (`tasks.json` + `connect.ps1`)** : dès l'ouverture du workspace, VS Code lance le serveur X (**VcXsrv** pour l'affichage déporté de RViz), exécute une synchronisation initiale, démarre `./run_robot.sh` (`roscore` + bringup) dans un terminal SSH dédié, puis ouvre un terminal SSH vierge prêt à l'emploi (avec nos alias ROS déjà chargés).
+- **Profil de terminal SSH par défaut** : tout nouveau terminal ouvert dans VS Code bascule automatiquement en session SSH (`ssh -Y`) directement sur le TurtleBot3.
+
+
 ## I. Architecture finale du projet
 
 ### Arborescence du paquet TABDK
@@ -483,10 +523,13 @@ Identifier le topic d'odométrie du TB3, son rythme et son type de message. Lire
 
 ##### Première implémentation
 
-Le subscriber `/odom` et le publisher `/reset` (touche `r`) ont d'abord été ajoutés directement dans `controleur.cpp`, puis extraits dans la classe `Odometry` lors de la mise en objets du contrôleur.
+Le subscriber `/odom` et le publisher `/reset` (touche `r`) ont d'abord été ajoutés directement dans `controleur.cpp`, puis extraits dans la classe `Odometry` lors de la mise en objets du contrôleur, avec dans un premier temps une `struct Pose2D { double x, y, rotation; }` définie à la main.
 
 ##### Difficultés rencontrées
 
+- **Collision entre la `struct Pose2D` maison et `geometry_msgs::Pose2D`** : lors de l'introduction de `Move.action` (qui transporte `geometry_msgs/Pose2D`), la structure maison entrait en conflit de nom avec le type ROS standard et imposait des conversions (`pose.rotation` ↔ `position.theta`). La structure locale a été supprimée au profit direct de `geometry_msgs::Pose2D` (`position.x`, `position.y`, `position.theta`).
+- **Doute initial sur l'odométrie et nécessité d'un redémarrage matériel** : pendant les premiers tests d'asservissement sur l'axe `x`, nous pensions l'odométrie défaillante car les coordonnées dérivaient et `/reset` ne semblait pas agir. Un redémarrage complet du robot a débloqué le capteur et montré que l'odométrie était finalement précise.
+- **Repère fixe après reset et orientation par IMU** : nous nous sommes longtemps demandé pourquoi le reset ne réalignait pas systématiquement l'axe `x` devant le robot lors de nos essais `(x, y)`. Au moment du reset, l'axe `+x` est bien devant le TB3, mais l'orientation étant estimée par la centrale inertielle (IMU / accéléromètre-gyroscope de la carte OpenCR), cet axe reste ensuite **fixe par rapport à l'environnement** et ne tourne pas avec le robot si on le déplace manuellement.
 - **Saut sur la première mesure odométrique** : lors de l'ajout du cumul de distance parcourue (pour les résultats d'action), la première callback calculait la distance depuis `(0, 0)` vers la position initiale du robot ; corrigé grâce au booléen `position_recue`.
 - **Tentative de correction `map → odom` via TF** : lors de l'intégration avec AMCL/SLAM, nous avons tenté d'ajouter un `tf::TransformListener` dans `odometry.cpp` pour projeter la pose `/odom` dans le repère `map` (tout en continuant à intégrer `distance_parcourue` dans le repère `odom` continu pour éviter les sauts d'AMCL). Face aux instabilités de disponibilité du transform en pratique, cette modification a été annulée (`revert`) au profit d'une calibration propre de la carte en `(0, 0)`.
 - **Effet de bord du reset Gazebo sur `actionlib`** : `/gazebo/reset_simulation` remet l'horloge simulée à `0`, ce qui bloquait les goals d'action suivants avant l'ajout de `action_server->redemarrer()`.
@@ -537,8 +580,9 @@ Les fonctions `reachPositionX`, `reachAngle` et `reachPosition` ont été dével
 ##### Difficultés rencontrées
 
 - **Discontinuité angulaire autour de `±π`** : une soustraction directe faisait tourner le robot dans le mauvais sens au passage de ±180° ; résolu avec `cal_delta_Theta` et `cal_angle_offset` dans `calculs.cpp`.
-- **Inversion des gains et instabilité près de la cible** : dans les premiers tests de `reachPositionSmooth`, `Kp_pivot` et `Kp_angular` avaient été inversés entre le mode pivot et le mode avance simultanée ; de plus, sans arrêt prioritaire en début de fonction (`if (erreur_distance < precision_linear) { stop(); return; }`), le bruit de `atan2` à très faible distance relançait des pivots sur place.
+- **Inversion des gains, bridage cassé et instabilité près de la cible** : dans les premiers tests de `reachPositionSmooth`, `Kp_pivot` et `Kp_angular` avaient été inversés entre le mode pivot et le mode avance simultanée, et une faute de frappe dans le bridage ternaire (`linear_speed > linear_speed`) empêchait la saturation de vitesse (problème éliminé définitivement en factorisant le calcul dans `commande_proportionnelle()`). De plus, sans arrêt prioritaire en début de fonction (`if (erreur_distance < precision_linear) { stop(); return; }`), le bruit de `atan2` à très faible distance relançait des pivots sur place.
 - **Échec de la première marche arrière automatique** : un premier essai de marche arrière dans `reachPositionSmooth` testait `-90 < erreur_angle < 90` sur un angle exprimé en **radians** et rendait la distance négative. Elle a dû être retirée temporairement avant d'être réécrite proprement dans `reachPositionSmoothBack()` avec un décalage d'angle de `M_PI` et un test `> M_PI / 2`.
+- **Dérive et effet « sol glissant » en simulation** : contrairement au TB3 physique dont les moteurs brident naturellement la vitesse, une consigne de vitesse maximale trop élevée dans Gazebo faisait patiner et dériver le robot, faussant la convergence de `reachPosition` et `reachPositionSmooth`. Il a donc fallu réduire et calibrer la vitesse maximale dans `config/params.yaml`.
 - **Prolifération d'états FSM** : `states.cpp` distinguait initialement trois états (`REACH_POSITION`, `REACH_POSITION_SMOOTH`, `REACH_POSITION_SMOOTH_BACK`) ; ils ont été simplifiés en un seul état `REACH_POSITION` aiguillé par `params->move_smooth` et `params->move_back`.
 
 ##### Version finale
@@ -618,7 +662,7 @@ Démarrage avec un découpage simple à partir de 0° (`[0°, 45°]`, `[45°, 90
 ### Difficultés rencontrées
 
 - **Confusion radians / degrés au démarrage** : la première version initialisait `int SCAN_SAMPLE = 2 * M_PI` (tronqué en entier à `6` !) au lieu de `360` ; corrigé avec `SCAN_SAMPLE = 360` et `angle_deg_increment = scan->angle_increment * 180 / M_PI`.
-- **Renommages successifs du topic RViz** : le topic des marqueurs est passé de `/markers` à `/lidar_visualization` puis `/obstacles_markers`, imposant de garder `detector.cpp` et `config/tb3_lidar.rviz` parfaitement alignés.
+- **Renommages successifs du topic RViz et fréquence de rafraîchissement** : le topic des marqueurs est passé de `/markers` à `/lidar_visualization` puis `/obstacles_markers` (imposant de garder `detector.cpp` et `config/tb3_lidar.rviz` alignés), et la cadence initiale à 1 Hz rendait l'affichage trop saccadé avant son passage à 5 Hz puis à `params.frequence`.
 - **Région frontale à cheval sur 0°** : sans le décalage de `-22.5°`, un obstacle droit devant à `-5°` tombait dans la région 7 au lieu de la région 0. Le décalage a imposé deux ajustements :
   1. gérer la traversée du 0° en deux boucles dans `get_minimum()` lorsque `index_fin < index_debut` ;
   2. corriger un bug subtil d'affichage RViz : `(debut + fin) / 2.0` donnait `(337.5 + 22.5) / 2 = 180°` et plaçait la barre frontale… à l'arrière du robot ! Corrigé par `(debut + ANGLE_REGION / 2.0)`.
@@ -963,21 +1007,40 @@ Cartographier l'environnement (maison Gazebo en simulation ou labyrinthe de la s
 
 #### Choix fonctionnels
 
-- Centralisation des commandes ROS dans `tabdk.sh` (alias `cm`, `slam`, `teleop`, `robot_maison`, `robot_vide`, `astar`, `tabdk`, `tabdk_rviz`) et outillage de synchronisation locale → SSH (`sync_robot.ps1`) pour fiabiliser les essais sur le robot réel.
-- Archivage des cartes directement dans `AStar-ROS/map/` pour basculer simplement d'un environnement à l'autre dans `AStar-ROS/launch/run.launch`.
+- **Automatisation des tests et contournement de TheConstructSim (`tabdk.sh`)** : afin de simplifier les lancements répétitifs en simulation comme sur le robot réel, nous avons écrit le script utilitaire `tabdk.sh` (placé à la racine du projet). Il injecte sans doublon dans `~/.bash_aliases` les raccourcis de compilation et de lancement (`cm`, `slam`, `teleop`, `robot_vide`, `robot_maison`, `astar`, `tabdk`, `tabdk_rviz`), source le workspace catkin et résout un blocage propre à la plateforme de simulation **TheConstructSim** : les paquets `ros-noetic-turtlebot3-navigation` et `ros-noetic-turtlebot3-slam` n'y étaient pas préinstallés (et devaient être réinstallés à chaque session), mais `apt` était bloqué faute de clé GPG ROS valide. Le script débloque `apt` via le serveur de clés puis installe automatiquement les deux paquets :
+
+<!-- code:tabdk.sh -->
+```bash
+add_alias 'alias cm="cd ~/catkin_ws && catkin_make && source devel/setup.bash && cd"'
+add_alias 'alias slam="roslaunch turtlebot3_slam turtlebot3_slam.launch"'
+add_alias 'alias teleop="roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch"'
+add_alias 'alias astar="roslaunch path_generator run.launch"'
+add_alias 'alias tabdk="roslaunch TABDK run.launch"'
+add_alias 'alias tabdk_rviz="roslaunch TABDK rviz_tb3.launch"'
+
+source ~/catkin_ws/devel/setup.bash 2>/dev/null
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F42ED6FBAB17C654
+sudo apt update
+sudo apt install -y ros-noetic-turtlebot3-navigation ros-noetic-turtlebot3-slam
+```
+
+- Archivage des cartes directement dans `AStar-ROS/map/` pour basculer simplement d'un environnement à l'autre dans `AStar-ROS/launch/run.launch`, complété par un outillage de synchronisation locale → SSH (`sync_robot.ps1`) pour déployer rapidement sur le TB3 réel.
 
 #### Première implémentation
 
-Cartographie progressive en simulation (`map_tb3_house`, `map_simu_tabdk`) puis dans le labyrinthe de la salle 4105 (`map_4105`), suivie de la sauvegarde par `map_saver`.
+Nous avons consacré environ **30 minutes** à cartographier soigneusement un environnement personnalisé complet en simulation (`map_simu_tabdk`, en complément de `map_tb3_house`), puis nous avons réalisé la cartographie SLAM du **labyrinthe physique de la salle 4105** (`map_4105`), suivie de la sauvegarde par `map_saver`.
+
+> *[Capture d'écran à insérer : carte SLAM personnalisée réalisée en simulation (`map_simu_tabdk`) et carte du labyrinthe physique de la salle 4105 (`map_4105_00`)]*
 
 #### Difficultés rencontrées
 
-- **Déformation des murs lors de rotations rapides** : la téléopération trop vive induisait de la dérive odométrique et dédoublait les parois ; des déplacements lents et réguliers ont été indispensables pour obtenir une grille d'occupation propre.
-- **Décalage entre l'origine de la carte et `/odom`** : sur les premières cartes (`map_simu_tabdk`, `map_4105`), la position de départ du robot ne coïncidait pas avec l'origine de la grille, obligeant à bricoler `origin` dans le `.yaml` et `initial_pose_x/y` dans `amcl.launch`. Réaliser une carte proprement référencée en `(0, 0)` (`map_4105_00`) a éliminé ce décalage.
+- **Environnement TheConstructSim bridé** : impossibilité initiale d'installer `turtlebot3-slam` et `turtlebot3-navigation` via `apt` à cause de la clé GPG manquante, et réinitialisation de l'environnement entre deux sessions — résolu durablement par `tabdk.sh`.
+- **Déformation des murs lors de rotations rapides** : la téléopération trop vive induisait de la dérive odométrique et dédoublait les parois ; des déplacements lents et réguliers (environ 30 min pour la carte personnalisée en simulation) ont été indispensables pour obtenir des grilles d'occupation nettes.
+- **Décalage entre le repère de la carte SLAM et la position initiale du robot** : si le robot n'est pas réinitialisé exactement sur son point de départ SLAM, son repère `/odom` ne coïncide plus avec l'origine de la carte dans RViz (point critique détaillé en § 6.2).
 
 #### Version finale
 
-Un ensemble de cartes validées (simulation et réel) est disponible dans `AStar-ROS/map/`, avec `map_4105_00.pgm/.yaml` calibrée en `(0, 0)` et chargée par défaut par `AStar-ROS/launch/run.launch`.
+Un ensemble de cartes validées (simulation et réel) est disponible dans `AStar-ROS/map/`, avec `map_4105_00.pgm/.yaml` réalisée à partir d'un point de départ physique marqué au sol (origine `(0, 0)`) et sélectionnée par défaut dans `AStar-ROS/launch/run.launch`.
 
 ---
 
@@ -1006,7 +1069,11 @@ Import du package `AStar-ROS` d'origine (`map_server`, `amcl`, `rviz`, `path_gen
 #### Difficultés rencontrées
 
 - **Trajectoire en escalier et collisions avec les murs** : le A* fourni générait un waypoint tous les 5 cm en 4 directions et rasait les parois. Le robot s'arrêtait sans cesse et accrochait les coins. L'ajout combiné d'`ecart_obstacle`, de la réécriture d'`a_star.cpp` (sur la branche `astar_amélioré`) et de `path_simplifier.cpp` a divisé drastiquement le nombre de waypoints et supprimé les frottements.
-- **Recalage `odom` ↔ `map` via AMCL** : après avoir tenté d'ajuster `initial_pose` dans `amcl.launch` puis d'ajouter un `tf::TransformListener` dans `TABDK/src/odometry.cpp`, nous avons finalement annulé (`revert`) la dépendance TF au profit de la carte `map_4105_00` calée en `(0, 0)`, beaucoup plus stable lors des essais.
+- **Décalage de position entre Gazebo et RViz en simulation** : en simulation, le robot ne se trouvait pas à la même position dans son monde Gazebo que sur la carte affichée par RViz, obligeant à utiliser `2D Pose Estimate` à chaque lancement pour recalibrer sa position initiale. Nous avons résolu ce problème en adaptant les coordonnées de spawn / pose initiale directement dans le fichier XML de lancement (`initial_pose_x`, `initial_pose_y`, `initial_pose_a` dans `AStar-ROS/launch/run.launch`) et l'origine de la carte.
+- **Dérive systématique sur le terrain réel (repère LiDAR/carte vs repère odométrie)** : sur le labyrinthe physique, l'utilisation de `2D Pose Estimate` échouait systématiquement : le robot se décalait au fur et à mesure qu'il suivait la trajectoire issue du `2D Nav Goal`. Après recherche (et une tentative infructueuse d'ajouter un `tf::TransformListener` `map → odom` dans `odometry.cpp`, ensuite annulée par `revert`), nous avons identifié que le LiDAR / RViz exprimaient la carte dans un repère différent de celui de `/odom` utilisé par notre contrôleur. Sur conseil de l'enseignant, la solution fiable a consisté à :
+  1. matérialiser un **marquage au sol** à l'emplacement exact de départ du SLAM lors de la cartographie (`map_4105_00`) ;
+  2. poser le robot sur ce repère et le **réinitialiser** (reset complet incluant l'odométrie) pour faire coïncider exactement son repère `/odom` avec l'origine `(0, 0)` de la carte dans RViz ;
+  3. ajuster empiriquement la position physique du robot sur le marquage — sans utiliser `2D Pose Estimate` — jusqu'à obtenir un alignement parfait après reset, puis ramener les coordonnées initiales du fichier `.launch` XML à `(0, 0, 0)`.
 - **Obstacles imprévus hors carte SLAM** : un obstacle dynamique placé dans le labyrinthe reste invisible pour `path_generator` ; le couplage avec `detector.cpp` (via `/global_control`) évite toute collision avant ou arrière.
 
 #### Version finale
@@ -1086,7 +1153,7 @@ Plutôt que de multiplier les paires `.h` / `.cpp` à déclarer dans `CMakeLists
 #include "serveur_services.cpp"
 ```
 
-Ce choix léger permet aussi aux nœuds satellites (`nodes/*.cpp`) de réutiliser directement `parametres.cpp`, `calculs.cpp` ou `modes.cpp` sans configurer de bibliothèque CMake dédiée. En contrepartie, toutes les classes d'un exécutable partagent la même unité de compilation : il a fallu nettoyer les `using namespace` et importer explicitement chaque symbole (`using std_msgs::Bool;`, `using geometry_msgs::Pose2D;`) pour éviter les collisions de noms.
+Ce choix léger permet aussi aux nœuds satellites (`nodes/*.cpp`) de réutiliser directement `parametres.cpp`, `calculs.cpp` ou `modes.cpp` sans configurer de bibliothèque CMake dédiée. En contrepartie, toutes les classes d'un exécutable partagent la même unité de compilation : il a fallu nettoyer les `using namespace`, remplacer notre ancienne `struct Pose2D` maison par `geometry_msgs::Pose2D` pour supprimer un conflit de nom lors de l'ajout de `Move.action`, et importer explicitement chaque symbole (`using std_msgs::Bool;`, `using geometry_msgs::Pose2D;`).
 
 ### 7.3 Patron `init()` différé et association des classes par pointeurs
 

@@ -249,7 +249,7 @@ Chaque diagramme ci-dessous présente un nœud du dossier `TABDK/src/nodes/` ave
 Lit les touches du clavier (`getch()`) et les diffuse aux autres nœuds sur `/keyboard_input`.
 
 ```mermaid
-flowchart LR
+flowchart TB
     C_PARAMS[("`config/params.yaml`")]
     M_PARAMS(["`src/parametres.cpp`"])
 
@@ -287,7 +287,7 @@ flowchart LR
 Traduit les touches clavier (`m` mode, `p` pause/play, `r` reset) en appels de services vers le contrôleur.
 
 ```mermaid
-flowchart LR
+flowchart TB
     C_PARAMS[("`config/params.yaml`")]
     M_PARAMS(["`src/parametres.cpp`"])
     M_MODES(["`src/modes.cpp`"])
@@ -307,17 +307,17 @@ flowchart LR
         N_SSRV(["`src/serveur_services.cpp`"])
     end
 
-    C_PARAMS -.->|"paramètre frequence"| M_PARAMS
+    C_PARAMS -.->|"frequence"| M_PARAMS
     M_PARAMS -.->|"#include"| NODE
-    M_MODES -.->|"#include (AUTO / MANUAL)"| NODE
-    S_MODE -.->|"header ROS (compilation)"| NODE
-    S_CTRL -.->|"header ROS (compilation)"| NODE
+    M_MODES -.->|"#include<br/>(AUTO / MANUAL)"| NODE
+    S_MODE -.->|"header ROS"| NODE
+    S_CTRL -.->|"header ROS"| NODE
 
     N_KEY -->|"topic /keyboard_input"| NODE
     N_CTRL -->|"topics /mode, /pause"| NODE
     N_SSRV -->|"topic /reset"| NODE
 
-    NODE -->|"service /set_mode<br/>service /global_control"| N_SSRV
+    NODE -->|"services /set_mode<br/>& /global_control"| N_SSRV
 
     classDef cpp fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
     classDef autre fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
@@ -335,7 +335,7 @@ flowchart LR
 Gère la file de waypoints (saisie clavier en mode `manual` ou trajectoire A* `/robot_path` en mode `auto`) et pilote leur exécution via l'action `/moving`.
 
 ```mermaid
-flowchart LR
+flowchart TB
     C_PARAMS[("`config/params.yaml`")]
     M_PARAMS(["`src/parametres.cpp`"])
     M_CALC(["`src/calculs.cpp`"])
@@ -360,10 +360,10 @@ flowchart LR
     end
 
     C_PARAMS -.->|"frequence"| M_PARAMS
-    C_PARAMS -.->|"paramètre waypoint_step"| NODE
+    C_PARAMS -.->|"waypoint_step"| NODE
     M_PARAMS -.->|"#include"| NODE
-    M_CALC -.->|"#include (rad_to_deg)"| NODE
-    A_MOVE -.->|"header ROS (compilation)"| NODE
+    M_CALC -.->|"#include<br/>(rad_to_deg)"| NODE
+    A_MOVE -.->|"header ROS"| NODE
 
     N_KEY -->|"topic /keyboard_input"| NODE
     N_PG -->|"topic /robot_path (Path)"| NODE
@@ -389,7 +389,7 @@ flowchart LR
 Analyse le LiDAR `/scan` sur 8 régions, affiche les obstacles dans RViz et déclenche `pause`/`play` en cas de collision imminente.
 
 ```mermaid
-flowchart LR
+flowchart TB
     C_PARAMS[("`config/params.yaml`")]
     M_PARAMS(["`src/parametres.cpp`"])
     S_CTRL{{"`srv/global_control.srv`"}}
@@ -409,7 +409,7 @@ flowchart LR
 
     C_PARAMS -.->|"collision & frequence"| M_PARAMS
     M_PARAMS -.->|"#include"| NODE
-    S_CTRL -.->|"header ROS (compilation)"| NODE
+    S_CTRL -.->|"header ROS"| NODE
 
     LIDAR -->|"topic /scan (LaserScan)"| NODE
     N_MVT -->|"topic /cmd_vel (Twist)"| NODE

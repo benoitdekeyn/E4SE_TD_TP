@@ -1,4 +1,4 @@
-# Rapport — Projet robotique mobile et navigation autonome : Application au robot TurtleBot3
+# Rapport : Projet robotique mobile et navigation autonome appliqué au robot TurtleBot3
 
 **Binôme :** Benoît de Keyn & Thibault Agueh  
 **Date :** 26 novembre 2026
@@ -7,43 +7,39 @@
 
 Ce rapport présente la conception, l'implémentation et la validation de notre projet de **robotique mobile et navigation autonome** sous **ROS Noetic**, appliqué au robot **TurtleBot3 Burger** (en simulation Gazebo et en conditions réelles dans le labyrinthe de la salle 4105).
 
-L'objectif du projet est de bâtir progressivement une architecture logicielle complète et modulaire — regroupée dans le package **`TABDK`** puis couplée au planificateur **`AStar-ROS`** — couvrant l'ensemble de la chaîne robotique :
+L'objectif du projet était de construire progressivement une chaîne logicielle complète, regroupée dans notre package **`TABDK`** puis couplée au planificateur **`AStar-ROS`**, couvrant l'ensemble des briques demandées :
 
-- le pilotage bas niveau (`/cmd_vel`) et le paramétrage global via YAML ;
-- la gestion des modes (`manual`/`auto`), de la pause et de la localisation odométrique (`/odom`) ;
-- l'asservissement en position et en orientation, étendu vers des déplacements fluides avant/arrière ;
-- la perception 360° par LiDAR (`/scan`), la visualisation dans RViz et la prévention active de collision ;
-- la supervision par services ROS (`/set_mode`, `/global_control`), le suivi asynchrone de waypoints par action (`/moving`) et la gestion de trajectoires `nav_msgs/Path` ;
-- la cartographie SLAM (Gmapping) et la planification de chemin A\* améliorée avec lissage de trajectoire.
+- le pilotage bas niveau (`/cmd_vel`) et le paramétrage global via YAML ([§ 3](#3-pilotage-de-base-et-paramétrage-du-tb3)) ;
+- la gestion des modes (`manual` et `auto`), de la pause et de la localisation odométrique (`/odom`) ([§ 4](#4-contrôle-et-navigation-du-tb3)) ;
+- l'asservissement en position et en orientation, étendu vers des déplacements fluides en marche avant et arrière ([§ 4.3.2](#432-navigation-vers-un-but)) ;
+- la perception 360° par LiDAR (`/scan`), la visualisation dans RViz et la prévention active de collision ([§ 5](#5-perception-de-lenvironnement-à-laide-du-lidar-capteur-de-distance-laser-360-lds-01---lds-02)) ;
+- la supervision par services ROS (`/set_mode`, `/global_control`), le suivi asynchrone de waypoints par action (`/moving`) et la gestion de trajectoires `nav_msgs/Path` ([§ 6](#6-services-actions-et-gestion-de-trajectoires)) ;
+- la cartographie SLAM (Gmapping) et la planification de chemin A\* améliorée avec lissage de trajectoire ([§ 7](#7-évitement-dobstacle-et-planification-de-trajectoire--slam)).
 
-Au-delà des exigences de l'énoncé, nous détaillons également notre démarche d'ingénierie : nos choix fonctionnels, les versions intermédiaires, les difficultés rencontrées sur simulateur et sur robot réel, ainsi que la migration d'un nœud monolithique vers une architecture orientée objet en classes.
+## 1. Environnement de développement
 
-## Environnement de développement
+Pour avancer efficacement tout au long du projet et travailler à deux dans de bonnes conditions, nous nous sommes appuyés sur deux environnements complémentaires : la simulation en ligne **TheConstructSim** et un **workspace VS Code automatisé** couplé à GitHub pour le robot physique.
 
-Pour gagner en efficacité tout au long du projet et travailler de manière fiable en binôme, nous nous sommes appuyés sur deux environnements complémentaires : la simulation en ligne **TheConstructSim** et un **workspace VS Code automatisé** couplé à GitHub pour le robot physique.
+### 1.1 Simulation en ligne : TheConstructSim
 
-### Simulation en ligne : TheConstructSim
+Pour travailler à distance depuis chez nous, tester nos packages dans un environnement virtuel et **économiser la batterie du TurtleBot3 réel** (qui tenait peu longtemps en séance), nous avons utilisé la plateforme **TheConstructSim**. Elle met à disposition dans le navigateur un **VS Code en ligne**, **Gazebo** et **RViz** déjà prêts à l'emploi. Nous détaillons en [§ 7.1](#71-slam-cartographie-et-localisation-simultanées) les contraintes rencontrées sur cette plateforme lors de l'installation des paquets SLAM et navigation.
 
-Pour développer à distance depuis chez nous, prototyper rapidement nos nœuds ROS et **économiser la batterie du TurtleBot3 réel** (dont l'autonomie en séance était limitée), nous avons utilisé la plateforme en ligne **TheConstructSim**. Elle fournit directement dans le navigateur un environnement prêt à l'emploi combinant un **VS Code en ligne**, **Gazebo** et **RViz** pour tester nos packages dans un monde virtuel.
+### 1.2 Développement local et déploiement sur le robot : VS Code, GitHub et SSH
 
-La principale contrainte de cette plateforme était la réinitialisation des paquets non préinstallés (`ros-noetic-turtlebot3-slam` et `ros-noetic-turtlebot3-navigation`) et le bridage d'`apt` lié à la clé GPG ROS — problème entièrement automatisé par notre script `tabdk.sh` (détaillé en § 6.1).
+Sur nos ordinateurs personnels, plutôt que d'installer **MobaXterm** (qui oblige à garder le code directement sur le robot, à ouvrir et agencer manuellement plusieurs fenêtres SSH et à retaper régulièrement le mot de passe), nous avons préféré travailler avec **VS Code**, **GitHub** et **GitHub Desktop**. Nous versions ainsi notre code localement pour collaborer proprement en binôme, garder un historique clair et sauvegarder nos avancées en toute sécurité.
 
-### Développement local et déploiement sur le robot : VS Code, GitHub et SSH
+Au début, nous devions copier manuellement chaque fichier modifié sur le robot après nos modifications sur Git. Nous avons donc fini par mettre en place un **workspace VS Code dédié** (`robotique.code-workspace` et `.vscode/`) qui automatise notre environnement de travail :
 
-Sur nos postes personnels, plutôt que d'utiliser **MobaXterm** — qui impose de conserver le code directement sur le robot, d'ouvrir et d'agencer manuellement plusieurs fenêtres SSH et de ressaisir régulièrement le mot de passe — nous avons privilégié un flux de travail familier et sécurisé basé sur **VS Code**, **GitHub** et **GitHub Desktop**. Le code reste versionné localement (collaboration propre en binôme, historique des versions, retour arrière sans risque), puis synchronisé sur le robot.
+- **Arborescence épurée** : nous affichons uniquement nos dossiers utiles (`TABDK/`, puis `AStar-ROS/` lorsque nous en avons eu besoin) directement dans VS Code, sans avoir à naviguer dans toute l'arborescence Ubuntu du robot.
+- **Synchronisation automatique à la sauvegarde (`sync_robot.ps1` + extension *Run on Save*)** : à chaque enregistrement d'un fichier local, un script PowerShell recopie automatiquement en miroir le contenu de nos dossiers locaux (`TABDK/` et `AStar-ROS/`) vers `~/catkin_ws/src/` sur le robot via `tar | ssh`, sans saisie de mot de passe grâce à la clé SSH installée par `setup.ps1`.\*
+- **Ouverture automatique des terminaux et de RViz (`tasks.json` + `connect.ps1`)** : à l'ouverture du workspace, VS Code démarre le serveur X (**VcXsrv** pour l'affichage de RViz), lance une synchronisation initiale, démarre `./run_robot.sh` (`roscore` et bringup du robot) dans un terminal SSH indépendant, puis ouvre un terminal SSH vierge prêt à l'emploi avec nos alias déjà chargés.
+- **Terminal SSH par défaut** : chaque nouveau terminal ouvert dans VS Code s'ouvre automatiquement en SSH (`ssh -Y`) sur le robot.
 
-Après une première phase où il fallait recopier manuellement chaque fichier modifié vers le robot, nous avons conçu un **workspace VS Code dédié** (`robotique.code-workspace` et `.vscode/`) qui automatise toute la chaîne :
+*\* Remarque sur la synchronisation miroir : lors de la création de la carte SLAM ([§ 7.1](#71-slam-cartographie-et-localisation-simultanées)) directement sur le robot, cette carte n'existait pas encore dans notre dossier local. À la première modification de code local, la synchronisation en miroir a donc écrasé le dossier distant et supprimé la carte que nous venions d'enregistrer. Par la suite, nous avons systématiquement copié chaque carte générée sur le robot vers notre dossier local avant toute modification du code, afin qu'elle soit conservée lors des synchronisations suivantes.*
 
-- **Explorateur épuré** : seuls nos dossiers utiles (`TABDK/` puis `AStar-ROS/`) apparaissent directement dans VS Code, évitant de naviguer dans toute l'arborescence Ubuntu du TurtleBot3.
-- **Synchronisation automatique à la sauvegarde (`sync_robot.ps1` + extension *Run on Save*)** : à chaque enregistrement local, un script PowerShell (protégé par mutex) recopie en miroir `TABDK/` et `AStar-ROS/` vers `~/catkin_ws/src/` sur le robot via `tar | ssh`, sans saisie de mot de passe grâce à la clé SSH configurée par `setup.ps1`.
-- **Ouverture automatique des terminaux et de l'affichage RViz (`tasks.json` + `connect.ps1`)** : dès l'ouverture du workspace, VS Code lance le serveur X (**VcXsrv** pour l'affichage déporté de RViz), exécute une synchronisation initiale, démarre `./run_robot.sh` (`roscore` + bringup) dans un terminal SSH dédié, puis ouvre un terminal SSH vierge prêt à l'emploi (avec nos alias ROS déjà chargés).
-- **Profil de terminal SSH par défaut** : tout nouveau terminal ouvert dans VS Code bascule automatiquement en session SSH (`ssh -Y`) directement sur le TurtleBot3.
+## 2. Architecture finale du projet
 
-
-## I. Architecture finale du projet
-
-### Arborescence du paquet TABDK
-
+### 2.1 Arborescence du paquet TABDK
 
 ```mermaid
 
@@ -134,12 +130,11 @@ flowchart LR
     style DEPS_CTRL fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
 ```
 
-### Découpage du noeud Controleur en classes
+### 2.2 Découpage du nœud contrôleur en classes
 
 #### Classe principale et dépendances neutres
 
 Le fichier `calculs.cpp` est le seul fichier `.cpp` qui ne contient pas une classe mais simplement des fonctions utilitaires.
-
 
 ```mermaid 
 classDiagram
@@ -201,7 +196,7 @@ classDiagram
     style ServeurServices fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
 ```
 
-#### Interactions entre les classes du nœud Controleur
+#### Interactions entre les classes du nœud contrôleur
 
 ```mermaid zoom=60
 classDiagram
@@ -251,8 +246,8 @@ classDiagram
     }
 
     class Odometry["odometry.cpp"] {
-        Role : Suivi de la position x, y, de l'orientation theta
-               et de la distance parcourue / à une position
+        Role : Suivi de la position x, y, de l'orientation theta,
+               de la vitesse et de la distance parcourue / à une position
         Subscriber : /odom
         - distanceToPosition()
         - distanceParcourue()
@@ -264,7 +259,7 @@ classDiagram
     ServeurAction --> Mouvements : cible atteinte ?<br/>choisir cible (x, y)<br/>arreter ()
     ServeurAction --> States : activer/desactiver suivi cible ()
     ServeurAction --> Modes : mode courant ?<br/>en pause ?
-    ServeurAction --> Odometry : position ?<br/>distance parcourue ?
+    ServeurAction --> Odometry : position + vitesse ?<br/>distance parcourue ?
 
     Modes --> States : mettre a jour la FSM ()<br/>choisir la fn de deplacement ()<br/> arreter ()<br/>reset ()
 
@@ -280,22 +275,22 @@ classDiagram
     style Odometry fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
 ```
 
-### Interaction des différents noeuds
+### 2.3 Interaction des différents nœuds
 
-Les 4 nœuds du dossier `TABDK/src/nodes/` complètent le nœud `controleur`. Leurs diagrammes d'interactions détaillés (dépendances de compilation, paramètres, topics, services et action) sont présentés et commentés dans la **version finale** de leurs parties respectives :
+Le paquet `TABDK` contient le nœud contrôleur ainsi que quatre autres nœuds, dont les schémas et les descriptions sont disponibles dans les parties indiquées dans le tableau suivant :
 
 | Nœud (`TABDK/src/nodes/`) | Rôle principal | Schéma détaillé |
 | --- | --- | --- |
-| `keyboard_input.cpp` | Capture clavier non-canonique → `/keyboard_input` | [§ 3.2 Mode navigation manuelle](#32-mode-navigation-manuelle) |
-| `detector.cpp` | Analyse LiDAR 8 régions, marqueurs RViz & anti-collision | [§ 4. Perception LiDAR](#4-perception-de-lenvironnement-à-laide-du-lidar-capteur-de-distance-laser-360-lds-01---lds-02) |
-| `client_services.cpp` | Commandes clavier `m`/`p`/`r` → `/set_mode` & `/global_control` | [§ 5.1 Services](#51-configuration-à-la-volée-du-comportement-du-robot--service) |
-| `client_action.cpp` | File de waypoints (clavier ou `/robot_path`) → action `/moving` | [§ 5.3 Gestion des trajectoires — Path](#53-gestion-des-trajectoires--path) |
+| `keyboard_input.cpp` | Capture clavier non-canonique → `/keyboard_input` | [§ 4.2 Mode navigation manuelle](#42-mode-navigation-manuelle) |
+| `detector.cpp` | Analyse LiDAR 8 régions, marqueurs RViz & anti-collision | [§ 5. Perception LiDAR](#5-perception-de-lenvironnement-à-laide-du-lidar-capteur-de-distance-laser-360-lds-01---lds-02) |
+| `client_services.cpp` | Commandes clavier `m`/`p`/`r` → `/set_mode` & `/global_control` | [§ 6.1 Services](#61-configuration-à-la-volée-du-comportement-du-robot--service) |
+| `client_action.cpp` | File de waypoints (clavier ou `/robot_path`) → action `/moving` | [§ 6.3 Gestion des trajectoires : Path](#63-gestion-des-trajectoires--path) |
 
-> La démarche complète de passage d'un `controleur.cpp` monolithique à cette architecture orientée objet (pattern `init()`, injection de dépendances, callbacks membres et contraintes spécifiques de `ServeurAction`) est détaillée en [§ 7. Migration architecturale](#7-migration-architecturale--du-monolithe-controleurcpp-au-système-de-classes).
+> Nous expliquons en [§ 8. Migration architecturale](#8-migration-architecturale--passage-dun-fichier-contrôleur-unique-à-un-découpage-en-classes) comment nous sommes passés d'un fichier `controleur.cpp` unique à ce découpage en classes (patron `init()`, association entre classes par pointeurs, callbacks membres et intégration de `ServeurAction`).
 
-## 2. Pilotage de base et paramétrage du TB3
+## 3. Pilotage de base et paramétrage du TB3
 
-### 2.3 Pilotage de base du TB3
+### 3.1 Pilotage de base du TB3
 
 #### Énoncé
 
@@ -308,30 +303,29 @@ Ajouter dans le nœud contrôleur un *publisher* générant une commande en vite
 
 #### Choix fonctionnels
 
-- Utilisation du topic `/cmd_vel` avec le message `geometry_msgs::Twist` (`#include <geometry_msgs/Twist.h>`), en pilotant `linear.x` (translation) et `angular.z` (rotation).
-- Conception de primitives élémentaires (`forward`, `backward`, `pivoter`, `stop`, `move`) afin de poser une couche bas niveau réutilisable dans tous les exercices suivants.
-- Séquencement périodique géré par une machine à états (`FORWARD` → `STOP` → `BACKWARD`) cadencée par `ros::Rate`.
-- Interception explicite de `SIGINT` (`ros::init_options::NoSigintHandler`) afin de garantir l'envoi d'une vitesse nulle avant la fermeture de ROS.
+- Nous avons utilisé le topic `/cmd_vel` avec le message `geometry_msgs::Twist` (`#include <geometry_msgs/Twist.h>`), en pilotant la vitesse linéaire sur `linear.x`.
+- Nous avons isolé les commandes moteurs de base dans trois fonctions simples (`forward`, `backward` et `stop`) afin de structurer clairement le pilotage dès ce premier exercice.
+- Nous avons géré l'enchaînement périodique **avancer → arrêter → reculer** à l'aide d'une petite machine à états (`FORWARD` → `STOP` → `BACKWARD`) cadencée par `ros::Rate`.
+- Nous avons ajouté l'appel à `stop()` dans `sigintHandler()`, à la fin du fichier, afin d'arrêter proprement le robot lors d'un `CTRL+C`.
 
 #### Première implémentation
 
-Le premier package `TABDK` regroupait tout dans un unique fichier `controleur.cpp` (131 lignes) : un *publisher* `/cmd_vel`, des fonctions globales (`forward`, `backward`, `stop`), un compteur de ticks et une boucle `while (ros::ok())`. Les durées étaient initialement configurées en **nombre brut de périodes** (`move_fwd_per: 10`, `move_bwd_per: 5`, `move_stp_per: 3`).
+Dans notre premier package `TABDK`, nous avions regroupé tout le code dans un seul fichier `controleur.cpp` de 131 lignes : un *publisher* `/cmd_vel`, les fonctions globales `forward`, `backward` et `stop`, un compteur de ticks et une boucle `while (ros::ok())`. Au départ, nous avions configuré les durées directement en **nombre de périodes** (`move_fwd_per: 10`, `move_bwd_per: 5`, `move_stp_per: 3`).
 
 #### Difficultés rencontrées
 
-- **Arrêt incomplet dans `stop()`** : la première version remettait uniquement `vel.linear.x = 0` sans toucher à `vel.angular.z`. Dès l'ajout de la rotation (`pivoter()`), le robot continuait de tourner sur place après un arrêt ; corrigé en réinitialisant tout le message via `vel = Twist()`.
-- **Arrêt lors d'un `CTRL+C`** : sans `NoSigintHandler`, ROS coupe la boucle avant que la commande d'arrêt ne soit publiée et le robot continue sur son inertie. Le passage par un drapeau `arret_demande` levé par `sigintHandler` permet d'exécuter un arrêt garanti en sortie de boucle.
-- **Dépendance des durées à la fréquence** : exprimer les durées en nombre de périodes (`*_per`) changeait la durée réelle des mouvements dès qu'on modifiait la fréquence de boucle ; passage à des durées en millisecondes (`*_tm`) converties par `msToTicks()`.
+- **Arrêt lors d'un `CTRL+C`** : sans interception dédiée (`ros::init_options::NoSigintHandler`), ROS fermait la boucle avant la publication de la vitesse nulle et le robot continuait d'avancer. Nous avons donc utilisé un drapeau `arret_demande` levé par `sigintHandler` pour garantir l'envoi de l'arrêt en sortie de boucle avant `ros::shutdown()`.
+- **Dépendance des durées à la fréquence** : exprimer les temporisations en nombre brut de périodes (`*_per`) changeait la durée réelle des déplacements dès que nous modifions la fréquence de contrôle. Nous sommes donc passés à des durées en millisecondes (`*_tm`) converties en nombre de ticks par `msToTicks()` ([§ 3.2](#32-paramètres-de-lapplication)).
 
 #### Version finale
 
-- Les primitives moteurs sont encapsulées dans la classe `Mouvements` (`TABDK/src/mouvements.cpp`), avec `stop()` publiant un `Twist()` nul.
-- Le cycle périodique avancer/arrêter/reculer est conservé dans `States::updateFSMAuto()` (`TABDK/src/states.cpp`).
-- `sigintHandler()` dans `TABDK/src/controleur.cpp` lève `arret_demande`, déclenchant `services.resetRobot()` puis `ros::shutdown()` en sortie de boucle.
+- Les fonctions de commande moteur sont regroupées dans la classe `Mouvements` (`TABDK/src/mouvements.cpp`), avec `stop()` qui publie un `Twist()` entièrement nul.
+- Le cycle périodique avancer/arrêter/reculer reste présent dans `States::updateFSMAuto()` (`TABDK/src/states.cpp`).
+- Dans `TABDK/src/controleur.cpp`, `sigintHandler()` lève `arret_demande`, ce qui déclenche `services.resetRobot()` ([§ 4.3.1](#431-localisation-du-tb3)) puis `ros::shutdown()` en sortie de boucle.
 
 ---
 
-### 2.4 Paramètres de l'application
+### 3.2 Paramètres de l'application
 
 #### Énoncé
 
@@ -339,24 +333,24 @@ Rendre l'application générique en spécifiant des paramètres (notamment la fr
 
 #### Choix fonctionnels
 
-- Adoption d'un fichier YAML centralisé (`TABDK/config/params.yaml`) chargé sur le serveur de paramètres ROS par `<rosparam command="load" file="$(find TABDK)/config/params.yaml" />` dans `launch/run.launch`, plutôt que de multiplier les `<arg>` dans le launch file.
-- Saisie des paramètres angulaires en **degrés** et des temporisations en **millisecondes** dans le YAML pour rester lisible lors des essais sur robot, avec conversion automatique en radians / ticks au chargement.
-- Valeurs par défaut codées dans la classe `Params` servant de filet de sécurité si une clé manque ou comporte une faute de frappe dans le YAML.
+- Nous avons préféré régler les paramètres depuis un fichier YAML (`TABDK/config/params.yaml`), chargé sur le serveur de paramètres ROS par `<rosparam command="load" file="$(find TABDK)/config/params.yaml" />` dans `launch/run.launch`, plutôt que de les passer en arguments du launch.
+- Nous avons choisi d'écrire les paramètres angulaires en **degrés** et les temporisations en **millisecondes** dans le fichier YAML, puis d'effectuer les conversions en radians et en ticks au chargement.
+- Nous avons défini des valeurs par défaut dans la classe `Params` afin que le nœud reste fonctionnel même si un paramètre n'est pas trouvé sur le serveur ROS.
 
 #### Première implémentation
 
-Le premier `config/params.yaml` ne comportait que 5 clés (`frequence`, `linear_speed`, `move_fwd_per`, `move_bwd_per`, `move_stp_per`), lues directement au début du `main()` de `controleur.cpp`. Par la suite, les premiers nœuds satellites (`keyboard_input`, `detector`, `client_action`) ont d'abord conservé leurs propres constantes codées en dur (`FREQ_ACTUALISATION = 5`, `Rate loop_rate(5)`, `MIN_DELAY_COLLISION = 2.0f`).
+Notre premier `config/params.yaml` ne contenait que 5 paramètres (`frequence`, `linear_speed`, `move_fwd_per`, `move_bwd_per`, `move_stp_per`), que nous lisions directement au début du `main()` de `controleur.cpp`. Par la suite, lorsque nous avons ajouté les autres nœuds (`keyboard_input`, `detector`, `client_action`), nous avions d'abord gardé des constantes locales codées en dur (`FREQ_ACTUALISATION = 5`, `Rate loop_rate(5)`, `MIN_DELAY_COLLISION = 2.0f`).
 
 #### Difficultés rencontrées
 
-- **Paramètres éclatés et fréquences désynchronisées** : multiplier les constantes locales dans chaque nœud empêchait de changer la fréquence globale ou les seuils de collision d'un seul geste. La classe `Params` a donc été incluse dans l'ensemble des 5 nœuds pour unifier le chargement.
-- **Pièges de saisie YAML et d'unités** : un doublon de clé dans `params.yaml` (par exemple `debut_collision_face` renseigné deux fois au lieu de `debut_collision_dos`) ou une confusion degrés/radians peut passer silencieusement ; les valeurs de repli de `Params` et la conversion centralisée dans `Params::load()` limitent ces risques.
+- **Paramètres éclatés et fréquences désynchronisées** : conserver des constantes locales dans chaque nœud nous empêchait de modifier la fréquence globale ou les seuils anti-collision depuis un seul endroit. Nous avons donc inclus la classe `Params` dans les 5 nœuds pour unifier le chargement.
+- **Cohérence des unités** : mélanger degrés, radians, millisecondes et ticks entre plusieurs fichiers nous a conduits à centraliser toutes les conversions dans `Params::load()`, `msToTicks()` et `ticksToMs()`.
 
 #### Version finale
 
 - La classe `Params` (`TABDK/src/parametres.cpp`) est incluse par les 5 nœuds du package (`controleur`, `keyboard_input`, `client_services`, `client_action`, `detector`).
-- `Params::load(nh)` charge 19 paramètres (fréquence, vitesses, gains `Kp_*`, seuils de précision et de pivot, `waypoint_step`, `move_smooth`, `move_back`, `default_mode`, temporisations et paramètres anti-collision) et convertit `precision_angular` et `trigger_pivot` en radians.
-- Les méthodes `msToTicks()` et `ticksToMs()` garantissent une base de temps homogène dans tout le contrôleur, indépendante de la fréquence choisie :
+- `Params::load(nh)` charge les 19 paramètres du projet (fréquence, vitesses, gains `Kp_*`, seuils de précision et de pivot, `waypoint_step`, `move_smooth`, `move_back`, `default_mode`, temporisations et paramètres anti-collision) et convertit `precision_angular` et `trigger_pivot` en radians.
+- Les méthodes `msToTicks()` et `ticksToMs()` assurent la cohérence temporelle dans l'ensemble du contrôleur :
 
 <!-- code:TABDK/src/parametres.cpp -->
 ```cpp
@@ -371,13 +365,13 @@ int msToTicks(int ms)                   { return frequence * ms / 1000; }
 double ticksToMs(std::uint64_t ticks) const { return ticks * 1000.0 / frequence; }
 ```
 
-*(Voir [§ 7. Migration architecturale](#7-migration-architecturale--du-monolithe-controleurcpp-au-système-de-classes) pour le mécanisme d'inclusion `#include "*.cpp"` partagé entre nœuds et l'initialisation différée après `ros::init()`.)*
+*(Voir [§ 8. Migration architecturale](#8-migration-architecturale--passage-dun-fichier-contrôleur-unique-à-un-découpage-en-classes) pour le choix d'inclusion directe `#include "*.cpp"` et l'initialisation différée après `ros::init()`.)*
 
 ---
 
-## 3. Contrôle et navigation du TB3
+## 4. Contrôle et navigation du TB3
 
-### 3.1 Les modes de navigation
+### 4.1 Les modes de navigation
 
 #### Énoncé
 
@@ -385,27 +379,25 @@ Permettre au TurtleBot3 de basculer entre **mode manuel** et **mode navigation a
 
 #### Choix fonctionnels
 
-- Séparation progressive de trois concepts qui étaient initialement mêlés :
-  1. le **mode actif** (`"manual"` ou `"auto"`), stocké en `std::string` pour correspondre directement aux messages ROS sans table de conversion ;
-  2. la **pause** (`pause_active`), traitée comme un état orthogonal afin de suspendre n'importe quel mode sans le réinitialiser ;
-  3. la **FSM des déplacements** (`STOP`, `FORWARD`, `BACKWARD`, `PIVOTER_GAUCHE`, `PIVOTER_DROITE`, `REACH_POSITION_X`, `REACH_ANGLE`, `REACH_POSITION`).
-- Publication continue (latched) de `/mode` (`std_msgs/String`) et `/pause` (`std_msgs/Bool`) par `controleur.cpp` pour garder tous les nœuds synchronisés.
+- Dès le début du projet, lorsque nous avons conçu la machine à états du robot, nous avons souhaité intégrer un **mécanisme de pause**. Cette idée venait de notre expérience de l'année précédente : pouvoir figer le robot à un instant précis (par exemple juste avant qu'il ne heurte un mur ou dans une situation intéressante à analyser) nous permettait d'observer tranquillement les valeurs des capteurs, l'état interne et les logs sans que le robot continue d'avancer.
+- Nous avons défini le mode de démarrage via `default_mode` dans `config/params.yaml` (avec repli sur `"manual"` si la valeur est invalide) et choisi de publier en continu (topics *latched*) l'état courant sur `/mode` (`std_msgs/String`) et `/pause` (`std_msgs/Bool`) pour que tous les nœuds restent synchronisés.
 
 #### Première implémentation
 
-Une `enum RobotMode` (`AUTO`, `MANUAL`, puis `PAUSE`) et une `enum RobotState` étaient gérées par des `switch` dans `controleur.cpp`. Les ordres issus du clavier étaient initialement stockés dans un dictionnaire dynamique `std::unordered_map<string, std::variant<bool, string>>` (approche inspirée de Python).
+Dans notre première version, nous avions implémenté les modes dans `controleur.cpp` avec une `enum RobotMode` contenant **trois modes** (`AUTO`, `MANUAL` et `PAUSE`) ainsi qu'une variable d'historique `previous_mode_` pour retrouver le mode précédent après la reprise. Pour les ordres issus du clavier, nous avions d'abord essayé un dictionnaire dynamique `std::unordered_map<string, std::variant<bool, string>>` (une approche proche de Python).
 
 #### Difficultés rencontrées
 
-- **Structure de données trop lourde** : l'usage de `unordered_map<string, variant<bool, string>>` imposait des extractions verbeuses (`std::get<string>`) et des chaînes non vérifiées à la compilation ; il a été remplacé très tôt par une structure typée `struct KeyboardInputs` et une `enum Direction`.
-- **Pause couplée aux directions et aux modes** : dans les premières versions, mettre le robot en pause ne remettait pas la direction clavier à `NONE` (le robot repartait dans l'ancienne direction à la reprise), puis `PAUSE` géré comme un mode à part entière (avec `previous_mode_`) compliquait les changements de mode pendant une pause.
-- **Monolithe de plus de 700 lignes** : `controleur.cpp` accumulait calculs, paramètres, odométrie, clavier, FSM et mouvements. Trois refactorings successifs ont permis de passer en programmation orientée objet : extraction des modules bas niveau (`calculs`, `parametres`, `odometry`, `mouvements`), découplage de la pause, puis éclatement du cœur logique en `Modes` et `States` avec une convention `init()` uniforme après `ros::init()` *(détaillé en [§ 7. Migration architecturale](#7-migration-architecturale--du-monolithe-controleurcpp-au-système-de-classes))*.
+- **Structure de données trop lourde pour le clavier** : notre dictionnaire `unordered_map<string, variant<bool, string>>` imposait des extractions verbeuses (`std::get<string>`) et des chaînes non vérifiées à la compilation. Nous l'avons rapidement remplacé par une structure typée `struct KeyboardInputs` et une `enum Direction`.
+- **Limites de la pause gérée comme un troisième mode** : au début, la mise en pause ne remettait pas la direction clavier à `NONE`, si bien que le robot repartait dans l'ancienne direction à la reprise. Surtout, dès que nous avons ajouté d'autres algorithmes et des nœuds indépendants devant interagir avec la pause (comme `detector.cpp` en [§ 5](#5-perception-de-lenvironnement-à-laide-du-lidar-capteur-de-distance-laser-360-lds-01---lds-02) et les services en [§ 6.1](#61-configuration-à-la-volée-du-comportement-du-robot--service)), cette approche est devenue difficile à maintenir. Par exemple, si nous changions de mode alors que le robot était en pause, il fallait à la fois conserver la pause et mettre à jour l'historique pour que la reprise s'effectue dans le bon mode.
+- **Taille croissante de `controleur.cpp`** : le fichier unique accumulait paramètres, calculs, odométrie, clavier, modes, FSM et mouvements (plus de 700 lignes). Nous avons alors entamé le découpage du nœud contrôleur en classes distinctes, notamment en séparant `Modes` et `States` avec une méthode `init()` uniforme *(détaillé en [§ 8. Migration architecturale](#8-migration-architecturale--passage-dun-fichier-contrôleur-unique-à-un-découpage-en-classes))*.
 
 #### Version finale
 
-- `Modes` (`TABDK/src/modes.cpp`) valide le mode par défaut issu de `params.yaml` (`default_mode`), gère `set_mode()` / `set_pause()` et cadence `States` dans `step()`.
-- `States` (`TABDK/src/states.cpp`) pilote la FSM des déplacements et appelle `Mouvements` via `applyState()`.
-- En version finale, `manual` et `auto` partagent tous deux le suivi de cible (`REACH_POSITION`), la différence portant sur l'origine des waypoints (saisie clavier vs trajectoire `/robot_path`), tandis que `pause_active` intercepte le cycle en amont sans altérer l'état courant :
+Nous avons finalement séparé complètement la gestion du **mode de fonctionnement** (`"manual"` ou `"auto"`, changé via `/set_mode`) de celle de la **pause** (booléen `pause_active`, piloté via `/global_control` en [§ 6.1](#61-configuration-à-la-volée-du-comportement-du-robot--service)). Les deux états sont indépendants : nous pouvons changer de mode sans casser la pause, et n'importe quel nœud peut mettre le robot en pause ou le relancer sans connaître son mode courant.
+
+- `Modes` (`TABDK/src/modes.cpp`) stocke le mode actif en `std::string` (directement compatible avec les messages ROS), gère `set_mode()` et `set_pause()`, et cadence `States` dans `step()`.
+- `States` (`TABDK/src/states.cpp`) conserve dans son `enum RobotState` les différents états développés au fil des exercices (`FORWARD`, `BACKWARD`, `PIVOTER_GAUCHE`, `PIVOTER_DROITE`, `STOP`, `REACH_POSITION_X`, `REACH_ANGLE`, `REACH_POSITION`). Dans le fonctionnement final, `manual` et `auto` utilisent tous deux le suivi de cible (`STOP` ↔ `REACH_POSITION`), seule la source des waypoints change (clavier en `manual`, `/robot_path` en `auto`), tandis que `pause_active` coupe les moteurs en amont sans modifier l'état courant :
 
 ```mermaid
 flowchart TB
@@ -434,7 +426,7 @@ flowchart TB
 
 ---
 
-### 3.2 Mode navigation manuelle
+### 4.2 Mode navigation manuelle
 
 #### Énoncé
 
@@ -442,23 +434,24 @@ Intégrer un nœud `key_input_node.cpp` pour piloter le robot au clavier (avance
 
 #### Choix fonctionnels
 
-- Externalisation de la capture clavier dans un nœud séparé (`keyboard_input.cpp`) pour ne jamais bloquer la boucle de commande du contrôleur sur `stdin`.
-- Passage du terminal en mode non-canonique via `termios` (`newt.c_lflag &= ~ICANON`) dans `getch()` afin de capter chaque touche instantanément sans validation par `Entrée`, tout en restaurant les réglages d'origine (`oldt`) juste après lecture.
-- **Architecture personnalisée (au-delà de l'énoncé)** : plutôt que de conserver un pilotage direct en vitesse au clavier en parallèle du serveur d'action, nous avons scindé la chaîne clavier en **3 nœuds découplés** et fait évoluer le mode manuel vers la saisie de **waypoints virtuels**. Le mode manuel réutilise ainsi exactement le même asservissement et la même sécurité anti-collision que le mode autonome.
+- Nous avons séparé la lecture clavier dans un nœud indépendant (`keyboard_input.cpp`) afin que l'attente de caractères sur `stdin` ne bloque jamais la boucle du contrôleur.
+- Dans `getch()`, nous avons désactivé le mode canonique du terminal avec `termios` (`newt.c_lflag &= ~ICANON`) pour réagir immédiatement à chaque touche sans attendre la touche `Entrée`, tout en restaurant les paramètres d'origine (`oldt`) après lecture.
+- **Évolution de notre mode manuel** : au lieu de garder un pilotage direct en vitesse séparé du reste de l'architecture, nous avons réparti la chaîne clavier en **3 nœuds** et orienté le mode manuel vers la saisie de **waypoints virtuels**. Ainsi, le mode manuel utilise la même chaîne d'action (`/moving`, [§ 6.2](#62-navigation--serveur-daction)) et la même protection anti-collision ([§ 5](#5-perception-de-lenvironnement-à-laide-du-lidar-capteur-de-distance-laser-360-lds-01---lds-02)) que le mode autonome.
 
 #### Première implémentation
 
-Le nœud `key_input_node.cpp` publiait les codes ASCII sur `/keyboard_input`, lus directement par `controleur.cpp` pour commander `FORWARD`, `BACKWARD`, `PIVOTER_GAUCHE`, `PIVOTER_DROITE`, `STOP` (barre espace) et `KEY_ZERO` (`0`, remise à `NONE`). Lors de l'introduction des services, le nœud a brièvement été transformé en `nodes/keyboard.cpp` appelant directement `/set_mode` et `/global_control`.
+Au départ, notre nœud `key_input_node.cpp` publiait les codes ASCII sur `/keyboard_input`, et `controleur.cpp` s'y abonnait directement pour lancer `FORWARD`, `BACKWARD`, `PIVOTER_GAUCHE`, `PIVOTER_DROITE`, `STOP` (barre espace) et `KEY_ZERO` (`0`, remise de la direction à `NONE`). Quand nous avons introduit les services ([§ 6.1](#61-configuration-à-la-volée-du-comportement-du-robot--service)), nous avons brièvement rassemblé la lecture clavier et les appels de services dans un seul nœud `nodes/keyboard.cpp`.
 
 #### Difficultés rencontrées
 
-- **Arrêt des rotations et remise à zéro de la direction** : sans remise à `NONE` explicite (`KEY_ZERO` ou lors d'une pause), la dernière direction reçue restait active à chaque tick.
-- **Conflit de responsabilités sur le clavier** : dès qu'il a fallu envoyer des waypoints au clavier en mode manuel tout en gardant les raccourcis `m`/`p`/`r` (services), concentrer la capture clavier et la logique applicative dans un seul nœud `keyboard.cpp` créait un couplage ingérable.
-- **Fréquence de scrutation** : la fréquence d'actualisation de `keyboard_input.cpp` a d'abord été codée en dur à 5 Hz avant d'être raccordée à `params.frequence`.
+- **Arrêt incomplet lors des rotations** : au début, nous nous contentions de remettre `vel.linear.x` à zéro dans `stop()`. Dès que nous avons ajouté `pivoter()`, le robot continuait donc de tourner sur place après un arrêt. Nous avons corrigé cela en réinitialisant tout le message via `vel = Twist()`.
+- **Remise à zéro de la direction clavier** : sans remise explicite à `NONE` (`KEY_ZERO` ou lors d'une pause), la dernière direction reçue restait mémorisée à chaque tour de boucle.
+- **Conflit de responsabilités dans `keyboard.cpp`** : lorsque nous avons eu besoin du clavier à la fois pour les raccourcis de services (`m`, `p`, `r`) et pour la saisie de waypoints dans `client_action.cpp`, garder toute la logique dans un seul nœud clavier devenait confus. Nous avons donc séparé la capture brute (`keyboard_input.cpp`) des consommateurs (`client_services.cpp` et `client_action.cpp`).
+- **Fréquence de scrutation** : la boucle de `keyboard_input.cpp` tournait initialement à une constante locale de 5 Hz avant que nous la raccordions à `params.frequence` ([§ 3.2](#32-paramètres-de-lapplication)).
 
 #### Version finale
 
-Le pilotage clavier repose sur 3 nœuds spécialisés (`keyboard_input.cpp` publie les codes bruts sur `/keyboard_input`) dont la répartition des commandes est la suivante :
+Le pilotage clavier s'appuie sur 3 nœuds spécialisés (`keyboard_input.cpp` diffuse les codes bruts sur `/keyboard_input`) selon la répartition suivante :
 
 | Touches | Nœud consommateur | Mécanisme ROS | Effet |
 | --- | --- | --- | --- |
@@ -469,7 +462,7 @@ Le pilotage clavier repose sur 3 nœuds spécialisés (`keyboard_input.cpp` publ
 | `w` | `client_action.cpp` *(mode `manual`)* | Action `/moving` (via `trajectoire`) | Empile `waypoint_virtuel` dans la file de waypoints |
 | `x` | `client_action.cpp` *(mode `manual`)* | File locale `trajectoire` | Vide la file de waypoints en attente |
 
-Le nœud `keyboard_input.cpp` ne fait plus aucune logique métier : il lit `frequence` via `parametres.cpp` et diffuse les codes touches sur `/keyboard_input` aux deux nœuds consommateurs :
+Le nœud `keyboard_input.cpp` ne porte plus aucune logique métier : il lit `frequence` via `parametres.cpp` et diffuse les codes touches sur `/keyboard_input` aux deux nœuds clients :
 
 ```mermaid
 flowchart TB
@@ -507,9 +500,9 @@ flowchart TB
 
 ---
 
-### 3.3 Mode navigation autonome
+### 4.3 Mode navigation autonome
 
-#### 3.3.1 Localisation du TB3
+#### 4.3.1 Localisation du TB3
 
 ##### Énoncé
 
@@ -517,27 +510,25 @@ Identifier le topic d'odométrie du TB3, son rythme et son type de message. Lire
 
 ##### Choix fonctionnels
 
-- Abonnement à `/odom` (`nav_msgs/Odometry`, ~30 Hz), extraction du cap `theta` par `tf::getYaw()` et stockage dans un `geometry_msgs/Pose2D`, complété par la vitesse instantanée `geometry_msgs/Twist`.
-- Calcul continu de la distance cumulée `distance_parcourue` et de la distance euclidienne à un point `distanceToPosition(x, y)` directement dans la classe `Odometry`.
-- **Architecture personnalisée** : unification du reset réel (`/reset`, `std_msgs/Empty`) et simulé (`/gazebo/reset_simulation`, `std_srvs/Empty`) dans une procédure unique `ServeurServices::resetRobot()` qui remet aussi à zéro les états internes et le serveur d'action dans un ordre précis.
+- Nous nous sommes abonnés au topic `/odom` (`nav_msgs/Odometry`, environ 30 Hz), en extrayant l'orientation `theta` avec `tf::getYaw()` pour stocker la pose dans un `geometry_msgs/Pose2D`.
+- Nous avons ajouté dans la classe `Odometry` le calcul continu de `distance_parcourue` et une méthode `distanceToPosition(x, y)` afin de les partager entre l'asservissement ([§ 4.3.2](#432-navigation-vers-un-but)) et le serveur d'action ([§ 6.2](#62-navigation--serveur-daction)).
+- Nous avons regroupé la réinitialisation du robot réel (`/reset`, `std_msgs/Empty`) et celle de la simulation (`/gazebo/reset_simulation`, `std_srvs/Empty`) dans une même fonction `ServeurServices::resetRobot()` qui remet aussi à zéro les états internes du contrôleur et le serveur d'action dans un ordre précis.
 
 ##### Première implémentation
 
-Le subscriber `/odom` et le publisher `/reset` (touche `r`) ont d'abord été ajoutés directement dans `controleur.cpp`, puis extraits dans la classe `Odometry` lors de la mise en objets du contrôleur, avec dans un premier temps une `struct Pose2D { double x, y, rotation; }` définie à la main.
+Au début, nous avions placé le subscriber `/odom` et le publisher `/reset` (déclenché par la touche `r`) directement dans `controleur.cpp`. Lors de l'extraction en classe `Odometry`, nous avions commencé avec une structure personnelle `struct Pose2D { double x, y, rotation; }` et nous ne relevions pas encore la vitesse du robot (nous avons ajouté le stockage de `vitesse` plus tard, uniquement pour remplir les feedbacks de l'action `Move.action` en [§ 6.2](#62-navigation--serveur-daction)).
 
 ##### Difficultés rencontrées
 
-- **Collision entre la `struct Pose2D` maison et `geometry_msgs::Pose2D`** : lors de l'introduction de `Move.action` (qui transporte `geometry_msgs/Pose2D`), la structure maison entrait en conflit de nom avec le type ROS standard et imposait des conversions (`pose.rotation` ↔ `position.theta`). La structure locale a été supprimée au profit direct de `geometry_msgs::Pose2D` (`position.x`, `position.y`, `position.theta`).
-- **Doute initial sur l'odométrie et nécessité d'un redémarrage matériel** : pendant les premiers tests d'asservissement sur l'axe `x`, nous pensions l'odométrie défaillante car les coordonnées dérivaient et `/reset` ne semblait pas agir. Un redémarrage complet du robot a débloqué le capteur et montré que l'odométrie était finalement précise.
-- **Repère fixe après reset et orientation par IMU** : nous nous sommes longtemps demandé pourquoi le reset ne réalignait pas systématiquement l'axe `x` devant le robot lors de nos essais `(x, y)`. Au moment du reset, l'axe `+x` est bien devant le TB3, mais l'orientation étant estimée par la centrale inertielle (IMU / accéléromètre-gyroscope de la carte OpenCR), cet axe reste ensuite **fixe par rapport à l'environnement** et ne tourne pas avec le robot si on le déplace manuellement.
-- **Saut sur la première mesure odométrique** : lors de l'ajout du cumul de distance parcourue (pour les résultats d'action), la première callback calculait la distance depuis `(0, 0)` vers la position initiale du robot ; corrigé grâce au booléen `position_recue`.
-- **Tentative de correction `map → odom` via TF** : lors de l'intégration avec AMCL/SLAM, nous avons tenté d'ajouter un `tf::TransformListener` dans `odometry.cpp` pour projeter la pose `/odom` dans le repère `map` (tout en continuant à intégrer `distance_parcourue` dans le repère `odom` continu pour éviter les sauts d'AMCL). Face aux instabilités de disponibilité du transform en pratique, cette modification a été annulée (`revert`) au profit d'une calibration propre de la carte en `(0, 0)`.
-- **Effet de bord du reset Gazebo sur `actionlib`** : `/gazebo/reset_simulation` remet l'horloge simulée à `0`, ce qui bloquait les goals d'action suivants avant l'ajout de `action_server->redemarrer()`.
+- **Doute initial sur l'odométrie et redémarrage du robot** : pendant nos premiers tests d'asservissement sur l'axe `x`, nous pensions que l'odométrie dysfonctionnait car les mesures semblaient incohérentes et les resets ne fonctionnaient pas. Après un redémarrage complet du robot, nous avons constaté que l'odométrie était finalement précise.
+- **Compréhension du repère fixe après reset (cap IMU)** : nous nous sommes longtemps demandé pourquoi le reset ne remettait pas l'orientation face au robot lorsque nous le déplacions pendant nos essais en `(x, y)`. Au moment du reset, l'axe `+x` est bien aligné devant le robot, mais comme l'orientation odométrique repose sur la centrale inertielle (accéléromètre/gyroscope de la carte OpenCR), cet axe reste ensuite **fixe par rapport à l'environnement** et ne tourne pas avec le robot si nous le déplaçons à la main.
+- **Saut sur la première mesure odométrique** : lorsque nous avons ajouté le cumul de `distance_parcourue`, le premier message `/odom` additionnait un déplacement fictif entre `(0, 0)` et la position initiale du robot. Nous avons corrigé cela avec un booléen `position_recue`.
+- **Conflit avec `geometry_msgs::Pose2D` et effets du reset sur les couches supérieures** : par la suite, notre `struct Pose2D` maison a créé un conflit de nom lors de l'ajout de `Move.action` (détails en [§ 8.2](#82-organisation-des-fichiers-cpp-et-namespaces)), le reset Gazebo a perturbé le serveur d'action (détails en [§ 6.2](#62-navigation--serveur-daction)), et le décalage entre `/odom` et la carte SLAM nous a conduits à tester puis retirer un `tf::TransformListener` (détails en [§ 7.2](#72-navigation-à-base-de-slam)).
 
 ##### Version finale
 
-- `Odometry` (`TABDK/src/odometry.cpp`) expose `position`, `vitesse`, `distanceToPosition(x, y)` et `distanceParcourue()`.
-- `ServeurServices::resetRobot()` (`TABDK/src/serveur_services.cpp`) exécute la réinitialisation dans un ordre critique (d'abord arrêt/préemption, puis reset de l'horloge Gazebo, puis recréation du serveur d'action, enfin diffusion de `/reset` aux clients) :
+- `Odometry` (`TABDK/src/odometry.cpp`) expose `position` (`geometry_msgs::Pose2D`), `vitesse` (`geometry_msgs::Twist`, ajoutée pour les feedbacks d'action), `distanceToPosition(x, y)` et `distanceParcourue()`.
+- `ServeurServices::resetRobot()` (`TABDK/src/serveur_services.cpp`) exécute la réinitialisation dans un ordre strict :
 
 <!-- code:TABDK/src/serveur_services.cpp -->
 ```cpp
@@ -546,16 +537,16 @@ void resetRobot() {
   modes->reset();                         // 2. stoppe moteurs, reset mode & pause
   std_srvs::Empty service;
   client_reset_sim->call(service);        // 3. remet la simu et /clock à 0
-  action_server->redemarrer();            // 4. oublie les anciens timestamps actionlib
+  action_server->redemarrer();            // 4. réinitialise le serveur actionlib
   pub_reset->publish(std_msgs::Empty());  // 5. notifie le TB3 réel et les clients ROS
 }
 ```
 
-*(Voir [§ 7. Migration architecturale](#7-migration-architecturale--du-monolithe-controleurcpp-au-système-de-classes) pour l'enregistrement du callback membre `&Odometry::odomCallback, this` et le partage d'instance par pointeur entre classes.)*
+*(Voir [§ 8. Migration architecturale](#8-migration-architecturale--passage-dun-fichier-contrôleur-unique-à-un-découpage-en-classes) pour l'enregistrement du callback membre `&Odometry::odomCallback, this` et le partage d'instance par pointeur entre classes.)*
 
 ---
 
-#### 3.3.2 Navigation vers un but
+#### 4.3.2 Navigation vers un but
 
 ##### Énoncé
 
@@ -567,27 +558,27 @@ Mettre en place l'asservissement en position du TurtleBot3 :
 
 ##### Choix fonctionnels
 
-- Choix de **correcteurs proportionnels saturés** (`commande_proportionnelle(Kp, erreur, vitesse_max) = min(|Kp · e|, vmax)`), suffisants et robustes sur le TB3 sans nécessiter de termes intégral/dérivé sensibles au bruit.
-- **Fonctions originales créées au-delà de l'énoncé** : en plus du `reachPosition(x, y)` séquentiel classique, nous avons conçu deux variantes activables depuis `params.yaml` (`move_smooth`, `move_back`) :
-  - **`reachPositionSmooth(x, y, arriere)`** : introduit une **hystérésis angulaire** (`pivot_en_cours`). Tant que $|\Delta\theta| \le \text{trigger\_pivot}$, le robot avance et corrige son cap **simultanément** via `move(v, w)` (avec zone morte $|\Delta\theta| \le \text{precision\_angular}$). Si $|\Delta\theta|$ dépasse `trigger_pivot`, `pivot_en_cours` passe à `true` et le robot pivote sur place (avec le gain dédié `Kp_pivot`) jusqu'à retomber sous `precision_angular` — ce qui évite les oscillations entre pivot et avance.
-  - **`reachPositionSmoothBack(x, y)`** : si la cible se trouve dans le demi-plan arrière ($|\Delta\theta| > \pi / 2$), le robot évite un demi-tour complet en visant l'angle opposé ($\theta_{\text{cible}} + \pi$, normalisé sur $[-\pi, \pi]$ par `cal_angle_offset`) et en inversant la vitesse linéaire (`-soft_linear_speed`).
-- Exploitation du bonus `2D Nav Goal` (`/move_base_simple/goal`) via le nœud `path_generator` (section 6.2) qui convertit le clic RViz en trajectoire `/robot_path`.
+- Nous avons choisi des **correcteurs proportionnels saturés** (`commande_proportionnelle(Kp, erreur, vitesse_max) = min(|Kp · e|, vmax)`). Sur le TurtleBot3, cet amortissement proportionnel adapte naturellement la vitesse de rotation et de translation à l'erreur (rapide loin de la cible, puis ralentissement progressif à l'approche), ce qui évite les changements brusques et les oscillations sans avoir besoin de termes intégral ou dérivé.
+- Pour la navigation en `(x, y)`, notre objectif était d'obtenir une **trajectoire suffisamment droite** sans que le robot décrive de grands arcs de cercle, tout en restant fluide. Nous avons donc ajouté la fonction `move(linear, angular)` (qui combine vitesse linéaire et vitesse angulaire simultanément) et développé deux améliorations activables depuis `params.yaml` (`move_smooth` et `move_back`) :
+  - **`reachPositionSmooth(x, y, arriere)`** : tant que l'erreur angulaire reste sous `trigger_pivot`, le robot avance et corrige son cap simultanément avec `move(v, w)` (sans tourner dans la zone morte $|\Delta\theta| \le \text{precision\_angular}$). Si $|\Delta\theta|$ dépasse `trigger_pivot`, nous activons l'hystérésis `pivot_en_cours` et le robot pivote sur place (avec le gain `Kp_pivot`) jusqu'à retomber sous `precision_angular`.
+  - **`reachPositionSmoothBack(x, y)`** : nous avons constaté que, pour rejoindre un point situé derrière lui, le robot effectuait parfois une grande rotation sur place alors qu'il pouvait simplement reculer. Comme nous n'avions pas besoin d'utiliser la caméra sur cette partie, nous avons décidé que lorsque l'angle à parcourir dépasse 90° ($|\Delta\theta| > \pi / 2$), nous inversons l'angle cible (décalé de $\pi$ via `cal_angle_offset`) ainsi que le signe de `linear.x` dans `/cmd_vel` pour faire reculer le robot directement.
 
 ##### Première implémentation
 
-Les fonctions `reachPositionX`, `reachAngle` et `reachPosition` ont été développées et validées successivement dans `controleur.cpp`, puis portées dans `mouvements.cpp` lors du refactoring objet, où une première version de `reachPositionSmooth` a été expérimentée.
+Nous avons d'abord codé et validé `reachPositionX`, `reachAngle` et `reachPosition` (alignement bloquant puis avance) directement dans `controleur.cpp`. Nous les avons ensuite déplacées dans `mouvements.cpp` lors du découpage en classes, moment où nous avons ajouté `move()` et expérimenté la première version de `reachPositionSmooth()`.
 
 ##### Difficultés rencontrées
 
-- **Discontinuité angulaire autour de `±π`** : une soustraction directe faisait tourner le robot dans le mauvais sens au passage de ±180° ; résolu avec `cal_delta_Theta` et `cal_angle_offset` dans `calculs.cpp`.
-- **Inversion des gains, bridage cassé et instabilité près de la cible** : dans les premiers tests de `reachPositionSmooth`, `Kp_pivot` et `Kp_angular` avaient été inversés entre le mode pivot et le mode avance simultanée, et une faute de frappe dans le bridage ternaire (`linear_speed > linear_speed`) empêchait la saturation de vitesse (problème éliminé définitivement en factorisant le calcul dans `commande_proportionnelle()`). De plus, sans arrêt prioritaire en début de fonction (`if (erreur_distance < precision_linear) { stop(); return; }`), le bruit de `atan2` à très faible distance relançait des pivots sur place.
-- **Échec de la première marche arrière automatique** : un premier essai de marche arrière dans `reachPositionSmooth` testait `-90 < erreur_angle < 90` sur un angle exprimé en **radians** et rendait la distance négative. Elle a dû être retirée temporairement avant d'être réécrite proprement dans `reachPositionSmoothBack()` avec un décalage d'angle de `M_PI` et un test `> M_PI / 2`.
-- **Dérive et effet « sol glissant » en simulation** : contrairement au TB3 physique dont les moteurs brident naturellement la vitesse, une consigne de vitesse maximale trop élevée dans Gazebo faisait patiner et dériver le robot, faussant la convergence de `reachPosition` et `reachPositionSmooth`. Il a donc fallu réduire et calibrer la vitesse maximale dans `config/params.yaml`.
-- **Prolifération d'états FSM** : `states.cpp` distinguait initialement trois états (`REACH_POSITION`, `REACH_POSITION_SMOOTH`, `REACH_POSITION_SMOOTH_BACK`) ; ils ont été simplifiés en un seul état `REACH_POSITION` aiguillé par `params->move_smooth` et `params->move_back`.
+- **Discontinuité angulaire autour de `±π`** : une simple soustraction faisait tourner le robot du mauvais côté au passage de ±180°. Nous avons résolu ce point avec `cal_delta_Theta` et `cal_angle_offset` dans `calculs.cpp`.
+- **Inversion des gains, saturation défaillante et instabilité près de la cible** : dans nos premiers tests de `reachPositionSmooth`, nous avions inversé `Kp_pivot` et `Kp_angular` entre le pivot sur place et l'avance simultanée, et une faute de frappe dans le bridage ternaire (`linear_speed > linear_speed`) empêchait la limitation de vitesse (corrigé en factorisant dans `commande_proportionnelle()`). De plus, sans test d'arrêt prioritaire au tout début de la fonction (`if (erreur_distance < precision_linear)`), le bruit d'`atan2` à très faible distance relançait des pivots inutiles.
+- **Première tentative ratée de marche arrière** : lors de notre premier essai, nous avions comparé `erreur_angle` à `-90` et `90` (en degrés) alors que l'angle était en **radians**, tout en rendant la distance négative. Nous avons retiré ce code temporairement avant de le réécrire proprement dans `reachPositionSmoothBack()` avec `> M_PI / 2`.
+- **Effet « sol glissant » en simulation** : contrairement au robot physique dont les moteurs brident naturellement la vitesse, une vitesse maximale trop élevée dans Gazebo faisait dériver le TB3 comme si le sol glissait, ce qui faussait nos fonctions `reachPosition`. Nous avons donc réduit et calibré la vitesse maximale dans `config/params.yaml`.
+- **Simplification des états FSM** : nous avions d'abord créé trois états distincts dans `states.cpp` (`REACH_POSITION`, `REACH_POSITION_SMOOTH`, `REACH_POSITION_SMOOTH_BACK`), avant de les regrouper en un seul état `REACH_POSITION` aiguillé par `move_smooth` et `move_back`.
+- **Limite identifiée à proximité immédiate de la cible** : `reachPositionSmoothBack` fonctionne bien sur le robot physique, mais il reste une limite connue. Lorsque le centre du robot arrive très près de la cible et la dépasse légèrement, l'angle d'erreur peut augmenter brusquement et déclencher un petit pivot final sur place pour revenir exactement sur le point demandé. Nous avons conscience de ce comportement et avons choisi de ne pas ajouter de traitement spécifique pour ce cas.
 
 ##### Version finale
 
-`Mouvements` (`TABDK/src/mouvements.cpp`) et `calculs.cpp` fournissent un asservissement fluide avant/arrière entièrement paramétrable depuis `config/params.yaml`. La logique de décision de `reachPositionSmoothBack(x, y)` se résume ainsi :
+`Mouvements` (`TABDK/src/mouvements.cpp`) et `calculs.cpp` assurent un asservissement fluide avant et arrière, entièrement réglable dans `config/params.yaml`. La logique de `reachPositionSmoothBack(x, y)` se résume ainsi :
 
 ```mermaid
 flowchart TB
@@ -635,11 +626,11 @@ double calculerErreurAngle(double x, double y, bool arriere) {
 }
 ```
 
-*(Voir [§ 7. Migration architecturale](#7-migration-architecturale--du-monolithe-controleurcpp-au-système-de-classes) pour l'injection de `Params *` et `Odometry *` dans `Mouvements` sans recopie d'état.)*
+*(Voir [§ 8.3](#83-patron-init-différé-et-association-des-classes-par-pointeurs) pour l'injection de `Params *` et `Odometry *` dans `Mouvements` sans recopie d'état.)*
 
 ---
 
-## 4. Perception de l'environnement à l'aide du Lidar (Capteur de distance Laser 360 LDS-01 - LDS-02)
+## 5. Perception de l'environnement à l'aide du Lidar (Capteur de distance Laser 360 LDS-01 - LDS-02)
 
 ### Énoncé
 
@@ -647,33 +638,33 @@ Créer le nœud `detector.cpp` abonné aux mesures LiDAR 360° (topic et type de
 
 ### Choix fonctionnels
 
-- Abonnement à `/scan` (`sensor_msgs/LaserScan`) et publication sur `/obstacles_markers` (`visualization_msgs/MarkerArray`, repère `base_scan`).
-- **Découpage personnalisé centré sur les axes du robot** : décalage des 8 secteurs de 45° de `OFFSET_REGIONS = -22.5°` afin que la **région 0** couvre exactement l'avant (`[-22.5°, +22.5°]`) et la **région 4** exactement l'arrière (`[157.5°, 202.5°]`).
-- **Visualisation géométrique dans RViz** : 8 rayons gris + labels d'angles limites, un label de distance adaptatif (`cm` sous 1 m, `m` au-delà), et une *stripline* (`Marker::LINE_LIST`) traçant pour chaque région un segment **perpendiculaire à l'axe central** à la distance minimale $d$ (rouge si $d < 0{,}30\text{ m}$, vert sinon), dont les extrémités sur les bords du secteur sont placées à :
+- Nous nous sommes abonnés à `/scan` (`sensor_msgs/LaserScan`) et nous publions nos marqueurs sur `/obstacles_markers` (`visualization_msgs/MarkerArray`, dans le repère `base_scan`).
+- **Découpage centré sur les axes du robot** : nous avons décalé les 8 régions de 45° avec `OFFSET_REGIONS = -22.5°`, de sorte que la **région 0** corresponde exactement à l'avant (`[-22.5°, +22.5°]`) et la **région 4** à l'arrière (`[157.5°, 202.5°]`).
+- **Visualisation géométrique dans RViz** : nous affichons 8 rayons gris avec leurs angles limites, un label de distance formaté en `cm` sous 1 m et en `m` au-delà, ainsi qu'une *stripline* (`Marker::LINE_LIST`) traçant dans chaque région un segment perpendiculaire à l'axe central à la distance minimale $d$ (rouge si $d < 0{,}30\text{ m}$, vert sinon), avec des extrémités placées sur les bords du secteur à :
   $$d_{\text{bord}} = \frac{d}{\cos(\Delta\theta / 2)} \quad \text{avec } \Delta\theta = 45^\circ$$
-- **Extension non demandée dans l'énoncé — anti-collision prédictif `prevent_collision()`** : le nœud écoute aussi `/cmd_vel` et `/pause`, estime le **temps avant impact** dans la direction effective du déplacement (avant si $v > 0$, arrière si $v < 0$) en retranchant le gabarit du TB3 :
+- **Prévention active de collision par temps avant impact (`prevent_collision()`)** : nous avons voulu aller plus loin qu'une détection à distance fixe. En effet, la distance nécessaire pour éviter un choc dépend directement de la vitesse du robot. Une fois le service `/global_control` mis en place ([§ 6.1](#61-configuration-à-la-volée-du-comportement-du-robot--service)), nous avons abonné `detector.cpp` à `/cmd_vel` et `/pause` pour estimer le **temps avant collision** dans le sens effectif du mouvement (région avant si $v > 0$, région arrière si $v < 0$) en retranchant le gabarit physique du robot :
   $$t_{\text{collision}} = \frac{|d_{\min} - d_{\text{gabarit}}|}{|v|} \times 1000 \text{ (ms)}$$
-  Si $t_{\text{collision}} < \text{delay\_collision}$, `detector` met le robot en pause via `/global_control` (`"pause"`), mémorise la distance et le côté (`distance_to_last_obstacle`, `was_obstacle_on_back`), puis relance automatiquement (`"play"`) dès que l'obstacle recule — sans jamais annuler une pause demandée manuellement par l'opérateur (`robot_pause && !collision_pause`).
+  Lorsque $t_{\text{collision}}$ passe sous `delay_collision`, nous arrêtons le robot via `/global_control` (`"pause"`) et nous mémorisons temporairement la distance de l'obstacle (`distance_to_last_obstacle`) ainsi que le côté (`was_obstacle_on_back`). Dès que cette distance augmente suffisamment (l'obstacle s'éloigne), nous autorisons à nouveau l'avancement (`"play"`), sans jamais annuler une pause demandée manuellement par l'opérateur (`robot_pause && !collision_pause`). Ce fonctionnement donne un résultat intéressant que nous avons pu montrer lors de la démonstration : si un obstacle se déplace lentement devant le robot, celui-ci le suit en maintenant sa distance de sécurité.
 
 ### Première implémentation
 
-Démarrage avec un découpage simple à partir de 0° (`[0°, 45°]`, `[45°, 90°]`…), filtrage des valeurs invalides à `FLT_MAX`, puis ajout des marqueurs RViz (`rviz_tb3.launch` + `config/tb3_lidar.rviz`) et d'une première ébauche d'anti-collision basée uniquement sur `/scan`.
+Nous avons commencé par découper les 360° à partir de 0° (`[0°, 45°]`, `[45°, 90°]`…), filtrer les valeurs invalides en les remplaçant par `FLT_MAX`, puis ajouter les marqueurs RViz (`rviz_tb3.launch` et `config/tb3_lidar.rviz`). Plus tard, nous avons ajouté une première ébauche de `prevent_collision()` qui appelait `/global_control` directement depuis `scanCallback`.
 
 ### Difficultés rencontrées
 
-- **Confusion radians / degrés au démarrage** : la première version initialisait `int SCAN_SAMPLE = 2 * M_PI` (tronqué en entier à `6` !) au lieu de `360` ; corrigé avec `SCAN_SAMPLE = 360` et `angle_deg_increment = scan->angle_increment * 180 / M_PI`.
-- **Renommages successifs du topic RViz et fréquence de rafraîchissement** : le topic des marqueurs est passé de `/markers` à `/lidar_visualization` puis `/obstacles_markers` (imposant de garder `detector.cpp` et `config/tb3_lidar.rviz` alignés), et la cadence initiale à 1 Hz rendait l'affichage trop saccadé avant son passage à 5 Hz puis à `params.frequence`.
-- **Région frontale à cheval sur 0°** : sans le décalage de `-22.5°`, un obstacle droit devant à `-5°` tombait dans la région 7 au lieu de la région 0. Le décalage a imposé deux ajustements :
+- **Confusion radians / degrés au démarrage** : dans notre première version, nous avions écrit `int SCAN_SAMPLE = 2 * M_PI` (tronqué en entier à `6`) au lieu de `360`. Nous avons corrigé cela en passant à `SCAN_SAMPLE = 360` et en convertissant `angle_increment` en degrés.
+- **Renommages du topic RViz et cadence des marqueurs** : le topic des marqueurs a changé plusieurs fois (`/markers`, puis `/lidar_visualization`, puis `/obstacles_markers`), nous obligeant à resynchroniser `config/tb3_lidar.rviz`. De plus, la boucle tournait d'abord à 1 Hz, ce qui rendait l'affichage saccadé avant son passage à 5 Hz puis à `params.frequence` ([§ 3.2](#32-paramètres-de-lapplication)).
+- **Région frontale à cheval sur 0°** : avant le décalage de `-22.5°`, un obstacle droit devant à `-5°` tombait dans la région 7 au lieu de la région 0. Le décalage a nécessité deux corrections :
   1. gérer la traversée du 0° en deux boucles dans `get_minimum()` lorsque `index_fin < index_debut` ;
-  2. corriger un bug subtil d'affichage RViz : `(debut + fin) / 2.0` donnait `(337.5 + 22.5) / 2 = 180°` et plaçait la barre frontale… à l'arrière du robot ! Corrigé par `(debut + ANGLE_REGION / 2.0)`.
-- **Mise au point de l'anti-collision (avant/arrière et pauses)** :
-  1. La première version appelait `play` à chaque scan sans obstacle, annulant toute pause manuelle de l'opérateur ; corrigé en écoutant `/pause` et en distinguant `robot_pause` de `collision_pause`.
-  2. En marche arrière, un bug dans `was_obstacle_on_back` (jamais passé à `true` lors d'une détection arrière et remis à `false` trop tôt) créait des **saccades** entre pause et reprise.
-  3. Le LiDAR mesurant depuis le centre du robot, il a fallu soustraire les 12 cm de carrosserie (`debut_collision_face` / `debut_collision_dos`) et passer les seuils (`delay_collision = 500 ms`) dans `params.yaml`.
+  2. corriger un bug d'affichage dans RViz où le centre de la région 0 était calculé par `(debut + fin) / 2.0`, ce qui donnait `(337.5 + 22.5) / 2 = 180°` et plaçait la barre frontale derrière le robot. Nous avons corrigé la formule en `(debut + ANGLE_REGION / 2.0)`.
+- **Mise au point de l'anti-collision** :
+  1. Au début, nous appelions `"play"` dès qu'il n'y avait plus d'obstacle, ce qui annulait une pause manuelle de l'opérateur. Nous avons résolu ce point en écoutant `/pause` et en distinguant `robot_pause` de `collision_pause`.
+  2. En marche arrière, nous avons eu des saccades entre pause et reprise car `was_obstacle_on_back` n'était pas passé à `true` lors d'une détection arrière et était remis à `false` trop tôt.
+  3. Comme le LiDAR mesure depuis le centre du robot, nous avons dû soustraire les 12 cm de carrosserie (`debut_collision_face` et `debut_collision_dos`) et rendre `delay_collision` configurable dans `config/params.yaml`.
 
 ### Version finale
 
-`TABDK/src/nodes/detector.cpp` réalise la détection sur 8 régions centrées, publie les marqueurs complets sur `/obstacles_markers` (visualisés via `rviz_tb3.launch` et `tb3_lidar.rviz`) et protège le robot en marche avant comme en marche arrière via le service `/global_control` :
+`TABDK/src/nodes/detector.cpp` analyse les 8 régions centrées, publie les marqueurs sur `/obstacles_markers` (visualisés avec `rviz_tb3.launch` et `tb3_lidar.rviz`) et gère l'arrêt et la reprise anti-collision en marche avant comme en marche arrière via `/global_control` ([§ 6.1](#61-configuration-à-la-volée-du-comportement-du-robot--service)) :
 
 <!-- code:TABDK/src/nodes/detector.cpp -->
 ```cpp
@@ -704,7 +695,7 @@ void prevent_collision() {
 }
 ```
 
-Le diagramme ci-dessous résume l'ensemble des échanges finaux du nœud `detector.cpp` (paramètres YAML, LiDAR `/scan`, vitesse `/cmd_vel`, état `/pause`, appel au service `/global_control` et marqueurs RViz `/obstacles_markers`) :
+Le diagramme ci-dessous résume l'ensemble des échanges finaux du nœud `detector.cpp` :
 
 ```mermaid
 flowchart TB
@@ -750,9 +741,9 @@ flowchart TB
 
 ---
 
-## 5. Services, actions et gestion de trajectoires
+## 6. Services, actions et gestion de trajectoires
 
-### 5.1 Configuration à la volée du comportement du robot — Service
+### 6.1 Configuration à la volée du comportement du robot : service
 
 #### Énoncé
 
@@ -760,7 +751,7 @@ Définir un service ROS personnalisé (`.srv`, génération dans `CMakeLists.txt
 
 #### Choix fonctionnels
 
-- **Écart assumé par rapport à l'énoncé** : plutôt qu'un unique service `/set_behavior` mêlant mode et commandes ponctuelles, séparation en **deux services spécialisés** afin que `detector.cpp` puisse mettre le robot en pause sans connaître ni modifier le mode courant :
+- **Écart choisi par rapport à l'énoncé** : plutôt que de regrouper les changements de mode et les commandes globales dans un unique service `/set_behavior`, nous avons séparé ces responsabilités en **deux services distincts**. Cela permet notamment à `detector.cpp` ([§ 5](#5-perception-de-lenvironnement-à-laide-du-lidar-capteur-de-distance-laser-360-lds-01---lds-02)) de mettre le robot en pause ou de le relancer sans connaître ni modifier le mode actif :
 
 <!-- code:TABDK/srv/set_mode.srv -->
 ```text
@@ -778,24 +769,24 @@ bool success
 string mode_courant
 ```
 
-- **Topics *latched* (`/mode`, `/pause`)** : publiés avec `advertise(..., 1, true)` par `controleur.cpp` afin que tout nœud démarrant après le contrôleur reçoive immédiatement le dernier état sans avoir besoin d'un service de lecture.
+- **Topics *latched* (`/mode`, `/pause`)** : nous publions ces deux topics avec `advertise(..., 1, true)` dans `controleur.cpp` afin que chaque nœud qui démarre après le contrôleur reçoive immédiatement le dernier état connu.
 
 #### Première implémentation
 
-Déclaration des deux `.srv` dans `CMakeLists.txt` (`add_service_files`, `generate_messages`), serveurs intégrés directement dans `controleur.cpp` et appelés par un nœud `keyboard.cpp`, avec validation par `rosservice call` puis sur le robot réel.
+Nous avons déclaré `set_mode.srv` et `global_control.srv` dans `CMakeLists.txt` (`add_service_files`, `generate_messages`), implémenté les serveurs directement dans `controleur.cpp` et les appels dans un nœud `keyboard.cpp`, puis validé les appels par `rosservice call` et sur le robot réel.
 
 #### Difficultés rencontrées
 
-- **Confusion entre mode et pause** : au départ, `PAUSE` était géré comme un mode dans `controleur.cpp`, ce qui compliquait la reprise du mode précédent ; la pause a été découplée dans un drapeau indépendant `pause_active` piloté exclusivement par `/global_control`.
-- **Désynchronisation multi-clients** : comme `client_services.cpp` bascule `manual ↔ auto` et `pause ↔ play`, son état local devenait faux dès qu'un autre nœud (`detector` ou un terminal) appelait le service ; résolu par l'abonnement aux topics latched `/mode`, `/pause` et `/reset`.
-- **Découplage architecture** : extraction des serveurs dans `serveur_services.cpp`, séparation du client dans `client_services.cpp`, et passage des modes en `std::string` pour supprimer les conversions `enum ↔ string`.
+- **Séparation entre mode et pause** : au départ, la pause était encore gérée comme un mode dans `controleur.cpp`, ce qui compliquait les changements de mode en pause (voir l'évolution détaillée en [§ 4.1](#41-les-modes-de-navigation)). Nous avons donc découplé `pause_active` pour qu'il soit piloté uniquement par `/global_control`.
+- **Désynchronisation multi-clients** : comme `client_services.cpp` bascule `manual ↔ auto` et `pause ↔ play` à l'appui des touches `m` et `p`, son état local devenait faux dès qu'un autre client (`detector.cpp` ou `rosservice call`) appelait un service. Nous avons résolu cela en l'abonnant aux topics *latched* `/mode`, `/pause` et `/reset`.
+- **Séparation des responsabilités** : nous avons ensuite extrait les serveurs dans la classe `ServeurServices` ([§ 8.1](#81-motivation-et-étapes-du-découpage)), séparé `client_services.cpp` de `keyboard_input.cpp` ([§ 4.2](#42-mode-navigation-manuelle)) et remplacé l'ancienne `enum` des modes par des `std::string`.
 
 #### Version finale
 
-- Côté serveur : `ServeurServices` (`TABDK/src/serveur_services.cpp`) au sein du nœud `controleur` *(voir [§ 7. Migration architecturale](#7-migration-architecturale--du-monolithe-controleurcpp-au-système-de-classes) pour l'enregistrement des callbacks membres et l'injection de `Modes` et `ServeurAction`)*.
-- Côté client : `TABDK/src/nodes/client_services.cpp` (touches `m`, `p`, `r`) et `TABDK/src/nodes/detector.cpp` (arrêt/reprise anti-collision).
+- Côté serveur : la classe `ServeurServices` (`TABDK/src/serveur_services.cpp`) expose `/set_mode` et `/global_control` dans le nœud `controleur` *(voir [§ 8.3](#83-patron-init-différé-et-association-des-classes-par-pointeurs) pour les callbacks membres et l'association avec `Modes` et `ServeurAction`)*.
+- Côté client : `TABDK/src/nodes/client_services.cpp` gère les touches `m`, `p`, `r`, et `TABDK/src/nodes/detector.cpp` appelle `/global_control` pour l'anti-collision.
 
-Le schéma ci-dessous illustre les dépendances de compilation (`parametres.cpp`, `modes.cpp`, headers générés depuis `set_mode.srv` et `global_control.srv`) et les échanges ROS du nœud `client_services.cpp` :
+Le schéma ci-dessous présente les dépendances de compilation et les échanges ROS du nœud `client_services.cpp` :
 
 ```mermaid
 flowchart TB
@@ -843,7 +834,7 @@ flowchart TB
 
 ---
 
-### 5.2 Navigation — Serveur d'action
+### 6.2 Navigation : serveur d'action
 
 #### Énoncé
 
@@ -851,7 +842,7 @@ Créer une action ROS (`action/Move.action`, compilation en deux temps dans `CMa
 
 #### Choix fonctionnels
 
-- Définition dans `TABDK/action/Move.action` d'une messagerie adaptée à la simulation et au TB3 réel (le champ batterie, indisponible en simulation, est remplacé par l'état `mode` et `pause`) :
+- Nous avons adapté `TABDK/action/Move.action` à la simulation et au TB3 réel (en remplaçant le niveau de batterie, non disponible en simulation, par le `mode` courant et l'état de `pause`) :
 
 <!-- code:TABDK/action/Move.action -->
 ```text
@@ -871,29 +862,29 @@ string mode                    # "manual" ou "auto"
 bool pause
 ```
 
-- **Serveur non-bloquant intégré à la boucle principale** : plutôt qu'une boucle bloquante dans un callback d'exécution, `SimpleActionServer<MoveAction>` enregistre `execute()` (qui accepte le goal et fixe la cible dans `Mouvements`) et `preempter()`, tandis que `ServeurAction::step()` est appelé à chaque tour du `while (ok())` de `controleur.cpp`.
-- **Temps de trajet hors pause** : `ticks_ecoules` n'est incrémenté dans `step()` que si `!modes->paused()`, puis converti en ms par `params->ticksToMs()`.
-- Déport de l'affichage des logs de suivi et de bilan vers `client_action.cpp` pour garder la sortie du contrôleur lisible.
+- **Serveur non-bloquant intégré à la boucle principale** : plutôt que de bloquer dans un callback d'exécution, nous utilisons `SimpleActionServer<MoveAction>` avec `registerGoalCallback` (`execute()`) et `registerPreemptCallback` (`preempter()`), tandis que `ServeurAction::step()` est appelé à chaque itération de `controleur.cpp`.
+- **Temps de trajet hors pause** : nous incrémentons `ticks_ecoules` dans `step()` uniquement lorsque `!modes->paused()`, puis nous convertissons ce compteur en millisecondes avec `params->ticksToMs()`.
+- Nous avons déplacé l'affichage des logs de suivi et de résultat côté `client_action.cpp` afin de garder les logs du contrôleur lisibles.
 
 #### Première implémentation
 
-Validation d'un test unitaire client/serveur isolé après la compilation en deux temps (`cm`), puis adaptation de `Move.action` (ajout vitesse, mode, pause) et intégration dans le contrôleur pour piloter `Mouvements` sur des waypoints envoyés par `client_action`.
+Nous avons d'abord validé un test unitaire isolé entre client et serveur d'action après la compilation en deux temps (`cm`). Nous avons ensuite enrichi `Move.action` (ajout de `vitesse`, `mode`, `pause`), complété `Odometry` avec `vitesse` ([§ 4.3.1](#431-localisation-du-tb3)), et intégré le serveur dans le contrôleur pour piloter `Mouvements` sur les waypoints envoyés par `client_action`.
 
 #### Difficultés rencontrées
 
-- **Feedbacks reçus en retard** : lors d'un reset ou d'une fin de goal, des feedbacks tardifs continuaient d'être traités côté client ; corrigé en ajoutant `goal_termine`, `stopTrackingGoal()` et `ROS_INFO_THROTTLE(1.0)`.
-- **Temps de trajet faussé par les pauses** : mesurer le temps avec `ros::Time::now()` comptabilisait les périodes de pause (opérateur ou obstacle) ; résolu en comptant uniquement les ticks de boucle où `!modes->paused()`, convertis en millisecondes via `ticksToMs()`.
-- **Rejet de goals après reset Gazebo** : après `/gazebo/reset_simulation`, l'horloge simulée revient à `0`, mais `SimpleActionServer` conserve les horodatages des goals précédents et refuse les nouveaux. Résolu par `ServeurAction::redemarrer()`, qui détruit et recrée proprement le serveur lors d'un reset global (`delete server; demarrer();`).
-- **Association de `ServeurAction` aux autres classes** : `SimpleActionServer` n'ayant pas de constructeur par défaut, son intégration dans l'architecture objet a imposé une allocation dynamique avec destructeur, la liaison des callbacks membres via `boost::bind` et l'injection des 5 autres classes du contrôleur *(détails techniques en [§ 7.4 Cas critique : intégration de `ServeurAction`](#74-cas-critique--intégration-de-serveuraction))*.
-- **Cible résiduelle après changement de mode** : `states->target_active` est remis à `false` dès qu'un goal est atteint afin qu'un changement de mode ne relance pas une ancienne cible.
+- **Feedbacks reçus en retard** : après un reset ou la fin d'un goal, des feedbacks tardifs continuaient parfois d'arriver côté client. Nous avons corrigé cela en ajoutant le drapeau `goal_termine`, `stopTrackingGoal()` et `ROS_INFO_THROTTLE(1.0)`.
+- **Temps de trajet faussé pendant la pause** : calculer la durée par différence d'horodatages comptait le temps passé en pause (manuelle ou anti-collision). Le comptage par ticks actifs a résolu ce problème.
+- **Serveur bloqué dans un état incohérent après un reset** : lors d'un reset du robot (en particulier avec `/gazebo/reset_simulation` qui remet l'horloge simulée à `0`), le goal pouvait être annulé mais le serveur d'action restait parfois bloqué dans un état incohérent, perturbant les goals suivants. Pour résoudre précisément ce problème, nous avons ajouté la fonction `ServeurAction::redemarrer()` qui détruit et recrée proprement l'instance du serveur lors d'un reset global ([§ 4.3.1](#431-localisation-du-tb3)). En revanche, si un goal est annulé pendant une pause, nous nous contentons simplement d'annuler ce goal.
+- **Association de `ServeurAction` aux autres classes** : `SimpleActionServer` n'ayant pas de constructeur par défaut, son intégration dans notre découpage en classes a demandé une allocation dynamique, un destructeur et la liaison des callbacks membres via `boost::bind` *(voir [§ 8.4](#84-cas-critique--intégration-de-serveuraction))*.
+- **Cible résiduelle après changement de mode** : nous remettons `states->target_active` à `false` dès qu'un goal est atteint afin qu'un changement de mode ne relance pas une ancienne cible.
 
 #### Version finale
 
-`ServeurAction` (`TABDK/src/serveur_action.cpp`) est cadencé par `controleur.cpp` (`step()`) et dialogue sur `/moving` avec `TABDK/src/nodes/client_action.cpp`, avec gestion complète de la préemption, de la pause et du reset *(le schéma complet des interactions de `client_action.cpp` avec le serveur d'action et `/robot_path` est présenté en [§ 5.3](#53-gestion-des-trajectoires--path))*.
+`ServeurAction` (`TABDK/src/serveur_action.cpp`) est cadencé par `controleur.cpp` (`step()`) et échange sur `/moving` avec `TABDK/src/nodes/client_action.cpp`, avec gestion de la préemption, de la pause et de la réinitialisation *(le schéma complet des interactions de `client_action.cpp` est présenté en [§ 6.3](#63-gestion-des-trajectoires--path))*.
 
 ---
 
-### 5.3 Gestion des trajectoires — Path
+### 6.3 Gestion des trajectoires : Path
 
 #### Énoncé
 
@@ -901,27 +892,25 @@ Faire de `client_action.cpp` un gestionnaire de mission abonné à un topic `nav
 
 #### Choix fonctionnels
 
-- Unification dans `client_action.cpp` d'une unique file `std::vector<Pose2D> trajectoire` alimentée selon le mode actif :
-  - en mode `manual` : construction interactive au clavier (flèches pour déplacer `waypoint_virtuel` par pas de `waypoint_step`, `w` pour empiler, `x` pour vider) ;
-  - en mode `auto` : réception d'un `nav_msgs/Path` sur `/robot_path` (nom aligné sur `path_generator` pour un branchement direct sans nœud intermédiaire), qui annule le goal en cours et remplace la file.
-- **Mécanismes techniques de robustesse (hors énoncé)** :
-  - **Annulation différée** : `SimpleActionClient("moving", false)` partage le fil unique de `spinOnce()` avec les callbacks clavier, `/reset` et `/robot_path`. Les callbacks ne font donc jamais `cancelGoal()` directement : ils lèvent `annulation_demandee`, consommé de manière sûre dans la boucle principale par `traiterAnnulation()`.
-  - **Verrou `sequence_blocked`** : si un waypoint échoue ou est préempté (`state != SUCCEEDED`), la file n'est pas dépilée aveuglément ; l'envoi est suspendu jusqu'à un `/reset` ou une nouvelle trajectoire.
-- Filtrage strict par `/mode` : les touches clavier sont ignorées en mode `auto`, et les trajectoires `/robot_path` sont ignorées en mode `manual`.
+- Nous avons unifié la gestion des waypoints dans `client_action.cpp` autour d'un unique vecteur `std::vector<Pose2D> trajectoire` :
+  - en mode `manual`, nous construisons la file au clavier (flèches pour déplacer `waypoint_virtuel` par pas de `waypoint_step`, `w` pour empiler, `x` pour vider) ;
+  - en mode `auto`, nous recevons un `nav_msgs/Path` sur `/robot_path` (nom aligné sur `path_generator` de [§ 7.2](#72-navigation-à-base-de-slam)). Lorsqu'une nouvelle trajectoire arrive alors qu'une précédente est encore en cours, nous avons fait le choix fonctionnel d'**écraser complètement l'ancienne trajectoire** (annulation du goal en cours et remplacement de la file), plutôt que de la mettre en attente.
+- Comme `SimpleActionClient("moving", false)` partage le fil unique de `spinOnce()` avec nos callbacks clavier, `/reset` et `/robot_path`, nos callbacks n'appellent pas `cancelGoal()` directement : ils lèvent un drapeau `annulation_demandee` exécuté proprement dans la boucle principale par `traiterAnnulation()`.
+- Nous filtrons strictement les entrées selon `/mode` : les touches clavier sont ignorées en mode `auto`, et les messages `/robot_path` sont ignorés en mode `manual`.
 
 #### Première implémentation
 
-Abonnement initial au topic `/trajectoire` (`nav_msgs/Path`), extraction des `(x, y)` dans `trajectoire`, envoi du premier élément (`trajectoire[0]`) et suppression à la validation (`SUCCEEDED`), avant renommage du topic en `/robot_path` lors du raccordement à `AStar-ROS`.
+Nous nous étions d'abord abonnés à `/trajectoire` (`nav_msgs/Path`), en extrayant les positions `(x, y)` dans `trajectoire`, en envoyant `trajectoire[0]` via `client.sendGoal(...)` puis en le retirant dès que l'état passait à `SUCCEEDED`. Nous avons ensuite renommé le topic en `/robot_path` lors du branchement sur `AStar-ROS` ([§ 7.2](#72-navigation-à-base-de-slam)).
 
 #### Difficultés rencontrées
 
-- **Inversion du signe de `y` au clavier** : dans la première version des waypoints manuels, les flèches gauche et droite incrémentaient `y` à l'envers par rapport au repère direct de ROS (`+x` devant, `+y` à gauche).
-- **Annulation asynchrone depuis les callbacks** : appeler `cancelGoal()` directement dans `resetCallback` ou `robotPathCallback` pouvait créer des conflits avec la boucle `spinOnce()` ; résolu par le couple `annulation_demandee` / `traiterAnnulation()`.
-- **Comportement en cas d'échec de goal** : l'ajout de `sequence_blocked` évite d'enchaîner sur un waypoint suivant après une annulation ou un échec.
+- **Inversion du signe de `y` au clavier** : au début, nos flèches gauche et droite incrémentaient `y` à l'envers par rapport au repère direct de ROS (`+x` devant, `+y` à gauche). Nous avons corrigé le signe dans `keyboardCallback()`.
+- **Annulation depuis les callbacks** : appeler `cancelGoal()` directement dans `resetCallback` ou `robotPathCallback` créait des conflits avec la boucle `spinOnce()`, ce qui nous a amenés à épurer les callbacks et à différer l'annulation via `traiterAnnulation()`.
+- **Arrêt de séquence sur échec de goal** : avant nos corrections sur la réinitialisation du serveur d'action ([§ 6.2](#62-navigation--serveur-daction)), certains goals échouaient en cours de route ; nous avions ajouté un indicateur `sequence_blocked` pour éviter d'enchaîner sur les points suivants après un échec, un état dans lequel nous ne sommes plus censés arriver en fonctionnement normal.
 
 #### Version finale
 
-`TABDK/src/nodes/client_action.cpp` orchestre l'ensemble des missions multi-waypoints (clavier en `manual`, `/robot_path` en `auto`) vers l'action `/moving`, avec attente non-bloquante du serveur (`attendreServeur()`) :
+`TABDK/src/nodes/client_action.cpp` gère l'envoi séquentiel des waypoints (clavier en `manual`, `/robot_path` en `auto`) vers `/moving`, avec attente non-bloquante du serveur (`attendreServeur()`) :
 
 <!-- code:TABDK/src/nodes/client_action.cpp -->
 ```cpp
@@ -939,11 +928,11 @@ if (goal_active && client.getState().isDone()) {
   if (client.getState() == SimpleClientGoalState::SUCCEEDED)
     trajectoire.erase(trajectoire.begin());
   else
-    sequence_blocked = true; // suspend la séquence en cas d'échec
+    sequence_blocked = true;
 }
 ```
 
-Le diagramme ci-dessous présente la version finale complète des interactions de `client_action.cpp` (paramètres, inclusions `parametres.cpp`/`calculs.cpp`, header `Move.action`, entrées clavier et `/robot_path`, synchronisation `/mode`/`/reset`, et dialogue bidirectionnel `/moving` avec `serveur_action.cpp`) :
+Le diagramme ci-dessous présente la version finale complète des interactions de `client_action.cpp` :
 
 ```mermaid
 flowchart TB
@@ -997,9 +986,9 @@ flowchart TB
 
 ---
 
-## 6. Évitement d'obstacle et planification de trajectoire — SLAM
+## 7. Évitement d'obstacle et planification de trajectoire : SLAM
 
-### 6.1 SLAM (Cartographie et Localisation simultanées)
+### 7.1 SLAM (Cartographie et Localisation simultanées)
 
 #### Énoncé
 
@@ -1007,7 +996,7 @@ Cartographier l'environnement (maison Gazebo en simulation ou labyrinthe de la s
 
 #### Choix fonctionnels
 
-- **Automatisation des tests et contournement de TheConstructSim (`tabdk.sh`)** : afin de simplifier les lancements répétitifs en simulation comme sur le robot réel, nous avons écrit le script utilitaire `tabdk.sh` (placé à la racine du projet). Il injecte sans doublon dans `~/.bash_aliases` les raccourcis de compilation et de lancement (`cm`, `slam`, `teleop`, `robot_vide`, `robot_maison`, `astar`, `tabdk`, `tabdk_rviz`), source le workspace catkin et résout un blocage propre à la plateforme de simulation **TheConstructSim** : les paquets `ros-noetic-turtlebot3-navigation` et `ros-noetic-turtlebot3-slam` n'y étaient pas préinstallés (et devaient être réinstallés à chaque session), mais `apt` était bloqué faute de clé GPG ROS valide. Le script débloque `apt` via le serveur de clés puis installe automatiquement les deux paquets :
+- **Script utilitaire `tabdk.sh`** : pour simplifier nos tests répétés en simulation comme sur le robot réel, nous avons écrit le script `tabdk.sh` à la racine du projet. Il ajoute sans doublon dans `~/.bash_aliases` nos raccourcis de compilation et de lancement (`cm`, `slam`, `teleop`, `robot_vide`, `robot_maison`, `astar`, `tabdk`, `tabdk_rviz`), source le workspace catkin et automatise l'installation des paquets nécessaires sur **TheConstructSim** ([§ 1.1](#11-simulation-en-ligne--theconstructsim)) :
 
 <!-- code:tabdk.sh -->
 ```bash
@@ -1024,27 +1013,28 @@ sudo apt update
 sudo apt install -y ros-noetic-turtlebot3-navigation ros-noetic-turtlebot3-slam
 ```
 
-- Archivage des cartes directement dans `AStar-ROS/map/` pour basculer simplement d'un environnement à l'autre dans `AStar-ROS/launch/run.launch`, complété par un outillage de synchronisation locale → SSH (`sync_robot.ps1`) pour déployer rapidement sur le TB3 réel.
+- Nous avons rangé nos cartes dans `AStar-ROS/map/` afin de passer facilement de la simulation au labyrinthe réel dans `AStar-ROS/launch/run.launch`.
 
 #### Première implémentation
 
-Nous avons consacré environ **30 minutes** à cartographier soigneusement un environnement personnalisé complet en simulation (`map_simu_tabdk`, en complément de `map_tb3_house`), puis nous avons réalisé la cartographie SLAM du **labyrinthe physique de la salle 4105** (`map_4105`), suivie de la sauvegarde par `map_saver`.
+Nous avons passé environ **30 minutes** à cartographier proprement un environnement personnalisé en simulation (`map_simu_tabdk`, en plus de `map_tb3_house`), puis nous avons réalisé la cartographie SLAM du **labyrinthe physique de la salle 4105** (`map_4105`) et sauvegardé les grilles avec `map_saver`.
 
 > *[Capture d'écran à insérer : carte SLAM personnalisée réalisée en simulation (`map_simu_tabdk`) et carte du labyrinthe physique de la salle 4105 (`map_4105_00`)]*
 
 #### Difficultés rencontrées
 
-- **Environnement TheConstructSim bridé** : impossibilité initiale d'installer `turtlebot3-slam` et `turtlebot3-navigation` via `apt` à cause de la clé GPG manquante, et réinitialisation de l'environnement entre deux sessions — résolu durablement par `tabdk.sh`.
-- **Déformation des murs lors de rotations rapides** : la téléopération trop vive induisait de la dérive odométrique et dédoublait les parois ; des déplacements lents et réguliers (environ 30 min pour la carte personnalisée en simulation) ont été indispensables pour obtenir des grilles d'occupation nettes.
-- **Décalage entre le repère de la carte SLAM et la position initiale du robot** : si le robot n'est pas réinitialisé exactement sur son point de départ SLAM, son repère `/odom` ne coïncide plus avec l'origine de la carte dans RViz (point critique détaillé en § 6.2).
+- **Paquets absents et `apt` bridé sur TheConstructSim** : sur la simulation en ligne, `ros-noetic-turtlebot3-slam` et `ros-noetic-turtlebot3-navigation` n'étaient pas préinstallés et disparaissaient entre deux sessions, tandis qu'`apt` refusait de les télécharger faute de clé GPG ROS valide. Nous avons contourné ce blocage en intégrant `apt-key adv`, `apt update` et `apt install` directement dans `tabdk.sh`.
+- **Perte accidentelle de la carte lors de la synchronisation** : lors de la première sauvegarde sur le robot réel, notre synchronisation miroir a effacé la carte qui n'avait pas encore été copiée en local (voir la remarque et la procédure adoptée en [§ 1.2](#12-développement-local-et-déploiement-sur-le-robot--vs-code-github-et-ssh)).
+- **Déformation des murs lors de rotations rapides** : une téléopération trop vive provoquait de la dérive odométrique et dédoublait les murs ; nous avons dû avancer et pivoter lentement dans chaque recoin pour obtenir des cartes exploitables.
+- **Alignement de l'origine de la carte** : sans point de départ précis lors du SLAM, le repère de la carte ne coïncidait plus avec l'odométrie du robot au moment de la navigation (nous détaillons ce point et sa résolution en [§ 7.2](#72-navigation-à-base-de-slam)).
 
 #### Version finale
 
-Un ensemble de cartes validées (simulation et réel) est disponible dans `AStar-ROS/map/`, avec `map_4105_00.pgm/.yaml` réalisée à partir d'un point de départ physique marqué au sol (origine `(0, 0)`) et sélectionnée par défaut dans `AStar-ROS/launch/run.launch`.
+Nous disposons dans `AStar-ROS/map/` de cartes validées pour la simulation et pour la salle 4105, avec `map_4105_00.pgm/.yaml` réalisée à partir d'un repère physique au sol en `(0, 0)` et chargée par défaut dans `AStar-ROS/launch/run.launch`.
 
 ---
 
-### 6.2 Navigation à base de SLAM
+### 7.2 Navigation à base de SLAM
 
 #### Énoncé
 
@@ -1054,31 +1044,31 @@ Importer et compiler `AStar-ROS` (`roslaunch path_generator run.launch`), calibr
 
 #### Choix fonctionnels
 
-- Branchement direct entre `path_generator` (`AStar-ROS`) et `client_action` (`TABDK`) sur `/robot_path`, avec une vue RViz dédiée (`AStar-ROS/rviz/turtlebot3_navigation_tabdk.rviz`).
-- **Marge de sécurité statique (`ecart_obstacle`)** : ajout d'un paramètre YAML dans `AStar-ROS/config/params.yaml` (`ecart_obstacle: 4` cases, soit 20 cm pour une résolution de 5 cm). Dans `isCollision_in_OCG()`, toute cellule $(x, y)$ est déclarée en collision si un carré $(2 \cdot \text{ecart} + 1)^2$ autour d'elle touche une cellule occupée, inconnue (`ocg.data != 0`) ou hors carte.
-- **Refonte algorithmique d'A\*** (`a_star.cpp`) : remplacement de l'implémentation d'origine (listes linéaires en $O(n)$ + timeout arbitraire d'1 s) par une `std::priority_queue` et deux tableaux plats `costs` et `parents` indexés par `y * width + x` (complexité $O((V + E)\log V)$, zéro fuite mémoire, exploration complète et diagnostics explicites si départ/but bloqué).
-- **Algorithme original de lissage optimal (`path_simplifier.cpp`)** : l'énoncé demandant une trajectoire plus lisse sans imposer de méthode, nous avons conçu un module dédié combinant deux briques :
-  1. `hasLineOfSight(start, end)` : supercover discret exact sur grille (arithmétique entière `(1 + 2*ix)*ny` vs `(1 + 2*iy)*nx`, sans imprécision flottante) vérifiant chaque cellule traversée — et **les deux cellules latérales** lorsqu'un segment passe exactement par un coin ;
-  2. `simplifyPath(path)` : parcours en largeur (**BFS**) sur les indices du chemin A\*, reliant un point `from` à tout point `to > from` visible en ligne droite. Le BFS garantit mathématiquement le **nombre minimal de segments droits** (diagonales incluses) tout en respectant partout la marge `ecart_obstacle`.
-- **Sécurité face aux obstacles dynamiques** : le planificateur A* ne connaissant que la carte statique, la protection temps réel est assurée par `detector.cpp` (pause automatique avant impact et reprise dès libération du passage).
+- Nous sommes partis du package `AStar-ROS` fourni dans le sujet (`path_generator`), que nous avons branché directement sur notre nœud `client_action` ([§ 6.3](#63-gestion-des-trajectoires--path)) via `/robot_path` et complété par une vue RViz dédiée (`AStar-ROS/rviz/turtlebot3_navigation_tabdk.rviz`).
+- **Marge de sécurité statique (`ecart_obstacle`)** : nous avons ajouté un paramètre `ecart_obstacle` dans `AStar-ROS/config/params.yaml` (`4` cases, soit 20 cm pour une résolution de 5 cm). Dans `isCollision_in_OCG()`, une cellule $(x, y)$ est considérée en collision dès qu'un carré $(2 \cdot \text{ecart} + 1)^2$ autour d'elle touche une cellule occupée, inconnue (`ocg.data != 0`) ou hors carte.
+- **Refonte de la recherche A\* (`a_star.cpp`)** : nous avons remplacé la recherche linéaire d'origine (et son timeout arbitraire d'1 s) par une `std::priority_queue` et deux tableaux plats `costs` et `parents` indexés par `y * width + x` (complexité $O((V + E)\log V)$, exploration complète et diagnostics ROS clairs si le départ ou la destination sont bloqués).
+- **Lissage de trajectoire par ligne de vue et BFS (`path_simplifier.cpp`)** : nous avons écrit un module supplémentaire composé de deux fonctions :
+  1. `hasLineOfSight(start, end)` : un lancer de rayon discret exact sur grille (arithmétique entière `(1 + 2*ix)*ny` vs `(1 + 2*iy)*nx`), qui vérifie chaque cellule traversée ainsi que **les deux cellules latérales** lorsqu'un segment passe exactement par un coin ;
+  2. `simplifyPath(path)` : un parcours en largeur (**BFS**) sur les indices du chemin A\*, qui relie deux points dès qu'ils sont visibles en ligne droite. Le BFS garantit le **nombre minimal de segments droits** (diagonales incluses) tout en respectant la marge `ecart_obstacle`.
+- **Obstacles dynamiques** : le planificateur A\* ne connaissant que la carte statique, la sécurité face aux obstacles imprévus est assurée en temps réel par notre nœud `detector.cpp` ([§ 5](#5-perception-de-lenvironnement-à-laide-du-lidar-capteur-de-distance-laser-360-lds-01---lds-02)).
 
 #### Première implémentation
 
-Import du package `AStar-ROS` d'origine (`map_server`, `amcl`, `rviz`, `path_generator`) et connexion de `/robot_path` à `client_action.cpp`.
+Nous avons d'abord importé le package `AStar-ROS` brut (`map_server`, `amcl`, `rviz`, `path_generator`) et raccordé son topic `/robot_path` à notre nœud `client_action.cpp`.
 
 #### Difficultés rencontrées
 
-- **Trajectoire en escalier et collisions avec les murs** : le A* fourni générait un waypoint tous les 5 cm en 4 directions et rasait les parois. Le robot s'arrêtait sans cesse et accrochait les coins. L'ajout combiné d'`ecart_obstacle`, de la réécriture d'`a_star.cpp` (sur la branche `astar_amélioré`) et de `path_simplifier.cpp` a divisé drastiquement le nombre de waypoints et supprimé les frottements.
-- **Décalage de position entre Gazebo et RViz en simulation** : en simulation, le robot ne se trouvait pas à la même position dans son monde Gazebo que sur la carte affichée par RViz, obligeant à utiliser `2D Pose Estimate` à chaque lancement pour recalibrer sa position initiale. Nous avons résolu ce problème en adaptant les coordonnées de spawn / pose initiale directement dans le fichier XML de lancement (`initial_pose_x`, `initial_pose_y`, `initial_pose_a` dans `AStar-ROS/launch/run.launch`) et l'origine de la carte.
-- **Dérive systématique sur le terrain réel (repère LiDAR/carte vs repère odométrie)** : sur le labyrinthe physique, l'utilisation de `2D Pose Estimate` échouait systématiquement : le robot se décalait au fur et à mesure qu'il suivait la trajectoire issue du `2D Nav Goal`. Après recherche (et une tentative infructueuse d'ajouter un `tf::TransformListener` `map → odom` dans `odometry.cpp`, ensuite annulée par `revert`), nous avons identifié que le LiDAR / RViz exprimaient la carte dans un repère différent de celui de `/odom` utilisé par notre contrôleur. Sur conseil de l'enseignant, la solution fiable a consisté à :
-  1. matérialiser un **marquage au sol** à l'emplacement exact de départ du SLAM lors de la cartographie (`map_4105_00`) ;
-  2. poser le robot sur ce repère et le **réinitialiser** (reset complet incluant l'odométrie) pour faire coïncider exactement son repère `/odom` avec l'origine `(0, 0)` de la carte dans RViz ;
-  3. ajuster empiriquement la position physique du robot sur le marquage — sans utiliser `2D Pose Estimate` — jusqu'à obtenir un alignement parfait après reset, puis ramener les coordonnées initiales du fichier `.launch` XML à `(0, 0, 0)`.
-- **Obstacles imprévus hors carte SLAM** : un obstacle dynamique placé dans le labyrinthe reste invisible pour `path_generator` ; le couplage avec `detector.cpp` (via `/global_control`) évite toute collision avant ou arrière.
+- **Trajectoire en escalier et frottements contre les murs** : le A\* d'origine générait un waypoint tous les 5 cm en 4 directions et rasait les parois, ce qui faisait s'arrêter le robot sans cesse et toucher les coins. L'ajout d'`ecart_obstacle`, la refonte de `a_star.cpp` (branche `astar_amélioré`) et le lissage dans `path_simplifier.cpp` ont fortement réduit le nombre de waypoints et supprimé les frottements.
+- **Décalage entre Gazebo et RViz en simulation** : en simulation, le robot n'apparaissait pas à la même position dans son monde Gazebo que sur la carte RViz, nous obligeant à utiliser `2D Pose Estimate` à chaque lancement. Nous avons réglé ce problème en adaptant les coordonnées de spawn / pose initiale dans le fichier launch XML (`initial_pose_x`, `initial_pose_y`, `initial_pose_a` dans `AStar-ROS/launch/run.launch`) et l'origine de la carte.
+- **Dérive sur le terrain réel (repère LiDAR/carte vs repère odométrie)** : sur le labyrinthe physique, utiliser `2D Pose Estimate` ne suffisait pas : le robot se décalait progressivement en suivant la trajectoire du `2D Nav Goal`. Après avoir cherché (y compris en tentant d'ajouter un `tf::TransformListener` `map → odom` dans `odometry.cpp`, tentative ensuite retirée par `revert`), nous avons compris que le LiDAR et RViz travaillaient dans un repère différent de notre repère `/odom`. Après échange avec l'enseignant, nous avons adopté une procédure fiable :
+  1. poser un **marquage physique au sol** à l'emplacement exact de départ du SLAM (`map_4105_00`) ;
+  2. placer le robot sur ce repère et déclencher un **reset du robot (et donc de son odométrie)** pour faire correspondre l'origine `/odom` avec l'origine `(0, 0)` de la carte dans RViz ;
+  3. ajuster empiriquement la position physique du robot sur le marquage, sans utiliser `2D Pose Estimate`, jusqu'à ce qu'il apparaisse pile sur l'origine RViz après un reset, en réglant les coordonnées initiales du XML à `(0, 0, 0)`.
+- **Obstacles dynamiques hors carte** : un obstacle ajouté dans le labyrinthe après le SLAM n'apparaît pas sur la carte statique ; le couplage avec `detector.cpp` ([§ 5](#5-perception-de-lenvironnement-à-laide-du-lidar-capteur-de-distance-laser-360-lds-01---lds-02)) permet au robot de s'arrêter automatiquement devant lui puis de repartir quand la voie se libère.
 
 #### Version finale
 
-Le pipeline complet de navigation autonome relie `AStar-ROS` amélioré et `TABDK` de la façon suivante :
+Le pipeline complet relie `AStar-ROS` amélioré et `TABDK` de la façon suivante :
 
 ```mermaid
 flowchart TB
@@ -1121,25 +1111,29 @@ for (size_t head = 0; head < queue.size() && parent[count - 1] == count; ++head)
 }
 ```
 
-Le robot planifie son itinéraire depuis RViz (`2D Nav Goal`), suit une trajectoire simplifiée et fluide sans raser les murs, et s'arrête automatiquement devant tout obstacle dynamique.
+Le robot planifie son itinéraire depuis RViz (`2D Nav Goal`), suit une trajectoire simplifiée et fluide loin des murs, et s'arrête automatiquement devant tout obstacle dynamique.
 
 ---
 
-## 7. Migration architecturale : du monolithe `controleur.cpp` au système de classes
+## 8. Migration architecturale : passage d'un fichier contrôleur unique à un découpage en classes
 
-### 7.1 Motivation et étapes de la migration
+### 8.1 Motivation et étapes du découpage
 
-Au démarrage du projet (exercices 2.3 à 3.3), tout le code était rassemblé dans un unique `controleur.cpp` qui a dépassé **700 lignes** (variables globales, callbacks ROS, conversions mathématiques, odométrie, clavier, modes, FSM et asservissements). Dès l'ajout des services puis du serveur d'action, cette structure monolithique est devenue difficile à faire évoluer et à déboguer.
+Dans le cadre du cours, il ne nous était pas demandé de découper le code en classes distinctes. Au démarrage du projet ([§ 3](#3-pilotage-de-base-et-paramétrage-du-tb3) et [§ 4](#4-contrôle-et-navigation-du-tb3)), tout notre code tenait dans un fichier `controleur.cpp` unique, qui a fini par dépasser **700 lignes** (variables globales, callbacks ROS, calculs trigonométriques, odométrie, clavier, modes, FSM et asservissements). Dès que nous avons ajouté les services puis le serveur d'action, cette structure monolithique est devenue difficile à lire et à faire évoluer.
 
-La migration vers l'architecture objet actuelle s'est effectuée en **trois étapes successives** :
+Nous aurions pu nous contenter de découper ce fichier en plusieurs fichiers `.cpp` contenant des fonctions et des variables globales concaténés dans un ordre précis. Nous n'avons pas retenu cette approche, car nous avions déjà beaucoup de variables globales : lorsqu'une fonction en modifie une, il devient difficile de savoir quelles autres parties du programme dépendent de son état et dans quel ordre les fonctions doivent s'exécuter.
+
+Nous avons donc préféré profiter de cette séparation pour passer à des **classes distinctes**, où chaque entité possède ses propres attributs et ses propres méthodes, rendant explicites les données utilisées et les interactions entre composants. Cette migration s'est faite en trois étapes :
 
 1. **Extraction des briques bas niveau** : création de `calculs.cpp` (fonctions pures), `parametres.cpp` (`Params`), `odometry.cpp` (`Odometry`), `mouvements.cpp` (`Mouvements`) et d'un module temporaire `clavier.cpp`.
-2. **Externalisation des couches ROS** : extraction des serveurs dans `serveur_services.cpp` (`ServeurServices`) et `serveur_action.cpp` (`ServeurAction`), tandis que la logique clavier sortait complètement du contrôleur vers `client_services.cpp` et `client_action.cpp`.
-3. **Séparation de la logique métier** : éclatement du reste de `controleur.cpp` en `Modes` (`modes.cpp`, mode actif et pause) et `States` (`states.cpp`, FSM des déplacements). `controleur.cpp` ne fait plus que **90 lignes** : instanciation, assemblage et boucle principale.
+2. **Externalisation des couches ROS** : extraction des serveurs dans `serveur_services.cpp` (`ServeurServices`) et `serveur_action.cpp` (`ServeurAction`), tandis que le clavier sortait du contrôleur vers `client_services.cpp` et `client_action.cpp` ([§ 4.2](#42-mode-navigation-manuelle)).
+3. **Séparation de la logique métier** : éclatement du reste de `controleur.cpp` en `Modes` (`modes.cpp`) et `States` (`states.cpp`). Le fichier `controleur.cpp` ne fait plus que **90 lignes** : instanciation, assemblage et boucle principale.
 
-### 7.2 Organisation de la compilation (`#include "*.cpp"` et namespaces)
+### 8.2 Organisation des fichiers `.cpp` et namespaces
 
-Plutôt que de multiplier les paires `.h` / `.cpp` à déclarer dans `CMakeLists.txt`, chaque classe réside dans un seul fichier `.cpp` protégé par des gardes d'inclusion (`#ifndef ..._CPP` / `#define ..._CPP` / `#endif`), inclus par `controleur.cpp` dans l'ordre strict de ses dépendances (des utilitaires jusqu'aux serveurs) :
+Nous avons choisi de conserver nos classes directement dans des fichiers `.cpp`, sans créer systématiquement des paires `.h` / `.cpp`. Nous voulions limiter le nombre de fichiers, éviter les déclarations redondantes contenant peu d'informations et garder une vue visuelle simple (quelques fichiers regroupés dans `TABDK/src/`, chacun correspondant à une partie du même nœud).
+
+Chaque fichier est protégé par une garde d'inclusion (`#ifndef ..._CPP` / `#define ..._CPP` / `#endif`) et inclus par `controleur.cpp` dans l'ordre de ses dépendances :
 
 <!-- code:TABDK/src/controleur.cpp -->
 ```cpp
@@ -1153,25 +1147,25 @@ Plutôt que de multiplier les paires `.h` / `.cpp` à déclarer dans `CMakeLists
 #include "serveur_services.cpp"
 ```
 
-Ce choix léger permet aussi aux nœuds satellites (`nodes/*.cpp`) de réutiliser directement `parametres.cpp`, `calculs.cpp` ou `modes.cpp` sans configurer de bibliothèque CMake dédiée. En contrepartie, toutes les classes d'un exécutable partagent la même unité de compilation : il a fallu nettoyer les `using namespace`, remplacer notre ancienne `struct Pose2D` maison par `geometry_msgs::Pose2D` pour supprimer un conflit de nom lors de l'ajout de `Move.action`, et importer explicitement chaque symbole (`using std_msgs::Bool;`, `using geometry_msgs::Pose2D;`).
+Cette organisation permet également aux nœuds de `nodes/` de réutiliser directement `parametres.cpp`, `calculs.cpp` ou `modes.cpp` sans configurer de bibliothèque CMake supplémentaire. En contrepartie, toutes les classes compilées ensemble partagent la même unité de compilation : nous avons dû nettoyer nos `using namespace`, supprimer notre ancienne `struct Pose2D` maison au profit de `geometry_msgs::Pose2D` (pour éviter une collision de nom lors de l'ajout de `Move.action` en [§ 6.2](#62-navigation--serveur-daction)) et importer explicitement chaque symbole utilisé.
 
-### 7.3 Patron `init()` différé et association des classes par pointeurs
+### 8.3 Patron `init()` différé et association des classes par pointeurs
 
-En ROS C++, on ne peut créer de `Publisher`, `Subscriber`, `ServiceServer` ou `SimpleActionServer` qu'**après** `ros::init()` et la création du `ros::NodeHandle`. Plutôt que de tout passer par des constructeurs complexes, nous avons adopté deux règles uniformes :
+En ROS C++, un `Publisher`, un `Subscriber`, un `ServiceServer` ou un `SimpleActionServer` ne peut être créé qu'**après** `ros::init()` et la création du `ros::NodeHandle`. Nous avons donc suivi deux règles uniformes :
 
-1. **Initialisation différée via `init(...)`** : chaque classe dispose d'un constructeur par défaut neutre et d'une méthode `init(...)` appelée explicitement dans `main()` dans l'ordre topologique des dépendances (`Params::load` → `Odometry` → `Mouvements` → `States` → `Modes` → `ServeurAction` → `ServeurServices`).
-2. **Propriété unique dans `main()` + injection par adresse** : toutes les instances vivent sur la pile de `main()` (durée de vie garantie sur tout le programme). Les classes qui collaborent reçoivent leurs dépendances par référence ou pointeur dans `init(...)` et conservent uniquement leur adresse (`Params *`, `Odometry *`, `Mouvements *`, `Modes *`, `States *`). Aucune donnée n'est dupliquée : une mise à jour de `odometry.position` ou de `mouvements.position_atteinte` est immédiatement visible par `States`, `Modes` et `ServeurAction`.
+1. **Initialisation différée par `init(...)`** : chaque classe possède un constructeur par défaut neutre et une méthode `init(...)` appelée dans `main()` dans l'ordre des dépendances (`Params::load` → `Odometry` → `Mouvements` → `States` → `Modes` → `ServeurAction` → `ServeurServices`).
+2. **Propriété unique dans `main()` et injection par adresse** : toutes les instances sont créées sur la pile de `main()`, garantissant leur durée de vie sur toute l'exécution. Les classes reçoivent les objets dont elles dépendent dans `init(...)` et conservent leur adresse (`Params *`, `Odometry *`, `Mouvements *`, `Modes *`, `States *`). Aucune donnée n'est copiée : une mise à jour de `odometry.position` ou de `mouvements.position_atteinte` est immédiatement visible par les autres classes.
 
-### 7.4 Cas critique : intégration de `ServeurAction`
+### 8.4 Cas critique : intégration de `ServeurAction`
 
-Le passage en classes a posé des contraintes spécifiques dès qu'une classe devait enregistrer des **callbacks ROS** — et tout particulièrement pour `ServeurAction` (`TABDK/src/serveur_action.cpp`), qui concentre le plus de dépendances (5 autres classes + `NodeHandle`) :
+Le passage en classes a introduit des contraintes particulières pour les callbacks ROS, en particulier dans `ServeurAction` (`TABDK/src/serveur_action.cpp`), qui interagit avec 5 autres classes et le `NodeHandle` :
 
-- **Callbacks sur méthodes membres** : une fonction globale C ne suffit plus ; il faut lier le pointeur d'instance `this` à chaque enregistrement ROS :
+- **Callbacks sur méthodes membres** : contrairement à une fonction globale C, une méthode de classe doit être liée à l'instance `this` lors de son enregistrement :
   - `nh.subscribe("/odom", 100, &Odometry::odomCallback, this)` dans `Odometry` ;
   - `nh.advertiseService("/set_mode", &ServeurServices::setModeCallback, this)` dans `ServeurServices` ;
   - `server->registerGoalCallback(boost::bind(&ServeurAction::execute, this))` et `registerPreemptCallback(boost::bind(&ServeurAction::preempter, this))` dans `ServeurAction`.
-- **Absence de constructeur par défaut sur `SimpleActionServer`** : contrairement à un `Publisher` ou `Subscriber`, `actionlib::SimpleActionServer<MoveAction>` exige un `NodeHandle` dès sa construction et ne peut donc pas être membre par valeur si l'on utilise le patron `init()`. Nous avons dû le stocker en pointeur (`Server *server = nullptr`), l'allouer dynamiquement dans `demarrer()` et libérer la mémoire dans le destructeur `~ServeurAction()`.
-- **Bénéfice inattendu pour le reset Gazebo** : cette allocation dynamique via `demarrer()` a permis d'ajouter proprement `redemarrer()` (`delete server; demarrer();`), appelé par `ServeurServices::resetRobot()` après `/gazebo/reset_simulation` pour purger les anciens horodatages conservés par `actionlib`.
+- **Allocation dynamique de `SimpleActionServer`** : contrairement à un `Publisher` ou un `Subscriber`, `actionlib::SimpleActionServer<MoveAction>` n'a pas de constructeur par défaut et exige un `NodeHandle` dès sa construction. Pour conserver notre patron `init()`, nous l'avons stocké en pointeur (`Server *server = nullptr`), alloué dans `demarrer()` et libéré dans le destructeur `~ServeurAction()`.
+- **Réinitialisation après reset** : cette allocation dynamique nous a ensuite permis d'écrire `redemarrer()` (`delete server; demarrer();`), appelé par `ServeurServices::resetRobot()` ([§ 4.3.1](#431-localisation-du-tb3) et [§ 6.2](#62-navigation--serveur-daction)) pour sortir le serveur d'action d'un état incohérent après un reset.
 
 <!-- code:TABDK/src/serveur_action.cpp -->
 ```cpp
@@ -1182,7 +1176,7 @@ void demarrer() {
   server->start();
 }
 
-void redemarrer() {      // appelé par ServeurServices::resetRobot() après reset /clock
+void redemarrer() {      // appelé par ServeurServices::resetRobot() après un reset
   delete server;
   server = nullptr;
   demarrer();
@@ -1192,3 +1186,12 @@ void redemarrer() {      // appelé par ServeurServices::resetRobot() après res
   if (server) delete server;
 }
 ```
+
+### 8.5 Conduite du refactoring
+
+Cette séparation en classes a représenté un travail conséquent. Nous nous sommes appuyés sur une IA pour nous aider pendant le refactoring, mais cette étape nous a tout de même demandé plusieurs heures : nous ne voulions pas laisser l'outil réécrire le système à sa manière. Nous avons dû spécifier précisément le découpage attendu et contrôler chaque modification pour rester aussi minimalistes que possible, afin de préserver au maximum la logique et la présentation de notre code d'origine tout en clarifiant son organisation.
+
+
+### 8.5 Conduite du refactoring
+
+Cette séparation en classes a représenté un travail conséquent. Nous nous sommes appuyés sur une IA pour nous aider pendant le refactoring, mais cette étape nous a tout de même demandé plusieurs heures : nous ne voulions pas laisser l'outil réécrire le système à sa manière. Nous avons dû spécifier précisément le découpage attendu et contrôler chaque modification pour rester aussi minimalistes que possible, afin de préserver au maximum la logique et la présentation de notre code d'origine tout en clarifiant son organisation.

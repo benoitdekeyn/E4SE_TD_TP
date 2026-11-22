@@ -1,19 +1,96 @@
 # Rapport — Projet robotique mobile et navigation autonome : Application au robot TurtleBot3
 
-## I. Architecture du projet
+## I. Architecture finale du projet
 
-### Arborescence
+### Arborescence du paquet TABDK
 
 
+```mermaid direction=LR
+
+flowchart LR
+    ROOT["`**TABDK/**`"]
+
+    META["`CMakeLists.txt · package.xml<br/>Compilation & dépendances`"]
+
+    D_LAUNCH["`**launch/**`"]
+    L_RUN["`run.launch<br/>params.yaml + 5 nœuds`"]
+    L_RVIZ["`rviz_tb3.launch<br/>RViz LiDAR + remote`"]
+
+    D_CONFIG["`**config/**`"]
+    C_PARAMS[("`params.yaml<br/>Paramètres ROS`")]
+    C_RVIZ[("`tb3_lidar.rviz<br/>Config RViz LiDAR`")]
+
+    D_SRV["`**srv/**`"]
+    S_MODE{{"`set_mode.srv<br/>/set_mode`"}}
+    S_CTRL{{"`global_control.srv<br/>/global_control`"}}
+
+    D_ACTION["`**action/**`"]
+    A_MOVE{{"`Move.action<br/>/moving`"}}
+
+    D_SRC["`**src/**`"]
+    N_CTRL(["`**controleur.cpp**<br/>Nœud controleur`"])
+
+    subgraph DEPS_CTRL["Dépendances de controleur.cpp"]
+        M_CALC(["`calculs.cpp`"])
+        M_PARAMS(["`parametres.cpp`"])
+        M_ODOM(["`odometry.cpp`"])
+        M_MVT(["`mouvements.cpp`"])
+        M_STATES(["`states.cpp`"])
+        M_MODES(["`modes.cpp`"])
+        M_ACT(["`serveur_action.cpp`"])
+        M_SRV(["`serveur_services.cpp`"])
+    end
+
+    D_NODES["`**nodes/**`"]
+    N_KEY(["`**keyboard_input.cpp**<br/>Nœud keyboard_input`"])
+    N_CSRV(["`**client_services.cpp**<br/>Nœud client_services`"])
+    N_CACT(["`**client_action.cpp**<br/>Nœud client_action`"])
+    N_DET(["`**detector.cpp**<br/>Nœud detector`"])
+
+    ROOT --> META
+    ROOT --> D_LAUNCH
+    ROOT --> D_CONFIG
+    ROOT --> D_SRV
+    ROOT --> D_ACTION
+    ROOT --> D_SRC
+
+    D_LAUNCH --> L_RUN
+    D_LAUNCH --> L_RVIZ
+
+    D_CONFIG --> C_PARAMS
+    D_CONFIG --> C_RVIZ
+
+    D_SRV --> S_MODE
+    D_SRV --> S_CTRL
+
+    D_ACTION --> A_MOVE
+
+    D_SRC --> N_CTRL
+    D_SRC --> D_NODES
+
+    N_CTRL -.-> M_CALC
+    N_CTRL -.-> M_PARAMS
+    N_CTRL -.-> M_ODOM
+    N_CTRL -.-> M_MVT
+    N_CTRL -.-> M_STATES
+    N_CTRL -.-> M_MODES
+    N_CTRL -.-> M_ACT
+    N_CTRL -.-> M_SRV
+
+    D_NODES --> N_KEY
+    D_NODES --> N_CSRV
+    D_NODES --> N_CACT
+    D_NODES --> N_DET
+```
 
 ### Découpage du noeud Controleur en classes
 
-#### Classe principale et utilitaires
+#### Classe principale et dépendances neutres
 
-Le fichier `calculs.cpp` est le seul fichier qui ne contient pas une classe.
+Le fichier `calculs.cpp` est le seul fichier `.cpp` qui ne contient pas une classe mais simplement des fonctions utilitaires.
 
 
-```mermaid
+```mermaid 
 classDiagram
     direction TB
 
@@ -63,7 +140,7 @@ classDiagram
     Mouvements ..> Calculs : conversion deg/rad ()<br/>correcteur proportionnel ()<br/>soustraction d'angles ()
 ```
 
-#### Interactions entre les classes du nœud
+#### Interactions entre les classes du nœud Controleur
 
 ```mermaid
 classDiagram
@@ -135,71 +212,131 @@ classDiagram
     Mouvements --> Odometry : position + orientation ?<br/>distance a la cible ?
 ```
 
-### Architecture ROS
+### Interaction des différents noeuds
 
-```mermaid
+Chaque diagramme ci-dessous présente un nœud du dossier `TABDK/src/nodes/` avec ses dépendances de **compilation / lancement / paramètres** (flèches pointillées `-.->`) et ses échanges **ROS à l'exécution** par topic, service ou action (flèches pleines `-->` / `<-->`).
+
+#### `keyboard_input.cpp`
+
+Lit les touches du clavier (`getch()`) et les diffuse aux autres nœuds sur `/keyboard_input`.
+
+```mermaid direction=LR
 flowchart LR
-    subgraph ROS_IN["Entrees ROS"]
-        P_YAML(["Parametres ROS (params.yaml)"])
-        T_ODOM(["Topic /odom"])
-        A_MOVE(["Action /moving (MoveAction)"])
-        S_MODE(["Service /set_mode"])
-        S_CTRL(["Service /global_control"])
-    end
+    L_RUN["`launch/run.launch`"]
+    C_PARAMS[("`config/params.yaml`")]
+    M_PARAMS(["`src/parametres.cpp`"])
 
-    subgraph NODE["Noeud controleur"]
-        MAIN["`**controleur.cpp**`"]
-        PARAMS["`**parametres.cpp**`"]
-        CALC["`**calculs.cpp**`"]
-        ODOM["`**odometry.cpp**`"]
-        MVT["`**mouvements.cpp**`"]
-        STATES["`**states.cpp**`"]
-        MODES["`**modes.cpp**`"]
-        ACTION["`**serveur_action.cpp**`"]
-        SERVICES["`**serveur_services.cpp**`"]
+    NODE(["`**nodes/keyboard_input.cpp**<br/>Nœud keyboard_input`"])
 
-        MAIN -->|"> cadencer"| MODES
-        MAIN -->|"> cadencer"| ACTION
-        MAIN -.->|"> reset a l'arret"| SERVICES
+    N_CSRV(["`nodes/client_services.cpp`"])
+    N_CACT(["`nodes/client_action.cpp`"])
 
-        PARAMS -.->|"conversion deg -> rad ?"| CALC
-        MVT -.->|"calculs d'asservissement ?"| CALC
-        MVT -->|"position + orientation ?<br/>distance a la cible ?"| ODOM
-        MVT -.->|"vitesses / gains Kp ?"| PARAMS
+    L_RUN -.->|"lance"| NODE
+    C_PARAMS -.->|"paramètre frequence"| M_PARAMS
+    M_PARAMS -.->|"#include"| NODE
 
-        STATES -->|"> commander deplacement"| MVT
-        STATES -.->|"vitesses / delais ?"| PARAMS
-        MODES -->|"> mettre a jour et appliquer FSM"| STATES
+    NODE -->|"topic /keyboard_input<br/>(Int8)"| N_CSRV
+    NODE -->|"topic /keyboard_input<br/>(Int8)"| N_CACT
+```
 
-        ACTION -->|"> fixer cible x, y<br/>cible atteinte ?"| MVT
-        ACTION -->|"> activer waypoint"| STATES
-        ACTION -->|"mode courant ?<br/>en pause ?"| MODES
-        ACTION -->|"position + vitesse ?<br/>distance parcourue ?"| ODOM
-        ACTION -.->|"mode de trajet ?<br/>conversion temps ?"| PARAMS
+#### `client_services.cpp`
 
-        SERVICES -->|"> changer de mode<br/>> pause / reset"| MODES
-        SERVICES -->|"> annuler goal et redemarrer"| ACTION
-    end
+Traduit les touches clavier (`m` mode, `p` pause/play, `r` reset) en appels de services vers le contrôleur.
 
-    subgraph ROS_OUT["Sorties ROS"]
-        T_VEL(["Topic /cmd_vel"])
-        T_MODE(["Topic /mode"])
-        T_PAUSE(["Topic /pause"])
-        T_RESET(["Topic /reset"])
-        S_GAZEBO(["Service /gazebo/reset_simulation"])
-    end
+```mermaid direction=LR
+flowchart LR
+    L_RUN["`launch/run.launch`"]
+    C_PARAMS[("`config/params.yaml`")]
+    M_PARAMS(["`src/parametres.cpp`"])
+    M_MODES(["`src/modes.cpp`"])
+    S_MODE{{"`srv/set_mode.srv`"}}
+    S_CTRL{{"`srv/global_control.srv`"}}
+    N_KEY(["`nodes/keyboard_input.cpp`"])
+    N_CTRL(["`src/controleur.cpp`"])
 
-    P_YAML --> PARAMS
-    T_ODOM --> ODOM
-    A_MOVE <--> ACTION
-    S_MODE --> SERVICES
-    S_CTRL --> SERVICES
+    NODE(["`**nodes/client_services.cpp**<br/>Nœud client_services`"])
 
-    MVT --> T_VEL
-    MAIN --> T_MODE
-    MAIN --> T_PAUSE
-    SERVICES --> T_RESET
-    SERVICES --> S_GAZEBO
+    N_SSRV(["`src/serveur_services.cpp`"])
+
+    L_RUN -.->|"lance"| NODE
+    C_PARAMS -.->|"paramètre frequence"| M_PARAMS
+    M_PARAMS -.->|"#include"| NODE
+    M_MODES -.->|"#include (AUTO / MANUAL)"| NODE
+    S_MODE -.->|"header ROS (compilation)"| NODE
+    S_CTRL -.->|"header ROS (compilation)"| NODE
+
+    N_KEY -->|"topic /keyboard_input"| NODE
+    N_CTRL -->|"topics /mode, /pause"| NODE
+    N_SSRV -->|"topic /reset"| NODE
+
+    NODE -->|"service /set_mode<br/>service /global_control"| N_SSRV
+```
+
+#### `client_action.cpp`
+
+Gère la file de waypoints (saisie clavier en mode `manual` ou trajectoire A* `/robot_path` en mode `auto`) et pilote leur exécution via l'action `/moving`.
+
+```mermaid direction=LR
+flowchart LR
+    L_RUN["`launch/run.launch`"]
+    C_PARAMS[("`config/params.yaml`")]
+    M_PARAMS(["`src/parametres.cpp`"])
+    M_CALC(["`src/calculs.cpp`"])
+    A_MOVE{{"`action/Move.action`"}}
+    N_KEY(["`nodes/keyboard_input.cpp`"])
+    N_CTRL(["`src/controleur.cpp`"])
+    N_SSRV(["`src/serveur_services.cpp`"])
+    N_PG(["`AStar-ROS/src/path_generator.cpp`"])
+
+    NODE(["`**nodes/client_action.cpp**<br/>Nœud client_action`"])
+
+    N_SACT(["`src/serveur_action.cpp`"])
+
+    L_RUN -.->|"lance"| NODE
+    C_PARAMS -.->|"frequence"| M_PARAMS
+    C_PARAMS -.->|"paramètre waypoint_step"| NODE
+    M_PARAMS -.->|"#include"| NODE
+    M_CALC -.->|"#include (rad_to_deg)"| NODE
+    A_MOVE -.->|"header ROS (compilation)"| NODE
+
+    N_KEY -->|"topic /keyboard_input"| NODE
+    N_CTRL -->|"topic /mode"| NODE
+    N_SSRV -->|"topic /reset"| NODE
+    N_PG -->|"topic /robot_path (Path)"| NODE
+
+    NODE <-->|"action /moving<br/>(goal / feedback / result)"| N_SACT
+```
+
+#### `detector.cpp`
+
+Analyse le LiDAR `/scan` sur 8 régions, affiche les obstacles dans RViz et déclenche `pause`/`play` en cas de collision imminente.
+
+```mermaid direction=LR
+flowchart LR
+    L_RUN["`launch/run.launch`"]
+    C_PARAMS[("`config/params.yaml`")]
+    M_PARAMS(["`src/parametres.cpp`"])
+    S_CTRL{{"`srv/global_control.srv`"}}
+    LIDAR["`Robot / Gazebo (LiDAR)`"]
+    N_MVT(["`src/mouvements.cpp`"])
+    N_CTRL(["`src/controleur.cpp`"])
+
+    NODE(["`**nodes/detector.cpp**<br/>Nœud detector`"])
+
+    N_SSRV(["`src/serveur_services.cpp`"])
+    RVIZ[("`RViz · config/tb3_lidar.rviz<br/>(via launch/rviz_tb3.launch)`")]
+
+    L_RUN -.->|"lance"| NODE
+    C_PARAMS -.->|"collision & frequence"| M_PARAMS
+    M_PARAMS -.->|"#include"| NODE
+    S_CTRL -.->|"header ROS (compilation)"| NODE
+
+    LIDAR -->|"topic /scan (LaserScan)"| NODE
+    N_MVT -->|"topic /cmd_vel (Twist)"| NODE
+    N_CTRL -->|"topic /pause (Bool)"| NODE
+
+    NODE -->|"service /global_control<br/>(pause / play)"| N_SSRV
+    NODE -->|"topic /obstacles_markers<br/>(MarkerArray)"| RVIZ
 ```
 
 ### 2.3 Pilotage de base du TB3

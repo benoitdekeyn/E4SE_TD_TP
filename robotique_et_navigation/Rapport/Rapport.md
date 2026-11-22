@@ -5,7 +5,7 @@
 ### Arborescence du paquet TABDK
 
 
-```mermaid direction=LR
+```mermaid
 
 flowchart LR
     ROOT["`**TABDK/**`"]
@@ -81,6 +81,17 @@ flowchart LR
     D_NODES --> N_CSRV
     D_NODES --> N_CACT
     D_NODES --> N_DET
+
+    classDef pkg fill:#1d4ed8,stroke:#1e40af,stroke-width:2px,color:#ffffff
+    classDef dossier fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    classDef cpp fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    classDef autre fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
+
+    class ROOT pkg
+    class D_LAUNCH,D_CONFIG,D_SRV,D_ACTION,D_SRC,D_NODES dossier
+    class N_CTRL,M_CALC,M_PARAMS,M_ODOM,M_MVT,M_STATES,M_MODES,M_ACT,M_SRV,N_KEY,N_CSRV,N_CACT,N_DET cpp
+    class META,L_RUN,L_RVIZ,C_PARAMS,C_RVIZ,S_MODE,S_CTRL,A_MOVE autre
+    style DEPS_CTRL fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
 ```
 
 ### Découpage du noeud Controleur en classes
@@ -138,11 +149,21 @@ classDiagram
 
     Params ..> Calculs : conversion deg/rad ()
     Mouvements ..> Calculs : conversion deg/rad ()<br/>correcteur proportionnel ()<br/>soustraction d'angles ()
+
+    style Controleur fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+    style Params fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
+    style Calculs fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
+    style Odometry fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style Mouvements fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style States fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style Modes fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style ServeurAction fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style ServeurServices fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
 ```
 
 #### Interactions entre les classes du nœud Controleur
 
-```mermaid
+```mermaid zoom=60
 classDiagram
     direction TB
 
@@ -210,55 +231,82 @@ classDiagram
     States --> Mouvements : cible atteinte ?<br/>arreter ()<br/>executer la fn de deplacement ()<br/>reset ()
 
     Mouvements --> Odometry : position + orientation ?<br/>distance a la cible ?
+
+    style ServeurServices fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
+    style ServeurAction fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
+    style Modes fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style States fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style Mouvements fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style Odometry fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
 ```
 
 ### Interaction des différents noeuds
 
-Chaque diagramme ci-dessous présente un nœud du dossier `TABDK/src/nodes/` avec ses dépendances de **compilation / lancement / paramètres** (flèches pointillées `-.->`) et ses échanges **ROS à l'exécution** par topic, service ou action (flèches pleines `-->` / `<-->`).
+Chaque diagramme ci-dessous présente un nœud du dossier `TABDK/src/nodes/` avec ses dépendances de **compilation / paramètres** (flèches pointillées `-.->`) et ses échanges **ROS à l'exécution** par topic, service ou action (flèches pleines `-->` / `<-->`). Chaque fichier `.cpp` appartenant à un nœud ROS est encadré par le nom de son nœud.
 
 #### `keyboard_input.cpp`
 
 Lit les touches du clavier (`getch()`) et les diffuse aux autres nœuds sur `/keyboard_input`.
 
-```mermaid direction=LR
+```mermaid
 flowchart LR
-    L_RUN["`launch/run.launch`"]
     C_PARAMS[("`config/params.yaml`")]
     M_PARAMS(["`src/parametres.cpp`"])
 
-    NODE(["`**nodes/keyboard_input.cpp**<br/>Nœud keyboard_input`"])
+    subgraph SG_KEY["Nœud keyboard_input"]
+        NODE(["`**nodes/keyboard_input.cpp**`"])
+    end
 
-    N_CSRV(["`nodes/client_services.cpp`"])
-    N_CACT(["`nodes/client_action.cpp`"])
+    subgraph SG_CSRV["Nœud client_services"]
+        N_CSRV(["`nodes/client_services.cpp`"])
+    end
 
-    L_RUN -.->|"lance"| NODE
+    subgraph SG_CACT["Nœud client_action"]
+        N_CACT(["`nodes/client_action.cpp`"])
+    end
+
     C_PARAMS -.->|"paramètre frequence"| M_PARAMS
     M_PARAMS -.->|"#include"| NODE
 
     NODE -->|"topic /keyboard_input<br/>(Int8)"| N_CSRV
     NODE -->|"topic /keyboard_input<br/>(Int8)"| N_CACT
+
+    classDef cpp fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    classDef autre fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
+
+    class M_PARAMS,N_CSRV,N_CACT cpp
+    class C_PARAMS autre
+    style SG_KEY fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+    style NODE fill:#1d4ed8,stroke:#1e40af,stroke-width:2px,color:#ffffff
+    style SG_CSRV fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
+    style SG_CACT fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
 ```
 
 #### `client_services.cpp`
 
 Traduit les touches clavier (`m` mode, `p` pause/play, `r` reset) en appels de services vers le contrôleur.
 
-```mermaid direction=LR
+```mermaid
 flowchart LR
-    L_RUN["`launch/run.launch`"]
     C_PARAMS[("`config/params.yaml`")]
     M_PARAMS(["`src/parametres.cpp`"])
     M_MODES(["`src/modes.cpp`"])
     S_MODE{{"`srv/set_mode.srv`"}}
     S_CTRL{{"`srv/global_control.srv`"}}
-    N_KEY(["`nodes/keyboard_input.cpp`"])
-    N_CTRL(["`src/controleur.cpp`"])
 
-    NODE(["`**nodes/client_services.cpp**<br/>Nœud client_services`"])
+    subgraph SG_KEY["Nœud keyboard_input"]
+        N_KEY(["`nodes/keyboard_input.cpp`"])
+    end
 
-    N_SSRV(["`src/serveur_services.cpp`"])
+    subgraph SG_CSRV["Nœud client_services"]
+        NODE(["`**nodes/client_services.cpp**`"])
+    end
 
-    L_RUN -.->|"lance"| NODE
+    subgraph SG_CTRL["Nœud controleur"]
+        N_CTRL(["`src/controleur.cpp`"])
+        N_SSRV(["`src/serveur_services.cpp`"])
+    end
+
     C_PARAMS -.->|"paramètre frequence"| M_PARAMS
     M_PARAMS -.->|"#include"| NODE
     M_MODES -.->|"#include (AUTO / MANUAL)"| NODE
@@ -270,29 +318,47 @@ flowchart LR
     N_SSRV -->|"topic /reset"| NODE
 
     NODE -->|"service /set_mode<br/>service /global_control"| N_SSRV
+
+    classDef cpp fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    classDef autre fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
+
+    class M_PARAMS,M_MODES,N_KEY,N_CTRL,N_SSRV cpp
+    class C_PARAMS,S_MODE,S_CTRL autre
+    style SG_CSRV fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+    style NODE fill:#1d4ed8,stroke:#1e40af,stroke-width:2px,color:#ffffff
+    style SG_KEY fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
+    style SG_CTRL fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
 ```
 
 #### `client_action.cpp`
 
 Gère la file de waypoints (saisie clavier en mode `manual` ou trajectoire A* `/robot_path` en mode `auto`) et pilote leur exécution via l'action `/moving`.
 
-```mermaid direction=LR
+```mermaid
 flowchart LR
-    L_RUN["`launch/run.launch`"]
     C_PARAMS[("`config/params.yaml`")]
     M_PARAMS(["`src/parametres.cpp`"])
     M_CALC(["`src/calculs.cpp`"])
     A_MOVE{{"`action/Move.action`"}}
-    N_KEY(["`nodes/keyboard_input.cpp`"])
-    N_CTRL(["`src/controleur.cpp`"])
-    N_SSRV(["`src/serveur_services.cpp`"])
-    N_PG(["`AStar-ROS/src/path_generator.cpp`"])
 
-    NODE(["`**nodes/client_action.cpp**<br/>Nœud client_action`"])
+    subgraph SG_KEY["Nœud keyboard_input"]
+        N_KEY(["`nodes/keyboard_input.cpp`"])
+    end
 
-    N_SACT(["`src/serveur_action.cpp`"])
+    subgraph SG_PG["Nœud path_generator"]
+        N_PG(["`AStar-ROS/src/path_generator.cpp`"])
+    end
 
-    L_RUN -.->|"lance"| NODE
+    subgraph SG_CACT["Nœud client_action"]
+        NODE(["`**nodes/client_action.cpp**`"])
+    end
+
+    subgraph SG_CTRL["Nœud controleur"]
+        N_CTRL(["`src/controleur.cpp`"])
+        N_SSRV(["`src/serveur_services.cpp`"])
+        N_SACT(["`src/serveur_action.cpp`"])
+    end
+
     C_PARAMS -.->|"frequence"| M_PARAMS
     C_PARAMS -.->|"paramètre waypoint_step"| NODE
     M_PARAMS -.->|"#include"| NODE
@@ -300,33 +366,47 @@ flowchart LR
     A_MOVE -.->|"header ROS (compilation)"| NODE
 
     N_KEY -->|"topic /keyboard_input"| NODE
+    N_PG -->|"topic /robot_path (Path)"| NODE
     N_CTRL -->|"topic /mode"| NODE
     N_SSRV -->|"topic /reset"| NODE
-    N_PG -->|"topic /robot_path (Path)"| NODE
 
     NODE <-->|"action /moving<br/>(goal / feedback / result)"| N_SACT
+
+    classDef cpp fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    classDef autre fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
+
+    class M_PARAMS,M_CALC,N_KEY,N_PG,N_CTRL,N_SSRV,N_SACT cpp
+    class C_PARAMS,A_MOVE autre
+    style SG_CACT fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+    style NODE fill:#1d4ed8,stroke:#1e40af,stroke-width:2px,color:#ffffff
+    style SG_KEY fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
+    style SG_PG fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
+    style SG_CTRL fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
 ```
 
 #### `detector.cpp`
 
 Analyse le LiDAR `/scan` sur 8 régions, affiche les obstacles dans RViz et déclenche `pause`/`play` en cas de collision imminente.
 
-```mermaid direction=LR
+```mermaid
 flowchart LR
-    L_RUN["`launch/run.launch`"]
     C_PARAMS[("`config/params.yaml`")]
     M_PARAMS(["`src/parametres.cpp`"])
     S_CTRL{{"`srv/global_control.srv`"}}
     LIDAR["`Robot / Gazebo (LiDAR)`"]
-    N_MVT(["`src/mouvements.cpp`"])
-    N_CTRL(["`src/controleur.cpp`"])
 
-    NODE(["`**nodes/detector.cpp**<br/>Nœud detector`"])
+    subgraph SG_DET["Nœud detector"]
+        NODE(["`**nodes/detector.cpp**`"])
+    end
 
-    N_SSRV(["`src/serveur_services.cpp`"])
-    RVIZ[("`RViz · config/tb3_lidar.rviz<br/>(via launch/rviz_tb3.launch)`")]
+    subgraph SG_CTRL["Nœud controleur"]
+        N_MVT(["`src/mouvements.cpp`"])
+        N_CTRL(["`src/controleur.cpp`"])
+        N_SSRV(["`src/serveur_services.cpp`"])
+    end
 
-    L_RUN -.->|"lance"| NODE
+    RVIZ[("`RViz · config/tb3_lidar.rviz`")]
+
     C_PARAMS -.->|"collision & frequence"| M_PARAMS
     M_PARAMS -.->|"#include"| NODE
     S_CTRL -.->|"header ROS (compilation)"| NODE
@@ -337,6 +417,17 @@ flowchart LR
 
     NODE -->|"service /global_control<br/>(pause / play)"| N_SSRV
     NODE -->|"topic /obstacles_markers<br/>(MarkerArray)"| RVIZ
+
+    classDef cpp fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    classDef autre fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
+    classDef ext fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
+
+    class M_PARAMS,N_MVT,N_CTRL,N_SSRV cpp
+    class C_PARAMS,S_CTRL,RVIZ autre
+    class LIDAR ext
+    style SG_DET fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+    style NODE fill:#1d4ed8,stroke:#1e40af,stroke-width:2px,color:#ffffff
+    style SG_CTRL fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
 ```
 
 ### 2.3 Pilotage de base du TB3
@@ -354,8 +445,8 @@ On voudrait maintenant ajouter dans le nœud contrôleur un autre *publisher* qu
 #### notre implementation
 
 1. Le topic est '/cmd_vel' comme l'année dernière
-2. Le type de message trouvé grâce à rostopic info, est un Twist qui contient les 3 vitesses linéaires et le s3 vitesses angulaires.
-3. Calcul PID $v = K_p \cdot e + K_i \cdot \int e \, dt + K_d \cdot \frac{de}{d}$
+2. Le type de message trouvé grâce à rostopic info, est un Twist qui contient les 3 vitesses linéaires et les 3 vitesses angulaires.
+3. C
 
 
 ### 2.4 Paramètres de l'application

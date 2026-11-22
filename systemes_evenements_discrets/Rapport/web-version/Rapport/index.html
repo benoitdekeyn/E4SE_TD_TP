@@ -184,6 +184,7 @@ pre.mermaid { text-align: center; background: transparent; margin: 0; padding: 8
 
 /* Diagrammes : cadre, boutons plein écran et pan/zoom, comme sur GitHub */
 .mermaid-box { position: relative; margin: 1em 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.mermaid-box[data-zoom] { margin-left: auto; margin-right: auto; }
 .mermaid-box svg { cursor: grab; }
 .mm-btn {
   width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center;
@@ -336,50 +337,75 @@ li.task-item { list-style: none; }
 <aside id="sidebar">
   <div class="sidebar-head"><div class="sidebar-title"><span>Rapport</span></div><button id="theme-toggle" type="button" title="Changer le thème"></button></div>
   <input id="toc-filter" type="search" placeholder="Filtrer les titres…" autocomplete="off">
-  <nav id="toc"><div class="toc-node root has-kids" data-level="1"><div class="toc-row row-l1"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l1" href="#rapport-de-projet--systèmes-embarqués-automobiles" data-id="rapport-de-projet--systèmes-embarqués-automobiles">Rapport de Projet — Systèmes Embarqués Automobiles</a></div><div class="toc-children"><div class="toc-node" data-level="2"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#régulateur-limiteur-de-vitesse-kit-mains-libres-bluetooth-autoradio-et-régulateur-adaptatif" data-id="régulateur-limiteur-de-vitesse-kit-mains-libres-bluetooth-autoradio-et-régulateur-adaptatif">Régulateur-Limiteur de Vitesse, Kit Mains-Libres Bluetooth, Autoradio et Régulateur Adaptatif</a></div></div><div class="toc-node" data-level="2"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#table-des-matières" data-id="table-des-matières">Table des matières</a></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#1-introduction-générale" data-id="1-introduction-générale">1. Introduction générale</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#contexte-et-objectifs" data-id="contexte-et-objectifs">Contexte et objectifs</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#méthodologie-adoptée" data-id="méthodologie-adoptée">Méthodologie adoptée</a></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#2-modélisation-et-simulation-du-véhicule" data-id="2-modélisation-et-simulation-du-véhicule">2. Modélisation et simulation du véhicule</a></div><div class="toc-children"><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#21-architecture-globale-en-and-lines-synchronisation-eval-et-interfaces" data-id="21-architecture-globale-en-and-lines-synchronisation-eval-et-interfaces">2.1 Architecture globale en AND-lines, synchronisation EVAL et interfaces</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#de-deux-modules-conceptuels-à-une-grille-dand-lines-dans-_sysvehicule" data-id="de-deux-modules-conceptuels-à-une-grille-dand-lines-dans-_sysvehicule">De deux modules conceptuels à une grille d'AND-lines dans _SysVehicule</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#pivot-architectural-majeur--de-la-boucle-tm---history-à-lhorloge-centrale-geneval" data-id="pivot-architectural-majeur--de-la-boucle-tm---history-à-lhorloge-centrale-geneval">Pivot architectural majeur : de la boucle tm() -&gt; History à l'horloge centrale GEN(EVAL)</a></div></div></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#22-dynamique-du-véhicule-et-primitives-de-simulation-simulation-du-vehicule" data-id="22-dynamique-du-véhicule-et-primitives-de-simulation-simulation-du-vehicule">2.2 Dynamique du véhicule et primitives de simulation (Simulation du vehicule)</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé" data-id="énoncé">Énoncé</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#choix-fonctionnels-et-fonctionnement-des-primitives-de-simulation" data-id="choix-fonctionnels-et-fonctionnement-des-primitives-de-simulation">Choix fonctionnels et fonctionnement des primitives de simulation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation" data-id="première-implémentation">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées" data-id="difficultés-rencontrées-et-erreurs-corrigées">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale" data-id="version-finale">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#23-gestion-de-la-pédale-daccélération" data-id="23-gestion-de-la-pédale-daccélération">2.3 Gestion de la pédale d'accélération</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé-1" data-id="énoncé-1">Énoncé</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#choix-fonctionnels" data-id="choix-fonctionnels">Choix fonctionnels</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation-1" data-id="première-implémentation-1">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées-1" data-id="difficultés-rencontrées-et-erreurs-corrigées-1">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale-1" data-id="version-finale-1">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#24-intégration-du-système-de-freinage-et-priorité-stricte" data-id="24-intégration-du-système-de-freinage-et-priorité-stricte">2.4 Intégration du système de freinage et priorité stricte</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé-2" data-id="énoncé-2">Énoncé</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#choix-fonctionnels-1" data-id="choix-fonctionnels-1">Choix fonctionnels</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation-2" data-id="première-implémentation-2">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées-2" data-id="difficultés-rencontrées-et-erreurs-corrigées-2">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale-2" data-id="version-finale-2">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#25-gestion-du-contact-du-démarrage-et-de-larrêt-durgence-clé-du-véhicule" data-id="25-gestion-du-contact-du-démarrage-et-de-larrêt-durgence-clé-du-véhicule">2.5 Gestion du contact, du démarrage et de l'arrêt d'urgence (Clé du véhicule)</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé-3" data-id="énoncé-3">Énoncé</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#choix-fonctionnels-2" data-id="choix-fonctionnels-2">Choix fonctionnels</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation-3" data-id="première-implémentation-3">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées-3" data-id="difficultés-rencontrées-et-erreurs-corrigées-3">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale-3" data-id="version-finale-3">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#26-modélisation-énergétique--carburant-batterie-et-pannes-ressources-et-pannes" data-id="26-modélisation-énergétique--carburant-batterie-et-pannes-ressources-et-pannes">2.6 Modélisation énergétique : carburant, batterie et pannes (Ressources et pannes)</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé-4" data-id="énoncé-4">Énoncé</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#choix-fonctionnels-3" data-id="choix-fonctionnels-3">Choix fonctionnels</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation-4" data-id="première-implémentation-4">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées-4" data-id="difficultés-rencontrées-et-erreurs-corrigées-4">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale-4" data-id="version-finale-4">Version finale</a></div></div></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#3-spécification-et-développement-du-régulateur-de-vitesse" data-id="3-spécification-et-développement-du-régulateur-de-vitesse">3. Spécification et développement du régulateur de vitesse</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#énoncé-5" data-id="énoncé-5">Énoncé</a></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#choix-fonctionnels-4" data-id="choix-fonctionnels-4">Choix fonctionnels</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#découplage-pilotage-state_71-vs-injection-state_60" data-id="découplage-pilotage-state_71-vs-injection-state_60">Découplage Pilotage (state_71) vs Injection (state_60)</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#loi-de-commande--correcteur-pi-discret-auto-dimensionné" data-id="loi-de-commande--correcteur-pi-discret-auto-dimensionné">Loi de commande : correcteur PI discret auto-dimensionné</a></div></div></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#première-implémentation-5" data-id="première-implémentation-5">Première implémentation</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#difficultés-rencontrées-et-erreurs-corrigées-5" data-id="difficultés-rencontrées-et-erreurs-corrigées-5">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#version-finale-5" data-id="version-finale-5">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#4-spécification-et-développement-du-limiteur-de-vitesse" data-id="4-spécification-et-développement-du-limiteur-de-vitesse">4. Spécification et développement du limiteur de vitesse</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#énoncé-6" data-id="énoncé-6">Énoncé</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#choix-fonctionnels-5" data-id="choix-fonctionnels-5">Choix fonctionnels</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#première-implémentation-6" data-id="première-implémentation-6">Première implémentation</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#difficultés-rencontrées-et-erreurs-corrigées-6" data-id="difficultés-rencontrées-et-erreurs-corrigées-6">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#version-finale-6" data-id="version-finale-6">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#5-contrôleur-de-kit-bluetooth--mains-libres--et-infodivertissement" data-id="5-contrôleur-de-kit-bluetooth--mains-libres--et-infodivertissement">5. Contrôleur de Kit Bluetooth « mains libres » et infodivertissement</a></div><div class="toc-children"><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#51-protocole-bluetooth-jumelage-par-code-pin-et-cycle-de-vie-du-téléphone" data-id="51-protocole-bluetooth-jumelage-par-code-pin-et-cycle-de-vie-du-téléphone">5.1 Protocole Bluetooth, jumelage par code PIN et cycle de vie du téléphone</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé-7" data-id="énoncé-7">Énoncé</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#choix-fonctionnels-6" data-id="choix-fonctionnels-6">Choix fonctionnels</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation-7" data-id="première-implémentation-7">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées-7" data-id="difficultés-rencontrées-et-erreurs-corrigées-7">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale-7" data-id="version-finale-7">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#52-gestion-des-appels-entrants-et-redirection-mains-libres" data-id="52-gestion-des-appels-entrants-et-redirection-mains-libres">5.2 Gestion des appels entrants et redirection mains-libres</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé-8" data-id="énoncé-8">Énoncé</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#choix-fonctionnels-7" data-id="choix-fonctionnels-7">Choix fonctionnels</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation-8" data-id="première-implémentation-8">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées-8" data-id="difficultés-rencontrées-et-erreurs-corrigées-8">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale-8" data-id="version-finale-8">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#53-messagerie-sms-et-tableau-de-bord-connecté" data-id="53-messagerie-sms-et-tableau-de-bord-connecté">5.3 Messagerie SMS et tableau de bord connecté</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé-9" data-id="énoncé-9">Énoncé</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#choix-fonctionnels-8" data-id="choix-fonctionnels-8">Choix fonctionnels</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation-9" data-id="première-implémentation-9">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées-9" data-id="difficultés-rencontrées-et-erreurs-corrigées-9">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale-9" data-id="version-finale-9">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#54-autoradio-arbitrage-des-priorités-audio-et-centralisation-sonore" data-id="54-autoradio-arbitrage-des-priorités-audio-et-centralisation-sonore">5.4 Autoradio, arbitrage des priorités audio et centralisation sonore</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé-10" data-id="énoncé-10">Énoncé</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#choix-fonctionnels-9" data-id="choix-fonctionnels-9">Choix fonctionnels</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation-10" data-id="première-implémentation-10">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées-10" data-id="difficultés-rencontrées-et-erreurs-corrigées-10">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale-10" data-id="version-finale-10">Version finale</a></div></div></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#6-extension--régulateur-de-vitesse-adaptatif-acc" data-id="6-extension--régulateur-de-vitesse-adaptatif-acc">6. Extension : Régulateur de vitesse adaptatif (ACC)</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#énoncé-11" data-id="énoncé-11">Énoncé</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#choix-fonctionnels-10" data-id="choix-fonctionnels-10">Choix fonctionnels</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#première-implémentation-11" data-id="première-implémentation-11">Première implémentation</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#difficultés-rencontrées-et-erreurs-corrigées-11" data-id="difficultés-rencontrées-et-erreurs-corrigées-11">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#version-finale-11" data-id="version-finale-11">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#7-synthèse-cartographie-des-and-lines-ihm-globale-et-tests-dintégration" data-id="7-synthèse-cartographie-des-and-lines-ihm-globale-et-tests-dintégration">7. Synthèse, cartographie des AND-lines, IHM globale et tests d'intégration</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#cartographie-complète-de-la-grille-dand-lines-systeme" data-id="cartographie-complète-de-la-grille-dand-lines-systeme">Cartographie complète de la grille d'AND-lines (Systeme)</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#présentation-du-tableau-de-bord-complet-panel-diagram-ihm" data-id="présentation-du-tableau-de-bord-complet-panel-diagram-ihm">Présentation du tableau de bord complet (Panel Diagram IHM)</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#scénarios-de-validation-croisée-tests-dintégration" data-id="scénarios-de-validation-croisée-tests-dintégration">Scénarios de validation croisée (Tests d'intégration)</a></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#8-conclusion-générale" data-id="8-conclusion-générale">8. Conclusion générale</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#bilan-du-projet" data-id="bilan-du-projet">Bilan du projet</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#enseignements-majeurs-tirés-des-difficultés-rencontrées" data-id="enseignements-majeurs-tirés-des-difficultés-rencontrées">Enseignements majeurs tirés des difficultés rencontrées</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#perspectives-dévolution" data-id="perspectives-dévolution">Perspectives d'évolution</a></div></div></div></div></div></div></nav>
+  <nav id="toc"><div class="toc-node root has-kids" data-level="1"><div class="toc-row row-l1"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l1" href="#rapport-de-projet---systèmes-à-événements-discrets" data-id="rapport-de-projet---systèmes-à-événements-discrets">Rapport de Projet - Systèmes à événements discrets</a></div><div class="toc-children"><div class="toc-node" data-level="2"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#régulateur-limiteur-de-vitesse-kit-mains-libres-bluetooth-autoradio-et-régulateur-adaptatif" data-id="régulateur-limiteur-de-vitesse-kit-mains-libres-bluetooth-autoradio-et-régulateur-adaptatif">Régulateur-Limiteur de Vitesse, Kit Mains-Libres Bluetooth, Autoradio et Régulateur Adaptatif</a></div></div><div class="toc-node" data-level="2"><div class="toc-row row-l2"><span class="toc-caret"></span><a class="toc-l2" href="#table-des-matières" data-id="table-des-matières">Table des matières</a></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#1-introduction" data-id="1-introduction">1. Introduction</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#contexte-et-objectifs" data-id="contexte-et-objectifs">Contexte et objectifs</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#méthodologie-adoptée" data-id="méthodologie-adoptée">Méthodologie adoptée</a></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#2-modélisation-et-simulation-du-véhicule" data-id="2-modélisation-et-simulation-du-véhicule">2. Modélisation et simulation du véhicule</a></div><div class="toc-children"><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#21-architecture-globale-en-and-lines-synchronisation-eval-et-interfaces" data-id="21-architecture-globale-en-and-lines-synchronisation-eval-et-interfaces">2.1 Architecture globale en AND-lines, synchronisation EVAL et interfaces</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#de-deux-modules-conceptuels-à-une-grille-dand-lines-dans-_sysvehicule" data-id="de-deux-modules-conceptuels-à-une-grille-dand-lines-dans-_sysvehicule">De deux modules conceptuels à une grille d'AND-lines dans _SysVehicule</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#pivot-architectural-majeur--de-la-boucle-tm---history-à-lhorloge-centrale-geneval" data-id="pivot-architectural-majeur--de-la-boucle-tm---history-à-lhorloge-centrale-geneval">Pivot architectural majeur : de la boucle tm() -&gt; History à l'horloge centrale GEN(EVAL)</a></div></div></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#22-dynamique-du-véhicule-et-primitives-de-simulation-simulation-du-vehicule" data-id="22-dynamique-du-véhicule-et-primitives-de-simulation-simulation-du-vehicule">2.2 Dynamique du véhicule et primitives de simulation (Simulation du vehicule)</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé" data-id="énoncé">Énoncé</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#choix-fonctionnels-et-fonctionnement-des-primitives-de-simulation" data-id="choix-fonctionnels-et-fonctionnement-des-primitives-de-simulation">Choix fonctionnels et fonctionnement des primitives de simulation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation" data-id="première-implémentation">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées" data-id="difficultés-rencontrées-et-erreurs-corrigées">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale" data-id="version-finale">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#23-gestion-de-la-pédale-daccélération" data-id="23-gestion-de-la-pédale-daccélération">2.3 Gestion de la pédale d'accélération</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé-1" data-id="énoncé-1">Énoncé</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#choix-fonctionnels" data-id="choix-fonctionnels">Choix fonctionnels</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation-1" data-id="première-implémentation-1">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées-1" data-id="difficultés-rencontrées-et-erreurs-corrigées-1">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale-1" data-id="version-finale-1">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#24-intégration-du-système-de-freinage-et-priorité-stricte" data-id="24-intégration-du-système-de-freinage-et-priorité-stricte">2.4 Intégration du système de freinage et priorité stricte</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé-2" data-id="énoncé-2">Énoncé</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#choix-fonctionnels-1" data-id="choix-fonctionnels-1">Choix fonctionnels</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation-2" data-id="première-implémentation-2">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées-2" data-id="difficultés-rencontrées-et-erreurs-corrigées-2">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale-2" data-id="version-finale-2">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#25-gestion-du-contact-du-démarrage-et-de-larrêt-durgence-clé-du-véhicule" data-id="25-gestion-du-contact-du-démarrage-et-de-larrêt-durgence-clé-du-véhicule">2.5 Gestion du contact, du démarrage et de l'arrêt d'urgence (Clé du véhicule)</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé-3" data-id="énoncé-3">Énoncé</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#choix-fonctionnels-2" data-id="choix-fonctionnels-2">Choix fonctionnels</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation-3" data-id="première-implémentation-3">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées-3" data-id="difficultés-rencontrées-et-erreurs-corrigées-3">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale-3" data-id="version-finale-3">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#26-modélisation-énergétique--carburant-batterie-et-pannes-ressources-et-pannes" data-id="26-modélisation-énergétique--carburant-batterie-et-pannes-ressources-et-pannes">2.6 Modélisation énergétique : carburant, batterie et pannes (Ressources et pannes)</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé-4" data-id="énoncé-4">Énoncé</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#choix-fonctionnels-3" data-id="choix-fonctionnels-3">Choix fonctionnels</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation-4" data-id="première-implémentation-4">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées-4" data-id="difficultés-rencontrées-et-erreurs-corrigées-4">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale-4" data-id="version-finale-4">Version finale</a></div></div></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#3-spécification-et-développement-du-régulateur-de-vitesse" data-id="3-spécification-et-développement-du-régulateur-de-vitesse">3. Spécification et développement du régulateur de vitesse</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#énoncé-5" data-id="énoncé-5">Énoncé</a></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#choix-fonctionnels-4" data-id="choix-fonctionnels-4">Choix fonctionnels</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#découplage-pilotage-state_71-vs-injection-state_60" data-id="découplage-pilotage-state_71-vs-injection-state_60">Découplage Pilotage (state_71) vs Injection (state_60)</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#loi-de-commande--correcteur-pi-discret-auto-dimensionné" data-id="loi-de-commande--correcteur-pi-discret-auto-dimensionné">Loi de commande : correcteur PI discret auto-dimensionné</a></div></div></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#première-implémentation-5" data-id="première-implémentation-5">Première implémentation</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#difficultés-rencontrées-et-erreurs-corrigées-5" data-id="difficultés-rencontrées-et-erreurs-corrigées-5">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#version-finale-5" data-id="version-finale-5">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#4-spécification-et-développement-du-limiteur-de-vitesse" data-id="4-spécification-et-développement-du-limiteur-de-vitesse">4. Spécification et développement du limiteur de vitesse</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#énoncé-6" data-id="énoncé-6">Énoncé</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#choix-fonctionnels-5" data-id="choix-fonctionnels-5">Choix fonctionnels</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#première-implémentation-6" data-id="première-implémentation-6">Première implémentation</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#difficultés-rencontrées-et-erreurs-corrigées-6" data-id="difficultés-rencontrées-et-erreurs-corrigées-6">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#version-finale-6" data-id="version-finale-6">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#5-contrôleur-de-kit-bluetooth--mains-libres--et-infodivertissement" data-id="5-contrôleur-de-kit-bluetooth--mains-libres--et-infodivertissement">5. Contrôleur de Kit Bluetooth « mains libres » et infodivertissement</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#principe-de-simulation-réaliste-du-bluetooth--cloisonnement-strict-et-paquets-params-" data-id="principe-de-simulation-réaliste-du-bluetooth--cloisonnement-strict-et-paquets-params-">Principe de simulation réaliste du Bluetooth : cloisonnement strict et paquets params-&gt;</a></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#51-protocole-bluetooth-jumelage-par-code-pin-et-cycle-de-vie-du-téléphone" data-id="51-protocole-bluetooth-jumelage-par-code-pin-et-cycle-de-vie-du-téléphone">5.1 Protocole Bluetooth, jumelage par code PIN et cycle de vie du téléphone</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé-7" data-id="énoncé-7">Énoncé</a></div></div><div class="toc-node has-kids" data-level="4"><div class="toc-row row-l4"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l4" href="#choix-fonctionnels-6" data-id="choix-fonctionnels-6">Choix fonctionnels</a></div><div class="toc-children"><div class="toc-node" data-level="5"><div class="toc-row row-l5"><span class="toc-caret"></span><a class="toc-l5" href="#échange-1--découverte-et-jumelage-par-code-pin-premier-appairage" data-id="échange-1--découverte-et-jumelage-par-code-pin-premier-appairage">Échange 1 — Découverte et jumelage par code PIN (premier appairage)</a></div></div><div class="toc-node" data-level="5"><div class="toc-row row-l5"><span class="toc-caret"></span><a class="toc-l5" href="#échange-2--connexion-reconnexion-automatique-et-déconnexion" data-id="échange-2--connexion-reconnexion-automatique-et-déconnexion">Échange 2 — Connexion, reconnexion automatique et déconnexion</a></div></div><div class="toc-node" data-level="5"><div class="toc-row row-l5"><span class="toc-caret"></span><a class="toc-l5" href="#échange-3--transmission-du-niveau-de-batterie-téléphone--kit" data-id="échange-3--transmission-du-niveau-de-batterie-téléphone--kit">Échange 3 — Transmission du niveau de batterie téléphone → kit</a></div></div></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation-7" data-id="première-implémentation-7">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées-7" data-id="difficultés-rencontrées-et-erreurs-corrigées-7">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale-7" data-id="version-finale-7">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#52-gestion-des-appels-entrants-et-redirection-mains-libres" data-id="52-gestion-des-appels-entrants-et-redirection-mains-libres">5.2 Gestion des appels entrants et redirection mains-libres</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé-8" data-id="énoncé-8">Énoncé</a></div></div><div class="toc-node has-kids" data-level="4"><div class="toc-row row-l4"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l4" href="#choix-fonctionnels-7" data-id="choix-fonctionnels-7">Choix fonctionnels</a></div><div class="toc-children"><div class="toc-node" data-level="5"><div class="toc-row row-l5"><span class="toc-caret"></span><a class="toc-l5" href="#échange-4--flux-de-paquets-lors-dun-appel-entrant-redirigé-vers-le-kit-mains-libres" data-id="échange-4--flux-de-paquets-lors-dun-appel-entrant-redirigé-vers-le-kit-mains-libres">Échange 4 — Flux de paquets lors d'un appel entrant redirigé vers le kit mains-libres</a></div></div></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation-8" data-id="première-implémentation-8">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées-8" data-id="difficultés-rencontrées-et-erreurs-corrigées-8">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale-8" data-id="version-finale-8">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#53-messagerie-sms-et-tableau-de-bord-connecté" data-id="53-messagerie-sms-et-tableau-de-bord-connecté">5.3 Messagerie SMS et tableau de bord connecté</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé-9" data-id="énoncé-9">Énoncé</a></div></div><div class="toc-node has-kids" data-level="4"><div class="toc-row row-l4"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l4" href="#choix-fonctionnels-8" data-id="choix-fonctionnels-8">Choix fonctionnels</a></div><div class="toc-children"><div class="toc-node" data-level="5"><div class="toc-row row-l5"><span class="toc-caret"></span><a class="toc-l5" href="#échange-5--synchronisation-et-lecture-de-sms-via-paquets-bluetooth-params-" data-id="échange-5--synchronisation-et-lecture-de-sms-via-paquets-bluetooth-params-">Échange 5 — Synchronisation et lecture de SMS via paquets Bluetooth (params-&gt;)</a></div></div></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation-9" data-id="première-implémentation-9">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées-9" data-id="difficultés-rencontrées-et-erreurs-corrigées-9">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale-9" data-id="version-finale-9">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="3"><div class="toc-row row-l3"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l3" href="#54-autoradio-et-arbitrage-des-priorités-audio" data-id="54-autoradio-et-arbitrage-des-priorités-audio">5.4 Autoradio et arbitrage des priorités audio</a></div><div class="toc-children"><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#énoncé-10" data-id="énoncé-10">Énoncé</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#choix-fonctionnels-9" data-id="choix-fonctionnels-9">Choix fonctionnels</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#première-implémentation-10" data-id="première-implémentation-10">Première implémentation</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#difficultés-rencontrées-et-erreurs-corrigées-10" data-id="difficultés-rencontrées-et-erreurs-corrigées-10">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="4"><div class="toc-row row-l4"><span class="toc-caret"></span><a class="toc-l4" href="#version-finale-10" data-id="version-finale-10">Version finale</a></div></div></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#6-extension--régulateur-de-vitesse-adaptatif-acc" data-id="6-extension--régulateur-de-vitesse-adaptatif-acc">6. Extension : Régulateur de vitesse adaptatif (ACC)</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#énoncé-11" data-id="énoncé-11">Énoncé</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#choix-fonctionnels-10" data-id="choix-fonctionnels-10">Choix fonctionnels</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#première-implémentation-11" data-id="première-implémentation-11">Première implémentation</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#difficultés-rencontrées-et-erreurs-corrigées-11" data-id="difficultés-rencontrées-et-erreurs-corrigées-11">Difficultés rencontrées et erreurs corrigées</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#version-finale-11" data-id="version-finale-11">Version finale</a></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#7-synthèse-cartographie-des-and-lines-ihm-globale-et-tests-dintégration" data-id="7-synthèse-cartographie-des-and-lines-ihm-globale-et-tests-dintégration">7. Synthèse, cartographie des AND-lines, IHM globale et tests d'intégration</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#cartographie-complète-de-la-grille-dand-lines-systeme" data-id="cartographie-complète-de-la-grille-dand-lines-systeme">Cartographie complète de la grille d'AND-lines (Systeme)</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#scénarios-testés" data-id="scénarios-testés">Scénarios testés</a></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#8-implémentation-de-la-gestion-sonore-sous-rhapsody" data-id="8-implémentation-de-la-gestion-sonore-sous-rhapsody">8. Implémentation de la gestion sonore sous Rhapsody</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#approche-initiale--appels-win32-dispersés-dans-les-états" data-id="approche-initiale--appels-win32-dispersés-dans-les-états">Approche initiale : appels Win32 dispersés dans les états</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#difficultés-rencontrées-et-limites-de-la-première-méthode" data-id="difficultés-rencontrées-et-limites-de-la-première-méthode">Difficultés rencontrées et limites de la première méthode</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#version-finale--dossier-versionné-sons-et-opération-centralisée-play_sound" data-id="version-finale--dossier-versionné-sons-et-opération-centralisée-play_sound">Version finale : dossier versionné sons/ et opération centralisée play_sound()</a></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#9-outillage-complémentaire--injection-dune-api-rest-et-interface-graphique-web" data-id="9-outillage-complémentaire--injection-dune-api-rest-et-interface-graphique-web">9. Outillage complémentaire : injection d'une API REST et interface graphique Web</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#motivation" data-id="motivation">Motivation</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#architecture-et-fonctionnement-de-loutil" data-id="architecture-et-fonctionnement-de-loutil">Architecture et fonctionnement de l'outil</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#liens-vers-la-démonstration-et-le-dépôt-github" data-id="liens-vers-la-démonstration-et-le-dépôt-github">Liens vers la démonstration et le dépôt GitHub</a></div></div></div></div><div class="toc-node has-kids" data-level="2"><div class="toc-row row-l2"><button class="toc-caret" type="button" tabindex="-1" aria-label="Déplier / replier"></button><a class="toc-l2" href="#10-conclusion-générale" data-id="10-conclusion-générale">10. Conclusion générale</a></div><div class="toc-children"><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#bilan-du-projet" data-id="bilan-du-projet">Bilan du projet</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#enseignements-majeurs-tirés-des-difficultés-rencontrées" data-id="enseignements-majeurs-tirés-des-difficultés-rencontrées">Enseignements majeurs tirés des difficultés rencontrées</a></div></div><div class="toc-node" data-level="3"><div class="toc-row row-l3"><span class="toc-caret"></span><a class="toc-l3" href="#perspectives-dévolution" data-id="perspectives-dévolution">Perspectives d'évolution</a></div></div></div></div></div></div></nav>
 </aside>
 <div id="resizer" role="separator" aria-orientation="vertical" title="Glisser pour redimensionner (double-clic : largeur initiale)"></div>
 <main id="content"><article class="markdown-body">
-<h1 id="rapport-de-projet--systèmes-embarqués-automobiles">Rapport de Projet — Systèmes Embarqués Automobiles<a class="anchor" href="#rapport-de-projet--systèmes-embarqués-automobiles" aria-label="Lien vers cette section">#</a></h1>
+<h1 id="rapport-de-projet---systèmes-à-événements-discrets">Rapport de Projet - Systèmes à événements discrets<a class="anchor" href="#rapport-de-projet---systèmes-à-événements-discrets" aria-label="Lien vers cette section">#</a></h1>
 <h2 id="régulateur-limiteur-de-vitesse-kit-mains-libres-bluetooth-autoradio-et-régulateur-adaptatif">Régulateur-Limiteur de Vitesse, Kit Mains-Libres Bluetooth, Autoradio et Régulateur Adaptatif<a class="anchor" href="#régulateur-limiteur-de-vitesse-kit-mains-libres-bluetooth-autoradio-et-régulateur-adaptatif" aria-label="Lien vers cette section">#</a></h2>
-<p><strong>Établissement :</strong> ESIEE Paris — Université Gustave Eiffel (Département DISC)<br>
-<strong>Encadrants :</strong> R. Hamouche / M. Dridi<br>
-<strong>Auteurs :</strong> Benoît de Keyn, Thibault <em>[Nom]</em><br>
-<strong>Date :</strong> 22/11/2026<br>
-<strong>Projet Rhapsody :</strong> <code>Projet_TABDK_E4SE</code> (<code>IBM Engineering Systems Design Rhapsody v9.0.2</code> — Statecharts, Panel Diagram &amp; Génération C++ OXF)</p>
+<p><strong>Binôme</strong> : Benoît de Keyn, Thibault Agueh<br>
+<strong>Date :</strong> 22/11/2026</p>
 <hr>
 <h2 id="table-des-matières">Table des matières<a class="anchor" href="#table-des-matières" aria-label="Lien vers cette section">#</a></h2>
-<ol>
-<li><a href="#1-introduction-g%C3%A9n%C3%A9rale">Introduction générale</a></li>
-<li><a href="#2-mod%C3%A9lisation-et-simulation-du-v%C3%A9hicule">Modélisation et simulation du véhicule</a>
-<ul>
-<li><a href="#21-architecture-globale-en-and-lines-synchronisation-eval-et-interfaces">2.1 Architecture globale en AND-lines, synchronisation <code>EVAL</code> et interfaces</a></li>
-<li><a href="#22-dynamique-du-v%C3%A9hicule-et-primitives-de-simulation-simulation-du-vehicule">2.2 Dynamique du véhicule et primitives de simulation (<code>Simulation du vehicule</code>)</a></li>
-<li><a href="#23-gestion-de-la-p%C3%A9dale-dacc%C3%A9l%C3%A9ration">2.3 Gestion de la pédale d'accélération</a></li>
-<li><a href="#24-int%C3%A9gration-du-syst%C3%A8me-de-freinage-et-priorit%C3%A9-stricte">2.4 Intégration du système de freinage et priorité stricte</a></li>
-<li><a href="#25-gestion-du-contact-du-d%C3%A9marrage-et-de-larr%C3%AAt-durgence-cl%C3%A9-du-v%C3%A9hicule">2.5 Gestion du contact, du démarrage et de l'arrêt d'urgence (<code>Clé du véhicule</code>)</a></li>
-<li><a href="#26-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes-ressources-et-pannes">2.6 Modélisation énergétique : carburant, batterie et pannes (<code>Ressources et pannes</code>)</a></li>
-</ul>
-</li>
-<li><a href="#3-sp%C3%A9cification-et-d%C3%A9veloppement-du-r%C3%A9gulateur-de-vitesse">Spécification et développement du régulateur de vitesse</a></li>
-<li><a href="#4-sp%C3%A9cification-et-d%C3%A9veloppement-du-limiteur-de-vitesse">Spécification et développement du limiteur de vitesse</a></li>
-<li><a href="#5-contr%C3%B4leur-de-kit-bluetooth--mains-libres--et-infodivertissement">Contrôleur de Kit Bluetooth « mains libres » et infodivertissement</a>
-<ul>
-<li><a href="#51-protocole-bluetooth-jumelage-par-code-pin-et-cycle-de-vie-du-t%C3%A9l%C3%A9phone">5.1 Protocole Bluetooth, jumelage par code PIN et cycle de vie du téléphone</a></li>
-<li><a href="#52-gestion-des-appels-entrants-et-redirection-mains-libres">5.2 Gestion des appels entrants et redirection mains-libres</a></li>
-<li><a href="#53-messagerie-sms-et-tableau-de-bord-connect%C3%A9">5.3 Messagerie SMS et tableau de bord connecté</a></li>
-<li><a href="#54-autoradio-arbitrage-des-priorit%C3%A9s-audio-et-centralisation-sonore">5.4 Autoradio, arbitrage des priorités audio et centralisation sonore</a></li>
-</ul>
-</li>
-<li><a href="#6-extension--r%C3%A9gulateur-de-vitesse-adaptatif-acc">Extension : Régulateur de vitesse adaptatif (ACC)</a></li>
-<li><a href="#7-synth%C3%A8se-cartographie-des-and-lines-ihm-globale-et-tests-dint%C3%A9gration">Synthèse, cartographie des AND-lines, IHM globale et tests d'intégration</a></li>
-<li><a href="#8-conclusion-g%C3%A9n%C3%A9rale">Conclusion générale</a></li>
-</ol>
+<!-- TOC -->
+<p><b>• <a href="#rapport-de-projet---syst%C3%A8mes-%C3%A0-%C3%A9v%C3%A9nements-discrets">Rapport de Projet - Systèmes à événements discrets</a></b><br>
+<b>• <a href="#r%C3%A9gulateur-limiteur-de-vitesse-kit-mains-libres-bluetooth-autoradio-et-r%C3%A9gulateur-adaptatif">Régulateur-Limiteur de Vitesse, Kit Mains-Libres Bluetooth, Autoradio et Régulateur Adaptatif</a></b><br>
+<b>• <a href="#table-des-mati%C3%A8res">Table des matières</a></b><br>
+<b>• <a href="#1-introduction">1. Introduction</a></b><br>
+    ◦ <a href="#contexte-et-objectifs">Contexte et objectifs</a><br>
+    ◦ <a href="#m%C3%A9thodologie-adopt%C3%A9e">Méthodologie adoptée</a><br>
+<b>• <a href="#2-mod%C3%A9lisation-et-simulation-du-v%C3%A9hicule">2. Modélisation et simulation du véhicule</a></b><br>
+    ◦ <a href="#21-architecture-globale-en-and-lines-synchronisation-eval-et-interfaces">2.1 Architecture globale en AND-lines, synchronisation EVAL et interfaces</a><br>
+    ◦ <a href="#22-dynamique-du-v%C3%A9hicule-et-primitives-de-simulation-simulation-du-vehicule">2.2 Dynamique du véhicule et primitives de simulation (Simulation du vehicule)</a><br>
+    ◦ <a href="#23-gestion-de-la-p%C3%A9dale-dacc%C3%A9l%C3%A9ration">2.3 Gestion de la pédale d'accélération</a><br>
+    ◦ <a href="#24-int%C3%A9gration-du-syst%C3%A8me-de-freinage-et-priorit%C3%A9-stricte">2.4 Intégration du système de freinage et priorité stricte</a><br>
+    ◦ <a href="#25-gestion-du-contact-du-d%C3%A9marrage-et-de-larr%C3%AAt-durgence-cl%C3%A9-du-v%C3%A9hicule">2.5 Gestion du contact, du démarrage et de l'arrêt d'urgence (Clé du véhicule)</a><br>
+    ◦ <a href="#26-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes-ressources-et-pannes">2.6 Modélisation énergétique : carburant, batterie et pannes (Ressources et pannes)</a><br>
+<b>• <a href="#3-sp%C3%A9cification-et-d%C3%A9veloppement-du-r%C3%A9gulateur-de-vitesse">3. Spécification et développement du régulateur de vitesse</a></b><br>
+    ◦ <a href="#%C3%A9nonc%C3%A9-5">Énoncé</a><br>
+    ◦ <a href="#choix-fonctionnels-4">Choix fonctionnels</a><br>
+    ◦ <a href="#premi%C3%A8re-impl%C3%A9mentation-5">Première implémentation</a><br>
+    ◦ <a href="#difficult%C3%A9s-rencontr%C3%A9es-et-erreurs-corrig%C3%A9es-5">Difficultés rencontrées et erreurs corrigées</a><br>
+    ◦ <a href="#version-finale-5">Version finale</a><br>
+<b>• <a href="#4-sp%C3%A9cification-et-d%C3%A9veloppement-du-limiteur-de-vitesse">4. Spécification et développement du limiteur de vitesse</a></b><br>
+    ◦ <a href="#%C3%A9nonc%C3%A9-6">Énoncé</a><br>
+    ◦ <a href="#choix-fonctionnels-5">Choix fonctionnels</a><br>
+    ◦ <a href="#premi%C3%A8re-impl%C3%A9mentation-6">Première implémentation</a><br>
+    ◦ <a href="#difficult%C3%A9s-rencontr%C3%A9es-et-erreurs-corrig%C3%A9es-6">Difficultés rencontrées et erreurs corrigées</a><br>
+    ◦ <a href="#version-finale-6">Version finale</a><br>
+<b>• <a href="#5-contr%C3%B4leur-de-kit-bluetooth--mains-libres--et-infodivertissement">5. Contrôleur de Kit Bluetooth « mains libres » et infodivertissement</a></b><br>
+    ◦ <a href="#principe-de-simulation-r%C3%A9aliste-du-bluetooth--cloisonnement-strict-et-paquets-params-">Principe de simulation réaliste du Bluetooth : cloisonnement strict et paquets params-&gt;</a><br>
+    ◦ <a href="#51-protocole-bluetooth-jumelage-par-code-pin-et-cycle-de-vie-du-t%C3%A9l%C3%A9phone">5.1 Protocole Bluetooth, jumelage par code PIN et cycle de vie du téléphone</a><br>
+    ◦ <a href="#52-gestion-des-appels-entrants-et-redirection-mains-libres">5.2 Gestion des appels entrants et redirection mains-libres</a><br>
+    ◦ <a href="#53-messagerie-sms-et-tableau-de-bord-connect%C3%A9">5.3 Messagerie SMS et tableau de bord connecté</a><br>
+    ◦ <a href="#54-autoradio-et-arbitrage-des-priorit%C3%A9s-audio">5.4 Autoradio et arbitrage des priorités audio</a><br>
+<b>• <a href="#6-extension--r%C3%A9gulateur-de-vitesse-adaptatif-acc">6. Extension : Régulateur de vitesse adaptatif (ACC)</a></b><br>
+    ◦ <a href="#%C3%A9nonc%C3%A9-11">Énoncé</a><br>
+    ◦ <a href="#choix-fonctionnels-10">Choix fonctionnels</a><br>
+    ◦ <a href="#premi%C3%A8re-impl%C3%A9mentation-11">Première implémentation</a><br>
+    ◦ <a href="#difficult%C3%A9s-rencontr%C3%A9es-et-erreurs-corrig%C3%A9es-11">Difficultés rencontrées et erreurs corrigées</a><br>
+    ◦ <a href="#version-finale-11">Version finale</a><br>
+<b>• <a href="#7-synth%C3%A8se-cartographie-des-and-lines-ihm-globale-et-tests-dint%C3%A9gration">7. Synthèse, cartographie des AND-lines, IHM globale et tests d'intégration</a></b><br>
+    ◦ <a href="#cartographie-compl%C3%A8te-de-la-grille-dand-lines-systeme">Cartographie complète de la grille d'AND-lines (Systeme)</a><br>
+    ◦ <a href="#sc%C3%A9narios-test%C3%A9s">Scénarios testés</a><br>
+<b>• <a href="#8-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody">8. Implémentation de la gestion sonore sous Rhapsody</a></b><br>
+    ◦ <a href="#approche-initiale--appels-win32-dispers%C3%A9s-dans-les-%C3%A9tats">Approche initiale : appels Win32 dispersés dans les états</a><br>
+    ◦ <a href="#difficult%C3%A9s-rencontr%C3%A9es-et-limites-de-la-premi%C3%A8re-m%C3%A9thode">Difficultés rencontrées et limites de la première méthode</a><br>
+    ◦ <a href="#version-finale--dossier-versionn%C3%A9-sons-et-op%C3%A9ration-centralis%C3%A9e-play_sound">Version finale : dossier versionné sons/ et opération centralisée play_sound()</a><br>
+<b>• <a href="#9-outillage-compl%C3%A9mentaire--injection-dune-api-rest-et-interface-graphique-web">9. Outillage complémentaire : injection d'une API REST et interface graphique Web</a></b><br>
+    ◦ <a href="#motivation">Motivation</a><br>
+    ◦ <a href="#architecture-et-fonctionnement-de-loutil">Architecture et fonctionnement de l'outil</a><br>
+    ◦ <a href="#liens-vers-la-d%C3%A9monstration-et-le-d%C3%A9p%C3%B4t-github">Liens vers la démonstration et le dépôt GitHub</a><br>
+<b>• <a href="#10-conclusion-g%C3%A9n%C3%A9rale">10. Conclusion générale</a></b><br>
+    ◦ <a href="#bilan-du-projet">Bilan du projet</a><br>
+    ◦ <a href="#enseignements-majeurs-tir%C3%A9s-des-difficult%C3%A9s-rencontr%C3%A9es">Enseignements majeurs tirés des difficultés rencontrées</a><br>
+    ◦ <a href="#perspectives-d%C3%A9volution">Perspectives d'évolution</a></p>
+<!-- /TOC -->
 <hr>
-<h2 id="1-introduction-générale">1. Introduction générale<a class="anchor" href="#1-introduction-générale" aria-label="Lien vers cette section">#</a></h2>
+<h2 id="1-introduction">1. Introduction<a class="anchor" href="#1-introduction" aria-label="Lien vers cette section">#</a></h2>
 <h3 id="contexte-et-objectifs">Contexte et objectifs<a class="anchor" href="#contexte-et-objectifs" aria-label="Lien vers cette section">#</a></h3>
 <p>Ce projet porte sur la spécification, la modélisation comportementale par <strong>Statecharts</strong> et la simulation temps réel en C++ (framework OXF) de plusieurs systèmes embarqués automobiles sous <strong>IBM Engineering Systems Design Rhapsody (v9.0.2)</strong>, à partir du socle <code>BaseProjectVehicule2022</code> (renommé et restructuré en <code>Projet_TABDK_E4SE</code>).</p>
-<p>Le système final couvre cinq axes majeurs, enrichis d'une gestion énergétique complète et d'un autoradio multi-pistes à arbitrage de priorités :</p>
+<p>Le système final couvre cinq axes majeurs, enrichis d'une gestion énergétique complète, d'un autoradio multi-pistes à arbitrage de priorités, d'une gestion sonore centralisée ainsi que d'un outillage maison permettant de piloter le code C++ généré depuis une <strong>interface graphique Web via API REST</strong> :</p>
 <ol>
 <li><strong>Modélisation et simulation du véhicule</strong> : couplage entre un moteur de dynamique longitudinale, le contrôle d'injection par pédales (priorité freinage &gt; accélération), le cycle de vie contact/moteur (arrêt d'urgence avec conservation d'inertie) et la gestion des ressources/pannes (carburant et batterie).</li>
 <li><strong>Régulateur de vitesse</strong> : maintien d'une vitesse cible compensant le profil routier (<eq><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>∈</mo><mo stretchy="false">[</mo><mo>−</mo><msup><mn>20</mn><mo>∘</mo></msup><mo separator="true">,</mo><mo>+</mo><msup><mn>20</mn><mo>∘</mo></msup><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">\alpha \in [-20^\circ, +20^\circ]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">−</span><span class="mord">2</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6741em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∘</span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">+</span><span class="mord">2</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6741em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∘</span></span></span></span></span></span></span></span><span class="mclose">]</span></span></span></span></eq>) via un correcteur PI discret auto-dimensionné avec anti-windup et transfert sans à-coup.</li>
@@ -456,39 +482,11 @@ li.task-item { list-style: none; }
 <ol>
 <li>Multiplication de timers OXF asynchrones indépendants, rendant l'ordre de réévaluation non déterministe entre régions dépendantes (ex. une coupure moteur détectée avant ou après le calcul d'injection).</li>
 <li>Déclenchement intempestif d'actions d'entrée/sortie sur les super-états lors des sorties/réentrées périodiques par le connecteur d'historique, et saturation des traces d'animation.</li>
-<li>Complexité visuelle importante du Statechart et risque d'oubli lors des refactorisations (un dernier rebouclage <code>tm()</code> résiduel sur <code>state_61/contact_on</code> n'a d'ailleurs été repéré et nettoyé que tardivement lors du nettoyage global de fin de projet).</li>
+<li>Complexité visuelle importante du Statechart et risque d'oubli lors des refactorisations (un dernier rebouclage <code>tm()</code> résiduel sur <code>state_61/contact_on</code> n'a d'ailleurs été repéré et nettoyé que tardivement lors du nettoyage global de fin de projet)</li>
 </ol>
 </li>
 <li><strong>Solution retenue (validée sur la branche <code>eval-tm-test</code>)</strong> : création d'une <strong>AND-line dédiée <code>Horloge rafraichissement</code> (<code>state_62</code>)</strong> contenant un unique état qui émet <code>GEN(EVAL)</code> à <eq><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>20</mn><mtext> Hz</mtext></mrow><annotation encoding="application/x-tex">20\text{ Hz}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">20</span><span class="mord text"><span class="mord"> Hz</span></span></span></span></span></eq> (<code>tm(1000/PARAM_SIMU_freq_rafraichissement)</code>). Toutes les transitions purement gardées du projet sont déclenchées par <code>EVAL [garde]</code>, supprimant les boucles <code>tm() -&gt; History</code> et offrant un véritable <strong>bus de synchronisation périodique</strong> commun à tout le véhicule.</li>
 </ul>
-<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TD
-    CLK[&quot;`**Horloge rafraichissement (state_62)**&lt;br/&gt;tm(50 ms) → GEN(EVAL)`&quot;]
-
-    subgraph CORE[&quot;Noyau Véhicule — 4 AND-lines synchronisées&quot;]
-        direction TB
-        KEY[&quot;`**Clé du véhicule (state_61)**&lt;br/&gt;Contact, démarrage, conso/charge`&quot;]
-        INJ[&quot;`**Débit de l'injection (state_60)**&lt;br/&gt;Arbitrage pédales / régulateur`&quot;]
-        DYN[&quot;`**Simulation du vehicule (state_72)**&lt;br/&gt;Intégration vitesse &amp; distance`&quot;]
-        RES[&quot;`**Ressources et pannes (state_252)**&lt;br/&gt;Seuils carburant/batterie &amp; dépannage`&quot;]
-    end
-
-    CLK -.-&gt;|&quot;`EVAL (20 Hz)`&quot;| KEY
-    CLK -.-&gt;|&quot;`EVAL (20 Hz)`&quot;| INJ
-    CLK -.-&gt;|&quot;`EVAL (20 Hz)`&quot;| DYN
-    CLK -.-&gt;|&quot;`EVAL (20 Hz)`&quot;| RES
-
-    KEY --&gt;|&quot;`ignition, IS_IN(moteur_on)`&quot;| INJ
-    INJ --&gt;|&quot;`throttle`&quot;| DYN
-    DYN --&gt;|&quot;`speed, float_speed`&quot;| RES
-    RES --&gt;|&quot;`IS_IN(fonctionelle)`&quot;| KEY
-
-    classDef clk fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f
-    classDef mod fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#1e3a8a
-    class CLK clk
-    class KEY,INJ,DYN,RES mod
-    style CORE fill:#f8fafc,stroke:#94a3b8,stroke-width:1.5px,color:#334155
-</pre></div>
 <blockquote>
 <p><strong>[Capture Rhapsody à insérer — Version finale]</strong> : AND-line <strong><code>Horloge rafraichissement</code></strong> (<code>state_62</code>, haut-centre de la zone véhicule) montrant l'état <code>horloge_rafraichissement</code> (<code>entry / GEN(EVAL);</code>) et sa transition <code>tm(1000/PARAM_SIMU_freq_rafraichissement)</code>.</p>
 </blockquote>
@@ -499,7 +497,7 @@ flowchart TD
 <h4 id="choix-fonctionnels-et-fonctionnement-des-primitives-de-simulation">Choix fonctionnels et fonctionnement des primitives de simulation<a class="anchor" href="#choix-fonctionnels-et-fonctionnement-des-primitives-de-simulation" aria-label="Lien vers cette section">#</a></h4>
 <p>L'AND-line <strong><code>Simulation du vehicule</code> (<code>state_72</code>)</strong> est volontairement minimaliste : elle ne contient qu'un unique état <code>simulation_du_vehicule</code> qui exécute <code>calcul_vitesse_distance()</code> à chaque événement <code>EVAL</code> (20 Hz). Toute la mécanique est encapsulée dans deux primitives de simulation (<code>init()</code> et <code>calcul_vitesse_distance()</code>), adaptées en un modèle Newtonien paramétrable (<code>PARAM_SIMU_*</code>) :</p>
 <div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TD
+flowchart LR
     IN[&quot;`**Entrées**&lt;br/&gt;throttle, brakePedal, alpha&lt;br/&gt;ignition, PARAM_SIMU_*`&quot;]
     S1[&quot;`**1. Force motrice**&lt;br/&gt;Si throttle &lt;= ralenti ou moteur OFF :&lt;br/&gt;frein moteur (-300 N) si v &gt; 10 km/h&lt;br/&gt;sinon traction ralenti`&quot;]
     S2[&quot;`**2. Forces résistantes**&lt;br/&gt;Traînée air (k·v²)&lt;br/&gt;Roulement (Cr·m·g·cos α)&lt;br/&gt;Gravité pente (m·g·sin α)&lt;br/&gt;Freinage mécanique progressif`&quot;]
@@ -667,7 +665,7 @@ throttle = throttle_repos + (accelPedal / (<span class="hljs-type">double</span>
 <h4 id="loi-de-commande--correcteur-pi-discret-auto-dimensionné">Loi de commande : correcteur PI discret auto-dimensionné<a class="anchor" href="#loi-de-commande--correcteur-pi-discret-auto-dimensionné" aria-label="Lien vers cette section">#</a></h4>
 <p>La loi statique fournie dans l'énoncé n'était pas adaptée au modèle physique Newtonien en forte pente. L'asservissement final (<code>calcul_regulateur_vitesse()</code>, cadencé à <code>PARAM_SIMU_freq_regulateur = 3 Hz</code>) repose sur un <strong>correcteur PI discret avec saturation anti-windup</strong>, dont les gains sont calculés automatiquement dans <code>init()</code> à partir de la masse, de la puissance et de la fréquence :</p>
 <div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TD
+flowchart LR
     ERR[&quot;`**Erreur centrée**&lt;br/&gt;e = (vitesseConsigne + 0.5) - float_speed`&quot;]
     I[&quot;`**Terme Intégral (anti-windup)**&lt;br/&gt;steady += Ki · e&lt;br/&gt;bridé dans [throttle_repos, 10]`&quot;]
     P[&quot;`**Terme Proportionnel**&lt;br/&gt;Kp · e`&quot;]
@@ -717,7 +715,7 @@ Ki_regulateur = Kp_regulateur / PARAM_SIMU_Ki_regulateur;
 <li><strong>Activation différée (<code>limiteur_inhibe</code> → <code>limiteur_effectif</code>)</strong> : tant que <code>speed &gt; vitesseConsigne</code>, le limiteur reste en <code>limiteur_inhibe</code> (<code>limiteur_attente = true</code>) sans brider ni déclencher d'alarme. Dès que <code>speed &lt;= vitesseConsigne</code>, il bascule en <code>limiteur_effectif</code> (<code>limiteur_attente = false</code>).</li>
 <li><strong>Bridage d'injection dans <code>state_60</code></strong> : <code>acceleration</code> bascule vers <code>freinage_injection</code> dès que <code>IS_IN(limiteur_effectif) &amp;&amp; float_speed &gt;= vitesseConsigne + 0.5</code>.</li>
 <li><strong>Kick-down</strong> : désactivation automatique sur <code>EVAL [IS_IN(moteur_off) || ((vitesseConsigne - speed) &lt; 10 &amp;&amp; accelPedal &gt; 7)]</code>.</li>
-<li><strong>Alarme de dépassement</strong> : dans <code>limiteur_effectif</code>, si <code>speed &gt; vitesseConsigne + 2</code> (typiquement en forte descente), l'entrée en <code>depassement</code> déclenche <code>alerte_depassement(1)</code> (voyant <code>limiteur_depasse = true</code> et <code>play_sound(&quot;alarme_depassement.wav&quot;)</code>).</li>
+<li><strong>Alarme de dépassement</strong> : dans <code>limiteur_effectif</code>, si <code>speed &gt; vitesseConsigne + 2</code> (typiquement en forte descente), l'entrée en <code>depassement</code> déclenche <code>alerte_depassement(1)</code> (voyant <code>limiteur_depasse = true</code> et lecture en boucle de <code>alarme_depassement.wav</code> ; voir <a href="#8-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody">§ 8 — Implémentation de la gestion sonore</a> pour le détail technique de la couche audio).</li>
 </ul>
 <h3 id="première-implémentation-6">Première implémentation<a class="anchor" href="#première-implémentation-6" aria-label="Lien vers cette section">#</a></h3>
 <p>La première implémentation (<code>7e69e249</code> → <code>b59e5d70</code>) utilisait un interrupteur <code>cmd_limiteur</code>, un seuil de kick-down à <code>accelPedal &gt; 5</code>, un état temporaire <code>stabilisation</code> (<code>tm(2000)</code>), et surtout une <strong>décomposition orthogonale interne (<code>And</code>) à l'intérieur de <code>limiteur_on</code></strong> séparant <code>state_81</code> (<code>limiteur_inhibe</code> ↔ <code>limiteur_effectif</code>) et <code>state_82</code> (<code>maintien_consigne</code> → <code>stabilisation</code> / <code>limite_tenue</code> / <code>depassement</code>).</p>
@@ -747,18 +745,67 @@ Ki_regulateur = Kp_regulateur / PARAM_SIMU_Ki_regulateur;
 </blockquote>
 <hr>
 <h2 id="5-contrôleur-de-kit-bluetooth--mains-libres--et-infodivertissement">5. Contrôleur de Kit Bluetooth « mains libres » et infodivertissement<a class="anchor" href="#5-contrôleur-de-kit-bluetooth--mains-libres--et-infodivertissement" aria-label="Lien vers cette section">#</a></h2>
-<p>Compte tenu de l'ampleur fonctionnelle de cet ensemble — qui mobilise <strong>8 AND-lines</strong> du Statechart final — il est présenté en <strong>quatre sous-parties</strong> : protocole Bluetooth/PIN, appels et redirection mains-libres, messagerie SMS, et autoradio à priorités audio.</p>
+<p>Compte tenu de l'ampleur fonctionnelle de cet ensemble — qui mobilise <strong>8 AND-lines</strong> du Statechart final — il est présenté en <strong>quatre sous-parties</strong> : protocole Bluetooth/PIN et batterie, appels et redirection mains-libres, messagerie SMS, et autoradio à priorités audio.</p>
+<h3 id="principe-de-simulation-réaliste-du-bluetooth--cloisonnement-strict-et-paquets-params-">Principe de simulation réaliste du Bluetooth : cloisonnement strict et paquets <code>params-&gt;</code><a class="anchor" href="#principe-de-simulation-réaliste-du-bluetooth--cloisonnement-strict-et-paquets-params-" aria-label="Lien vers cette section">#</a></h3>
+<p>Bien que toutes les AND-lines cohabitent au sein de la classe <code>_SysVehicule</code> pour les besoins de la simulation Rhapsody, nous avons volontairement conçu le système comme <strong>deux équipements physiques totalement indépendants</strong> (d'un côté le <strong>Téléphone</strong> : <code>state_96</code>, <code>state_126</code>, <code>state_139</code> ; de l'autre le <strong>Kit Véhicule</strong> : <code>state_87</code>, <code>state_166</code>, <code>state_218</code>, auxquels s'ajoutent les simulateurs réseau <code>state_146</code> et <code>state_206</code>).</p>
+<ul>
+<li><strong>Exécution autonome sans mémoire partagée</strong> : chaque bloc d'AND-lines est capable de s'exécuter de manière autonome sur son propre système matériel, <strong>sans aucun état (<code>IS_IN</code>), aucun attribut ni aucune opération partagés entre le téléphone et le véhicule</strong>. La <strong>seule exception</strong> concerne l'accès au périphérique audio Windows (<code>play_sound()</code> / <code>PlaySound</code>, cf. <a href="#8-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody">§ 8</a>), imposée par le fait que les deux systèmes s'exécutent sur le même poste de simulation.</li>
+<li><strong>Transmission d'informations par événements paramétrés (<code>GEN(...)</code> → <code>params-&gt;</code>)</strong> : pour simuler fidèlement l'échange de <strong>paquets Bluetooth</strong> sur une liaison radio, toute donnée devant franchir la frontière entre le téléphone et le kit véhicule est encapsulée dans un <strong>événement Rhapsody paramétré</strong>. Côté émetteur, la macro <code>GEN(ev_nom(valeur))</code> sérialise la donnée dans l'instance d'événement ; côté récepteur, la transition déclenchée extrait la charge utile via le pointeur généré <strong><code>params-&gt;nom_du_parametre</code></strong> (mécanisme OXF standard de Rhapsody C++), sans jamais lire directement un attribut de l'autre système :</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Fonctionnalité</th>
+<th style="text-align:left">Événement (paquet Bluetooth)</th>
+<th style="text-align:left">Émission côté Téléphone</th>
+<th style="text-align:left">Réception côté Kit Véhicule (<code>params-&gt;</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Code PIN (§ 5.1)</strong></td>
+<td style="text-align:left"><code>ev_tentative_mdp(OMString mdp)</code></td>
+<td style="text-align:left"><code>GEN(ev_tentative_mdp(champ_mdp))</code></td>
+<td style="text-align:left"><code>[verifier_mdp(params-&gt;mdp)]</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Batterie (§ 5.1)</strong></td>
+<td style="text-align:left"><code>ev_actualisation_batterie_telephone_vehicule(int pourcentage)</code></td>
+<td style="text-align:left"><code>GEN(ev_actualisation_batterie_telephone_vehicule(niveau_batterie_telephone))</code></td>
+<td style="text-align:left"><code>envoi_batterie_kit(params-&gt;pourcentage)</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Synchro SMS initiale (§ 5.3)</strong></td>
+<td style="text-align:left"><code>ev_transfert_sms_to_kit(int historique)</code></td>
+<td style="text-align:left"><code>GEN(ev_transfert_sms_to_kit(nbr_sms_telephone))</code></td>
+<td style="text-align:left"><code>nbr_sms_kit = params-&gt;historique</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Réception SMS (§ 5.3)</strong></td>
+<td style="text-align:left"><code>ev_nv_sms_kit(int sms_telephone)</code></td>
+<td style="text-align:left"><code>GEN(ev_nv_sms_kit(nbr_sms_telephone))</code></td>
+<td style="text-align:left"><code>nbr_sms_kit = params-&gt;sms_telephone</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Lecture SMS (§ 5.3)</strong></td>
+<td style="text-align:left"><code>ev_actualisation_sms_kit(int sms_tel)</code></td>
+<td style="text-align:left"><code>GEN(ev_actualisation_sms_kit(nbr_sms_telephone))</code></td>
+<td style="text-align:left"><code>nbr_sms_kit = params-&gt;sms_tel</code></td>
+</tr>
+</tbody>
+</table>
 <hr>
 <h3 id="51-protocole-bluetooth-jumelage-par-code-pin-et-cycle-de-vie-du-téléphone">5.1 Protocole Bluetooth, jumelage par code PIN et cycle de vie du téléphone<a class="anchor" href="#51-protocole-bluetooth-jumelage-par-code-pin-et-cycle-de-vie-du-téléphone" aria-label="Lien vers cette section">#</a></h3>
 <h4 id="énoncé-7">Énoncé<a class="anchor" href="#énoncé-7" aria-label="Lien vers cette section">#</a></h4>
 <p>Modéliser le dialogue entre un kit véhicule esclave (actif contact mis) et un téléphone maître : détection de <em>« Kit Bluetooth Vehicule »</em>, jumelage autorisé <strong>uniquement moteur à l'arrêt</strong> avec code PIN (<code>&quot;1234&quot;</code>), mémorisation (<code>kit_jumele</code>), reconnexion automatique et gestion de la batterie/alimentation du téléphone.</p>
 <h4 id="choix-fonctionnels-6">Choix fonctionnels<a class="anchor" href="#choix-fonctionnels-6" aria-label="Lien vers cette section">#</a></h4>
-<p>Trois AND-lines collaborent exclusivement par échanges d'événements :</p>
+<p>Trois AND-lines collaborent exclusivement par échanges de paquets événementiels :</p>
 <ul>
 <li><strong><code>Jumelage kit main libre</code> (<code>state_87</code>, côté véhicule)</strong> : démarre après <code>tm(325)</code> lorsque <code>IS_IN(contact_on)</code>, diffuse sa présence via <code>GEN(ev_kit_vehicule_pret)</code> toutes les <code>500 ms</code> en <code>recherche_telephone</code>, n'accepte <code>ev_demande_jumelage</code> que sous <strong><code>[IS_IN(moteur_off)]</code></strong>, demande le PIN (<code>GEN(ev_demande_mdp)</code>), et vérifie <code>verifier_mdp(params-&gt;mdp)</code> sur réception de <code>ev_tentative_mdp</code>.</li>
 <li><strong><code>Telephone</code> (<code>state_96</code>, côté téléphone)</strong> : encapsule le Bluetooth dans <code>telephone_actif</code> (dépendant de <code>telephone_allume &amp;&amp; niveau_batterie_telephone &gt; 0</code>). Une fois le kit détecté (<code>ev_kit_vehicule_pret</code>), aiguille automatiquement vers <code>connexion</code> si <code>kit_jumele == true</code>, ou vers <code>jumelage</code> (<code>attente_jumelage</code> → <code>attente_reponse</code> → <code>jumelage_effectif</code>) sinon.</li>
-<li><strong><code>Batterie téléphone</code> (<code>state_126</code>)</strong> : décharge de <eq><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><mn>1</mn><mtext> </mtext><mi mathvariant="normal">%</mi><mi mathvariant="normal">/</mi><mtext>s</mtext></mrow><annotation encoding="application/x-tex">-1\,\%/\text{s}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">−</span><span class="mord">1</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">%/</span><span class="mord text"><span class="mord">s</span></span></span></span></span></eq> lorsque <code>IS_IN(telephone_actif)</code>, recharge de <eq><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo><mn>5</mn><mtext> </mtext><mi mathvariant="normal">%</mi></mrow><annotation encoding="application/x-tex">+5\,\%</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.0833em;"></span><span class="mord">+</span><span class="mord">5</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">%</span></span></span></span></eq> toutes les <eq><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1,5</mn><mtext> s</mtext></mrow><annotation encoding="application/x-tex">1{,}5\text{ s}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">1</span><span class="mord"><span class="mpunct">,</span></span><span class="mord">5</span><span class="mord text"><span class="mord"> s</span></span></span></span></span></eq> si <code>charge_vehicule_telephone == true</code>, et émission de <code>ev_actualisation_batterie_telephone_vehicule(niveau_batterie_telephone)</code>.</li>
+<li><strong><code>Batterie téléphone</code> (<code>state_126</code>, côté téléphone)</strong> : décharge de <eq><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><mn>1</mn><mtext> </mtext><mi mathvariant="normal">%</mi><mi mathvariant="normal">/</mi><mtext>s</mtext></mrow><annotation encoding="application/x-tex">-1\,\%/\text{s}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">−</span><span class="mord">1</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">%/</span><span class="mord text"><span class="mord">s</span></span></span></span></span></eq> lorsque <code>IS_IN(telephone_actif)</code>, recharge de <eq><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo><mn>5</mn><mtext> </mtext><mi mathvariant="normal">%</mi></mrow><annotation encoding="application/x-tex">+5\,\%</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.0833em;"></span><span class="mord">+</span><span class="mord">5</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">%</span></span></span></span></eq> toutes les <eq><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1,5</mn><mtext> s</mtext></mrow><annotation encoding="application/x-tex">1{,}5\text{ s}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">1</span><span class="mord"><span class="mpunct">,</span></span><span class="mord">5</span><span class="mord text"><span class="mord"> s</span></span></span></span></span></eq> si <code>charge_vehicule_telephone == true</code>, et émet le paquet <code>ev_actualisation_batterie_telephone_vehicule(niveau_batterie_telephone)</code>.</li>
 </ul>
+<h5 id="échange-1--découverte-et-jumelage-par-code-pin-premier-appairage">Échange 1 — Découverte et jumelage par code PIN (premier appairage)<a class="anchor" href="#échange-1--découverte-et-jumelage-par-code-pin-premier-appairage" aria-label="Lien vers cette section">#</a></h5>
 <div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
 sequenceDiagram
     participant Tel as Téléphone (state_96)
@@ -767,28 +814,52 @@ sequenceDiagram
     Note over Kit: contact_on → tm(325 ms) → recherche_telephone
     Kit-&gt;&gt;Tel: ev_kit_vehicule_pret (toutes les 500 ms)
     Note over Tel: kit_detecte (&quot;Kit Bluetooth Vehicule&quot;)
+    Tel-&gt;&gt;Kit: ev_demande_jumelage (clic OK)
 
-    alt Jamais jumelé (kit_jumele == false)
-        Tel-&gt;&gt;Kit: ev_demande_jumelage (clic OK)
-        alt Moteur en marche (moteur_on)
-            Note over Kit: Garde [IS_IN(moteur_off)] fausse → aucune réponse
-            Note over Tel: tm(500 ms) → messages_appairage[5] (refusé)
-        else Moteur à l'arrêt (moteur_off)
-            Kit-&gt;&gt;Tel: ev_demande_mdp (&quot;Entrez un mot de passe&quot;)
-            Tel-&gt;&gt;Kit: ev_tentative_mdp(champ_mdp) (clic Appairer)
-            alt verifier_mdp(mdp) == false
-                Kit-&gt;&gt;Tel: ev_mdp_incorrect (&quot;Mot de passe incorrect&quot;)
-            else verifier_mdp(mdp) == true (&quot;1234&quot;)
-                Kit-&gt;&gt;Tel: ev_mdp_correct
-                Tel-&gt;&gt;Kit: ev_demande_connexion (toutes les 100 ms)
-                Kit-&gt;&gt;Tel: connexion_acceptee
-                Note over Tel,Kit: kit_connecte &amp; telephone_connecte (kit_jumele = true)
-            end
+    alt Moteur en marche (moteur_on)
+        Note over Kit: Garde [IS_IN(moteur_off)] fausse → paquet ignoré
+        Note over Tel: Timeout tm(500 ms) → jumelage refusé
+    else Moteur à l'arrêt (moteur_off)
+        Kit-&gt;&gt;Tel: ev_demande_mdp (&quot;Entrez un mot de passe&quot;)
+        Tel-&gt;&gt;Kit: ev_tentative_mdp(champ_mdp)
+        Note over Kit: Lecture via params-&gt;mdp dans verifier_mdp(params-&gt;mdp)
+        alt Code PIN incorrect
+            Kit-&gt;&gt;Tel: ev_mdp_incorrect (champ_mdp vidé)
+        else Code PIN valide (&quot;1234&quot;)
+            Kit-&gt;&gt;Tel: ev_mdp_correct
+            Note over Tel,Kit: Transition vers la séquence de connexion
         end
-    else Déjà jumelé (kit_jumele == true)
-        Tel-&gt;&gt;Kit: ev_demande_connexion (automatique)
-        Kit-&gt;&gt;Tel: connexion_acceptee
     end
+</pre></div>
+<h5 id="échange-2--connexion-reconnexion-automatique-et-déconnexion">Échange 2 — Connexion, reconnexion automatique et déconnexion<a class="anchor" href="#échange-2--connexion-reconnexion-automatique-et-déconnexion" aria-label="Lien vers cette section">#</a></h5>
+<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+sequenceDiagram
+    participant Tel as Téléphone (state_96)
+    participant Kit as Kit Véhicule (state_87)
+
+    Kit-&gt;&gt;Tel: ev_kit_vehicule_pret
+    Note over Tel: kit_jumele == true → saut direct en connexion
+    Tel-&gt;&gt;Kit: ev_demande_connexion (toutes les 100 ms)
+    Kit-&gt;&gt;Tel: connexion_acceptee
+    Note over Tel,Kit: Liaison active (kit_connecte / telephone_connecte)
+
+    alt Coupure côté véhicule (contact_off)
+        Kit-&gt;&gt;Tel: ev_bluetooth_kit_desactive
+        Note over Tel: Retour en recherche_bluetooth
+    else Coupure côté téléphone (BT OFF ou extinction)
+        Tel-&gt;&gt;Kit: ev_bluetooth_telephone_desactive
+        Note over Kit: Retour en recherche_telephone (batterie affichée = 0)
+    end
+</pre></div>
+<h5 id="échange-3--transmission-du-niveau-de-batterie-téléphone--kit">Échange 3 — Transmission du niveau de batterie téléphone → kit<a class="anchor" href="#échange-3--transmission-du-niveau-de-batterie-téléphone--kit" aria-label="Lien vers cette section">#</a></h5>
+<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+sequenceDiagram
+    participant Bat as Batterie Tél. (state_126)
+    participant Kit as Kit Véhicule (state_166)
+
+    Note over Bat: Décharge (1 s si actif) ou Charge (1,5 s si branché)
+    Bat-&gt;&gt;Kit: ev_actualisation_batterie_telephone_vehicule(niveau_batterie_telephone)
+    Note over Kit: envoi_batterie_kit(params-&gt;pourcentage)&lt;br/&gt;→ mise à jour niveau_batterie_kit
 </pre></div>
 <h4 id="première-implémentation-7">Première implémentation<a class="anchor" href="#première-implémentation-7" aria-label="Lien vers cette section">#</a></h4>
 <p>Dans la première ébauche (<code>6ce1ad56</code> → <code>ebe690e7</code>), le téléphone n'avait ni bouton marche/arrêt ni état <code>bluetooth_telephone_desactive</code>, et la vérification <code>verifier_mdp()</code> était exécutée <strong>localement côté téléphone</strong> (sans aucun échange avec le kit), en comparant directement la variable globale <code>champ_mdp == mot_de_passe</code>.</p>
@@ -819,30 +890,40 @@ sequenceDiagram
 <li><strong><code>Appel Extérieur</code> (<code>state_146</code>)</strong> : simule le réseau appelant (<code>telephone_SIM</code> → <code>tentative_appel</code> émettant <code>GEN(ev_SIM_appel)</code> toutes les <code>100 ms</code> pendant <code>5 s</code> max → <code>discussion_telephonique</code> sur <code>ev_appel_en_cours</code> → retour sur <code>ev_SIM_raccrocher</code>).</li>
 <li><strong><code>Communication telephone</code> (<code>state_139</code>)</strong> : bascule entre <code>arret_de_communication</code> (quand <code>IS_IN(telephone_eteint)</code>) et <code>gestion_communication</code> → <code>gestion_communication_telephone</code> (<strong>état <code>And</code> à 3 sous-régions parallèles</strong>) :
 <ul>
-<li><code>state_183</code> : appels sur le téléphone (<code>attente_appel_tel</code>, <code>gestion_sonnerie</code> [clignotement voyant + <code>sonnerie.wav</code> en parallèle], <code>appel_en_cours</code>).</li>
+<li><code>state_183</code> : appels sur le téléphone (<code>attente_appel_tel</code>, <code>gestion_sonnerie</code> [clignotement voyant + <code>sonnerie.wav</code> en parallèle, voir <a href="#8-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody">§ 8</a>], <code>appel_en_cours</code>).</li>
 <li><code>state_184</code> : messagerie SMS locale (voir § 5.3).</li>
 <li><code>state_262</code> : <strong>redirection Bluetooth</strong> (<code>redirection_off</code> ↔ <code>redirection_kit_bluetooth_communication</code> selon <code>IS_IN(kit_connecte)</code>), qui relaie la sonnerie, le décrochage et le raccrochage vers le kit.</li>
 </ul>
 </li>
-<li><strong><code>Commande kit main libre</code> (<code>state_166</code>)</strong> : actif uniquement si <code>IS_IN(telephone_connecte)</code>, cet état <code>And</code> fait tourner en parallèle la gestion d'appel du kit (<code>state_131</code> : <code>attente_redirection_appel</code>, <code>gestion_sonnerie_kit</code> [clignotement + <code>sonnerie2.wav</code>], <code>appel_en_cours_kit</code>), l'affichage batterie (<code>state_130</code>), la messagerie SMS (<code>state_199</code>) et les adaptateurs de boutons au volant (<code>state_173</code>, <code>state_174</code>, <code>state_198</code>).</li>
+<li><strong><code>Commande kit main libre</code> (<code>state_166</code>)</strong> : actif uniquement si <code>IS_IN(telephone_connecte)</code>, cet état <code>And</code> fait tourner en parallèle la gestion d'appel du kit (<code>state_131</code> : <code>attente_redirection_appel</code>, <code>gestion_sonnerie_kit</code> [clignotement + <code>sonnerie2.wav</code>, voir <a href="#8-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody">§ 8</a>], <code>appel_en_cours_kit</code>), l'affichage batterie (<code>state_130</code>), la messagerie SMS (<code>state_199</code>) et les adaptateurs de boutons au volant (<code>state_173</code>, <code>state_174</code>, <code>state_198</code>).</li>
 </ol>
+<h5 id="échange-4--flux-de-paquets-lors-dun-appel-entrant-redirigé-vers-le-kit-mains-libres">Échange 4 — Flux de paquets lors d'un appel entrant redirigé vers le kit mains-libres<a class="anchor" href="#échange-4--flux-de-paquets-lors-dun-appel-entrant-redirigé-vers-le-kit-mains-libres" aria-label="Lien vers cette section">#</a></h5>
 <div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TD
-    SIM[&quot;`**Appel Extérieur (state_146)**&lt;br/&gt;telephone_SIM → tentative_appel&lt;br/&gt;→ discussion_telephonique`&quot;]
-    TEL[&quot;`**Communication telephone (state_139 — And)**&lt;br/&gt;• state_183 : Appel téléphone + sonnerie&lt;br/&gt;• state_184 : SMS téléphone&lt;br/&gt;• state_262 : Redirection BT (off ↔ active)`&quot;]
-    KIT[&quot;`**Commande kit main libre (state_166 — And)**&lt;br/&gt;• state_131 : Sonnerie &amp; appel kit&lt;br/&gt;• state_130 : Batterie déportée&lt;br/&gt;• state_199 : SMS kit (speed &lt;= 0)&lt;br/&gt;• Adaptateurs boutons volant`&quot;]
+sequenceDiagram
+    participant SIM as Réseau SIM (state_146)
+    participant Tel as Téléphone + Redir. BT (state_139)
+    participant Kit as Kit Véhicule (state_166)
 
-    SIM --&gt;|&quot;`ev_SIM_appel`&quot;| TEL
-    TEL --&gt;|&quot;`ev_appel_en_cours / ev_refuser_appel&lt;br/&gt;ev_SIM_raccrocher`&quot;| SIM
-    TEL --&gt;|&quot;`ev_appel_entrant_kit, ev_sonnerie_kit&lt;br/&gt;ev_appel_transfere_kit, ev_appel_termine_kit`&quot;| KIT
-    KIT --&gt;|&quot;`ev_decrocher_kit, ev_raccrocher_kit`&quot;| TEL
+    SIM-&gt;&gt;Tel: ev_SIM_appel (salve toutes les 100 ms, 5 s max)
+    Tel-&gt;&gt;Kit: ev_appel_entrant_kit + ev_sonnerie_kit
+    Note over Kit: Clignotement voyant + sonnerie2.wav
 
-    classDef sim fill:#fef3c7,stroke:#d97706,color:#78350f
-    classDef tel fill:#dcfce7,stroke:#16a34a,color:#14532d
-    classDef kit fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
-    class SIM sim
-    class TEL tel
-    class KIT kit
+    alt Appel décroché au volant
+        Kit-&gt;&gt;Tel: ev_decrocher_kit
+        Tel-&gt;&gt;Kit: ev_appel_transfere_kit
+        Kit-&gt;&gt;SIM: ev_appel_en_cours
+        Note over SIM,Kit: Conversation active (VOYANT_vehicule_appel = true)
+        Kit-&gt;&gt;Tel: ev_raccrocher_kit
+        Tel-&gt;&gt;Kit: ev_appel_termine_kit
+        Tel-&gt;&gt;SIM: ev_SIM_raccrocher (action exit)
+    else Appel refusé au volant
+        Kit-&gt;&gt;Tel: ev_raccrocher_kit
+        Tel-&gt;&gt;SIM: ev_refuser_appel
+        Tel-&gt;&gt;Kit: ev_refuser_appel (arrêt sonnerie)
+    else Non répondu (timeout)
+        Note over Tel: sonnerie_finie_kit après tm(1000) sans ev_SIM_appel
+        Tel-&gt;&gt;Kit: ev_fin_sonnerie (arrêt sonnerie)
+    end
 </pre></div>
 <h4 id="première-implémentation-8">Première implémentation<a class="anchor" href="#première-implémentation-8" aria-label="Lien vers cette section">#</a></h4>
 <p>Dans la première version (<code>d165757a</code> → <code>caa1ac20</code>), <code>gestion_communication_telephone</code> et <code>redirection_kit_bluetooth_communication</code> étaient <strong>deux états frères mutuellement exclusifs (<code>OR</code>)</strong>. Le réseau appelant se nommait <code>telephone_exterieur</code> et sortait de <code>discussion_telephonique</code> en écoutant directement <code>ev_raccrocher_kit</code> et <code>ev_raccrocher_telephone</code>.</p>
@@ -850,7 +931,7 @@ flowchart TD
 <ul>
 <li><strong>Perte de contexte d'appel lors d'une connexion/déconnexion Bluetooth (<code>3feef2e1</code>)</strong> : avec l'architecture initiale <code>OR</code>, connecter le kit ou couper le contact en plein appel détruisait l'état actif de <code>gestion_communication_telephone</code> et désynchronisait les boutons téléphone vs volant. La refactorisation finale (<code>3feef2e1</code>) a transformé la redirection Bluetooth en <strong>sous-région orthogonale interne <code>state_262</code></strong> à l'intérieur de <code>gestion_communication_telephone</code>, tout en ajoutant les transitions croisées (<code>ev_decrocher_telephone</code>, <code>ev_raccrocher_telephone</code>, <code>ev_btn_telephone_sms</code>) sur la branche kit : décrocher sur le téléphone ou au volant maintient désormais les deux côtés parfaitement cohérents.</li>
 <li><strong>Simulateur SIM bloqué en <code>discussion_telephonique</code> (<code>9c50bc77</code> – <em>fix ev_SIM_appel</em>)</strong> : écouter uniquement les boutons manuels <code>ev_raccrocher_*</code> dans <code>state_146</code> laissait le correspondant bloqué en communication lorsque l'appel se terminait par extinction du téléphone ou perte de liaison. La solution a consisté à renommer l'état en <code>telephone_SIM</code>, unifier le flux sur <code>ev_btn_SIM_appel</code> / <code>ev_SIM_appel</code>, et émettre <strong><code>GEN(ev_SIM_raccrocher)</code> en action de sortie (<code>exit</code>)</strong> de <code>appel_en_cours</code> et <code>transfer_appel</code>.</li>
-<li><strong>Sonnerie sonore qui ne s'arrêtait pas au décrochage ou au timeout (<code>3feef2e1</code>)</strong> : <code>PlaySound(..., SND_LOOP | SND_ASYNC)</code> continuait à tourner en tâche de fond après la prise d'appel ou la fin des 5 secondes de sonnerie. L'ajout de <code>play_sound(&quot;stop&quot;)</code> en entrée de <code>appel_en_cours</code> et <code>sonnerie_finie</code> (et <code>PlaySound(NULL, 0, 0)</code> en sortie de <code>gestion_sonnerie_kit</code>) a stoppé la fuite audio.</li>
+<li><strong>Sonnerie sonore qui ne s'arrêtait pas au décrochage ou au timeout (<code>3feef2e1</code>)</strong> : la lecture asynchrone en boucle continuait en tâche de fond après la prise d'appel ou la fin des 5 secondes de sonnerie ; ce problème a été résolu via l'ajout de <code>play_sound(&quot;stop&quot;)</code> (détaillé en <a href="#8-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody">§ 8 — Implémentation de la gestion sonore</a>).</li>
 <li><strong>Piège Rhapsody : création silencieuse d'événements sur fautes de frappe</strong> : lors du développement rapide des transitions téléphonie/SMS, Rhapsody crée automatiquement un nouvel événement dans le package à chaque coquille saisie sur une flèche (laissant apparaître dans le modèle des événements parasites tels que <code>ev_raccrocher_telephonel</code>, <code>ev_raccroher_telephone</code>, <code>ev_eppel_termine_kit</code>, <code>ev_bnt_appel_externe</code>). Ce retour d'expérience nous a amenés à vérifier systématiquement le navigateur d'événements pour traquer les transitions qui ne se déclenchaient jamais à cause d'une lettre de différence.</li>
 </ul>
 <h4 id="version-finale-8">Version finale<a class="anchor" href="#version-finale-8" aria-label="Lien vers cette section">#</a></h4>
@@ -873,6 +954,28 @@ flowchart TD
 <li><strong>Source de vérité unique et sécurité routière</strong> : seul le téléphone modifie <code>nbr_sms_telephone</code> (via <code>actualisation_sms_telephone(±1)</code>) et pousse la valeur exacte vers le kit via des événements paramétrés (<code>ev_transfert_sms_to_kit</code>, <code>ev_nv_sms_kit</code>, <code>ev_actualisation_sms_kit</code>). Côté kit (<code>state_199</code>), la transition <code>messagerie_kit -&gt; lire_message_kit</code> est gardée par <strong><code>[speed &lt;= 0]</code></strong> (lecture impossible en roulant).</li>
 <li><strong>Persistance à l'extinction</strong> : lorsque le téléphone s'éteint (<code>arret_de_communication</code>), <code>nbr_sauvegarde_sms_telephone = nbr_sms_telephone</code> sauvegarde les SMS non lus, qui sont restaurés à la sortie lors du rallumage. À la déconnexion Bluetooth, <code>VOYANT_kit(false)</code> remet <code>nbr_sms_kit = 0</code> et éteint les voyants tableau de bord.</li>
 </ul>
+<h5 id="échange-5--synchronisation-et-lecture-de-sms-via-paquets-bluetooth-params-">Échange 5 — Synchronisation et lecture de SMS via paquets Bluetooth (<code>params-&gt;</code>)<a class="anchor" href="#échange-5--synchronisation-et-lecture-de-sms-via-paquets-bluetooth-params-" aria-label="Lien vers cette section">#</a></h5>
+<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+sequenceDiagram
+    participant Ext as SMS Extérieur (state_206)
+    participant Tel as Téléphone + Redir. BT (state_139)
+    participant Kit as Kit Véhicule (state_166)
+
+    Note over Tel,Kit: 1. À la connexion Bluetooth
+    Tel-&gt;&gt;Kit: ev_transfert_sms_to_kit(nbr_sms_telephone)
+    Note over Kit: nbr_sms_kit = params-&gt;historique
+
+    Note over Ext,Kit: 2. Réception d'un nouveau SMS
+    Ext-&gt;&gt;Tel: ev_envoi_sms (actualisation_sms_telephone(+1))
+    Tel-&gt;&gt;Kit: ev_nv_sms_kit(nbr_sms_telephone)
+    Note over Kit: nbr_sms_kit = params-&gt;sms_telephone&lt;br/&gt;VOYANT_vehicule_sms = (nbr_sms_kit &gt; 0)
+
+    Note over Tel,Kit: 3. Consultation depuis le kit (uniquement si speed &lt;= 0)
+    Kit-&gt;&gt;Tel: ev_lire_sms_kit (garde [speed &lt;= 0] côté kit)
+    Note over Tel: actualisation_sms_telephone(-1)
+    Tel-&gt;&gt;Kit: ev_actualisation_sms_kit(nbr_sms_telephone)
+    Note over Kit: nbr_sms_kit = params-&gt;sms_tel
+</pre></div>
 <h4 id="première-implémentation-9">Première implémentation<a class="anchor" href="#première-implémentation-9" aria-label="Lien vers cette section">#</a></h4>
 <p>Dans la première version (<code>fe4c06a2</code>), les sous-régions SMS utilisaient 5 états côté redirection (<code>init_sms_kit</code>, <code>transfert_sms</code>, <code>attente_sms_kit</code>, <code>reception_sms_kit</code>, <code>lire_sms_kit</code>), incrémentaient <strong>deux compteurs séparément</strong> (<code>actualisation_sms_kit(1); actualisation_sms_telephone(1)</code>), et s'appuyaient sur des événements booléens <code>ev_nv_message_kit</code> et <code>ev_messagerie_vide_kit</code> pour allumer ou éteindre manuellement les voyants.</p>
 <h4 id="difficultés-rencontrées-et-erreurs-corrigées-9">Difficultés rencontrées et erreurs corrigées<a class="anchor" href="#difficultés-rencontrées-et-erreurs-corrigées-9" aria-label="Lien vers cette section">#</a></h4>
@@ -886,28 +989,28 @@ flowchart TD
 <p><strong>[Capture Rhapsody à insérer — Version finale]</strong> : AND-line <strong><code>SMS Extérieur</code></strong> (<code>state_206</code>, tout en haut à droite), accompagnée des sous-régions SMS (<code>state_184</code> et <code>state_189</code> dans <code>Communication telephone</code> + <code>state_199</code> dans <code>Commande kit main libre</code>).</p>
 </blockquote>
 <hr>
-<h3 id="54-autoradio-arbitrage-des-priorités-audio-et-centralisation-sonore">5.4 Autoradio, arbitrage des priorités audio et centralisation sonore<a class="anchor" href="#54-autoradio-arbitrage-des-priorités-audio-et-centralisation-sonore" aria-label="Lien vers cette section">#</a></h3>
+<h3 id="54-autoradio-et-arbitrage-des-priorités-audio">5.4 Autoradio et arbitrage des priorités audio<a class="anchor" href="#54-autoradio-et-arbitrage-des-priorités-audio" aria-label="Lien vers cette section">#</a></h3>
 <h4 id="énoncé-10">Énoncé<a class="anchor" href="#énoncé-10" aria-label="Lien vers cette section">#</a></h4>
 <p>Intégrer un autoradio multi-pistes s'éteignant contact coupé ou batterie vide, arbitrant automatiquement les priorités audio face aux sonneries et aux appels mains-libres, avec reprise transparente de la piste en cours après interruption.</p>
 <h4 id="choix-fonctionnels-9">Choix fonctionnels<a class="anchor" href="#choix-fonctionnels-9" aria-label="Lien vers cette section">#</a></h4>
-<p>L'AND-line <strong><code>Radio</code> (<code>state_218</code>)</strong> implémente une machine à deux niveaux :</p>
+<p>L'AND-line <strong><code>Radio</code> (<code>state_218</code>)</strong> implémente une machine à deux niveaux (les aspects bas niveau de lecture <code>.wav</code> et de centralisation dans <code>play_sound()</code> sont détaillés séparément en <a href="#8-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody">§ 8 — Implémentation de la gestion sonore</a>) :</p>
 <ul>
 <li><strong>Alimentation</strong> : <code>contact_radio_eteint</code> ↔ <code>contact_radio_actif</code> selon <code>EVAL [IS_IN(contact_on) &amp;&amp; niveau_batterie &gt; 0]</code>.</li>
 <li><strong>Arbitrage strict des priorités (<code>Radio &lt; Sonnerie &lt; Appel</code>) et History Connector (<code>H</code>)</strong> :
 <ul>
 <li><code>priorite_radio</code> (état <code>And</code>) gère en parallèle le lecteur (<code>radio_desactive</code> → <code>lancement_radio</code> [<code>&quot;Press PLAY&quot;</code>] → <code>radio_active</code> bouclant entre <code>musique_1</code>, <code>musique_2</code>, <code>musique_3</code> sur <code>ev_skip_musique</code>) et un filtre anti-rebond <code>tm(500)</code> sur <code>ev_btn_radio_skip</code> (<code>state_260</code>).</li>
-<li>L'arrivée d'une sonnerie (<code>sonnerie_en_cours == true</code>) fait passer en <code>priorite_sonnerie</code>, puis la prise d'appel sur le kit (<code>IS_IN(appel_en_cours_kit)</code>) fait passer en <code>priorite_appel</code> (<code>entry / PlaySound(NULL, 0, 0);</code>).</li>
+<li>L'arrivée d'une sonnerie (<code>sonnerie_en_cours == true</code>) fait passer en <code>priorite_sonnerie</code>, puis la prise d'appel sur le kit (<code>IS_IN(appel_en_cours_kit)</code>) fait passer en <code>priorite_appel</code> (coupant le canal audio durant la conversation).</li>
 <li>À la fin de la sonnerie ou de l'appel, les transitions pointent vers un <strong>History Connector (<code>historyconnector_331</code>)</strong> dans <code>priorite_radio</code> : la radio reprend exactement la piste (<code>musique_1</code>/<code>2</code>/<code>3</code>) ou l'état éteint (<code>radio_desactive</code>) qu'elle avait avant l'interruption !</li>
 </ul>
 </li>
 </ul>
 <div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TD
-    OFF[&quot;`**contact_radio_eteint**&lt;br/&gt;Contact OFF ou batterie &lt;= 0&lt;br/&gt;PlaySound(NULL)`&quot;]
+flowchart LR
+    OFF[&quot;`**contact_radio_eteint**&lt;br/&gt;Contact OFF ou batterie &lt;= 0&lt;br/&gt;Coupure audio`&quot;]
     subgraph ACT[&quot;contact_radio_actif — Arbitrage des priorités audio&quot;]
         P1[&quot;`**Priorité 3 (basse) : priorite_radio**&lt;br/&gt;radio_desactive / lancement_radio / musique_1..3&lt;br/&gt;+ anti-rebond Skip (500 ms)`&quot;]
         P2[&quot;`**Priorité 2 : priorite_sonnerie**&lt;br/&gt;Canal cédé à sonnerie.wav / sonnerie2.wav`&quot;]
-        P3[&quot;`**Priorité 1 (haute) : priorite_appel**&lt;br/&gt;PlaySound(NULL) — silence audio durant l'appel`&quot;]
+        P3[&quot;`**Priorité 1 (haute) : priorite_appel**&lt;br/&gt;Silence audio durant l'appel`&quot;]
         H((&quot;`**H**&lt;br/&gt;History`&quot;))
 
         P1 --&gt;|&quot;`sonnerie_en_cours`&quot;| P2
@@ -931,21 +1034,12 @@ flowchart TD
     class H hist
 </pre></div>
 <h4 id="première-implémentation-10">Première implémentation<a class="anchor" href="#première-implémentation-10" aria-label="Lien vers cette section">#</a></h4>
-<p>Dans la première version (<code>caa1ac20</code>), chaque état sonore appelait directement l'API Win32 <code>PlaySound(TEXT(&quot;...&quot;), NULL, SND_LOOP | SND_ASYNC);</code> avec des noms codés en dur (<code>&quot;musique_1&quot;</code>, <code>&quot;sonnerie.wav&quot;</code>, <code>&quot;..\\..\\media\\alarme_incendie.wav&quot;</code>), obligeant à copier manuellement les <code>.wav</code> dans <code>CodesGeneres/ModeAnimation/</code> (dossier ignoré par Git).</p>
+<p>Dans la première version (<code>caa1ac20</code>), la région radio comportait des états nommés <code>contac_active</code> et <code>contact_eteint</code>, et déclenchait directement des appels Win32 <code>PlaySound</code> locaux depuis chaque piste musicale (voir l'historique audio complet en <a href="#8-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody">§ 8</a>).</p>
 <h4 id="difficultés-rencontrées-et-erreurs-corrigées-10">Difficultés rencontrées et erreurs corrigées<a class="anchor" href="#difficultés-rencontrées-et-erreurs-corrigées-10" aria-label="Lien vers cette section">#</a></h4>
 <ul>
-<li><strong>Extension <code>.wav</code> oubliée dans les pistes radio (<code>caa1ac20</code> → <code>58b9fda3</code>)</strong> : les trois états musicaux appelaient <code>PlaySound(TEXT(&quot;musique_1&quot;), ...)</code> sans l'extension <code>.wav</code>, empêchant la lecture sur certains postes Windows.</li>
-<li><strong>Fragilité des chemins audio et non-versionnement (<code>58b9fda3</code>)</strong> : placer les sons dans <code>CodesGeneres/ModeAnimation/</code> (qui est purgé/ignoré par Git) cassait le son à chaque clonage ou changement de poste entre binômes. Nous avons centralisé les 6 fichiers <code>.wav</code> dans un dossier versionné [sons/](file:///c:/Users/benoi/Documents/GitHub/E4SE_TD_TP/systemes_evenements_discrets/Rhapsody_v9.0.2/Projet_TABDK_E4SE/sons), défini l'attribut <code>chemin_sons = &quot;..\\..\\sons\\&quot;</code>, et créé une opération unique <strong><code>play_sound(OMString fichier)</code></strong> utilisée par l'autoradio, les sonneries et <code>alerte_depassement()</code> :<div class="code-block"><div class="code-frame" data-lang="cpp"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang" title="cpp">cpp</span></div><pre><code class="hljs language-cpp"><span class="hljs-comment">// play_sound(const OMString&amp; fichier) : gestion audio centralisée</span>
-<span class="hljs-keyword">if</span> (fichier == <span class="hljs-string">&quot;stop&quot;</span>) {
-    <span class="hljs-built_in">PlaySound</span>(<span class="hljs-literal">NULL</span>, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>);
-} <span class="hljs-keyword">else</span> {
-    OMString chemin = chemin_sons;
-    chemin += fichier;
-    <span class="hljs-built_in">PlaySound</span>(<span class="hljs-built_in">TEXT</span>(chemin.<span class="hljs-built_in">GetBuffer</span>(<span class="hljs-number">0</span>)), <span class="hljs-literal">NULL</span>, SND_LOOP | SND_ASYNC);
-}
-</code></pre></div></div>
-</li>
-<li><strong>Harmonisation des noms d'états (<code>b1047c59</code>)</strong> : les premiers noms <code>contac_active</code> et <code>contact_eteint</code> pouvaient prêter à confusion avec <code>contact_on</code>/<code>contact_off</code> de <code>Clé du véhicule</code> lors des <code>IS_IN(...)</code> ; ils ont été renommés en <code>contact_radio_actif</code> et <code>contact_radio_eteint</code>.</li>
+<li><strong>Harmonisation des noms d'états (<code>b1047c59</code>)</strong> : les premiers noms <code>contac_active</code> et <code>contact_eteint</code> pouvaient prêter à confusion avec <code>contact_on</code>/<code>contact_off</code> de <code>Clé du véhicule</code> lors des tests <code>IS_IN(...)</code> ; ils ont été renommés en <code>contact_radio_actif</code> et <code>contact_radio_eteint</code>.</li>
+<li><strong>Anti-rebond du changement de piste</strong> : afin d'éviter qu'un clic rapide ou un rebond sur le bouton <code>Skip</code> ne saute plusieurs pistes d'un coup, la sous-région orthogonale <code>state_260</code> (<code>attente_btn_radio</code> → <code>appui_btn_radio</code> → <code>tm(500) / GEN(ev_skip_musique)</code>) filtre la commande.</li>
+<li><strong>Problèmes de lecture et de chemins <code>.wav</code></strong> : initialement rencontrés sur <code>musique_1..3</code> (extension oubliée et fichiers non versionnés), ils ont conduit à la refonte globale de la gestion sonore présentée en <a href="#8-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody">§ 8 — Implémentation de la gestion sonore</a>.</li>
 </ul>
 <h4 id="version-finale-10">Version finale<a class="anchor" href="#version-finale-10" aria-label="Lien vers cette section">#</a></h4>
 <blockquote>
@@ -977,7 +1071,7 @@ flowchart TD
 </li>
 </ol>
 <div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TD
+flowchart LR
     ENV[&quot;`**Simulateur cible (state_256, 20 Hz)**&lt;br/&gt;distance_voiture_devant += (v_devant/3.6)·dt&lt;br/&gt;distance_inter_voiture = d_devant - distance`&quot;]
     DEC{&quot;`distance_inter_voiture&lt;br/&gt;&lt; distance_securite&lt;br/&gt;ET cible active ?`&quot;}
     DIST[&quot;`**suivi_distance_consigne**&lt;br/&gt;PI sur e_d = d_inter - d_secu`&quot;]
@@ -1020,211 +1114,13 @@ steady += Ki_regulateur * erreur;
 <h2 id="7-synthèse-cartographie-des-and-lines-ihm-globale-et-tests-dintégration">7. Synthèse, cartographie des AND-lines, IHM globale et tests d'intégration<a class="anchor" href="#7-synthèse-cartographie-des-and-lines-ihm-globale-et-tests-dintégration" aria-label="Lien vers cette section">#</a></h2>
 <h3 id="cartographie-complète-de-la-grille-dand-lines-systeme">Cartographie complète de la grille d'AND-lines (<code>Systeme</code>)<a class="anchor" href="#cartographie-complète-de-la-grille-dand-lines-systeme" aria-label="Lien vers cette section">#</a></h3>
 <p>Le Statechart final de <code>_SysVehicule</code> se structure en <strong>16 AND-lines actives</strong> réparties spatialement en deux grands blocs (Conduite/ADAS à gauche, Télécommunications/Bluetooth à droite, Autoradio en bas), complétées par 4 cellules structurelles vides (<code>state_217</code>, <code>state_219</code>, <code>state_220</code>, <code>state_221</code>) issues du quadrillage orthogonal de la ligne inférieure :</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">Zone visuelle</th>
-<th style="text-align:left">Intitulé Rhapsody de l'AND-line</th>
-<th style="text-align:center">ID</th>
-<th style="text-align:left">Rôle fonctionnel</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>Gauche — Haut</strong></td>
-<td style="text-align:left"><code>Débit de l'injection d'essence</code></td>
-<td style="text-align:center"><code>state_60</code></td>
-<td style="text-align:left">Arbitrage pédales (priorité frein/limiteur) ↔ régulateur vitesse/distance (ACC)</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Gauche — Haut</strong></td>
-<td style="text-align:left"><code>Clé du véhicule</code></td>
-<td style="text-align:center"><code>state_61</code></td>
-<td style="text-align:left">Contact électrique, démarrage/arrêt moteur, appels conso/alternateur</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Gauche — Haut</strong></td>
-<td style="text-align:left"><code>Horloge rafraichissement</code></td>
-<td style="text-align:center"><code>state_62</code></td>
-<td style="text-align:left">Horloge maître unique émettant <code>GEN(EVAL)</code> à 20 Hz</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Gauche — Haut</strong></td>
-<td style="text-align:left"><code>Simulation du vehicule</code></td>
-<td style="text-align:center"><code>state_72</code></td>
-<td style="text-align:left">Intégration Newtonienne (<code>calcul_vitesse_distance()</code>)</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Gauche — Milieu</strong></td>
-<td style="text-align:left"><code>Mode de pilotage</code></td>
-<td style="text-align:center"><code>state_71</code></td>
-<td style="text-align:left">Logique régulateur de vitesse et réglage consigne <eq><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>±</mo><mn>1</mn><mtext> km/h</mtext></mrow><annotation encoding="application/x-tex">\pm 1\text{ km/h}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">±</span><span class="mord">1</span><span class="mord text"><span class="mord"> km/h</span></span></span></span></span></eq></td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Gauche — Milieu</strong></td>
-<td style="text-align:left"><code>Limiteur de vitesse</code></td>
-<td style="text-align:center"><code>state_76</code></td>
-<td style="text-align:left">Limiteur, double appui <eq><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>±</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">\pm 10</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">±</span><span class="mord">10</span></span></span></span></eq>, kick-down, inhibition et alarme</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Gauche — Bas</strong></td>
-<td style="text-align:left"><code>Ressources et pannes</code></td>
-<td style="text-align:center"><code>state_252</code></td>
-<td style="text-align:left">Seuils carburant/batterie, états de panne et dépannages à l'arrêt</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Gauche — Bas</strong></td>
-<td style="text-align:left"><code>Simulation voiture régulateur adaptatif</code></td>
-<td style="text-align:center"><code>state_256</code></td>
-<td style="text-align:left">Modélisation du véhicule précédent et de <code>distance_inter_voiture</code></td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Bas — Gauche</strong></td>
-<td style="text-align:left"><code>Radio</code></td>
-<td style="text-align:center"><code>state_218</code></td>
-<td style="text-align:left">Autoradio 3 pistes, priorités audio et History Connector <code>H</code></td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Droite — Haut</strong></td>
-<td style="text-align:left"><code>Jumelage kit main libre</code></td>
-<td style="text-align:center"><code>state_87</code></td>
-<td style="text-align:left">Protocole Bluetooth côté véhicule (esclave) + vérification PIN moteur OFF</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Droite — Haut</strong></td>
-<td style="text-align:left"><code>Commande kit main libre</code></td>
-<td style="text-align:center"><code>state_166</code></td>
-<td style="text-align:left">Tableau de bord connecté (appels, SMS <code>[speed&lt;=0]</code>, batterie, boutons volant)</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Droite — Haut</strong></td>
-<td style="text-align:left"><code>Appel Extérieur</code></td>
-<td style="text-align:center"><code>state_146</code></td>
-<td style="text-align:left">Simulateur réseau <code>telephone_SIM</code> (appels entrants, timeout 5 s, raccrochage)</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Droite — Haut</strong></td>
-<td style="text-align:left"><code>SMS Extérieur</code></td>
-<td style="text-align:center"><code>state_206</code></td>
-<td style="text-align:left">Simulateur d'envoi de SMS entrants</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Droite — Bas</strong></td>
-<td style="text-align:left"><code>Telephone</code></td>
-<td style="text-align:center"><code>state_96</code></td>
-<td style="text-align:left">Alimentation téléphone, Bluetooth maître, jumelage PIN et reconnexion auto</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Droite — Bas</strong></td>
-<td style="text-align:left"><code>Batterie téléphone</code></td>
-<td style="text-align:center"><code>state_126</code></td>
-<td style="text-align:left">Décharge (téléphone actif) / charge véhicule et envoi du niveau au kit</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Droite — Bas</strong></td>
-<td style="text-align:left"><code>Communication telephone</code></td>
-<td style="text-align:center"><code>state_139</code></td>
-<td style="text-align:left">Appels locaux, SMS locaux et redirection Bluetooth orthogonale (<code>state_262</code>)</td>
-</tr>
-</tbody>
-</table>
-<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TD
-    CLK[&quot;`**Horloge centrale (state_62)**&lt;br/&gt;GEN(EVAL) à 20 Hz`&quot;]
-
-    subgraph D1[&quot;Propulsion, Physique &amp; Ressources&quot;]
-        R1[&quot;`state_61 : Clé du véhicule`&quot;]
-        R2[&quot;`state_72 : Simulation du vehicule`&quot;]
-        R3[&quot;`state_252 : Ressources et pannes`&quot;]
-    end
-
-    subgraph D2[&quot;Aides à la conduite (ADAS)&quot;]
-        R4[&quot;`state_60 : Débit injection (Pédales / ACC)`&quot;]
-        R5[&quot;`state_71 : Mode de pilotage (Régulateur)`&quot;]
-        R6[&quot;`state_76 : Limiteur de vitesse`&quot;]
-        R7[&quot;`state_256 : Simulation voiture devant`&quot;]
-    end
-
-    subgraph D3[&quot;Bluetooth, Téléphonie &amp; Messagerie&quot;]
-        R8[&quot;`state_87 / state_96 : Jumelage PIN &amp; BT`&quot;]
-        R9[&quot;`state_126 : Batterie téléphone`&quot;]
-        R10[&quot;`state_139 / state_166 : Appels, SMS &amp; Kit`&quot;]
-        R11[&quot;`state_146 / state_206 : Réseau SIM &amp; SMS`&quot;]
-    end
-
-    subgraph D4[&quot;Audio &amp; Multimédia&quot;]
-        R12[&quot;`state_218 : Radio (Priorités + History H)`&quot;]
-        R13[&quot;`play_sound() — dossier sons/ (6 .wav)`&quot;]
-    end
-
-    CLK -.-&gt;|&quot;`EVAL`&quot;| D1
-    CLK -.-&gt;|&quot;`EVAL`&quot;| D2
-    CLK -.-&gt;|&quot;`EVAL`&quot;| D3
-    CLK -.-&gt;|&quot;`EVAL`&quot;| D4
-
-    D1 &lt;--&gt;|&quot;`moteur_on, speed, throttle`&quot;| D2
-    D1 --&gt;|&quot;`contact_on, moteur_off, speed`&quot;| D3
-    D1 --&gt;|&quot;`contact_on, niveau_batterie`&quot;| D4
-    D3 --&gt;|&quot;`sonnerie_en_cours, appel_en_cours_kit`&quot;| D4
-    R6 --&gt;|&quot;`alarme_depassement.wav`&quot;| R13
-    R12 --&gt; R13
-
-    classDef clk fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f
-    classDef d1 fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
-    classDef d2 fill:#dcfce7,stroke:#16a34a,color:#14532d
-    classDef d3 fill:#f3e8ff,stroke:#9333ea,color:#581c87
-    classDef d4 fill:#ffe4e6,stroke:#e11d48,color:#881337
-    class CLK clk
-    class R1,R2,R3 d1
-    class R4,R5,R6,R7 d2
-    class R8,R9,R10,R11 d3
-    class R12,R13 d4
-</pre></div>
 <blockquote>
 <p><strong>[Capture Rhapsody à insérer — Vue d'ensemble]</strong> : Capture globale du Statechart <code>Systeme</code> de <code>_SysVehicule</code> montrant la répartition complète des 16 AND-lines actives.</p>
 </blockquote>
-<h3 id="présentation-du-tableau-de-bord-complet-panel-diagram-ihm">Présentation du tableau de bord complet (Panel Diagram <code>IHM</code>)<a class="anchor" href="#présentation-du-tableau-de-bord-complet-panel-diagram-ihm" aria-label="Lien vers cette section">#</a></h3>
-<p>Le Panel Diagram regroupe <strong>19 boutons poussoirs</strong>, <strong>44 composants ActiveX</strong> (sliders, compteurs, jauges, interrupteurs, voyants) et <strong>4 zones de texte</strong> :</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">Zone de l'IHM</th>
-<th style="text-align:left">Commandes</th>
-<th style="text-align:left">Affichages et témoins</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>Véhicule &amp; Route</strong></td>
-<td style="text-align:left">Switch <code>cmd_contact</code>, bouton <code>Démarrer</code>, sliders <code>accelPedal</code>, <code>brakePedal</code>, <code>alpha</code></td>
-<td style="text-align:left">Compteur <code>speed</code>, odomètre <code>distance</code>, <code>throttle</code></td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Énergie &amp; Dépannage</strong></td>
-<td style="text-align:left">Boutons <code>remplir carburant</code>, <code>recharge d'urgence batterie</code></td>
-<td style="text-align:left">Jauges <code>reservoir_carburant</code>, <code>niveau_batterie</code>, voyants <code>carburant_faible</code>, <code>batterie_faible</code></td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>ADAS (Régul. / Lim. / ACC)</strong></td>
-<td style="text-align:left">Boutons <code>Régulateur</code>, <code>Limiteur</code>, <code>+</code>, <code>-</code>, switch <code>SWITCH_simulation_voiture_devant</code>, sliders <code>vitesse_voiture_devant</code>, <code>distance_securite</code></td>
-<td style="text-align:left"><code>vitesseConsigne</code>, <code>distance_inter_voiture</code>, voyants <code>voyant_regulateur</code>, <code>voyant_limiteur</code>, <code>limiteur_attente</code>, <code>limiteur_depasse</code></td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Téléphone &amp; Réseau SIM</strong></td>
-<td style="text-align:left">Switches <code>telephone_allume</code>, <code>bluetooth_telephone_actif</code>, <code>charge_vehicule_telephone</code>, champ <code>champ_mdp</code>, boutons <code>OK</code>, <code>Appairer</code>, <code>Décrocher</code>, <code>Raccrocher</code>, <code>lire sms</code>, <code>Appeler</code>, <code>Envoyer SMS</code></td>
-<td style="text-align:left"><code>affichage_liste_appareils</code>, <code>affichage_appairage</code>, <code>niveau_batterie_telephone</code>, <code>nbr_sms_telephone</code>, voyants <code>VOYANT_vehicule_connecte</code>, <code>VOYANT_telephone_appel/sonnerie/sms</code></td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Kit Mains-Libres &amp; Radio</strong></td>
-<td style="text-align:left">Switch <code>radio_on</code>, boutons <code>Play</code>, <code>Skip</code>, <code>Décrocher</code>, <code>Raccrocher</code>, <code>lire message</code></td>
-<td style="text-align:left"><code>affichage_titre_musique</code>, <code>niveau_batterie_kit</code>, <code>nbr_sms_kit</code>, voyants <code>VOYANT_bluetooth_vehicule</code>, <code>VOYANT_telephone_connecte</code>, <code>VOYANT_vehicule_appel/sonnerie/sms</code>, <code>VOYANT_radio</code></td>
-</tr>
-</tbody>
-</table>
 <blockquote>
 <p><strong>[Capture Rhapsody à insérer — Version finale]</strong> : Capture d'écran annotée du Panel Diagram <code>IHM</code> complet en cours de simulation (<code>ModeAnimation</code>).</p>
 </blockquote>
-<h3 id="scénarios-de-validation-croisée-tests-dintégration">Scénarios de validation croisée (Tests d'intégration)<a class="anchor" href="#scénarios-de-validation-croisée-tests-dintégration" aria-label="Lien vers cette section">#</a></h3>
+<h3 id="scénarios-testés">Scénarios testés<a class="anchor" href="#scénarios-testés" aria-label="Lien vers cette section">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -1295,9 +1191,125 @@ flowchart TD
 </tbody>
 </table>
 <hr>
-<h2 id="8-conclusion-générale">8. Conclusion générale<a class="anchor" href="#8-conclusion-générale" aria-label="Lien vers cette section">#</a></h2>
+<h2 id="8-implémentation-de-la-gestion-sonore-sous-rhapsody">8. Implémentation de la gestion sonore sous Rhapsody<a class="anchor" href="#8-implémentation-de-la-gestion-sonore-sous-rhapsody" aria-label="Lien vers cette section">#</a></h2>
+<p>Trois fonctionnalités du projet produisent du son en simulation : l'<strong>alarme de dépassement du limiteur</strong> (§ 4), les <strong>sonneries d'appels entrants</strong> sur téléphone et kit mains-libres (§ 5.2), et les <strong>trois pistes musicales de l'autoradio</strong> (§ 5.4). Cette section synthétise l'évolution de notre couche audio sous Windows / Rhapsody.</p>
+<h3 id="approche-initiale--appels-win32-dispersés-dans-les-états">Approche initiale : appels Win32 dispersés dans les états<a class="anchor" href="#approche-initiale--appels-win32-dispersés-dans-les-états" aria-label="Lien vers cette section">#</a></h3>
+<p>Dans un premier temps (<code>8999114b</code> pour le limiteur, puis <code>caa1ac20</code> pour la radio et les sonneries), nous avons suivi directement la recommandation de base du sujet consistant à invoquer l'API multimédia Windows (<code>winmm.lib</code>) à l'intérieur des états ou opérations concernés :</p>
+<div class="code-block"><div class="code-frame" data-lang="cpp"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang" title="cpp">cpp</span></div><pre><code class="hljs language-cpp"><span class="hljs-comment">// Première approche : appels dispersés avec chemins codés en dur</span>
+<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;windows.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-keyword">pragma</span> comment(lib, <span class="hljs-string">&quot;winmm.lib&quot;</span>)</span>
+
+<span class="hljs-built_in">PlaySound</span>(<span class="hljs-built_in">TEXT</span>(<span class="hljs-string">&quot;..\\..\\media\\alarme_incendie.wav&quot;</span>), <span class="hljs-literal">NULL</span>, SND_FILENAME | SND_ASYNC);
+<span class="hljs-built_in">PlaySound</span>(<span class="hljs-built_in">TEXT</span>(<span class="hljs-string">&quot;musique_1&quot;</span>), <span class="hljs-literal">NULL</span>, SND_LOOP | SND_ASYNC);
+<span class="hljs-built_in">PlaySound</span>(<span class="hljs-built_in">TEXT</span>(<span class="hljs-string">&quot;sonnerie.wav&quot;</span>), <span class="hljs-literal">NULL</span>, SND_LOOP | SND_ASYNC);
+<span class="hljs-built_in">PlaySound</span>(<span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>); <span class="hljs-comment">// arrêt</span>
+</code></pre></div></div>
+<p>Les fichiers <code>.wav</code> devaient alors être copiés manuellement dans le dossier de sortie de compilation <code>CodesGeneres/ModeAnimation/</code> (répertoire de travail de l'exécutable en mode animation).</p>
+<h3 id="difficultés-rencontrées-et-limites-de-la-première-méthode">Difficultés rencontrées et limites de la première méthode<a class="anchor" href="#difficultés-rencontrées-et-limites-de-la-première-méthode" aria-label="Lien vers cette section">#</a></h3>
+<ol>
+<li><strong>Incompatibilité avec Git et le travail en binôme</strong> : le dossier <code>CodesGeneres/</code> est généré automatiquement et exclu par <code>.gitignore</code>. Dès que l'un des binômes clonait ou récupérait les modifications de l'autre, les fichiers <code>.wav</code> étaient absents et les appels <code>PlaySound</code> restaient silencieux.</li>
+<li><strong>Chemins incohérents et oubli d'extension (<code>caa1ac20</code> → <code>58b9fda3</code>)</strong> : certains appels utilisaient un chemin relatif vers un dossier <code>media/</code> (<code>&quot;..\\..\\media\\alarme_incendie.wav&quot;</code>), d'autres un nom nu dans le dossier courant (<code>&quot;sonnerie.wav&quot;</code>), et les trois états de l'autoradio avaient même omis l'extension <code>.wav</code> (<code>&quot;musique_1&quot;</code>, <code>&quot;musique_2&quot;</code>, <code>&quot;musique_3&quot;</code>), empêchant la lecture fiable selon la configuration Windows.</li>
+<li><strong>Fuites audio sur les sonneries asynchrones (<code>3feef2e1</code>)</strong> : avec les drapeaux <code>SND_LOOP | SND_ASYNC</code>, le son tourne sur un thread système en boucle infinie tant qu'un arrêt explicite <code>PlaySound(NULL, 0, 0)</code> n'est pas déclenché. Les sonneries continuaient ainsi parfois après un décrochage sur le téléphone ou après expiration du délai de sonnerie.</li>
+<li><strong>Contrainte monocanal de <code>PlaySound</code></strong> : l'API Win32 <code>PlaySound</code> ne gérant qu'une seule piste simultanée, tout nouvel appel coupe la piste précédente. Cette contrainte matérielle/OS a rendu indispensable la machine d'arbitrage de priorités de l'autoradio (<code>state_218</code>, § 5.4) pour orchestrer proprement la reprise musicale.</li>
+</ol>
+<h3 id="version-finale--dossier-versionné-sons-et-opération-centralisée-play_sound">Version finale : dossier versionné <code>sons/</code> et opération centralisée <code>play_sound()</code><a class="anchor" href="#version-finale--dossier-versionné-sons-et-opération-centralisée-play_sound" aria-label="Lien vers cette section">#</a></h3>
+<p>Pour fiabiliser et factoriser toute la chaîne audio (<code>58b9fda3</code> puis <code>3feef2e1</code>), nous avons mis en place une architecture unique en trois points :</p>
+<ul>
+<li><strong>Dossier de ressources versionné</strong> : les 6 fichiers <code>.wav</code> du projet sont regroupés dans <code>Projet_TABDK_E4SE/sons/</code> et suivis sous Git.</li>
+<li><strong>Chemin relatif centralisé</strong> : un unique attribut <code>chemin_sons</code> (initialisé à <code>&quot;..\\..\\sons\\&quot;</code>, chemin relatif depuis <code>CodesGeneres/ModeAnimation/</code>) évite toute duplication de chemin dans le Statechart.</li>
+<li><strong>Point d'entrée unique <code>play_sound(const OMString&amp; fichier)</code></strong> : toutes les actions sonores du modèle (radio, sonneries, alarme limiteur) passent par cette opération, qui gère également le mot-clé <code>&quot;stop&quot;</code> pour couper proprement le flux en cours :</li>
+</ul>
+<div class="code-block"><div class="code-frame" data-lang="cpp"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang" title="cpp">cpp</span></div><pre><code class="hljs language-cpp"><span class="hljs-comment">// Opération finale play_sound(const OMString&amp; fichier)</span>
+<span class="hljs-keyword">if</span> (fichier == <span class="hljs-string">&quot;stop&quot;</span>) {
+    <span class="hljs-built_in">PlaySound</span>(<span class="hljs-literal">NULL</span>, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>);
+} <span class="hljs-keyword">else</span> {
+    OMString chemin = chemin_sons;
+    chemin += fichier;
+    <span class="hljs-built_in">PlaySound</span>(<span class="hljs-built_in">TEXT</span>(chemin.<span class="hljs-built_in">GetBuffer</span>(<span class="hljs-number">0</span>)), <span class="hljs-literal">NULL</span>, SND_LOOP | SND_ASYNC);
+}
+</code></pre></div></div>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Fonctionnalité</th>
+<th style="text-align:left">État / Opération appelante</th>
+<th style="text-align:left">Fichier <code>.wav</code> joué</th>
+<th style="text-align:left">Mécanisme d'arrêt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Alarme limiteur (§ 4)</strong></td>
+<td style="text-align:left"><code>alerte_depassement(1)</code> depuis <code>state_76/.../depassement</code></td>
+<td style="text-align:left"><code>alarme_depassement.wav</code></td>
+<td style="text-align:left"><code>alerte_depassement(0)</code> en <code>exit</code> de <code>depassement</code> et <code>entry</code> de <code>limiteur_off</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Sonnerie téléphone (§ 5.2)</strong></td>
+<td style="text-align:left"><code>state_139/.../sonnerie_sonore</code></td>
+<td style="text-align:left"><code>sonnerie.wav</code></td>
+<td style="text-align:left"><code>play_sound(&quot;stop&quot;)</code> en <code>entry</code> de <code>appel_en_cours</code> et <code>sonnerie_finie</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Sonnerie kit véhicule (§ 5.2)</strong></td>
+<td style="text-align:left"><code>state_166/.../sonnerie_sonore_kit</code></td>
+<td style="text-align:left"><code>sonnerie2.wav</code></td>
+<td style="text-align:left"><code>PlaySound(NULL, 0, 0)</code> en <code>exit</code> de <code>gestion_sonnerie_kit</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Autoradio 3 pistes (§ 5.4)</strong></td>
+<td style="text-align:left"><code>state_218/.../musique_1</code>, <code>musique_2</code>, <code>musique_3</code></td>
+<td style="text-align:left"><code>musique_1.wav</code> à <code>musique_3.wav</code></td>
+<td style="text-align:left"><code>PlaySound(NULL, 0, 0)</code> en <code>entry</code> de <code>radio_desactive</code>, <code>contact_radio_eteint</code> et <code>priorite_appel</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="9-outillage-complémentaire--injection-dune-api-rest-et-interface-graphique-web">9. Outillage complémentaire : injection d'une API REST et interface graphique Web<a class="anchor" href="#9-outillage-complémentaire--injection-dune-api-rest-et-interface-graphique-web" aria-label="Lien vers cette section">#</a></h2>
+<h3 id="motivation">Motivation<a class="anchor" href="#motivation" aria-label="Lien vers cette section">#</a></h3>
+<p>Si le <em>Panel Diagram</em> intégré à Rhapsody s'est révélé très pratique pour le débogage pas à pas en mode animation, son ergonomie (widgets ActiveX datés, absence de mise en page réactive, dépendance stricte à l'installation locale d'IBM Rhapsody) limite la lisibilité lors d'une démonstration complète réunissant conduite, ADAS, téléphone, kit Bluetooth et autoradio.</p>
+<p>Pour aller plus loin, nous avons développé un <strong>outil dédié</strong> qui transforme automatiquement le <strong>code C++ généré par Rhapsody</strong> en un <strong>logiciel autonome pilotable depuis une interface graphique Web moderne</strong>.</p>
+<h3 id="architecture-et-fonctionnement-de-loutil">Architecture et fonctionnement de l'outil<a class="anchor" href="#architecture-et-fonctionnement-de-loutil" aria-label="Lien vers cette section">#</a></h3>
+<p>Plutôt que de réécrire la logique du véhicule en JavaScript (ce qui aurait cassé la fidélité vis-à-vis des Statecharts modélisés), l'outil conserve <strong>intégralement le moteur C++ OXF généré par Rhapsody</strong> comme cœur d'exécution :</p>
+<ol>
+<li><strong>Analyse du code C++ généré en entrée</strong> : l'outil prend en entrée le code C++ généré par Rhapsody (<code>_SysVehicule</code>, attributs, getters/setters et événements OXF).</li>
+<li><strong>Injection automatique d'un serveur HTTP embarqué</strong> : il injecte directement un serveur HTTP dans le code C++ généré et crée les liaisons entre les <strong>attributs</strong> (lecture de l'état temps réel : vitesse, distance, voyants, messages, jauges ; écriture des commandes continues : pédales, pente, switches) et les <strong>événements</strong> (déclenchement de <code>GEN(ev_*)</code> sur les boutons poussoirs) vers une <strong>API REST</strong>.</li>
+<li><strong>Production d'un logiciel avec interface graphique Web</strong> : l'exécutable C++ ainsi enrichi est couplé à une <strong>interface Web</strong> (tableau de bord complet, commandes au volant, smartphone virtuel et autoradio) qui communique en temps réel avec le Statechart C++ via des requêtes REST.</li>
+</ol>
+<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+flowchart LR
+    RPY[&quot;`**Modèle Rhapsody**&lt;br/&gt;Statechart Systeme&lt;br/&gt;(.rpyx / .sbsx)`&quot;]
+    CPP[&quot;`**Code C++ généré**&lt;br/&gt;_SysVehicule + OXF&lt;br/&gt;(attributs &amp; événements)`&quot;]
+    TOOL[&quot;`**Outil d'injection &amp; build**&lt;br/&gt;Injection serveur HTTP&lt;br/&gt;Binding attributs / GEN(ev_*)`&quot;]
+    SRV[&quot;`**Logiciel C++ autonome**&lt;br/&gt;Exécution Statechart&lt;br/&gt;+ Serveur API REST`&quot;]
+    WEB[&quot;`**Interface Graphique Web**&lt;br/&gt;Tableau de bord, ADAS,&lt;br/&gt;Téléphone, Kit BT &amp; Radio`&quot;]
+
+    RPY --&gt;|&quot;`Génération C++`&quot;| CPP
+    CPP --&gt;|&quot;`Entrée outil`&quot;| TOOL
+    TOOL --&gt;|&quot;`Compilation`&quot;| SRV
+    WEB &lt;--&gt;|&quot;`Requêtes HTTP / REST API&lt;br/&gt;(état attributs ↔ événements)`&quot;| SRV
+
+    classDef rpy fill:#f1f5f9,stroke:#64748b,color:#0f172a
+    classDef tool fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    classDef run fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    classDef web fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    class RPY,CPP rpy
+    class TOOL tool
+    class SRV run
+    class WEB web
+</pre></div>
+<h3 id="liens-vers-la-démonstration-et-le-dépôt-github">Liens vers la démonstration et le dépôt GitHub<a class="anchor" href="#liens-vers-la-démonstration-et-le-dépôt-github" aria-label="Lien vers cette section">#</a></h3>
+<ul>
+<li><strong>Démo de l'interface Web :</strong> <em>[Lien vers la démo à compléter]</em></li>
+<li><strong>Dépôt GitHub de l'outil (injection API REST + interface Web) :</strong> <em>[Lien GitHub à compléter]</em></li>
+</ul>
+<blockquote>
+<p><strong>[Capture d'écran à insérer — Optionnel]</strong> : Vue de l'interface graphique Web pilotant le code C++ Rhapsody via l'API REST.</p>
+</blockquote>
+<hr>
+<h2 id="10-conclusion-générale">10. Conclusion générale<a class="anchor" href="#10-conclusion-générale" aria-label="Lien vers cette section">#</a></h2>
 <h3 id="bilan-du-projet">Bilan du projet<a class="anchor" href="#bilan-du-projet" aria-label="Lien vers cette section">#</a></h3>
-<p>Ce projet a abouti à un <strong>modèle Statechart complet, exécutable et validé en animation</strong> couvrant l'ensemble des sous-systèmes demandés — dynamique véhicule, commandes primaires, modélisation énergétique, régulateur PI, limiteur de vitesse, kit Bluetooth mains-libres (PIN, appels, SMS), autoradio à priorités et extension ACC.</p>
+<p>Ce projet a abouti à un <strong>modèle Statechart complet, exécutable et validé en animation</strong> couvrant l'ensemble des sous-systèmes demandés — dynamique véhicule, commandes primaires, modélisation énergétique, régulateur PI, limiteur de vitesse, kit Bluetooth mains-libres (PIN, appels, SMS), autoradio à priorités et extension ACC — complété par une couche audio centralisée et un outillage d'exposition REST/Web du code C++ généré.</p>
 <h3 id="enseignements-majeurs-tirés-des-difficultés-rencontrées">Enseignements majeurs tirés des difficultés rencontrées<a class="anchor" href="#enseignements-majeurs-tirés-des-difficultés-rencontrées" aria-label="Lien vers cette section">#</a></h3>
 <p>Notre parcours d'implémentation — marqué par de nombreuses itérations, refactorisations et corrections de bugs subtils — met en lumière plusieurs principes fondamentaux d'ingénierie des Systèmes à Événements Discrets :</p>
 <ol>
@@ -6407,7 +6419,19 @@ lodash-es/lodash.js:
     const svg = $('svg', box);
     if (!svg || !window.svgPanZoom) return;
     box._raw = svg.outerHTML;
-    svg.style.height = `${svg.getBoundingClientRect().height}px`; // hauteur figée : svg-pan-zoom en a besoin
+    const z = Number(box.dataset.zoom || 100) / 100;
+    const r = svg.getBoundingClientRect();
+    if (z !== 1 && r.width > 0) {
+      const maxW = Math.max(80, box.clientWidth - 16);
+      const targetW = Math.min(maxW, r.width * z);
+      const targetH = r.height * (targetW / r.width);
+      svg.style.maxWidth = `${targetW.toFixed(1)}px`;
+      svg.style.width = `${targetW.toFixed(1)}px`;
+      svg.style.height = `${targetH.toFixed(1)}px`;
+      box.style.maxWidth = `${Math.ceil(targetW + 18)}px`;
+    } else {
+      svg.style.height = `${r.height}px`; // hauteur figée : svg-pan-zoom en a besoin
+    }
     box._pz = newPz(svg, false);
     const exp = mkBtn('mm-btn mm-expand mm-ui', '⤢', 'Plein écran');
     exp.addEventListener('click', () => openFull(box));
@@ -6485,6 +6509,7 @@ lodash-es/lodash.js:
       nodes.forEach((n) => {
         const box = n.parentElement;
         if (box._pz) { try { box._pz.destroy(); } catch (_) {} box._pz = null; }
+        box.style.maxWidth = '';
         $$('.mm-ui', box).forEach((x) => x.remove());
         n.textContent = n.dataset.src;
         n.removeAttribute('data-processed');

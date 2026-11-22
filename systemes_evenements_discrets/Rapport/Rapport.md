@@ -1,44 +1,78 @@
-# Rapport de Projet — Systèmes Embarqués Automobiles
-## Régulateur-Limiteur de Vitesse, Kit Mains-Libres Bluetooth, Autoradio et Régulateur Adaptatif
+# Rapport de Projet - Systèmes à événements discrets
+## Régulateur-Limiteur de Vitesse, Kit Mains-Libres Bluetooth, Autoradio et Régulateur Adaptatif  
 
-**Établissement :** ESIEE Paris — Université Gustave Eiffel (Département DISC)  
-**Encadrants :** R. Hamouche / M. Dridi  
-**Auteurs :** Benoît de Keyn, Thibault *[Nom]*  
+**Binôme** : Benoît de Keyn, Thibault Agueh  
 **Date :** 22/11/2026  
-**Projet Rhapsody :** `Projet_TABDK_E4SE` (`IBM Engineering Systems Design Rhapsody v9.0.2` — Statecharts, Panel Diagram & Génération C++ OXF)
 
 ---
 
 ## Table des matières
 
-1. [Introduction générale](#1-introduction-générale)
-2. [Modélisation et simulation du véhicule](#2-modélisation-et-simulation-du-véhicule)
-   - [2.1 Architecture globale en AND-lines, synchronisation `EVAL` et interfaces](#21-architecture-globale-en-and-lines-synchronisation-eval-et-interfaces)
-   - [2.2 Dynamique du véhicule et primitives de simulation (`Simulation du vehicule`)](#22-dynamique-du-véhicule-et-primitives-de-simulation-simulation-du-vehicule)
-   - [2.3 Gestion de la pédale d'accélération](#23-gestion-de-la-pédale-daccélération)
-   - [2.4 Intégration du système de freinage et priorité stricte](#24-intégration-du-système-de-freinage-et-priorité-stricte)
-   - [2.5 Gestion du contact, du démarrage et de l'arrêt d'urgence (`Clé du véhicule`)](#25-gestion-du-contact-du-démarrage-et-de-larrêt-durgence-clé-du-véhicule)
-   - [2.6 Modélisation énergétique : carburant, batterie et pannes (`Ressources et pannes`)](#26-modélisation-énergétique--carburant-batterie-et-pannes-ressources-et-pannes)
-3. [Spécification et développement du régulateur de vitesse](#3-spécification-et-développement-du-régulateur-de-vitesse)
-4. [Spécification et développement du limiteur de vitesse](#4-spécification-et-développement-du-limiteur-de-vitesse)
-5. [Contrôleur de Kit Bluetooth « mains libres » et infodivertissement](#5-contrôleur-de-kit-bluetooth--mains-libres--et-infodivertissement)
-   - [5.1 Protocole Bluetooth, jumelage par code PIN et cycle de vie du téléphone](#51-protocole-bluetooth-jumelage-par-code-pin-et-cycle-de-vie-du-téléphone)
-   - [5.2 Gestion des appels entrants et redirection mains-libres](#52-gestion-des-appels-entrants-et-redirection-mains-libres)
-   - [5.3 Messagerie SMS et tableau de bord connecté](#53-messagerie-sms-et-tableau-de-bord-connecté)
-   - [5.4 Autoradio, arbitrage des priorités audio et centralisation sonore](#54-autoradio-arbitrage-des-priorités-audio-et-centralisation-sonore)
-6. [Extension : Régulateur de vitesse adaptatif (ACC)](#6-extension--régulateur-de-vitesse-adaptatif-acc)
-7. [Synthèse, cartographie des AND-lines, IHM globale et tests d'intégration](#7-synthèse-cartographie-des-and-lines-ihm-globale-et-tests-dintégration)
-8. [Conclusion générale](#8-conclusion-générale)
+<!-- TOC -->
 
+<b>• [Rapport de Projet - Systèmes à événements discrets](#rapport-de-projet---syst%C3%A8mes-%C3%A0-%C3%A9v%C3%A9nements-discrets)</b><br>
+<b>• [Régulateur-Limiteur de Vitesse, Kit Mains-Libres Bluetooth, Autoradio et Régulateur Adaptatif](#r%C3%A9gulateur-limiteur-de-vitesse-kit-mains-libres-bluetooth-autoradio-et-r%C3%A9gulateur-adaptatif)</b><br>
+<b>• [Table des matières](#table-des-mati%C3%A8res)</b><br>
+<b>• [1. Introduction](#1-introduction)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [Contexte et objectifs](#contexte-et-objectifs)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Méthodologie adoptée](#m%C3%A9thodologie-adopt%C3%A9e)<br>
+<b>• [2. Modélisation et simulation du véhicule](#2-mod%C3%A9lisation-et-simulation-du-v%C3%A9hicule)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [2.1 Architecture globale en AND-lines, synchronisation EVAL et interfaces](#21-architecture-globale-en-and-lines-synchronisation-eval-et-interfaces)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [2.2 Dynamique du véhicule et primitives de simulation (Simulation du vehicule)](#22-dynamique-du-v%C3%A9hicule-et-primitives-de-simulation-simulation-du-vehicule)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [2.3 Gestion de la pédale d'accélération](#23-gestion-de-la-p%C3%A9dale-dacc%C3%A9l%C3%A9ration)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [2.4 Intégration du système de freinage et priorité stricte](#24-int%C3%A9gration-du-syst%C3%A8me-de-freinage-et-priorit%C3%A9-stricte)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [2.5 Gestion du contact, du démarrage et de l'arrêt d'urgence (Clé du véhicule)](#25-gestion-du-contact-du-d%C3%A9marrage-et-de-larr%C3%AAt-durgence-cl%C3%A9-du-v%C3%A9hicule)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [2.6 Modélisation énergétique : carburant, batterie et pannes (Ressources et pannes)](#26-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes-ressources-et-pannes)<br>
+<b>• [3. Spécification et développement du régulateur de vitesse](#3-sp%C3%A9cification-et-d%C3%A9veloppement-du-r%C3%A9gulateur-de-vitesse)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [Énoncé](#%C3%A9nonc%C3%A9-5)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Choix fonctionnels](#choix-fonctionnels-4)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Première implémentation](#premi%C3%A8re-impl%C3%A9mentation-5)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Difficultés rencontrées et erreurs corrigées](#difficult%C3%A9s-rencontr%C3%A9es-et-erreurs-corrig%C3%A9es-5)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Version finale](#version-finale-5)<br>
+<b>• [4. Spécification et développement du limiteur de vitesse](#4-sp%C3%A9cification-et-d%C3%A9veloppement-du-limiteur-de-vitesse)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [Énoncé](#%C3%A9nonc%C3%A9-6)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Choix fonctionnels](#choix-fonctionnels-5)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Première implémentation](#premi%C3%A8re-impl%C3%A9mentation-6)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Difficultés rencontrées et erreurs corrigées](#difficult%C3%A9s-rencontr%C3%A9es-et-erreurs-corrig%C3%A9es-6)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Version finale](#version-finale-6)<br>
+<b>• [5. Contrôleur de Kit Bluetooth « mains libres » et infodivertissement](#5-contr%C3%B4leur-de-kit-bluetooth--mains-libres--et-infodivertissement)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [Principe de simulation réaliste du Bluetooth : cloisonnement strict et paquets params-\>](#principe-de-simulation-r%C3%A9aliste-du-bluetooth--cloisonnement-strict-et-paquets-params-)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [5.1 Protocole Bluetooth, jumelage par code PIN et cycle de vie du téléphone](#51-protocole-bluetooth-jumelage-par-code-pin-et-cycle-de-vie-du-t%C3%A9l%C3%A9phone)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [5.2 Gestion des appels entrants et redirection mains-libres](#52-gestion-des-appels-entrants-et-redirection-mains-libres)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [5.3 Messagerie SMS et tableau de bord connecté](#53-messagerie-sms-et-tableau-de-bord-connect%C3%A9)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [5.4 Autoradio et arbitrage des priorités audio](#54-autoradio-et-arbitrage-des-priorit%C3%A9s-audio)<br>
+<b>• [6. Extension : Régulateur de vitesse adaptatif (ACC)](#6-extension--r%C3%A9gulateur-de-vitesse-adaptatif-acc)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [Énoncé](#%C3%A9nonc%C3%A9-11)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Choix fonctionnels](#choix-fonctionnels-10)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Première implémentation](#premi%C3%A8re-impl%C3%A9mentation-11)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Difficultés rencontrées et erreurs corrigées](#difficult%C3%A9s-rencontr%C3%A9es-et-erreurs-corrig%C3%A9es-11)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Version finale](#version-finale-11)<br>
+<b>• [7. Synthèse, cartographie des AND-lines, IHM globale et tests d'intégration](#7-synth%C3%A8se-cartographie-des-and-lines-ihm-globale-et-tests-dint%C3%A9gration)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [Cartographie complète de la grille d'AND-lines (Systeme)](#cartographie-compl%C3%A8te-de-la-grille-dand-lines-systeme)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Scénarios testés](#sc%C3%A9narios-test%C3%A9s)<br>
+<b>• [8. Implémentation de la gestion sonore sous Rhapsody](#8-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [Approche initiale : appels Win32 dispersés dans les états](#approche-initiale--appels-win32-dispers%C3%A9s-dans-les-%C3%A9tats)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Difficultés rencontrées et limites de la première méthode](#difficult%C3%A9s-rencontr%C3%A9es-et-limites-de-la-premi%C3%A8re-m%C3%A9thode)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Version finale : dossier versionné sons/ et opération centralisée play\_sound()](#version-finale--dossier-versionn%C3%A9-sons-et-op%C3%A9ration-centralis%C3%A9e-play_sound)<br>
+<b>• [9. Outillage complémentaire : injection d'une API REST et interface graphique Web](#9-outillage-compl%C3%A9mentaire--injection-dune-api-rest-et-interface-graphique-web)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [Motivation](#motivation)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Architecture et fonctionnement de l'outil](#architecture-et-fonctionnement-de-loutil)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Liens vers la démonstration et le dépôt GitHub](#liens-vers-la-d%C3%A9monstration-et-le-d%C3%A9p%C3%B4t-github)<br>
+<b>• [10. Conclusion générale](#10-conclusion-g%C3%A9n%C3%A9rale)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [Bilan du projet](#bilan-du-projet)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Enseignements majeurs tirés des difficultés rencontrées](#enseignements-majeurs-tir%C3%A9s-des-difficult%C3%A9s-rencontr%C3%A9es)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Perspectives d'évolution](#perspectives-d%C3%A9volution)
+
+<!-- /TOC -->
 ---
 
-## 1. Introduction générale
+## 1. Introduction
 
 ### Contexte et objectifs
 
 Ce projet porte sur la spécification, la modélisation comportementale par **Statecharts** et la simulation temps réel en C++ (framework OXF) de plusieurs systèmes embarqués automobiles sous **IBM Engineering Systems Design Rhapsody (v9.0.2)**, à partir du socle `BaseProjectVehicule2022` (renommé et restructuré en `Projet_TABDK_E4SE`).
 
-Le système final couvre cinq axes majeurs, enrichis d'une gestion énergétique complète et d'un autoradio multi-pistes à arbitrage de priorités :
+Le système final couvre cinq axes majeurs, enrichis d'une gestion énergétique complète, d'un autoradio multi-pistes à arbitrage de priorités, d'une gestion sonore centralisée ainsi que d'un outillage maison permettant de piloter le code C++ généré depuis une **interface graphique Web via API REST** :
 
 1. **Modélisation et simulation du véhicule** : couplage entre un moteur de dynamique longitudinale, le contrôle d'injection par pédales (priorité freinage > accélération), le cycle de vie contact/moteur (arrêt d'urgence avec conservation d'inertie) et la gestion des ressources/pannes (carburant et batterie).
 2. **Régulateur de vitesse** : maintien d'une vitesse cible compensant le profil routier ($\alpha \in [-20^\circ, +20^\circ]$) via un correcteur PI discret auto-dimensionné avec anti-windup et transfert sans à-coup.
@@ -81,37 +115,8 @@ Son Statechart racine `Systeme` est découpé en **AND-lines (régions orthogona
 * **Difficultés rencontrées** :
   1. Multiplication de timers OXF asynchrones indépendants, rendant l'ordre de réévaluation non déterministe entre régions dépendantes (ex. une coupure moteur détectée avant ou après le calcul d'injection).
   2. Déclenchement intempestif d'actions d'entrée/sortie sur les super-états lors des sorties/réentrées périodiques par le connecteur d'historique, et saturation des traces d'animation.
-  3. Complexité visuelle importante du Statechart et risque d'oubli lors des refactorisations (un dernier rebouclage `tm()` résiduel sur `state_61/contact_on` n'a d'ailleurs été repéré et nettoyé que tardivement lors du nettoyage global de fin de projet).
+  3. Complexité visuelle importante du Statechart et risque d'oubli lors des refactorisations (un dernier rebouclage `tm()` résiduel sur `state_61/contact_on` n'a d'ailleurs été repéré et nettoyé que tardivement lors du nettoyage global de fin de projet)
 * **Solution retenue (validée sur la branche `eval-tm-test`)** : création d'une **AND-line dédiée `Horloge rafraichissement` (`state_62`)** contenant un unique état qui émet `GEN(EVAL)` à $20\text{ Hz}$ (`tm(1000/PARAM_SIMU_freq_rafraichissement)`). Toutes les transitions purement gardées du projet sont déclenchées par `EVAL [garde]`, supprimant les boucles `tm() -> History` et offrant un véritable **bus de synchronisation périodique** commun à tout le véhicule.
-
-```mermaid
-flowchart LR
-    CLK["`**Horloge rafraichissement (state_62)**<br/>tm(50 ms) → GEN(EVAL)`"]
-
-    subgraph CORE["Noyau Véhicule — 4 AND-lines synchronisées"]
-        direction TB
-        KEY["`**Clé du véhicule (state_61)**<br/>Contact, démarrage, conso/charge`"]
-        INJ["`**Débit de l'injection (state_60)**<br/>Arbitrage pédales / régulateur`"]
-        DYN["`**Simulation du vehicule (state_72)**<br/>Intégration vitesse & distance`"]
-        RES["`**Ressources et pannes (state_252)**<br/>Seuils carburant/batterie & dépannage`"]
-    end
-
-    CLK -.->|"`EVAL (20 Hz)`"| KEY
-    CLK -.->|"`EVAL (20 Hz)`"| INJ
-    CLK -.->|"`EVAL (20 Hz)`"| DYN
-    CLK -.->|"`EVAL (20 Hz)`"| RES
-
-    KEY -->|"`ignition, IS_IN(moteur_on)`"| INJ
-    INJ -->|"`throttle`"| DYN
-    DYN -->|"`speed, float_speed`"| RES
-    RES -->|"`IS_IN(fonctionelle)`"| KEY
-
-    classDef clk fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f
-    classDef mod fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#1e3a8a
-    class CLK clk
-    class KEY,INJ,DYN,RES mod
-    style CORE fill:#f8fafc,stroke:#94a3b8,stroke-width:1.5px,color:#334155
-```
 
 > **[Capture Rhapsody à insérer — Version finale]** : AND-line **`Horloge rafraichissement`** (`state_62`, haut-centre de la zone véhicule) montrant l'état `horloge_rafraichissement` (`entry / GEN(EVAL);`) et sa transition `tm(1000/PARAM_SIMU_freq_rafraichissement)`.
 
@@ -392,7 +397,7 @@ L'AND-line **`Limiteur de vitesse` (`state_76`)** met en œuvre les mécanismes 
 * **Activation différée (`limiteur_inhibe` → `limiteur_effectif`)** : tant que `speed > vitesseConsigne`, le limiteur reste en `limiteur_inhibe` (`limiteur_attente = true`) sans brider ni déclencher d'alarme. Dès que `speed <= vitesseConsigne`, il bascule en `limiteur_effectif` (`limiteur_attente = false`).
 * **Bridage d'injection dans `state_60`** : `acceleration` bascule vers `freinage_injection` dès que `IS_IN(limiteur_effectif) && float_speed >= vitesseConsigne + 0.5`.
 * **Kick-down** : désactivation automatique sur `EVAL [IS_IN(moteur_off) || ((vitesseConsigne - speed) < 10 && accelPedal > 7)]`.
-* **Alarme de dépassement** : dans `limiteur_effectif`, si `speed > vitesseConsigne + 2` (typiquement en forte descente), l'entrée en `depassement` déclenche `alerte_depassement(1)` (voyant `limiteur_depasse = true` et `play_sound("alarme_depassement.wav")`).
+* **Alarme de dépassement** : dans `limiteur_effectif`, si `speed > vitesseConsigne + 2` (typiquement en forte descente), l'entrée en `depassement` déclenche `alerte_depassement(1)` (voyant `limiteur_depasse = true` et lecture en boucle de `alarme_depassement.wav` ; voir [§ 8 — Implémentation de la gestion sonore](#8-implémentation-de-la-gestion-sonore-sous-rhapsody) pour le détail technique de la couche audio).
 
 ### Première implémentation
 
@@ -421,7 +426,22 @@ Cette fonctionnalité a concentré certains des bugs comportementaux les plus in
 
 ## 5. Contrôleur de Kit Bluetooth « mains libres » et infodivertissement
 
-Compte tenu de l'ampleur fonctionnelle de cet ensemble — qui mobilise **8 AND-lines** du Statechart final — il est présenté en **quatre sous-parties** : protocole Bluetooth/PIN, appels et redirection mains-libres, messagerie SMS, et autoradio à priorités audio.
+Compte tenu de l'ampleur fonctionnelle de cet ensemble — qui mobilise **8 AND-lines** du Statechart final — il est présenté en **quatre sous-parties** : protocole Bluetooth/PIN et batterie, appels et redirection mains-libres, messagerie SMS, et autoradio à priorités audio.
+
+### Principe de simulation réaliste du Bluetooth : cloisonnement strict et paquets `params->`
+
+Bien que toutes les AND-lines cohabitent au sein de la classe `_SysVehicule` pour les besoins de la simulation Rhapsody, nous avons volontairement conçu le système comme **deux équipements physiques totalement indépendants** (d'un côté le **Téléphone** : `state_96`, `state_126`, `state_139` ; de l'autre le **Kit Véhicule** : `state_87`, `state_166`, `state_218`, auxquels s'ajoutent les simulateurs réseau `state_146` et `state_206`).
+
+* **Exécution autonome sans mémoire partagée** : chaque bloc d'AND-lines est capable de s'exécuter de manière autonome sur son propre système matériel, **sans aucun état (`IS_IN`), aucun attribut ni aucune opération partagés entre le téléphone et le véhicule**. La **seule exception** concerne l'accès au périphérique audio Windows (`play_sound()` / `PlaySound`, cf. [§ 8](#8-implémentation-de-la-gestion-sonore-sous-rhapsody)), imposée par le fait que les deux systèmes s'exécutent sur le même poste de simulation.
+* **Transmission d'informations par événements paramétrés (`GEN(...)` → `params->`)** : pour simuler fidèlement l'échange de **paquets Bluetooth** sur une liaison radio, toute donnée devant franchir la frontière entre le téléphone et le kit véhicule est encapsulée dans un **événement Rhapsody paramétré**. Côté émetteur, la macro `GEN(ev_nom(valeur))` sérialise la donnée dans l'instance d'événement ; côté récepteur, la transition déclenchée extrait la charge utile via le pointeur généré **`params->nom_du_parametre`** (mécanisme OXF standard de Rhapsody C++), sans jamais lire directement un attribut de l'autre système :
+
+| Fonctionnalité | Événement (paquet Bluetooth) | Émission côté Téléphone | Réception côté Kit Véhicule (`params->`) |
+| :--- | :--- | :--- | :--- |
+| **Code PIN (§ 5.1)** | `ev_tentative_mdp(OMString mdp)` | `GEN(ev_tentative_mdp(champ_mdp))` | `[verifier_mdp(params->mdp)]` |
+| **Batterie (§ 5.1)** | `ev_actualisation_batterie_telephone_vehicule(int pourcentage)` | `GEN(ev_actualisation_batterie_telephone_vehicule(niveau_batterie_telephone))` | `envoi_batterie_kit(params->pourcentage)` |
+| **Synchro SMS initiale (§ 5.3)** | `ev_transfert_sms_to_kit(int historique)` | `GEN(ev_transfert_sms_to_kit(nbr_sms_telephone))` | `nbr_sms_kit = params->historique` |
+| **Réception SMS (§ 5.3)** | `ev_nv_sms_kit(int sms_telephone)` | `GEN(ev_nv_sms_kit(nbr_sms_telephone))` | `nbr_sms_kit = params->sms_telephone` |
+| **Lecture SMS (§ 5.3)** | `ev_actualisation_sms_kit(int sms_tel)` | `GEN(ev_actualisation_sms_kit(nbr_sms_telephone))` | `nbr_sms_kit = params->sms_tel` |
 
 ---
 
@@ -432,10 +452,12 @@ Modéliser le dialogue entre un kit véhicule esclave (actif contact mis) et un 
 
 #### Choix fonctionnels
 
-Trois AND-lines collaborent exclusivement par échanges d'événements :
+Trois AND-lines collaborent exclusivement par échanges de paquets événementiels :
 * **`Jumelage kit main libre` (`state_87`, côté véhicule)** : démarre après `tm(325)` lorsque `IS_IN(contact_on)`, diffuse sa présence via `GEN(ev_kit_vehicule_pret)` toutes les `500 ms` en `recherche_telephone`, n'accepte `ev_demande_jumelage` que sous **`[IS_IN(moteur_off)]`**, demande le PIN (`GEN(ev_demande_mdp)`), et vérifie `verifier_mdp(params->mdp)` sur réception de `ev_tentative_mdp`.
 * **`Telephone` (`state_96`, côté téléphone)** : encapsule le Bluetooth dans `telephone_actif` (dépendant de `telephone_allume && niveau_batterie_telephone > 0`). Une fois le kit détecté (`ev_kit_vehicule_pret`), aiguille automatiquement vers `connexion` si `kit_jumele == true`, ou vers `jumelage` (`attente_jumelage` → `attente_reponse` → `jumelage_effectif`) sinon.
-* **`Batterie téléphone` (`state_126`)** : décharge de $-1\,\%/\text{s}$ lorsque `IS_IN(telephone_actif)`, recharge de $+5\,\%$ toutes les $1{,}5\text{ s}$ si `charge_vehicule_telephone == true`, et émission de `ev_actualisation_batterie_telephone_vehicule(niveau_batterie_telephone)`.
+* **`Batterie téléphone` (`state_126`, côté téléphone)** : décharge de $-1\,\%/\text{s}$ lorsque `IS_IN(telephone_actif)`, recharge de $+5\,\%$ toutes les $1{,}5\text{ s}$ si `charge_vehicule_telephone == true`, et émet le paquet `ev_actualisation_batterie_telephone_vehicule(niveau_batterie_telephone)`.
+
+##### Échange 1 — Découverte et jumelage par code PIN (premier appairage)
 
 ```mermaid
 sequenceDiagram
@@ -445,28 +467,56 @@ sequenceDiagram
     Note over Kit: contact_on → tm(325 ms) → recherche_telephone
     Kit->>Tel: ev_kit_vehicule_pret (toutes les 500 ms)
     Note over Tel: kit_detecte ("Kit Bluetooth Vehicule")
+    Tel->>Kit: ev_demande_jumelage (clic OK)
 
-    alt Jamais jumelé (kit_jumele == false)
-        Tel->>Kit: ev_demande_jumelage (clic OK)
-        alt Moteur en marche (moteur_on)
-            Note over Kit: Garde [IS_IN(moteur_off)] fausse → aucune réponse
-            Note over Tel: tm(500 ms) → messages_appairage[5] (refusé)
-        else Moteur à l'arrêt (moteur_off)
-            Kit->>Tel: ev_demande_mdp ("Entrez un mot de passe")
-            Tel->>Kit: ev_tentative_mdp(champ_mdp) (clic Appairer)
-            alt verifier_mdp(mdp) == false
-                Kit->>Tel: ev_mdp_incorrect ("Mot de passe incorrect")
-            else verifier_mdp(mdp) == true ("1234")
-                Kit->>Tel: ev_mdp_correct
-                Tel->>Kit: ev_demande_connexion (toutes les 100 ms)
-                Kit->>Tel: connexion_acceptee
-                Note over Tel,Kit: kit_connecte & telephone_connecte (kit_jumele = true)
-            end
+    alt Moteur en marche (moteur_on)
+        Note over Kit: Garde [IS_IN(moteur_off)] fausse → paquet ignoré
+        Note over Tel: Timeout tm(500 ms) → jumelage refusé
+    else Moteur à l'arrêt (moteur_off)
+        Kit->>Tel: ev_demande_mdp ("Entrez un mot de passe")
+        Tel->>Kit: ev_tentative_mdp(champ_mdp)
+        Note over Kit: Lecture via params->mdp dans verifier_mdp(params->mdp)
+        alt Code PIN incorrect
+            Kit->>Tel: ev_mdp_incorrect (champ_mdp vidé)
+        else Code PIN valide ("1234")
+            Kit->>Tel: ev_mdp_correct
+            Note over Tel,Kit: Transition vers la séquence de connexion
         end
-    else Déjà jumelé (kit_jumele == true)
-        Tel->>Kit: ev_demande_connexion (automatique)
-        Kit->>Tel: connexion_acceptee
     end
+```
+
+##### Échange 2 — Connexion, reconnexion automatique et déconnexion
+
+```mermaid
+sequenceDiagram
+    participant Tel as Téléphone (state_96)
+    participant Kit as Kit Véhicule (state_87)
+
+    Kit->>Tel: ev_kit_vehicule_pret
+    Note over Tel: kit_jumele == true → saut direct en connexion
+    Tel->>Kit: ev_demande_connexion (toutes les 100 ms)
+    Kit->>Tel: connexion_acceptee
+    Note over Tel,Kit: Liaison active (kit_connecte / telephone_connecte)
+
+    alt Coupure côté véhicule (contact_off)
+        Kit->>Tel: ev_bluetooth_kit_desactive
+        Note over Tel: Retour en recherche_bluetooth
+    else Coupure côté téléphone (BT OFF ou extinction)
+        Tel->>Kit: ev_bluetooth_telephone_desactive
+        Note over Kit: Retour en recherche_telephone (batterie affichée = 0)
+    end
+```
+
+##### Échange 3 — Transmission du niveau de batterie téléphone → kit
+
+```mermaid
+sequenceDiagram
+    participant Bat as Batterie Tél. (state_126)
+    participant Kit as Kit Véhicule (state_166)
+
+    Note over Bat: Décharge (1 s si actif) ou Charge (1,5 s si branché)
+    Bat->>Kit: ev_actualisation_batterie_telephone_vehicule(niveau_batterie_telephone)
+    Note over Kit: envoi_batterie_kit(params->pourcentage)<br/>→ mise à jour niveau_batterie_kit
 ```
 
 #### Première implémentation
@@ -500,28 +550,39 @@ Gérer la réception d'appels entrants (sonneries visuelle et sonore, acceptatio
 Le traitement des appels s'articule autour de trois AND-lines découplées :
 1. **`Appel Extérieur` (`state_146`)** : simule le réseau appelant (`telephone_SIM` → `tentative_appel` émettant `GEN(ev_SIM_appel)` toutes les `100 ms` pendant `5 s` max → `discussion_telephonique` sur `ev_appel_en_cours` → retour sur `ev_SIM_raccrocher`).
 2. **`Communication telephone` (`state_139`)** : bascule entre `arret_de_communication` (quand `IS_IN(telephone_eteint)`) et `gestion_communication` → `gestion_communication_telephone` (**état `And` à 3 sous-régions parallèles**) :
-   * `state_183` : appels sur le téléphone (`attente_appel_tel`, `gestion_sonnerie` [clignotement voyant + `sonnerie.wav` en parallèle], `appel_en_cours`).
+   * `state_183` : appels sur le téléphone (`attente_appel_tel`, `gestion_sonnerie` [clignotement voyant + `sonnerie.wav` en parallèle, voir [§ 8](#8-implémentation-de-la-gestion-sonore-sous-rhapsody)], `appel_en_cours`).
    * `state_184` : messagerie SMS locale (voir § 5.3).
    * `state_262` : **redirection Bluetooth** (`redirection_off` ↔ `redirection_kit_bluetooth_communication` selon `IS_IN(kit_connecte)`), qui relaie la sonnerie, le décrochage et le raccrochage vers le kit.
-3. **`Commande kit main libre` (`state_166`)** : actif uniquement si `IS_IN(telephone_connecte)`, cet état `And` fait tourner en parallèle la gestion d'appel du kit (`state_131` : `attente_redirection_appel`, `gestion_sonnerie_kit` [clignotement + `sonnerie2.wav`], `appel_en_cours_kit`), l'affichage batterie (`state_130`), la messagerie SMS (`state_199`) et les adaptateurs de boutons au volant (`state_173`, `state_174`, `state_198`).
+3. **`Commande kit main libre` (`state_166`)** : actif uniquement si `IS_IN(telephone_connecte)`, cet état `And` fait tourner en parallèle la gestion d'appel du kit (`state_131` : `attente_redirection_appel`, `gestion_sonnerie_kit` [clignotement + `sonnerie2.wav`, voir [§ 8](#8-implémentation-de-la-gestion-sonore-sous-rhapsody)], `appel_en_cours_kit`), l'affichage batterie (`state_130`), la messagerie SMS (`state_199`) et les adaptateurs de boutons au volant (`state_173`, `state_174`, `state_198`).
+
+##### Échange 4 — Flux de paquets lors d'un appel entrant redirigé vers le kit mains-libres
 
 ```mermaid
-flowchart LR
-    SIM["`**Appel Extérieur (state_146)**<br/>telephone_SIM → tentative_appel<br/>→ discussion_telephonique`"]
-    TEL["`**Communication telephone (state_139 — And)**<br/>• state_183 : Appel téléphone + sonnerie<br/>• state_184 : SMS téléphone<br/>• state_262 : Redirection BT (off ↔ active)`"]
-    KIT["`**Commande kit main libre (state_166 — And)**<br/>• state_131 : Sonnerie & appel kit<br/>• state_130 : Batterie déportée<br/>• state_199 : SMS kit (speed <= 0)<br/>• Adaptateurs boutons volant`"]
+sequenceDiagram
+    participant SIM as Réseau SIM (state_146)
+    participant Tel as Téléphone + Redir. BT (state_139)
+    participant Kit as Kit Véhicule (state_166)
 
-    SIM -->|"`ev_SIM_appel`"| TEL
-    TEL -->|"`ev_appel_en_cours / ev_refuser_appel<br/>ev_SIM_raccrocher`"| SIM
-    TEL -->|"`ev_appel_entrant_kit, ev_sonnerie_kit<br/>ev_appel_transfere_kit, ev_appel_termine_kit`"| KIT
-    KIT -->|"`ev_decrocher_kit, ev_raccrocher_kit`"| TEL
+    SIM->>Tel: ev_SIM_appel (salve toutes les 100 ms, 5 s max)
+    Tel->>Kit: ev_appel_entrant_kit + ev_sonnerie_kit
+    Note over Kit: Clignotement voyant + sonnerie2.wav
 
-    classDef sim fill:#fef3c7,stroke:#d97706,color:#78350f
-    classDef tel fill:#dcfce7,stroke:#16a34a,color:#14532d
-    classDef kit fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
-    class SIM sim
-    class TEL tel
-    class KIT kit
+    alt Appel décroché au volant
+        Kit->>Tel: ev_decrocher_kit
+        Tel->>Kit: ev_appel_transfere_kit
+        Kit->>SIM: ev_appel_en_cours
+        Note over SIM,Kit: Conversation active (VOYANT_vehicule_appel = true)
+        Kit->>Tel: ev_raccrocher_kit
+        Tel->>Kit: ev_appel_termine_kit
+        Tel->>SIM: ev_SIM_raccrocher (action exit)
+    else Appel refusé au volant
+        Kit->>Tel: ev_raccrocher_kit
+        Tel->>SIM: ev_refuser_appel
+        Tel->>Kit: ev_refuser_appel (arrêt sonnerie)
+    else Non répondu (timeout)
+        Note over Tel: sonnerie_finie_kit après tm(1000) sans ev_SIM_appel
+        Tel->>Kit: ev_fin_sonnerie (arrêt sonnerie)
+    end
 ```
 
 #### Première implémentation
@@ -532,7 +593,7 @@ Dans la première version (`d165757a` → `caa1ac20`), `gestion_communication_te
 
 * **Perte de contexte d'appel lors d'une connexion/déconnexion Bluetooth (`3feef2e1`)** : avec l'architecture initiale `OR`, connecter le kit ou couper le contact en plein appel détruisait l'état actif de `gestion_communication_telephone` et désynchronisait les boutons téléphone vs volant. La refactorisation finale (`3feef2e1`) a transformé la redirection Bluetooth en **sous-région orthogonale interne `state_262`** à l'intérieur de `gestion_communication_telephone`, tout en ajoutant les transitions croisées (`ev_decrocher_telephone`, `ev_raccrocher_telephone`, `ev_btn_telephone_sms`) sur la branche kit : décrocher sur le téléphone ou au volant maintient désormais les deux côtés parfaitement cohérents.
 * **Simulateur SIM bloqué en `discussion_telephonique` (`9c50bc77` – *fix ev_SIM_appel*)** : écouter uniquement les boutons manuels `ev_raccrocher_*` dans `state_146` laissait le correspondant bloqué en communication lorsque l'appel se terminait par extinction du téléphone ou perte de liaison. La solution a consisté à renommer l'état en `telephone_SIM`, unifier le flux sur `ev_btn_SIM_appel` / `ev_SIM_appel`, et émettre **`GEN(ev_SIM_raccrocher)` en action de sortie (`exit`)** de `appel_en_cours` et `transfer_appel`.
-* **Sonnerie sonore qui ne s'arrêtait pas au décrochage ou au timeout (`3feef2e1`)** : `PlaySound(..., SND_LOOP | SND_ASYNC)` continuait à tourner en tâche de fond après la prise d'appel ou la fin des 5 secondes de sonnerie. L'ajout de `play_sound("stop")` en entrée de `appel_en_cours` et `sonnerie_finie` (et `PlaySound(NULL, 0, 0)` en sortie de `gestion_sonnerie_kit`) a stoppé la fuite audio.
+* **Sonnerie sonore qui ne s'arrêtait pas au décrochage ou au timeout (`3feef2e1`)** : la lecture asynchrone en boucle continuait en tâche de fond après la prise d'appel ou la fin des 5 secondes de sonnerie ; ce problème a été résolu via l'ajout de `play_sound("stop")` (détaillé en [§ 8 — Implémentation de la gestion sonore](#8-implémentation-de-la-gestion-sonore-sous-rhapsody)).
 * **Piège Rhapsody : création silencieuse d'événements sur fautes de frappe** : lors du développement rapide des transitions téléphonie/SMS, Rhapsody crée automatiquement un nouvel événement dans le package à chaque coquille saisie sur une flèche (laissant apparaître dans le modèle des événements parasites tels que `ev_raccrocher_telephonel`, `ev_raccroher_telephone`, `ev_eppel_termine_kit`, `ev_bnt_appel_externe`). Ce retour d'expérience nous a amenés à vérifier systématiquement le navigateur d'événements pour traquer les transitions qui ne se déclenchaient jamais à cause d'une lettre de différence.
 
 #### Version finale
@@ -556,6 +617,30 @@ Recevoir des SMS en parallèle des appels, afficher leur nombre et un témoin lu
 * **Source de vérité unique et sécurité routière** : seul le téléphone modifie `nbr_sms_telephone` (via `actualisation_sms_telephone(±1)`) et pousse la valeur exacte vers le kit via des événements paramétrés (`ev_transfert_sms_to_kit`, `ev_nv_sms_kit`, `ev_actualisation_sms_kit`). Côté kit (`state_199`), la transition `messagerie_kit -> lire_message_kit` est gardée par **`[speed <= 0]`** (lecture impossible en roulant).
 * **Persistance à l'extinction** : lorsque le téléphone s'éteint (`arret_de_communication`), `nbr_sauvegarde_sms_telephone = nbr_sms_telephone` sauvegarde les SMS non lus, qui sont restaurés à la sortie lors du rallumage. À la déconnexion Bluetooth, `VOYANT_kit(false)` remet `nbr_sms_kit = 0` et éteint les voyants tableau de bord.
 
+##### Échange 5 — Synchronisation et lecture de SMS via paquets Bluetooth (`params->`)
+
+```mermaid
+sequenceDiagram
+    participant Ext as SMS Extérieur (state_206)
+    participant Tel as Téléphone + Redir. BT (state_139)
+    participant Kit as Kit Véhicule (state_166)
+
+    Note over Tel,Kit: 1. À la connexion Bluetooth
+    Tel->>Kit: ev_transfert_sms_to_kit(nbr_sms_telephone)
+    Note over Kit: nbr_sms_kit = params->historique
+
+    Note over Ext,Kit: 2. Réception d'un nouveau SMS
+    Ext->>Tel: ev_envoi_sms (actualisation_sms_telephone(+1))
+    Tel->>Kit: ev_nv_sms_kit(nbr_sms_telephone)
+    Note over Kit: nbr_sms_kit = params->sms_telephone<br/>VOYANT_vehicule_sms = (nbr_sms_kit > 0)
+
+    Note over Tel,Kit: 3. Consultation depuis le kit (uniquement si speed <= 0)
+    Kit->>Tel: ev_lire_sms_kit (garde [speed <= 0] côté kit)
+    Note over Tel: actualisation_sms_telephone(-1)
+    Tel->>Kit: ev_actualisation_sms_kit(nbr_sms_telephone)
+    Note over Kit: nbr_sms_kit = params->sms_tel
+```
+
 #### Première implémentation
 
 Dans la première version (`fe4c06a2`), les sous-régions SMS utilisaient 5 états côté redirection (`init_sms_kit`, `transfert_sms`, `attente_sms_kit`, `reception_sms_kit`, `lire_sms_kit`), incrémentaient **deux compteurs séparément** (`actualisation_sms_kit(1); actualisation_sms_telephone(1)`), et s'appuyaient sur des événements booléens `ev_nv_message_kit` et `ev_messagerie_vide_kit` pour allumer ou éteindre manuellement les voyants.
@@ -572,27 +657,27 @@ Dans la première version (`fe4c06a2`), les sous-régions SMS utilisaient 5 éta
 
 ---
 
-### 5.4 Autoradio, arbitrage des priorités audio et centralisation sonore
+### 5.4 Autoradio et arbitrage des priorités audio
 
 #### Énoncé
 Intégrer un autoradio multi-pistes s'éteignant contact coupé ou batterie vide, arbitrant automatiquement les priorités audio face aux sonneries et aux appels mains-libres, avec reprise transparente de la piste en cours après interruption.
 
 #### Choix fonctionnels
 
-L'AND-line **`Radio` (`state_218`)** implémente une machine à deux niveaux :
+L'AND-line **`Radio` (`state_218`)** implémente une machine à deux niveaux (les aspects bas niveau de lecture `.wav` et de centralisation dans `play_sound()` sont détaillés séparément en [§ 8 — Implémentation de la gestion sonore](#8-implémentation-de-la-gestion-sonore-sous-rhapsody)) :
 * **Alimentation** : `contact_radio_eteint` ↔ `contact_radio_actif` selon `EVAL [IS_IN(contact_on) && niveau_batterie > 0]`.
 * **Arbitrage strict des priorités (`Radio < Sonnerie < Appel`) et History Connector (`H`)** :
   * `priorite_radio` (état `And`) gère en parallèle le lecteur (`radio_desactive` → `lancement_radio` [`"Press PLAY"`] → `radio_active` bouclant entre `musique_1`, `musique_2`, `musique_3` sur `ev_skip_musique`) et un filtre anti-rebond `tm(500)` sur `ev_btn_radio_skip` (`state_260`).
-  * L'arrivée d'une sonnerie (`sonnerie_en_cours == true`) fait passer en `priorite_sonnerie`, puis la prise d'appel sur le kit (`IS_IN(appel_en_cours_kit)`) fait passer en `priorite_appel` (`entry / PlaySound(NULL, 0, 0);`).
+  * L'arrivée d'une sonnerie (`sonnerie_en_cours == true`) fait passer en `priorite_sonnerie`, puis la prise d'appel sur le kit (`IS_IN(appel_en_cours_kit)`) fait passer en `priorite_appel` (coupant le canal audio durant la conversation).
   * À la fin de la sonnerie ou de l'appel, les transitions pointent vers un **History Connector (`historyconnector_331`)** dans `priorite_radio` : la radio reprend exactement la piste (`musique_1`/`2`/`3`) ou l'état éteint (`radio_desactive`) qu'elle avait avant l'interruption !
 
 ```mermaid
-flowchart TB
-    OFF["`**contact_radio_eteint**<br/>Contact OFF ou batterie <= 0<br/>PlaySound(NULL)`"]
+flowchart LR
+    OFF["`**contact_radio_eteint**<br/>Contact OFF ou batterie <= 0<br/>Coupure audio`"]
     subgraph ACT["contact_radio_actif — Arbitrage des priorités audio"]
         P1["`**Priorité 3 (basse) : priorite_radio**<br/>radio_desactive / lancement_radio / musique_1..3<br/>+ anti-rebond Skip (500 ms)`"]
         P2["`**Priorité 2 : priorite_sonnerie**<br/>Canal cédé à sonnerie.wav / sonnerie2.wav`"]
-        P3["`**Priorité 1 (haute) : priorite_appel**<br/>PlaySound(NULL) — silence audio durant l'appel`"]
+        P3["`**Priorité 1 (haute) : priorite_appel**<br/>Silence audio durant l'appel`"]
         H(("`**H**<br/>History`"))
 
         P1 -->|"`sonnerie_en_cours`"| P2
@@ -618,23 +703,13 @@ flowchart TB
 
 #### Première implémentation
 
-Dans la première version (`caa1ac20`), chaque état sonore appelait directement l'API Win32 `PlaySound(TEXT("..."), NULL, SND_LOOP | SND_ASYNC);` avec des noms codés en dur (`"musique_1"`, `"sonnerie.wav"`, `"..\\..\\media\\alarme_incendie.wav"`), obligeant à copier manuellement les `.wav` dans `CodesGeneres/ModeAnimation/` (dossier ignoré par Git).
+Dans la première version (`caa1ac20`), la région radio comportait des états nommés `contac_active` et `contact_eteint`, et déclenchait directement des appels Win32 `PlaySound` locaux depuis chaque piste musicale (voir l'historique audio complet en [§ 8](#8-implémentation-de-la-gestion-sonore-sous-rhapsody)).
 
 #### Difficultés rencontrées et erreurs corrigées
 
-* **Extension `.wav` oubliée dans les pistes radio (`caa1ac20` → `58b9fda3`)** : les trois états musicaux appelaient `PlaySound(TEXT("musique_1"), ...)` sans l'extension `.wav`, empêchant la lecture sur certains postes Windows.
-* **Fragilité des chemins audio et non-versionnement (`58b9fda3`)** : placer les sons dans `CodesGeneres/ModeAnimation/` (qui est purgé/ignoré par Git) cassait le son à chaque clonage ou changement de poste entre binômes. Nous avons centralisé les 6 fichiers `.wav` dans un dossier versionné [sons/](file:///c:/Users/benoi/Documents/GitHub/E4SE_TD_TP/systemes_evenements_discrets/Rhapsody_v9.0.2/Projet_TABDK_E4SE/sons), défini l'attribut `chemin_sons = "..\\..\\sons\\"`, et créé une opération unique **`play_sound(OMString fichier)`** utilisée par l'autoradio, les sonneries et `alerte_depassement()` :
-  ```cpp
-  // play_sound(const OMString& fichier) : gestion audio centralisée
-  if (fichier == "stop") {
-      PlaySound(NULL, NULL, 0);
-  } else {
-      OMString chemin = chemin_sons;
-      chemin += fichier;
-      PlaySound(TEXT(chemin.GetBuffer(0)), NULL, SND_LOOP | SND_ASYNC);
-  }
-  ```
-* **Harmonisation des noms d'états (`b1047c59`)** : les premiers noms `contac_active` et `contact_eteint` pouvaient prêter à confusion avec `contact_on`/`contact_off` de `Clé du véhicule` lors des `IS_IN(...)` ; ils ont été renommés en `contact_radio_actif` et `contact_radio_eteint`.
+* **Harmonisation des noms d'états (`b1047c59`)** : les premiers noms `contac_active` et `contact_eteint` pouvaient prêter à confusion avec `contact_on`/`contact_off` de `Clé du véhicule` lors des tests `IS_IN(...)` ; ils ont été renommés en `contact_radio_actif` et `contact_radio_eteint`.
+* **Anti-rebond du changement de piste** : afin d'éviter qu'un clic rapide ou un rebond sur le bouton `Skip` ne saute plusieurs pistes d'un coup, la sous-région orthogonale `state_260` (`attente_btn_radio` → `appui_btn_radio` → `tm(500) / GEN(ev_skip_musique)`) filtre la commande.
+* **Problèmes de lecture et de chemins `.wav`** : initialement rencontrés sur `musique_1..3` (extension oubliée et fichiers non versionnés), ils ont conduit à la refonte globale de la gestion sonore présentée en [§ 8 — Implémentation de la gestion sonore](#8-implémentation-de-la-gestion-sonore-sous-rhapsody).
 
 #### Version finale
 
@@ -711,95 +786,11 @@ L'ACC a été prototypé en parallèle sur la branche Git dédiée **`teste-treg
 
 Le Statechart final de `_SysVehicule` se structure en **16 AND-lines actives** réparties spatialement en deux grands blocs (Conduite/ADAS à gauche, Télécommunications/Bluetooth à droite, Autoradio en bas), complétées par 4 cellules structurelles vides (`state_217`, `state_219`, `state_220`, `state_221`) issues du quadrillage orthogonal de la ligne inférieure :
 
-| Zone visuelle | Intitulé Rhapsody de l'AND-line | ID | Rôle fonctionnel |
-| :--- | :--- | :---: | :--- |
-| **Gauche — Haut** | `Débit de l'injection d'essence` | `state_60` | Arbitrage pédales (priorité frein/limiteur) ↔ régulateur vitesse/distance (ACC) |
-| **Gauche — Haut** | `Clé du véhicule` | `state_61` | Contact électrique, démarrage/arrêt moteur, appels conso/alternateur |
-| **Gauche — Haut** | `Horloge rafraichissement` | `state_62` | Horloge maître unique émettant `GEN(EVAL)` à 20 Hz |
-| **Gauche — Haut** | `Simulation du vehicule` | `state_72` | Intégration Newtonienne (`calcul_vitesse_distance()`) |
-| **Gauche — Milieu** | `Mode de pilotage` | `state_71` | Logique régulateur de vitesse et réglage consigne $\pm 1\text{ km/h}$ |
-| **Gauche — Milieu** | `Limiteur de vitesse` | `state_76` | Limiteur, double appui $\pm 10$, kick-down, inhibition et alarme |
-| **Gauche — Bas** | `Ressources et pannes` | `state_252` | Seuils carburant/batterie, états de panne et dépannages à l'arrêt |
-| **Gauche — Bas** | `Simulation voiture régulateur adaptatif` | `state_256` | Modélisation du véhicule précédent et de `distance_inter_voiture` |
-| **Bas — Gauche** | `Radio` | `state_218` | Autoradio 3 pistes, priorités audio et History Connector `H` |
-| **Droite — Haut** | `Jumelage kit main libre` | `state_87` | Protocole Bluetooth côté véhicule (esclave) + vérification PIN moteur OFF |
-| **Droite — Haut** | `Commande kit main libre` | `state_166` | Tableau de bord connecté (appels, SMS `[speed<=0]`, batterie, boutons volant) |
-| **Droite — Haut** | `Appel Extérieur` | `state_146` | Simulateur réseau `telephone_SIM` (appels entrants, timeout 5 s, raccrochage) |
-| **Droite — Haut** | `SMS Extérieur` | `state_206` | Simulateur d'envoi de SMS entrants |
-| **Droite — Bas** | `Telephone` | `state_96` | Alimentation téléphone, Bluetooth maître, jumelage PIN et reconnexion auto |
-| **Droite — Bas** | `Batterie téléphone` | `state_126` | Décharge (téléphone actif) / charge véhicule et envoi du niveau au kit |
-| **Droite — Bas** | `Communication telephone` | `state_139` | Appels locaux, SMS locaux et redirection Bluetooth orthogonale (`state_262`) |
-
-```mermaid
-flowchart TB
-    CLK["`**Horloge centrale (state_62)**<br/>GEN(EVAL) à 20 Hz`"]
-
-    subgraph D1["Propulsion, Physique & Ressources"]
-        R1["`state_61 : Clé du véhicule`"]
-        R2["`state_72 : Simulation du vehicule`"]
-        R3["`state_252 : Ressources et pannes`"]
-    end
-
-    subgraph D2["Aides à la conduite (ADAS)"]
-        R4["`state_60 : Débit injection (Pédales / ACC)`"]
-        R5["`state_71 : Mode de pilotage (Régulateur)`"]
-        R6["`state_76 : Limiteur de vitesse`"]
-        R7["`state_256 : Simulation voiture devant`"]
-    end
-
-    subgraph D3["Bluetooth, Téléphonie & Messagerie"]
-        R8["`state_87 / state_96 : Jumelage PIN & BT`"]
-        R9["`state_126 : Batterie téléphone`"]
-        R10["`state_139 / state_166 : Appels, SMS & Kit`"]
-        R11["`state_146 / state_206 : Réseau SIM & SMS`"]
-    end
-
-    subgraph D4["Audio & Multimédia"]
-        R12["`state_218 : Radio (Priorités + History H)`"]
-        R13["`play_sound() — dossier sons/ (6 .wav)`"]
-    end
-
-    CLK -.->|"`EVAL`"| D1
-    CLK -.->|"`EVAL`"| D2
-    CLK -.->|"`EVAL`"| D3
-    CLK -.->|"`EVAL`"| D4
-
-    D1 <-->|"`moteur_on, speed, throttle`"| D2
-    D1 -->|"`contact_on, moteur_off, speed`"| D3
-    D1 -->|"`contact_on, niveau_batterie`"| D4
-    D3 -->|"`sonnerie_en_cours, appel_en_cours_kit`"| D4
-    R6 -->|"`alarme_depassement.wav`"| R13
-    R12 --> R13
-
-    classDef clk fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f
-    classDef d1 fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
-    classDef d2 fill:#dcfce7,stroke:#16a34a,color:#14532d
-    classDef d3 fill:#f3e8ff,stroke:#9333ea,color:#581c87
-    classDef d4 fill:#ffe4e6,stroke:#e11d48,color:#881337
-    class CLK clk
-    class R1,R2,R3 d1
-    class R4,R5,R6,R7 d2
-    class R8,R9,R10,R11 d3
-    class R12,R13 d4
-```
-
 > **[Capture Rhapsody à insérer — Vue d'ensemble]** : Capture globale du Statechart `Systeme` de `_SysVehicule` montrant la répartition complète des 16 AND-lines actives.
-
-### Présentation du tableau de bord complet (Panel Diagram `IHM`)
-
-Le Panel Diagram regroupe **19 boutons poussoirs**, **44 composants ActiveX** (sliders, compteurs, jauges, interrupteurs, voyants) et **4 zones de texte** :
-
-| Zone de l'IHM | Commandes | Affichages et témoins |
-| :--- | :--- | :--- |
-| **Véhicule & Route** | Switch `cmd_contact`, bouton `Démarrer`, sliders `accelPedal`, `brakePedal`, `alpha` | Compteur `speed`, odomètre `distance`, `throttle` |
-| **Énergie & Dépannage** | Boutons `remplir carburant`, `recharge d'urgence batterie` | Jauges `reservoir_carburant`, `niveau_batterie`, voyants `carburant_faible`, `batterie_faible` |
-| **ADAS (Régul. / Lim. / ACC)** | Boutons `Régulateur`, `Limiteur`, `+`, `-`, switch `SWITCH_simulation_voiture_devant`, sliders `vitesse_voiture_devant`, `distance_securite` | `vitesseConsigne`, `distance_inter_voiture`, voyants `voyant_regulateur`, `voyant_limiteur`, `limiteur_attente`, `limiteur_depasse` |
-| **Téléphone & Réseau SIM** | Switches `telephone_allume`, `bluetooth_telephone_actif`, `charge_vehicule_telephone`, champ `champ_mdp`, boutons `OK`, `Appairer`, `Décrocher`, `Raccrocher`, `lire sms`, `Appeler`, `Envoyer SMS` | `affichage_liste_appareils`, `affichage_appairage`, `niveau_batterie_telephone`, `nbr_sms_telephone`, voyants `VOYANT_vehicule_connecte`, `VOYANT_telephone_appel/sonnerie/sms` |
-| **Kit Mains-Libres & Radio** | Switch `radio_on`, boutons `Play`, `Skip`, `Décrocher`, `Raccrocher`, `lire message` | `affichage_titre_musique`, `niveau_batterie_kit`, `nbr_sms_kit`, voyants `VOYANT_bluetooth_vehicule`, `VOYANT_telephone_connecte`, `VOYANT_vehicule_appel/sonnerie/sms`, `VOYANT_radio` |
 
 > **[Capture Rhapsody à insérer — Version finale]** : Capture d'écran annotée du Panel Diagram `IHM` complet en cours de simulation (`ModeAnimation`).
 
-### Scénarios de validation croisée (Tests d'intégration)
+### Scénarios testés
 
 | # | Scénario testé | AND-lines impliquées | Comportement vérifié en animation | Statut |
 | :---: | :--- | :--- | :--- | :---: |
@@ -814,11 +805,115 @@ Le Panel Diagram regroupe **19 boutons poussoirs**, **44 composants ActiveX** (s
 
 ---
 
-## 8. Conclusion générale
+## 8. Implémentation de la gestion sonore sous Rhapsody
+
+Trois fonctionnalités du projet produisent du son en simulation : l'**alarme de dépassement du limiteur** (§ 4), les **sonneries d'appels entrants** sur téléphone et kit mains-libres (§ 5.2), et les **trois pistes musicales de l'autoradio** (§ 5.4). Cette section synthétise l'évolution de notre couche audio sous Windows / Rhapsody.
+
+### Approche initiale : appels Win32 dispersés dans les états
+
+Dans un premier temps (`8999114b` pour le limiteur, puis `caa1ac20` pour la radio et les sonneries), nous avons suivi directement la recommandation de base du sujet consistant à invoquer l'API multimédia Windows (`winmm.lib`) à l'intérieur des états ou opérations concernés :
+
+```cpp
+// Première approche : appels dispersés avec chemins codés en dur
+#include <windows.h>
+#pragma comment(lib, "winmm.lib")
+
+PlaySound(TEXT("..\\..\\media\\alarme_incendie.wav"), NULL, SND_FILENAME | SND_ASYNC);
+PlaySound(TEXT("musique_1"), NULL, SND_LOOP | SND_ASYNC);
+PlaySound(TEXT("sonnerie.wav"), NULL, SND_LOOP | SND_ASYNC);
+PlaySound(NULL, 0, 0); // arrêt
+```
+
+Les fichiers `.wav` devaient alors être copiés manuellement dans le dossier de sortie de compilation `CodesGeneres/ModeAnimation/` (répertoire de travail de l'exécutable en mode animation).
+
+### Difficultés rencontrées et limites de la première méthode
+
+1. **Incompatibilité avec Git et le travail en binôme** : le dossier `CodesGeneres/` est généré automatiquement et exclu par `.gitignore`. Dès que l'un des binômes clonait ou récupérait les modifications de l'autre, les fichiers `.wav` étaient absents et les appels `PlaySound` restaient silencieux.
+2. **Chemins incohérents et oubli d'extension (`caa1ac20` → `58b9fda3`)** : certains appels utilisaient un chemin relatif vers un dossier `media/` (`"..\\..\\media\\alarme_incendie.wav"`), d'autres un nom nu dans le dossier courant (`"sonnerie.wav"`), et les trois états de l'autoradio avaient même omis l'extension `.wav` (`"musique_1"`, `"musique_2"`, `"musique_3"`), empêchant la lecture fiable selon la configuration Windows.
+3. **Fuites audio sur les sonneries asynchrones (`3feef2e1`)** : avec les drapeaux `SND_LOOP | SND_ASYNC`, le son tourne sur un thread système en boucle infinie tant qu'un arrêt explicite `PlaySound(NULL, 0, 0)` n'est pas déclenché. Les sonneries continuaient ainsi parfois après un décrochage sur le téléphone ou après expiration du délai de sonnerie.
+4. **Contrainte monocanal de `PlaySound`** : l'API Win32 `PlaySound` ne gérant qu'une seule piste simultanée, tout nouvel appel coupe la piste précédente. Cette contrainte matérielle/OS a rendu indispensable la machine d'arbitrage de priorités de l'autoradio (`state_218`, § 5.4) pour orchestrer proprement la reprise musicale.
+
+### Version finale : dossier versionné `sons/` et opération centralisée `play_sound()`
+
+Pour fiabiliser et factoriser toute la chaîne audio (`58b9fda3` puis `3feef2e1`), nous avons mis en place une architecture unique en trois points :
+
+* **Dossier de ressources versionné** : les 6 fichiers `.wav` du projet sont regroupés dans `Projet_TABDK_E4SE/sons/` et suivis sous Git.
+* **Chemin relatif centralisé** : un unique attribut `chemin_sons` (initialisé à `"..\\..\\sons\\"`, chemin relatif depuis `CodesGeneres/ModeAnimation/`) évite toute duplication de chemin dans le Statechart.
+* **Point d'entrée unique `play_sound(const OMString& fichier)`** : toutes les actions sonores du modèle (radio, sonneries, alarme limiteur) passent par cette opération, qui gère également le mot-clé `"stop"` pour couper proprement le flux en cours :
+
+```cpp
+// Opération finale play_sound(const OMString& fichier)
+if (fichier == "stop") {
+    PlaySound(NULL, NULL, 0);
+} else {
+    OMString chemin = chemin_sons;
+    chemin += fichier;
+    PlaySound(TEXT(chemin.GetBuffer(0)), NULL, SND_LOOP | SND_ASYNC);
+}
+```
+
+| Fonctionnalité | État / Opération appelante | Fichier `.wav` joué | Mécanisme d'arrêt |
+| :--- | :--- | :--- | :--- |
+| **Alarme limiteur (§ 4)** | `alerte_depassement(1)` depuis `state_76/.../depassement` | `alarme_depassement.wav` | `alerte_depassement(0)` en `exit` de `depassement` et `entry` de `limiteur_off` |
+| **Sonnerie téléphone (§ 5.2)** | `state_139/.../sonnerie_sonore` | `sonnerie.wav` | `play_sound("stop")` en `entry` de `appel_en_cours` et `sonnerie_finie` |
+| **Sonnerie kit véhicule (§ 5.2)** | `state_166/.../sonnerie_sonore_kit` | `sonnerie2.wav` | `PlaySound(NULL, 0, 0)` en `exit` de `gestion_sonnerie_kit` |
+| **Autoradio 3 pistes (§ 5.4)** | `state_218/.../musique_1`, `musique_2`, `musique_3` | `musique_1.wav` à `musique_3.wav` | `PlaySound(NULL, 0, 0)` en `entry` de `radio_desactive`, `contact_radio_eteint` et `priorite_appel` |
+
+---
+
+## 9. Outillage complémentaire : injection d'une API REST et interface graphique Web
+
+### Motivation
+
+Si le *Panel Diagram* intégré à Rhapsody s'est révélé très pratique pour le débogage pas à pas en mode animation, son ergonomie (widgets ActiveX datés, absence de mise en page réactive, dépendance stricte à l'installation locale d'IBM Rhapsody) limite la lisibilité lors d'une démonstration complète réunissant conduite, ADAS, téléphone, kit Bluetooth et autoradio.
+
+Pour aller plus loin, nous avons développé un **outil dédié** qui transforme automatiquement le **code C++ généré par Rhapsody** en un **logiciel autonome pilotable depuis une interface graphique Web moderne**.
+
+### Architecture et fonctionnement de l'outil
+
+Plutôt que de réécrire la logique du véhicule en JavaScript (ce qui aurait cassé la fidélité vis-à-vis des Statecharts modélisés), l'outil conserve **intégralement le moteur C++ OXF généré par Rhapsody** comme cœur d'exécution :
+
+1. **Analyse du code C++ généré en entrée** : l'outil prend en entrée le code C++ généré par Rhapsody (`_SysVehicule`, attributs, getters/setters et événements OXF).
+2. **Injection automatique d'un serveur HTTP embarqué** : il injecte directement un serveur HTTP dans le code C++ généré et crée les liaisons entre les **attributs** (lecture de l'état temps réel : vitesse, distance, voyants, messages, jauges ; écriture des commandes continues : pédales, pente, switches) et les **événements** (déclenchement de `GEN(ev_*)` sur les boutons poussoirs) vers une **API REST**.
+3. **Production d'un logiciel avec interface graphique Web** : l'exécutable C++ ainsi enrichi est couplé à une **interface Web** (tableau de bord complet, commandes au volant, smartphone virtuel et autoradio) qui communique en temps réel avec le Statechart C++ via des requêtes REST.
+
+```mermaid
+flowchart LR
+    RPY["`**Modèle Rhapsody**<br/>Statechart Systeme<br/>(.rpyx / .sbsx)`"]
+    CPP["`**Code C++ généré**<br/>_SysVehicule + OXF<br/>(attributs & événements)`"]
+    TOOL["`**Outil d'injection & build**<br/>Injection serveur HTTP<br/>Binding attributs / GEN(ev_*)`"]
+    SRV["`**Logiciel C++ autonome**<br/>Exécution Statechart<br/>+ Serveur API REST`"]
+    WEB["`**Interface Graphique Web**<br/>Tableau de bord, ADAS,<br/>Téléphone, Kit BT & Radio`"]
+
+    RPY -->|"`Génération C++`"| CPP
+    CPP -->|"`Entrée outil`"| TOOL
+    TOOL -->|"`Compilation`"| SRV
+    WEB <-->|"`Requêtes HTTP / REST API<br/>(état attributs ↔ événements)`"| SRV
+
+    classDef rpy fill:#f1f5f9,stroke:#64748b,color:#0f172a
+    classDef tool fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    classDef run fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    classDef web fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    class RPY,CPP rpy
+    class TOOL tool
+    class SRV run
+    class WEB web
+```
+
+### Liens vers la démonstration et le dépôt GitHub
+
+* **Démo de l'interface Web :** *[Lien vers la démo à compléter]*
+* **Dépôt GitHub de l'outil (injection API REST + interface Web) :** *[Lien GitHub à compléter]*
+
+> **[Capture d'écran à insérer — Optionnel]** : Vue de l'interface graphique Web pilotant le code C++ Rhapsody via l'API REST.
+
+---
+
+## 10. Conclusion générale
 
 ### Bilan du projet
 
-Ce projet a abouti à un **modèle Statechart complet, exécutable et validé en animation** couvrant l'ensemble des sous-systèmes demandés — dynamique véhicule, commandes primaires, modélisation énergétique, régulateur PI, limiteur de vitesse, kit Bluetooth mains-libres (PIN, appels, SMS), autoradio à priorités et extension ACC.
+Ce projet a abouti à un **modèle Statechart complet, exécutable et validé en animation** couvrant l'ensemble des sous-systèmes demandés — dynamique véhicule, commandes primaires, modélisation énergétique, régulateur PI, limiteur de vitesse, kit Bluetooth mains-libres (PIN, appels, SMS), autoradio à priorités et extension ACC — complété par une couche audio centralisée et un outillage d'exposition REST/Web du code C++ généré.
 
 ### Enseignements majeurs tirés des difficultés rencontrées
 

@@ -12,6 +12,7 @@
         }
     ],
     "settings": {
-        "terminal.integrated.cwd": "${workspaceFolder:Rapport}\\MarkDownAble"
+        "terminal.integrated.cwd": "${workspaceFolder:Rapport}\\MarkDownAble",
+        "antigravity.enableInlineDiff": true
     }
 }

@@ -3,7 +3,6 @@
 
 #include <string>
 
-#include "parametres.cpp"
 #include "mouvements.cpp"
 #include "states.cpp"
 

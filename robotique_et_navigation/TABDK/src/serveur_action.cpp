@@ -36,7 +36,7 @@ public:
 
   // Le reset global annule les goals actifs ou en attente.
   void reset() {
-    states->waypoint_active = false;
+    states->target_active = false;
     if (server->isActive()) {
       MoveResult res;
       res.temps_total = params->ticksToMs(ticks_ecoules);
@@ -85,8 +85,8 @@ public:
       res.temps_total = params->ticksToMs(ticks_ecoules);
       res.distance_parcourue = odometry->distanceParcourue() - distance_depart;
       res.position = odometry->position;
-      // Ne pas reprendre un waypoint terminé après un changement de mode.
-      states->waypoint_active = false;
+      // Ne pas reprendre une cible terminé après un changement de mode.
+      states->target_active = false;
       server->setSucceeded(res);
       goal.reset();
     }
@@ -127,21 +127,14 @@ private:
     mouvements->targets.x = goal->position_x;
     mouvements->targets.y = goal->position_y;
     mouvements->position_atteinte = false;
-    if (!params->move_smooth) {
-      states->waypoint_state = REACH_POSITION;
-    } else if (params->move_back) {
-      states->waypoint_state = REACH_POSITION_SMOOTH_BACK;
-    } else {
-      states->waypoint_state = REACH_POSITION_SMOOTH;
-    }
-    states->waypoint_active = true;
+    states->target_active = true;
   }
 
   // Déclenché si le client annule l'action
   void preempter() {
     if (!goal) return;
     
-    states->waypoint_active = false;
+    states->target_active = false;
     mouvements->stop();
     MoveResult res;
     res.temps_total = params->ticksToMs(ticks_ecoules);

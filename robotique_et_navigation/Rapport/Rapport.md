@@ -1,40 +1,210 @@
 # Rapport — Projet robotique mobile et navigation autonome : Application au robot TurtleBot3
 
-## 1. Environnement et outils
+## I. Architecture du projet
 
-### 1.1 VSCode
-
-### 1.2 Git et GitHub
+### Arborescence
 
 
-## 2. Mise en place du package et du nœud contrôleur initial
 
-### 2.1 Création du package
+### Découpage du noeud Controleur en classes
 
-Utilisez la commande `catkin_create_pkg` (page 45 du cours) pour créer un nouveau package, nommé `tb3_projet_<vos_initiaux>`, avec les dépendances indiquées :
+#### Classe principale et utilitaires
 
-`std_msgs geometry_msgs nav_msgs sensor_msgs message_generation actionlib_msgs actionlib tf tf2 tf2_ros rospy roscpp`
-
-* **Remarque :** la commande `roscd` permet de naviguer entre les packages.
-
-### 2.2 Création du nœud contrôleur et du topic `/log`
-
-1. Dans le dossier `src` du package, importer ce fichier `controleur.cpp`, le nœud contrôleur.
-2. Dans le nœud contrôleur, créer un *publisher* qui produit toutes les 2 sec un message `String` sur un topic appelé `/log` :
-* Pour construire l'exécutable du nœud contrôleur, ajouter dans le `CMakeLists.txt` les directives correspondantes (cf. page 50 du cours).
-* Compiler votre workspace.
-* Lancer et tester le fonctionnement du node en utilisant `rosrun`.
+Le fichier `calculs.cpp` est le seul fichier qui ne contient pas une classe.
 
 
-3. **Création d'un launcher de nodes :**
-* Créer dans votre package `tb3_projet_xx` un dossier appelé `launch`. Créer dans ce dernier le fichier `run.launch` permettant de lancer le nœud contrôleur.
-* Quitter `roscore` (`CTRL+C`) avant de lancer le contrôleur via la commande `roslaunch`.
-* **REMARQUE :** `roslaunch` lance automatiquement le master `roscore`.
+```mermaid
+classDiagram
+    direction TB
 
+    class Controleur["controleur.cpp"] {
+        Role : Point d'entree, initialisation et boucle principale
+        Publishers : /mode /pause /reset
+        Client de service : /gazebo /reset_simulation
+        - main()
+        - publishStatus()
+        - sigintHandler()
+    }
 
+    class Params["parametres.cpp"] {
+        Role : Chargement et conversion des parametres globaux depuis params.yaml
+        Parametres ROS : frequence, vitesses, gains Kp, seuils, mode par defaut, ...
+        - load() 
+        - msToTicks()
+        - ticksToMs()
+    }
+
+    class Calculs["calculs.cpp"] {
+        Role : Fonctions de calcul purement mathématiques
+
+    }
+    class Odometry["odometry.cpp"]
+    class Mouvements["mouvements.cpp"]
+    class States["states.cpp"]
+    class Modes["modes.cpp"]
+    class ServeurAction["serveur_action.cpp"]
+    class ServeurServices["serveur_services.cpp"]
+
+    Controleur *-- ServeurAction : init ()
+    Controleur --> ServeurAction : step ()
+    Controleur *-- ServeurServices : init ()
+    Controleur --> ServeurServices : resetRobot ()
+    Controleur *-- Params : load ()
+    Controleur *-- Modes : init ()
+    Controleur *-- States : init ()
+    Controleur *-- Mouvements : init ()
+    Controleur *-- Odometry : init ()
+
+    Mouvements --> Params : vitesses / gains Kp ?<br/>seuils de precision ?
+    ServeurAction --> Params : conversion ms/ticks ()
+    States --> Params : vitesses / delais ?<br/>fonctionnalités reachPosition ?
+
+    Params ..> Calculs : conversion deg/rad ()
+    Mouvements ..> Calculs : conversion deg/rad ()<br/>correcteur proportionnel ()<br/>soustraction d'angles ()
+```
+
+#### Interactions entre les classes du nœud
+
+```mermaid
+classDiagram
+    direction TB
+
+    class ServeurServices["serveur_services.cpp"] {
+        Role : Commandes synchrones et reset global du robot
+        Serveurs de services : /set_mode, /global_control
+        Publisher : /reset
+        Client de service : /gazebo, /reset_simulation
+        - resetRobot()
+        - setModeCallback()
+        - globalControlCallback()
+    }
+
+    class ServeurAction["serveur_action.cpp"] {
+        Role : Suivi des waypoints, feedback continu et annulation
+        Serveur d'action : /moving
+        - demarrer()
+        - step()
+        - execute()
+        - preempter()
+        - reset()
+    }
+
+    class Modes["modes.cpp"] {
+        Role : Gestion du mode actif et de la pause
+        - set_mode()
+        - set_pause()
+    }
+
+    class States["states.cpp"] {
+        Role : Machine a etats finis des deplacements
+        - updateFSMManual()
+        - updateFSMAuto()
+        - applyState()
+    }
+
+    class Mouvements["mouvements.cpp"] {
+        Role : Pilotage des moteurs et asservissement vers une cible
+        Publisher : /cmd_vel
+        - forward/backward(vitesse positive)
+        - pivoter(vitesse signée)
+        - stop()
+        - move(vitesses signées : angulaire + lineaire)
+        - reachPosition(x,y) (avec versions 'Smooth' et 'Back')
+    }
+
+    class Odometry["odometry.cpp"] {
+        Role : Suivi de la position x, y, de l'orientation theta
+               et de la distance parcourue / à une position
+        Subscriber : /odom
+        - distanceToPosition()
+        - distanceParcourue()
+    }
+
+    ServeurServices --> Modes : changer de mode (mode)<br/>pause () / play ()<br/>reset ()
+    ServeurServices --> ServeurAction : annuler goal ()<br/>redemarrer ()
+
+    ServeurAction --> Mouvements : cible atteinte ?<br/>choisir cible (x, y)<br/>arreter ()
+    ServeurAction --> States : activer/desactiver suivi cible ()
+    ServeurAction --> Modes : mode courant ?<br/>en pause ?
+    ServeurAction --> Odometry : position ?<br/>distance parcourue ?
+
+    Modes --> States : mettre a jour la FSM ()<br/>choisir la fn de deplacement ()<br/> arreter ()<br/>reset ()
+
+    States --> Mouvements : cible atteinte ?<br/>arreter ()<br/>executer la fn de deplacement ()<br/>reset ()
+
+    Mouvements --> Odometry : position + orientation ?<br/>distance a la cible ?
+```
+
+### Architecture ROS
+
+```mermaid
+flowchart LR
+    subgraph ROS_IN["Entrees ROS"]
+        P_YAML(["Parametres ROS (params.yaml)"])
+        T_ODOM(["Topic /odom"])
+        A_MOVE(["Action /moving (MoveAction)"])
+        S_MODE(["Service /set_mode"])
+        S_CTRL(["Service /global_control"])
+    end
+
+    subgraph NODE["Noeud controleur"]
+        MAIN["`**controleur.cpp**`"]
+        PARAMS["`**parametres.cpp**`"]
+        CALC["`**calculs.cpp**`"]
+        ODOM["`**odometry.cpp**`"]
+        MVT["`**mouvements.cpp**`"]
+        STATES["`**states.cpp**`"]
+        MODES["`**modes.cpp**`"]
+        ACTION["`**serveur_action.cpp**`"]
+        SERVICES["`**serveur_services.cpp**`"]
+
+        MAIN -->|"> cadencer"| MODES
+        MAIN -->|"> cadencer"| ACTION
+        MAIN -.->|"> reset a l'arret"| SERVICES
+
+        PARAMS -.->|"conversion deg -> rad ?"| CALC
+        MVT -.->|"calculs d'asservissement ?"| CALC
+        MVT -->|"position + orientation ?<br/>distance a la cible ?"| ODOM
+        MVT -.->|"vitesses / gains Kp ?"| PARAMS
+
+        STATES -->|"> commander deplacement"| MVT
+        STATES -.->|"vitesses / delais ?"| PARAMS
+        MODES -->|"> mettre a jour et appliquer FSM"| STATES
+
+        ACTION -->|"> fixer cible x, y<br/>cible atteinte ?"| MVT
+        ACTION -->|"> activer waypoint"| STATES
+        ACTION -->|"mode courant ?<br/>en pause ?"| MODES
+        ACTION -->|"position + vitesse ?<br/>distance parcourue ?"| ODOM
+        ACTION -.->|"mode de trajet ?<br/>conversion temps ?"| PARAMS
+
+        SERVICES -->|"> changer de mode<br/>> pause / reset"| MODES
+        SERVICES -->|"> annuler goal et redemarrer"| ACTION
+    end
+
+    subgraph ROS_OUT["Sorties ROS"]
+        T_VEL(["Topic /cmd_vel"])
+        T_MODE(["Topic /mode"])
+        T_PAUSE(["Topic /pause"])
+        T_RESET(["Topic /reset"])
+        S_GAZEBO(["Service /gazebo/reset_simulation"])
+    end
+
+    P_YAML --> PARAMS
+    T_ODOM --> ODOM
+    A_MOVE <--> ACTION
+    S_MODE --> SERVICES
+    S_CTRL --> SERVICES
+
+    MVT --> T_VEL
+    MAIN --> T_MODE
+    MAIN --> T_PAUSE
+    SERVICES --> T_RESET
+    SERVICES --> S_GAZEBO
+```
 
 ### 2.3 Pilotage de base du TB3
 
+#### Enonce
 On voudrait maintenant ajouter dans le nœud contrôleur un autre *publisher* qui permet de générer une commande en vitesse pour déplacer le robot TB3.
 
 1. Identifier le topic concerné, la librairie `.h` nécessaire, son *namespace* ainsi que le type de message véhiculé par le topic (cf. page 53 du cours).
@@ -44,6 +214,11 @@ On voudrait maintenant ajouter dans le nœud contrôleur un autre *publisher* qu
 5. Appeler maintenant les fonctions précédentes (`avancer` et `arreter`) depuis la fonction `void move()` afin de réaliser au robot les mouvements suivants : avancer pendant une certaine durée, puis s'arrêter pour une autre durée. Ces durées doivent être basées sur la période du contrôleur (valeurs multiples de la période de contrôle).
 * Intégrer la fonction `void reculer(double vitesse)` pour réaliser les mouvements suivants : avancer-arreter-reculer périodiquement.
 
+#### notre implementation
+
+1. Le topic est '/cmd_vel' comme l'année dernière
+2. Le type de message trouvé grâce à rostopic info, est un Twist qui contient les 3 vitesses linéaires et le s3 vitesses angulaires.
+3. Calcul PID $v = K_p \cdot e + K_i \cdot \int e \, dt + K_d \cdot \frac{de}{d}$
 
 
 ### 2.4 Paramètres de l'application
@@ -89,7 +264,7 @@ Utiliser les structures de données adéquates pour le stockage de la position :
 * **Remarque 1 :** pour une meilleure efficacité et une bonne stabilité numérique des calculs odométriques, l'orientation du robot est représentée dans une unité de mesure appelée quaternion. Pour la conversion des positions angulaires vers l'unité angles d'Euler (Roll (x), Pitch (y), Yaw (z)), utiliser la fonction `tf::getYaw(geometry_msgs::Quaternion orientation_quaternion)`. Elle retourne l'orientation sur l'axe z (Yaw) du robot.
 * **Remarque 2 :**
 * Pour réinitialiser la position du robot TB3 réel, il suffit de publier un message (vide) vers le topic `/reset`. Associer une touche clavier pour déclencher cette opération.
-* Pour réinitialiser la position du robot TB3 simulé, appeler le service `/gazebo/reset_simulation` (ou bien utiliser ce fichier `reset_gazebo.sh`).
+* Pour réinitialiser la position du robot TB3 simulé, appeler le service `/gazebo/res` et_simulation` (ou bien utiliser ce fichier `reset_gazebo.sh.
 
 
 

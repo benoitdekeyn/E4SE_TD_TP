@@ -38,7 +38,7 @@ public:
     this->precision_linear   = params->precision_linear;
     this->Kp_pivot           = params->Kp_pivot;
     this->Kp_angular         = params->Kp_angular;
-    this->trigger_pivot    = params->trigger_pivot;
+    this->trigger_pivot      = params->trigger_pivot;
     this->precision_angular  = params->precision_angular;
     this->linear_speed       = params->linear_speed;
     this->angular_speed      = params->angular_speed;

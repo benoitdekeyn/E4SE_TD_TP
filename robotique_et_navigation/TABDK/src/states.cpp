@@ -9,8 +9,6 @@ enum RobotState {
   STOP,
   REACH_POSITION_X,
   REACH_POSITION,
-  REACH_POSITION_SMOOTH,
-  REACH_POSITION_SMOOTH_BACK,
   REACH_ANGLE
 };
 
@@ -18,9 +16,7 @@ enum RobotState {
 
 class States {
 public:
-  bool waypoint_active = false;
-  // État utilisé pour rejoindre un waypoint, choisi par le serveur d'action.
-  RobotState waypoint_state = REACH_POSITION_SMOOTH;
+  bool target_active = false;
 
   void init(Params &params, Mouvements &mouvements) {
     this->params = &params;
@@ -29,8 +25,8 @@ public:
 
   void initManual() {
     current_state = STOP;
-    if (waypoint_active) {
-      // La position peut avoir changé depuis le dernier contrôle du waypoint.
+    if (target_active) {
+      // La position peut avoir changé depuis le dernier contrôle de la cible.
       mouvements->position_atteinte = false;
     }
   }
@@ -48,7 +44,7 @@ public:
     mouvements->reset();
     current_state = DEFAULT_STATE;
     ticks_counter = 0;
-    waypoint_active = false;
+    target_active = false;
   }
 
 private:
@@ -59,19 +55,17 @@ private:
   int ticks_counter = 0;
 
 public:
-  // Le suivi des waypoints est utilisé dans les deux modes.
+  // Le suivi des cibles est utilisé dans les deux modes.
   void updateFSMManual() {
     switch (current_state) {
     case STOP:
-      if (waypoint_active) {
-        current_state = waypoint_state;
+      if (target_active) {
+        current_state = REACH_POSITION;
       }
       break;
     case REACH_POSITION:
-    case REACH_POSITION_SMOOTH:
-    case REACH_POSITION_SMOOTH_BACK:
-      if (!waypoint_active || mouvements->position_atteinte) {
-        waypoint_active = false;
+      if (!target_active || mouvements->position_atteinte) {
+        target_active = false;
         mouvements->position_atteinte = false;
         current_state = STOP;
       }
@@ -99,22 +93,20 @@ public:
     case BACKWARD:
       mouvements->backward(params->linear_speed);
       break;
-      case REACH_POSITION_X:
-        mouvements->reachPositionX(mouvements->targets.position_x);
-        break;
-    case REACH_POSITION:
-      mouvements->reachPosition(mouvements->targets.x, mouvements->targets.y);
-      break;
-    case REACH_POSITION_SMOOTH:
-      mouvements->reachPositionSmooth(mouvements->targets.x,
-                                      mouvements->targets.y);
-      break;
-    case REACH_POSITION_SMOOTH_BACK:
-      mouvements->reachPositionSmoothBack(mouvements->targets.x,
-                                          mouvements->targets.y);
+    case REACH_POSITION_X:
+      mouvements->reachPositionX(mouvements->targets.x);
       break;
     case REACH_ANGLE:
       mouvements->reachAngle(mouvements->targets.angle);
+      break;
+    case REACH_POSITION:
+      if (!params->move_smooth) {
+        mouvements->reachPosition(mouvements->targets.x, mouvements->targets.y);
+      } else if (params->move_back) {
+        mouvements->reachPositionSmoothBack(mouvements->targets.x, mouvements->targets.y);
+      } else {
+        mouvements->reachPositionSmooth(mouvements->targets.x, mouvements->targets.y);
+      }
       break;
     default:
       mouvements->stop();

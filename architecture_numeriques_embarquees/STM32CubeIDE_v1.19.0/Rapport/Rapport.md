@@ -239,7 +239,7 @@
 
 ### 1. Photos de la maison
 
-<img src="media/photo_maison_1.jpg" width="500">
+<img src="media/photo_maison_1.jpg" width="500" style="justify:center">
 <img src="media/photo_maison_2.jpg" width="500">
 
 <!-- newpage -->

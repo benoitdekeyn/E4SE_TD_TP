@@ -3,6 +3,7 @@
 
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Pose2D.h>
+#include <geometry_msgs/Twist.h>
 #include <ros/ros.h>
 #include <tf/tf.h>
 #include <cmath>
@@ -10,11 +11,13 @@
 using namespace ros;
 using namespace tf;
 using geometry_msgs::Pose2D;
+using geometry_msgs::Twist;
 
-// Écoute /odom et conserve la dernière position
+// Écoute /odom et conserve la dernière position et les dernières vitesses
 class Odometry {
 public:
   Pose2D position;
+  Twist vitesse; 
 
   void init(NodeHandle &nh) {
     odom_sub = nh.subscribe("/odom", 100, &Odometry::odomCallback, this);
@@ -52,6 +55,7 @@ private:
     position.x = msg->pose.pose.position.x;
     position.y = msg->pose.pose.position.y;
     position.theta = getYaw(quaternion_odom);
+    vitesse = msg->twist.twist;
   }
 };
 

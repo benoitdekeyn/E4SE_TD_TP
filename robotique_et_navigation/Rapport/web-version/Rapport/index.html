@@ -274,7 +274,7 @@ li.task-item { list-style: none; }
   .code-frame { overflow: visible; }
   .mermaid-box { border: 0; overflow: visible; margin: 1em 0; }
   pre.mermaid { padding: 0; }
-  pre.mermaid svg { max-height: calc(var(--pdf-fig-h, 100vh) - 9em); }
+  pre.mermaid svg { display: block; margin: 0 auto; max-height: calc(var(--pdf-fig-h, 100vh) - 4em); }
   .markdown-body a { color: var(--accent); }
 }
 
@@ -380,8 +380,9 @@ li.task-item { list-style: none; }
     ◦ <a href="#85-conduite-du-refactoring">8.5 Conduite du refactoring</a></p>
 <!-- /TOC -->
 <h2 id="introduction">Introduction<a class="anchor" href="#introduction" aria-label="Lien vers cette section">#</a></h2>
-<p>Ce rapport présente la conception, l'implémentation et la validation de notre projet de <strong>robotique mobile et navigation autonome</strong> sous <strong>ROS Noetic</strong>, appliqué au robot <strong>TurtleBot3 Burger</strong> (en simulation Gazebo et en conditions réelles dans le labyrinthe de la salle 4105).</p>
-<p>L'objectif du projet était de développer progressivement notre package <strong><code>TABDK</code></strong>, puis de le relier au planificateur <strong><code>AStar-ROS</code></strong> pour couvrir toutes les étapes demandées :</p>
+<p>Ce rapport présente l'architecture, les difficultés rencontrées et les solutions apportées dans le cadre pour la réalisation de notre projet de robotique mobile et navigation autonome sous ROS.
+Nous avons utilisé un robot TurtleBot3 Burger en simulation Gazebo et en conditions réelles dans le labyrinthe de la salle 4105.</p>
+<p>L'objectif du projet était de développer progressivement notre package <code>TABDK</code>, puis de le relier au planificateur <code>AStar-ROS</code> pour couvrir toutes les étapes demandées :</p>
 <ul>
 <li>le pilotage bas niveau (<code>/cmd_vel</code>) et le paramétrage global via YAML (<a href="#3-pilotage-de-base-et-param%C3%A9trage-du-tb3">section 3, Pilotage de base et paramétrage du TB3</a>) ;</li>
 <li>la gestion des modes (<code>manual</code> et <code>auto</code>), de la pause, du pilotage manuel et de la localisation odométrique (<code>/odom</code>) (<a href="#4-contr%C3%B4le-et-navigation-du-tb3">section 4, Contrôle et navigation du TB3</a>) ;</li>
@@ -391,12 +392,12 @@ li.task-item { list-style: none; }
 <li>la cartographie SLAM (Gmapping) et la planification de chemin A* améliorée avec lissage de trajectoire (<a href="#7-%C3%A9vitement-dobstacle-et-planification-de-trajectoire--slam">section 7, Évitement d'obstacle et planification de trajectoire : SLAM</a>).</li>
 </ul>
 <h2 id="1-environnement-de-développement">1. Environnement de développement<a class="anchor" href="#1-environnement-de-développement" aria-label="Lien vers cette section">#</a></h2>
-<p>Pour avancer efficacement tout au long du projet et travailler à deux dans de bonnes conditions, nous avons utilisé deux environnements complémentaires : la simulation en ligne <strong>TheConstructSim</strong> et un <strong>workspace VS Code automatisé</strong> couplé à GitHub pour le robot physique.</p>
+<p>Pour avancer efficacement tout au long du projet et travailler à deux dans de bonnes conditions, nous avons utilisé deux environnements complémentaires : la simulation en ligne sur TheConstructSim et un workspace VS Code automatisé pour le robot physique, avec GitHub pour le suivi et la collaboration sur le code.</p>
 <h3 id="11-simulation-en-ligne--theconstructsim">1.1 Simulation en ligne : TheConstructSim<a class="anchor" href="#11-simulation-en-ligne--theconstructsim" aria-label="Lien vers cette section">#</a></h3>
-<p>Pour travailler à distance depuis chez nous, tester nos packages dans un environnement virtuel et <strong>économiser la batterie du TurtleBot3 réel</strong> (qui tenait peu longtemps en séance), nous avons utilisé la plateforme <strong>TheConstructSim</strong>. Elle met à disposition dans le navigateur un <strong>VS Code en ligne</strong>, <strong>Gazebo</strong> et <strong>RViz</strong> déjà prêts à l'emploi. Nous détaillons dans la <a href="#71-slam-cartographie-et-localisation-simultan%C3%A9es">section 7.1, SLAM (Cartographie et Localisation simultanées)</a> les contraintes rencontrées sur cette plateforme lors de l'installation des paquets SLAM et navigation.</p>
+<p>Pour travailler à distance depuis chez nous, tester nos packages dans un environnement virtuel et économiser la batterie du TurtleBot3 réel (qui tenait peu longtemps en séance), nous avons utilisé la plateforme TheConstructSim (VS Code en ligne, Gazebo et RViz déjà prêts à l'emploi). Nous détaillons dans la <a href="#71-slam-cartographie-et-localisation-simultan%C3%A9es">section 7.1, SLAM (Cartographie et Localisation simultanées)</a> les contraintes rencontrées sur cette plateforme.</p>
 <h3 id="12-développement-local-et-déploiement-sur-le-robot--vs-code-github-et-ssh">1.2 Développement local et déploiement sur le robot : VS Code, GitHub et SSH<a class="anchor" href="#12-développement-local-et-déploiement-sur-le-robot--vs-code-github-et-ssh" aria-label="Lien vers cette section">#</a></h3>
-<p>Sur nos ordinateurs personnels, nous avons préféré utiliser <strong>VS Code</strong>, <strong>GitHub</strong> et <strong>GitHub Desktop</strong> plutôt que <strong>MobaXterm</strong> (qui oblige à garder le code sur le robot, à ouvrir et placer plusieurs fenêtres SSH à la main et à retaper souvent le mot de passe). Nous codions,en local et pour collaborer on utilisait GitHub.</p>
-<p>Au début, nous devions copier à la main chaque fichier modifié sur le robot après nos changements sur Git. Nous avons donc mis en place un <strong>workspace VS Code dédié</strong> (<code>robotique.code-workspace</code>) pour automatiser notre travail :</p>
+<p>Sur nos PC, nous avons préféré utiliser VS Code, GitHub et GitHub Desktop plutôt que MobaXterm (qui oblige à garder le code sur le robot, à ouvrir et placer plusieurs fenêtres SSH à la main et à retaper souvent le mot de passe). Nous codions,en local et pour collaborer on utilisait GitHub.</p>
+<p>Au début, nous devions copier à la main chaque fichier modifié sur le robot après nos changements sur Git. Nous avons donc mis en place un workspace VS Code dédié (<code>robotique.code-workspace</code>) pour automatiser notre travail :</p>
 <ul>
 <li><strong>Arborescence épurée</strong> : nous affichons uniquement nos dossiers utiles (<code>TABDK/</code>, puis <code>AStar-ROS/</code> lorsque nous en avons eu besoin) directement dans VS Code, sans avoir à parcourir toute l'arborescence du robot.</li>
 <li><strong>Synchronisation automatique à la sauvegarde</strong> : à chaque enregistrement en local, nos dossiers <code>TABDK/</code> et <code>AStar-ROS/</code> sont recopiés automatiquement en miroir vers <code>~/catkin_ws/src/</code> sur le robot via SSH.</li>
@@ -405,8 +406,7 @@ li.task-item { list-style: none; }
 </ul>
 <h2 id="2-architecture-finale-du-projet">2. Architecture finale du projet<a class="anchor" href="#2-architecture-finale-du-projet" aria-label="Lien vers cette section">#</a></h2>
 <h3 id="21-arborescence-du-paquet-tabdk">2.1 Arborescence du paquet TABDK<a class="anchor" href="#21-arborescence-du-paquet-tabdk" aria-label="Lien vers cette section">#</a></h3>
-<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-
+<div class="mermaid-box" data-zoom-paysage="60" data-zoom-portrait="100"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
 flowchart LR
     ROOT[&quot;`**TABDK/**`&quot;]
 
@@ -508,7 +508,7 @@ flowchart LR
 <p>Le fichier <code>calculs.cpp</code> est le seul fichier <code>.cpp</code> dsitué directement dans <code>src/</code> qui ne contient pas une classe mais simplement des fonctions utilitaires.</p>
 </blockquote>
 <h4 id="classe-principale-et-dépendances-neutres">Classe principale et dépendances neutres<a class="anchor" href="#classe-principale-et-dépendances-neutres" aria-label="Lien vers cette section">#</a></h4>
-<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+<div class="mermaid-box" data-zoom-paysage="80" data-zoom-portrait="100"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
 classDiagram
     direction TB
 
@@ -569,7 +569,7 @@ classDiagram
     style ServeurServices fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
 </pre></div>
 <h4 id="interactions-entre-les-classes-du-nœud-contrôleur">Interactions entre les classes du nœud contrôleur<a class="anchor" href="#interactions-entre-les-classes-du-nœud-contrôleur" aria-label="Lien vers cette section">#</a></h4>
-<div class="mermaid-box" data-zoom="60"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+<div class="mermaid-box" data-zoom-paysage="60" data-zoom-portrait="100"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
 classDiagram
     direction TB
 
@@ -706,7 +706,6 @@ classDiagram
 <li>Nous avons conservé l'ancien cycle avancer, arrêter, reculer dans <code>States::updateFSMAuto()</code> (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/states.cpp#L117-L145" target="_blank" rel="noopener noreferrer">TABDK/src/states.cpp</a>), même si nous ne l'appelons plus dans le fonctionnement final (comme expliqué dans la <a href="#43-mode-navigation-autonome">section 4.3, Mode navigation autonome</a>).</li>
 <li>Dans <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/controleur.cpp#L24-L28" target="_blank" rel="noopener noreferrer">TABDK/src/controleur.cpp</a> et <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/controleur.cpp#L77-L89" target="_blank" rel="noopener noreferrer">L77-L89</a>, <code>sigintHandler()</code> lève <code>arret_demande</code>, puis <code>main()</code> appelle <code>services.resetRobot()</code> et <code>shutdown()</code> en sortie de boucle.</li>
 </ul>
-<hr>
 <h3 id="32-paramètres-de-lapplication">3.2 Paramètres de l'application<a class="anchor" href="#32-paramètres-de-lapplication" aria-label="Lien vers cette section">#</a></h3>
 <h4 id="choix-fonctionnels-1">Choix fonctionnels<a class="anchor" href="#choix-fonctionnels-1" aria-label="Lien vers cette section">#</a></h4>
 <ul>
@@ -728,14 +727,13 @@ classDiagram
 <li>Nos cinq nœuds (lancés ensemble par <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/launch/run.launch#L1-L8" target="_blank" rel="noopener noreferrer">TABDK/launch/run.launch</a>) incluent cette classe. Le paramètre <code>params.frequence</code> (réglé à 5 Hz) fixe la fréquence des boucles de <code>controleur</code>, <code>keyboard_input</code> et <code>client_action</code>, tandis que <code>detector</code> et <code>client_services</code> réagissent directement aux messages reçus via <code>spin()</code>.</li>
 <li>Les méthodes <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/parametres.cpp#L62-L64" target="_blank" rel="noopener noreferrer"><code>msToTicks()</code></a> et <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/parametres.cpp#L67-L69" target="_blank" rel="noopener noreferrer"><code>ticksToMs()</code></a> assurent les conversions temporelles dans le contrôleur.</li>
 </ul>
-<hr>
 <h2 id="4-contrôle-et-navigation-du-tb3">4. Contrôle et navigation du TB3<a class="anchor" href="#4-contrôle-et-navigation-du-tb3" aria-label="Lien vers cette section">#</a></h2>
 <h3 id="41-les-modes-de-navigation">4.1 Les modes de navigation<a class="anchor" href="#41-les-modes-de-navigation" aria-label="Lien vers cette section">#</a></h3>
 <h4 id="choix-fonctionnels-2">Choix fonctionnels<a class="anchor" href="#choix-fonctionnels-2" aria-label="Lien vers cette section">#</a></h4>
 <ul>
-<li>Dès les premières versions de notre machine à états, nous avons voulu intégrer un <strong>mécanisme de pause</strong>. Car déjà l'année dernière, nous avions déjà mis un mode pause pour arrêter le robot à un instant précis (par exemple juste avant un obstacle ou dans un cas à analyser) ce qui nous permettait d'observer tranquillement les capteurs, l'état interne et les logs sans qu'il continue d'avancer.</li>
+<li>Dès les premières versions de notre machine à états, nous avons voulu intégrer un mécanisme de pause. Car déjà l'année dernière, nous avions déjà mis un mode pause pour arrêter le robot à un instant précis (par exemple juste avant un obstacle ou dans un cas à analyser) ce qui nous permettait d'observer tranquillement les capteurs, l'état interne et les logs sans qu'il continue d'avancer.</li>
 <li>Nous avons défini le mode de démarrage avec <code>default_mode</code> dans <code>config/params.yaml</code> (avec un repli sur <code>&quot;manual&quot;</code> si la valeur est invalide).</li>
-<li>Quand nous avons ajouté plusieurs nœuds ROS, des services et des actions, nous avons <strong>séparé complètement la pause du mode</strong>. Nous voulions que la pause reflète l'arrêt physique du robot (couper les déplacements et les compteurs de déplacement) sans figer son algorithme de décision ni bloquer la lecture des entrées utilisateur.</li>
+<li>Quand nous avons ajouté plusieurs nœuds ROS, des services et des actions, nous avons séparé complètement la pause du mode. Nous voulions que la pause reflète l'arrêt physique du robot (couper les déplacements et les compteurs de déplacement) sans figer son algorithme de décision ni bloquer la lecture des entrées utilisateur.</li>
 </ul>
 <h4 id="première-implémentation-2">Première implémentation<a class="anchor" href="#première-implémentation-2" aria-label="Lien vers cette section">#</a></h4>
 <p>Dans notre première version, nous avions deux modes principaux dans <code>controleur.cpp</code> (<code>enum RobotMode</code>) :</p>
@@ -743,7 +741,7 @@ classDiagram
 <li>le mode automatique (<code>AUTO</code>) exécutait la séquence prédéfinie (avancer, s'arrêter, reculer) ;</li>
 <li>le mode manuel (<code>MANUAL</code>) permettait de piloter directement le robot avec les flèches du clavier.</li>
 </ul>
-<p>Nous avons ajouté la pause comme un <strong>troisième mode</strong> (<code>PAUSE</code>) dans <code>enum RobotMode</code>, avec une variable <code>previous_mode</code> pour revenir au mode précédent à la reprise.</p>
+<p>Nous avons ajouté la pause comme un troisième mode (<code>PAUSE</code>) dans <code>enum RobotMode</code>, avec une variable <code>previous_mode</code> pour revenir au mode précédent à la reprise.</p>
 <h4 id="difficultés-rencontrées-2">Difficultés rencontrées<a class="anchor" href="#difficultés-rencontrées-2" aria-label="Lien vers cette section">#</a></h4>
 <ul>
 <li>Au début, la mise en pause ne remettait pas la direction clavier à <code>NONE</code>, donc le robot repartait dans l'ancienne direction à la reprise. Ensuite, dès que nous avons ajouté plusieurs nœuds ROS, des services (<a href="#61-configuration-%C3%A0-la-vol%C3%A9e-du-comportement-du-robot--service">section 6.1, Configuration à la volée du comportement du robot : service</a>) et pour l'arrêt devant un obstacle (<a href="#5-perception-de-lenvironnement-%C3%A0-laide-du-lidar">section 5, Perception de l'environnement à l'aide du LiDAR</a>), garder la pause comme un mode est devenu difficile à gérer. Il fallait par exemple mettre à jour <code>previous_mode</code> si nous changions de mode pendant une pause.</li>
@@ -758,7 +756,10 @@ classDiagram
 <li>Nous avons laissé dans la classe <code>States</code> (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/states.cpp#L4-L115" target="_blank" rel="noopener noreferrer">TABDK/src/states.cpp</a>) les états ajoutés au fil du projet, mais en pratique, les modes <code>manual</code> et <code>auto</code> utilisent tous deux le suivi de cible (<code>STOP</code> ↔ <code>REACH_POSITION</code>), seule la provenance des waypoints change (clavier ou <code>/robot_path</code>).</li>
 </ul>
 <p>Voici un schéma qui illustre la gestion des modes et de la pause :</p>
-<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+<div class="mermaid-box" data-zoom-paysage="80" data-zoom-portrait="70"><pre class="mermaid">---
+config:
+  layout: dagre
+---
 flowchart TB
     LOOP([&quot;`Boucle principale (controleur.cpp)`&quot;])
     STEP([&quot;`Modes::step()`&quot;])
@@ -788,7 +789,6 @@ flowchart TB
     style FSM_REACH fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
     style APPLY fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
 </pre></div>
-<hr>
 <h3 id="42-mode-navigation-manuelle">4.2 Mode navigation manuelle<a class="anchor" href="#42-mode-navigation-manuelle" aria-label="Lien vers cette section">#</a></h3>
 <h4 id="choix-fonctionnels-3">Choix fonctionnels<a class="anchor" href="#choix-fonctionnels-3" aria-label="Lien vers cette section">#</a></h4>
 <ul>
@@ -861,8 +861,46 @@ flowchart TB
 </tbody>
 </table>
 <p>Voici un schéma qui illustre les interactions de <code>keyboard_input.cpp</code> :</p>
-<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TB
+<div class="mermaid-box" data-zoom-paysage="95" data-zoom-portrait="55"><pre class="mermaid" data-src-portrait="---
+config:
+  layout: dagre
+---
+flowchart TD
+    C_PARAMS[(&quot;`config/params.yaml`&quot;)]
+    M_PARAMS([&quot;`src/parametres.cpp`&quot;])
+
+    subgraph SG_KEY[&quot;Nœud keyboard_input&quot;]
+        NODE([&quot;`**nodes/keyboard_input.cpp**`&quot;])
+    end
+
+    subgraph SG_CSRV[&quot;Nœud client_services&quot;]
+        N_CSRV([&quot;`nodes/client_services.cpp`&quot;])
+    end
+
+    subgraph SG_CACT[&quot;Nœud client_action&quot;]
+        N_CACT([&quot;`nodes/client_action.cpp`&quot;])
+    end
+
+    C_PARAMS -.-&gt;|&quot;paramètre frequence&quot;| M_PARAMS
+    M_PARAMS -.-&gt;|&quot;#include&quot;| NODE
+
+    NODE --&gt;|&quot;topic /keyboard_input&lt;br/&gt;(Int8)&quot;| N_CSRV
+    NODE --&gt;|&quot;topic /keyboard_input&lt;br/&gt;(Int8)&quot;| N_CACT
+
+    classDef cpp fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    classDef autre fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
+
+    class M_PARAMS,N_CSRV,N_CACT cpp
+    class C_PARAMS autre
+    style SG_KEY fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+    style NODE fill:#1d4ed8,stroke:#1e40af,stroke-width:2px,color:#ffffff
+    style SG_CSRV fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
+    style SG_CACT fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
+">---
+config:
+  layout: dagre
+---
+flowchart LR
     C_PARAMS[(&quot;`config/params.yaml`&quot;)]
     M_PARAMS([&quot;`src/parametres.cpp`&quot;])
 
@@ -894,7 +932,6 @@ flowchart TB
     style SG_CSRV fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
     style SG_CACT fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
 </pre></div>
-<hr>
 <h3 id="43-mode-navigation-autonome">4.3 Mode navigation autonome<a class="anchor" href="#43-mode-navigation-autonome" aria-label="Lien vers cette section">#</a></h3>
 <p>Au fil du projet, nous avons fait évoluer le mode automatique : nous sommes passés d'une séquence prédéfinie (avancer, s'arrêter, reculer) à une navigation par waypoints. Dans notre version finale, nous n'appelons plus <code>States::updateFSMAuto()</code> dans <code>Modes::step()</code>. Les modes <code>auto</code> et <code>manual</code> passent tous deux par <code>States::updateFSMManual()</code> et l'état <code>REACH_POSITION</code>, et le serveur d'action (<a href="#62-navigation--serveur-daction">section 6.2, Navigation : serveur d'action</a>) met directement à jour la cible de <code>reachPosition()</code>. Nous avons tout de même gardé <code>updateFSMAuto()</code> et les noms historiques dans <code>states.cpp</code> pour pouvoir relire l'ancien fonctionnement ou y revenir facilement si besoin (en désactivant le serveur d'action et en réactivant l'appel à <code>updateFSMAuto()</code>).</p>
 <h4 id="431-localisation-du-tb3-et-odométrie">4.3.1 Localisation du TB3 et odométrie<a class="anchor" href="#431-localisation-du-tb3-et-odométrie" aria-label="Lien vers cette section">#</a></h4>
@@ -913,7 +950,6 @@ flowchart TB
 </ul>
 <h5 id="version-finale-4">Version finale<a class="anchor" href="#version-finale-4" aria-label="Lien vers cette section">#</a></h5>
 <p>La classe <code>Odometry</code> (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/odometry.cpp#L17-L60" target="_blank" rel="noopener noreferrer">TABDK/src/odometry.cpp</a>) met à jour <code>position</code> (<code>geometry_msgs::Pose2D</code>), <code>vitesse</code> (<code>geometry_msgs::Twist</code>) et <code>distance_parcourue</code> dans <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/odometry.cpp#L41-L59" target="_blank" rel="noopener noreferrer"><code>odomCallback()</code></a> (ainsi que <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/odometry.cpp#L26-L30" target="_blank" rel="noopener noreferrer"><code>distanceToPosition()</code></a> et <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/odometry.cpp#L32-L34" target="_blank" rel="noopener noreferrer"><code>distanceParcourue()</code></a>) qui est appelée à la frequence non pas du topic <code>/odom</code>, mais de la boucle ROS (donc 5 Hz pour notre cas).</p>
-<hr>
 <h4 id="432-navigation-vers-un-but">4.3.2 Navigation vers un but<a class="anchor" href="#432-navigation-vers-un-but" aria-label="Lien vers cette section">#</a></h4>
 <h5 id="choix-fonctionnels-5">Choix fonctionnels<a class="anchor" href="#choix-fonctionnels-5" aria-label="Lien vers cette section">#</a></h5>
 <ul>
@@ -942,8 +978,37 @@ Nous avons développé la seconde, <code>cal_angle_offset()</code>, d'abord dans
 <h5 id="version-finale-5">Version finale<a class="anchor" href="#version-finale-5" aria-label="Lien vers cette section">#</a></h5>
 <p>Dans la version finale, <code>Mouvements</code> (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L158-L279" target="_blank" rel="noopener noreferrer">TABDK/src/mouvements.cpp</a>, avec <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L158-L177" target="_blank" rel="noopener noreferrer"><code>reachPosition()</code></a>, <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L191-L241" target="_blank" rel="noopener noreferrer"><code>reachPositionSmooth()</code></a> et <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L247-L252" target="_blank" rel="noopener noreferrer"><code>reachPositionSmoothBack()</code></a>), <code>calculs.cpp</code> (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/calculs.cpp#L16-L48" target="_blank" rel="noopener noreferrer">TABDK/src/calculs.cpp</a>) et l'état <code>REACH_POSITION</code> de <code>States</code> (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/states.cpp#L102-L110" target="_blank" rel="noopener noreferrer">TABDK/src/states.cpp</a>) gèrent le déplacement vers une cible selon <code>move_smooth</code> et <code>move_back</code>.</p>
 <p>Voici un schéma qui résume la logique de <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L247-L252" target="_blank" rel="noopener noreferrer"><code>reachPositionSmoothBack()</code></a> :</p>
-<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TB
+<div class="mermaid-box" data-zoom-paysage="95" data-zoom-portrait="100"><pre class="mermaid" data-src-portrait="%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+flowchart TD
+    START([&quot;`Navigation vers la cible (x, y)`&quot;])
+    DIST{&quot;`Distance inférieure à la précision linéaire ?`&quot;}
+    DONE[&quot;`Arrêt du robot&lt;br/&gt;Cible atteinte`&quot;]
+    BACK{&quot;`Angle à parcourir supérieur à 90° ?`&quot;}
+    FWD_M[&quot;`Marche avant&lt;br/&gt;Vise l'angle cible`&quot;]
+    BWD_M[&quot;`Marche arrière&lt;br/&gt;Angle cible inversé de 180°`&quot;]
+    TRIG{&quot;`Erreur angulaire supérieure au seuil de pivot&lt;br/&gt;ou pivot en cours ?`&quot;}
+    PIV[&quot;`Pivot sur place&lt;br/&gt;jusqu'à la précision angulaire`&quot;]
+    MOVE[&quot;`Avance ou recul&lt;br/&gt;avec correction angulaire simultanée`&quot;]
+
+    START --&gt; DIST
+    DIST --&gt;|&quot;oui&quot;| DONE
+    DIST --&gt;|&quot;non&quot;| BACK
+    BACK --&gt;|&quot;non&quot;| FWD_M
+    BACK --&gt;|&quot;oui&quot;| BWD_M
+    FWD_M --&gt; TRIG
+    BWD_M --&gt; TRIG
+    TRIG --&gt;|&quot;oui&quot;| PIV
+    TRIG --&gt;|&quot;non&quot;| MOVE
+
+    style START fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
+    style DONE fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style DIST fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style BACK fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style TRIG fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style PIV fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
+    style MOVE fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+flowchart LR
     START([&quot;`Navigation vers la cible (x, y)`&quot;])
     DIST{&quot;`Distance inférieure à la précision linéaire ?`&quot;}
     DONE[&quot;`Arrêt du robot&lt;br/&gt;Cible atteinte`&quot;]
@@ -972,13 +1037,12 @@ flowchart TB
     style PIV fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
     style MOVE fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
 </pre></div>
-<hr>
 <h2 id="5-perception-de-lenvironnement-à-laide-du-lidar">5. Perception de l'environnement à l'aide du LiDAR<a class="anchor" href="#5-perception-de-lenvironnement-à-laide-du-lidar" aria-label="Lien vers cette section">#</a></h2>
 <h3 id="51-analyse-lidar-et-évitement-dobstacles">5.1 Analyse LiDAR et évitement d'obstacles<a class="anchor" href="#51-analyse-lidar-et-évitement-dobstacles" aria-label="Lien vers cette section">#</a></h3>
 <h4 id="choix-fonctionnels-6">Choix fonctionnels<a class="anchor" href="#choix-fonctionnels-6" aria-label="Lien vers cette section">#</a></h4>
 <ul>
 <li>Nous nous sommes abonnés à <code>/scan</code> (<code>sensor_msgs/LaserScan</code>) et nous publions nos marqueurs sur <code>/obstacles_markers</code> (<code>visualization_msgs/MarkerArray</code>, dans le repère arbitraire <code>base_scan</code> comme dans le tuto).</li>
-<li>Après avoir fait une première version fonctionnelle sans décalage, nous avons décalé les huit régions d'un seizième de tour, soit 22,5° (<code>OFFSET_REGIONS</code>), afin que les axes <code>X</code> et <code>Y</code> du robot traversent le milieu des régions plutôt que leurs frontières. Nous évitons ainsi qu'un obstacle placé droit devant le robot se retrouve systématiquement à cheval sur deux régions : la <strong>région 0</strong> correspond à l'avant du robot et la <strong>région 4</strong> à l'arrière.</li>
+<li>Après avoir fait une première version fonctionnelle sans décalage, nous avons décalé les huit régions d'un seizième de tour, soit 22,5° (<code>OFFSET_REGIONS</code>), afin que les axes <code>X</code> et <code>Y</code> du robot traversent le milieu des régions plutôt que leurs frontières. Nous évitons ainsi qu'un obstacle placé droit devant le robot se retrouve systématiquement à cheval sur deux régions : la région 0 correspond à l'avant du robot et la région 4 à l'arrière.</li>
 <li>Nous avons choisi de représenter les huit régions sous la forme d'une sorte de camembert autour du robot. Dans chaque région, nous affichons une barre perpendiculaire à son axe central, placée à la distance de l'obstacle le plus proche. Nous voyons ainsi tout de suite dans quelle direction se trouve un obstacle et à quelle distance minimale (nous détaillons cette réalisation dans la <a href="#52-conception-des-marqueurs-rviz">section 5.2, Conception des marqueurs RViz</a>).</li>
 <li>Nous avons choisi de calculer un &quot;temps avant collision&quot; plutôt que d'utiliser uniquement une distance fixe à garder entre le robot et l'obstacle. L'avantage est que la distance de sécurité s'adapte naturellement à la vitesse du robot :
 <ul>
@@ -1002,15 +1066,55 @@ Si ce délai passe sous <code>delay_collision</code>, nous mettons le robot en p
 <ol>
 <li>Au début, nous appelions <code>&quot;play&quot;</code> dès que le délai repassait au-dessus du seuil, ce qui annulait une pause manuelle. Nous avons résolu cela en écoutant <code>/pause</code> et en distinguant <code>robot_pause</code> de <code>collision_pause</code>.</li>
 <li>En marche arrière, le robot saccadait entre pause et reprise parce que nous ne passions pas <code>was_obstacle_on_back</code> à <code>true</code> et que nous le remettions à <code>false</code> trop tôt.</li>
-<li>Comme le LiDAR mesure depuis le centre du robot, nous avons retranché les 12 cm de carrosserie (<code>debut_collision_face</code> et <code>debut_collision_dos</code>) et rendu <code>delay_collision</code> configurable dans <code>config/params.yaml</code>.</li>
+<li>Comme le LiDAR mesure depuis le centre du robot, nous avons retranché les 12 cm de &quot;carrosserie&quot; (<code>debut_collision_face</code> et <code>debut_collision_dos</code>) et rendu <code>delay_collision</code> configurable dans <code>config/params.yaml</code>. Ces 12cm correspondent d'ailleurs à la distance à partir de laquelle le lidar devient fiable de ce qu'on en a testé.</li>
 </ol>
 </li>
 </ul>
 <h4 id="version-finale-6">Version finale<a class="anchor" href="#version-finale-6" aria-label="Lien vers cette section">#</a></h4>
 <p>Le nœud <code>detector.cpp</code> (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L64-L233" target="_blank" rel="noopener noreferrer">TABDK/src/nodes/detector.cpp</a> pour les marqueurs et <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L203-L233" target="_blank" rel="noopener noreferrer"><code>scanCallback()</code></a>, et <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L330-L377" target="_blank" rel="noopener noreferrer">L330-L377</a> pour l'évitement d'obstacles) analyse les 8 régions à chaque réception sur <code>/scan</code>, publie la visualisation sur <code>/obstacles_markers</code> (lancée avec <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/launch/rviz_tb3.launch" target="_blank" rel="noopener noreferrer">TABDK/launch/rviz_tb3.launch</a> et <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/config/tb3_lidar.rviz" target="_blank" rel="noopener noreferrer"><code>tb3_lidar.rviz</code></a>) et gère l'arrêt et la reprise pour les obstacles via <code>/global_control</code> (<a href="#61-configuration-%C3%A0-la-vol%C3%A9e-du-comportement-du-robot--service">section 6.1, Configuration à la volée du comportement du robot : service</a>).</p>
 <p>Voici un schéma qui illustre le fonctionnement de <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L330-L377" target="_blank" rel="noopener noreferrer"><code>prevent_collision()</code></a> :</p>
-<div class="mermaid-box" data-zoom="75"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TB
+<div class="mermaid-box"><pre class="mermaid" data-src-portrait="%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+flowchart TD
+    START([&quot;`Nouveau scan LiDAR reçu`&quot;])
+    P_MAN{&quot;`Pause manuelle active ?`&quot;}
+    KEEP[&quot;`Ne rien faire&lt;br/&gt;(respecter la pause manuelle)`&quot;]
+    P_COL{&quot;`En pause à cause d'un obstacle ?`&quot;}
+    FAR{&quot;`L'obstacle s'est-il éloigné&lt;br/&gt;du côté mémorisé ?`&quot;}
+    PLAY[&quot;`Demander la reprise du mouvement`&quot;]
+    WAIT[&quot;`Rester en pause`&quot;]
+    MOVING{&quot;`Robot en mouvement ?&lt;br/&gt;(marche avant ou arrière)`&quot;}
+    CALC[&quot;`Selon le sens (avant ou arrière) :&lt;br/&gt;distance minimale − gabarit du robot&lt;br/&gt;→ calcul du temps avant collision`&quot;]
+    RISK{&quot;`Temps avant collision&lt;br/&gt;inférieur au seuil ?`&quot;}
+    PAUSE[&quot;`Mémoriser distance et côté&lt;br/&gt;Mettre en pause automatique`&quot;]
+    OK[&quot;`Continuer le déplacement`&quot;]
+
+    START --&gt; P_MAN
+    P_MAN --&gt;|&quot;oui&quot;| KEEP
+    P_MAN --&gt;|&quot;non&quot;| P_COL
+    P_COL --&gt;|&quot;oui&quot;| FAR
+    FAR --&gt;|&quot;oui&quot;| PLAY
+    FAR --&gt;|&quot;non&quot;| WAIT
+    P_COL --&gt;|&quot;non&quot;| MOVING
+    MOVING --&gt;|&quot;non&quot;| OK
+    MOVING --&gt;|&quot;oui&quot;| CALC
+    CALC --&gt; RISK
+    RISK --&gt;|&quot;oui&quot;| PAUSE
+    RISK --&gt;|&quot;non&quot;| OK
+
+    style START fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
+    style P_MAN fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style P_COL fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style FAR fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style MOVING fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style RISK fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style PLAY fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style OK fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style PAUSE fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
+    style KEEP fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
+    style WAIT fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
+    style CALC fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
+">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+flowchart LR
     START([&quot;`Nouveau scan LiDAR reçu`&quot;])
     P_MAN{&quot;`Pause manuelle active ?`&quot;}
     KEEP[&quot;`Ne rien faire&lt;br/&gt;(respecter la pause manuelle)`&quot;]
@@ -1051,7 +1155,7 @@ flowchart TB
     style CALC fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
 </pre></div>
 <p>Voici un schéma qui illustre les échanges du nœud <code>detector.cpp</code> :</p>
-<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+<div class="mermaid-box" data-zoom-paysage="85" data-zoom-portrait="84"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
 flowchart TB
     C_PARAMS[(&quot;`config/params.yaml`&quot;)]
     M_PARAMS([&quot;`src/parametres.cpp`&quot;])
@@ -1093,7 +1197,7 @@ flowchart TB
     style SG_CTRL fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
 </pre></div>
 <h3 id="52-conception-des-marqueurs-rviz">5.2 Conception des marqueurs RViz<a class="anchor" href="#52-conception-des-marqueurs-rviz" aria-label="Lien vers cette section">#</a></h3>
-<p>Nous avons construit petit à petit une visualisation claire dans RViz (repère <code>base_scan</code>, publiée sur <code>/obstacles_markers</code>) pour voir d'un coup d'œil ce que le robot détecte autour de lui :</p>
+<p>Nous avons d'abord codé nous-mêmes la logique trigonométrique de calcul des positions de départ et de fin pour afficher des premiers marqueurs simples (points et traits). Comme le tutoriel restait assez évasif sur le tracé de lignes dans RViz et qu'il s'agissait d'une partie purement graphique, nous nous sommes ensuite aidés d'une IA pour implémenter la syntaxe RViz d'un affichage plus abouti (repère <code>base_scan</code>, publié sur <code>/obstacles_markers</code>) afin de voir d'un coup d'œil ce que le robot détecte autour de lui :</p>
 <ul>
 <li><a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L135-L150" target="_blank" rel="noopener noreferrer"><code>make_rays()</code></a> trace huit rayons gris partant du centre du robot aux frontières entre régions, et <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L153-L168" target="_blank" rel="noopener noreferrer"><code>make_ray_labels()</code></a> affiche l'angle correspondant au bout de chaque rayon.</li>
 <li><a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L111-L132" target="_blank" rel="noopener noreferrer"><code>make_stripline()</code></a> trace dans chaque secteur une barre perpendiculaire à l'axe central de la région, placée à la distance minimale détectée et étendue jusqu'aux bords du secteur. Pour passer de <code>(distance, angle)</code> aux coordonnées 2D, nous utilisons notre fonction <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L79-L85" target="_blank" rel="noopener noreferrer"><code>polar_to_point()</code></a>.</li>
@@ -1116,12 +1220,11 @@ flowchart TB
 </tr>
 </tbody>
 </table>
-<hr>
 <h2 id="6-services-actions-et-gestion-de-trajectoires">6. Services, actions et gestion de trajectoires<a class="anchor" href="#6-services-actions-et-gestion-de-trajectoires" aria-label="Lien vers cette section">#</a></h2>
 <h3 id="61-configuration-à-la-volée-du-comportement-du-robot--service">6.1 Configuration à la volée du comportement du robot : service<a class="anchor" href="#61-configuration-à-la-volée-du-comportement-du-robot--service" aria-label="Lien vers cette section">#</a></h3>
 <h4 id="choix-fonctionnels-7">Choix fonctionnels<a class="anchor" href="#choix-fonctionnels-7" aria-label="Lien vers cette section">#</a></h4>
 <ul>
-<li>Contrairement à l'énoncé qui proposait un seul service <code>/set_behavior</code>, nous avons séparé les changements de mode et les commandes globales en <strong>deux services distincts</strong>. Comme ça, <code>detector.cpp</code> (<a href="#5-perception-de-lenvironnement-%C3%A0-laide-du-lidar">section 5, Perception de l'environnement à l'aide du LiDAR</a>) peut mettre le robot en pause ou le relancer sans connaître ni changer le mode actif :</li>
+<li>Contrairement à l'énoncé qui proposait un seul service <code>/set_behavior</code>, nous avons séparé les changements de mode et les commandes globales en deux services distincts. Comme ça, <code>detector.cpp</code> (<a href="#5-perception-de-lenvironnement-%C3%A0-laide-du-lidar">section 5, Perception de l'environnement à l'aide du LiDAR</a>) peut mettre le robot en pause ou le relancer sans connaître ni changer le mode actif :</li>
 </ul>
 <div class="code-block"><div class="code-frame" data-lang="text" data-filename="set_mode.srv"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang custom" title="TABDK/srv/set_mode.srv">TABDK/srv/set_mode.srv</span></div><pre><code class="hljs language-text">string mode          # &quot;auto&quot; ou &quot;manual&quot;
 ---
@@ -1157,7 +1260,7 @@ string mode_courant
 <li>Côté client, <code>client_services.cpp</code> (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/client_services.cpp#L79-L126" target="_blank" rel="noopener noreferrer">TABDK/src/nodes/client_services.cpp</a>) gère les touches <code>m</code>, <code>p</code>, <code>r</code>, et <code>detector.cpp</code> appelle <code>/global_control</code> pour l'évitement d'obstacles.</li>
 </ul>
 <p>Voici un schéma qui illustre les échanges de <code>serveur_services.cpp</code> avec le contrôleur, les autres classes et les nœuds ROS :</p>
-<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+<div class="mermaid-box" data-zoom-paysage="80" data-zoom-portrait="85"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
 flowchart TB
     S_MODE{{&quot;`srv/set_mode.srv`&quot;}}
     S_CTRL{{&quot;`srv/global_control.srv`&quot;}}
@@ -1212,8 +1315,38 @@ flowchart TB
     style SG_CACT fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
 </pre></div>
 <p>Voici un schéma qui illustre le fonctionnement de <code>serveur_services.cpp</code> selon la requête reçue :</p>
-<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TB
+<div class="mermaid-box" data-zoom-paysage="85" data-zoom-portrait="78"><pre class="mermaid" data-src-portrait="%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+flowchart TD
+    REQ([&quot;`Requête reçue par le serveur de services`&quot;])
+    WHICH{&quot;`Quel service est appelé ?`&quot;}
+    MODE_OK{&quot;`Mode valide&lt;br/&gt;(manual ou auto) ?`&quot;}
+    SET_M[&quot;`Changer le mode courant&lt;br/&gt;Répondre succès + mode actif`&quot;]
+    BAD_M[&quot;`Avertir et répondre échec&lt;br/&gt;+ mode actif inchangé`&quot;]
+    CMD{&quot;`Quelle commande globale ?`&quot;}
+    RST[&quot;`Annuler les goals, réinitialiser le contrôleur,&lt;br/&gt;réinitialiser la simulation, redémarrer le serveur d'action&lt;br/&gt;et publier sur /reset`&quot;]
+    PP[&quot;`Mettre le robot en pause&lt;br/&gt;ou reprendre le mouvement`&quot;]
+    BAD_C[&quot;`Avertir et répondre échec`&quot;]
+
+    REQ --&gt; WHICH
+    WHICH --&gt;|&quot;/set_mode&quot;| MODE_OK
+    MODE_OK --&gt;|&quot;oui&quot;| SET_M
+    MODE_OK --&gt;|&quot;non&quot;| BAD_M
+    WHICH --&gt;|&quot;/global_control&quot;| CMD
+    CMD --&gt;|&quot;reset&quot;| RST
+    CMD --&gt;|&quot;pause ou play&quot;| PP
+    CMD --&gt;|&quot;autre&quot;| BAD_C
+
+    style REQ fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
+    style WHICH fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style MODE_OK fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style CMD fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style SET_M fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style PP fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style RST fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
+    style BAD_M fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
+    style BAD_C fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
+">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+flowchart LR
     REQ([&quot;`Requête reçue par le serveur de services`&quot;])
     WHICH{&quot;`Quel service est appelé ?`&quot;}
     MODE_OK{&quot;`Mode valide&lt;br/&gt;(manual ou auto) ?`&quot;}
@@ -1244,8 +1377,41 @@ flowchart TB
     style BAD_C fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
 </pre></div>
 <p>Côté client, voici le fonctionnement de <code>client_services.cpp</code> :</p>
-<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TB
+<div class="mermaid-box" data-zoom-paysage="85" data-zoom-portrait="57"><pre class="mermaid" data-src-portrait="---
+config:
+  layout: dagre
+---
+flowchart TD
+    EVT([&quot;`Message reçu par le client de services`&quot;])
+    SRC{&quot;`Source du message ?`&quot;}
+    SYNC[&quot;`Mettre à jour l'état local connu&lt;br/&gt;(mode ou pause)`&quot;]
+    CLR[&quot;`Effacer l'état local et attendre&lt;br/&gt;les nouveaux états du contrôleur`&quot;]
+    KEY{&quot;`Quelle touche ?`&quot;}
+    KM[&quot;`Si le mode est connu :&lt;br/&gt;demander le basculement manual ↔ auto`&quot;]
+    KP[&quot;`Si la pause est connue :&lt;br/&gt;demander le basculement pause ↔ play`&quot;]
+    KR[&quot;`Demander une réinitialisation globale`&quot;]
+
+    EVT --&gt; SRC
+    SRC --&gt;|&quot;/mode ou /pause&quot;| SYNC
+    SRC --&gt;|&quot;/reset&quot;| CLR
+    SRC --&gt;|&quot;/keyboard_input&quot;| KEY
+    KEY --&gt;|&quot;m&quot;| KM
+    KEY --&gt;|&quot;p&quot;| KP
+    KEY --&gt;|&quot;r&quot;| KR
+
+    style EVT fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
+    style SRC fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style KEY fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style SYNC fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
+    style CLR fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
+    style KM fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style KP fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style KR fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
+">---
+config:
+  layout: dagre
+---
+flowchart LR
     EVT([&quot;`Message reçu par le client de services`&quot;])
     SRC{&quot;`Source du message ?`&quot;}
     SYNC[&quot;`Mettre à jour l'état local connu&lt;br/&gt;(mode ou pause)`&quot;]
@@ -1273,7 +1439,7 @@ flowchart TB
     style KR fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
 </pre></div>
 <p>Voici les échanges du nœud <code>client_services.cpp</code> :</p>
-<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+<div class="mermaid-box" data-zoom-paysage="90" data-zoom-portrait="100"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
 flowchart TB
     C_PARAMS[(&quot;`config/params.yaml`&quot;)]
     M_PARAMS([&quot;`src/parametres.cpp`&quot;])
@@ -1316,16 +1482,15 @@ flowchart TB
     style SG_KEY fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
     style SG_CTRL fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
 </pre></div>
-<hr>
 <h3 id="62-navigation--serveur-daction">6.2 Navigation : serveur d'action<a class="anchor" href="#62-navigation--serveur-daction" aria-label="Lien vers cette section">#</a></h3>
 <h4 id="choix-fonctionnels-8">Choix fonctionnels<a class="anchor" href="#choix-fonctionnels-8" aria-label="Lien vers cette section">#</a></h4>
 <ul>
-<li>Nous avons construit <code>TABDK/action/Move.action</code> autour des données vraiment utiles à notre robot. Nous avons choisi de <strong>ne pas garder le niveau de batterie</strong> dans l'action pour deux raisons :
-<ol>
+<li>Nous avons construit <code>TABDK/action/Move.action</code> autour des données vraiment utiles à notre robot. Nous avons choisi de ne pas garder le niveau de batterie dans l'action pour deux raisons :
+<ul>
 <li>il aurait été compliqué de faire des tests réalistes, car la simulation ne permet pas de faire varier facilement le niveau de batterie ;</li>
 <li>nous ne trouvions pas utile d'ajouter un ralentissement en batterie faible, puisque nous avions déjà deux modes et une vitesse plafonnée même dans le mode le plus rapide.
 Nous avons préféré transmettre le <code>mode</code> courant et l'état de <code>pause</code>, qui servent directement à notre application :</li>
-</ol>
+</ul>
 </li>
 </ul>
 <div class="code-block"><div class="code-frame" data-lang="text" data-filename="Move.action"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang custom" title="TABDK/action/Move.action">TABDK/action/Move.action</span></div><pre><code class="hljs language-text">float64 position_x
@@ -1350,7 +1515,7 @@ bool pause
 </ul>
 <h4 id="première-implémentation-7">Première implémentation<a class="anchor" href="#première-implémentation-7" aria-label="Lien vers cette section">#</a></h4>
 <p>Au départ, nous sommes partis des deux nœuds indépendants que vous nous aviez fournis (<code>nodes/serveur_action.cpp</code> et <code>nodes/client_action.cpp</code>), avec un fichier <code>Move.action</code> minimal (<code>pos_x</code>, <code>reached</code>, <code>pos_x_intermediaire</code>). Nous avons ajouté <code>Move.action</code> dans <code>add_action_files()</code> de <code>CMakeLists.txt</code>, compilé en deux temps (<code>cm</code>), puis testé ces deux nœuds séparément :</p>
-<p><em>Premier test unitaire réussi entre <code>serveur_action</code> (à gauche) et <code>client_action</code> (à droite) sur le robot.</em></p>
+<p><em>Premier test réussi entre <code>serveur_action</code> (à gauche) et <code>client_action</code> (à droite) sur le robot.</em></p>
 <img src="media/test_serveur_client_action_enonce.png" alt="Premier test réussi entre le serveur d'action et le client d'action fournis" width="100%">
 <p>Nous avons ensuite pas mal adapté cet exemple de départ pour l'intégrer à notre architecture :</p>
 <ul>
@@ -1369,8 +1534,47 @@ bool pause
 </ul>
 <h4 id="version-finale-8">Version finale<a class="anchor" href="#version-finale-8" aria-label="Lien vers cette section">#</a></h4>
 <p>Dans notre version finale, la classe <code>ServeurAction</code> (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/serveur_action.cpp#L38-L145" target="_blank" rel="noopener noreferrer">TABDK/src/serveur_action.cpp</a>) gère l'action <code>/moving</code> (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/action/Move.action" target="_blank" rel="noopener noreferrer">TABDK/action/Move.action</a>) dans le contrôleur. Voici un schéma qui illustre ses échanges avec <code>controleur.cpp</code>, les autres classes et <code>client_action.cpp</code> :</p>
-<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TB
+<div class="mermaid-box"><pre class="mermaid" data-src-portrait="%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+flowchart TD
+    A_MOVE{{&quot;`action/Move.action`&quot;}}
+
+    subgraph SG_CACT[&quot;Nœud client_action&quot;]
+        N_CACT([&quot;`nodes/client_action.cpp`&quot;])
+    end
+
+    subgraph SG_CTRL[&quot;Nœud controleur&quot;]
+        N_CTRL([&quot;`src/controleur.cpp`&quot;])
+        NODE([&quot;`**src/serveur_action.cpp**`&quot;])
+        N_PARAMS([&quot;`src/parametres.cpp`&quot;])
+        N_MVT([&quot;`src/mouvements.cpp`&quot;])
+        N_STATES([&quot;`src/states.cpp`&quot;])
+        N_MODES([&quot;`src/modes.cpp`&quot;])
+        N_ODOM([&quot;`src/odometry.cpp`&quot;])
+        N_SSRV([&quot;`src/serveur_services.cpp`&quot;])
+    end
+
+    A_MOVE -.-&gt;|&quot;header ROS&quot;| NODE
+
+    N_CACT &lt;--&gt;|&quot;action /moving&lt;br/&gt;(objectif / feedback / résultat)&quot;| NODE
+    N_CTRL --&gt;|&quot;init() et step()&lt;br/&gt;à chaque itération&quot;| NODE
+    N_SSRV --&gt;|&quot;reset() et redemarrer()&quot;| NODE
+
+    NODE --&gt;|&quot;ticksToMs()&quot;| N_PARAMS
+    NODE --&gt;|&quot;cible (x, y), position_atteinte, stop()&quot;| N_MVT
+    NODE --&gt;|&quot;activer / désactiver suivi de cible&quot;| N_STATES
+    NODE --&gt;|&quot;mode courant et état de pause&quot;| N_MODES
+    NODE --&gt;|&quot;position, vitesse, distance&quot;| N_ODOM
+
+    classDef cpp fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    classDef autre fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
+
+    class N_CACT,N_CTRL,N_PARAMS,N_MVT,N_STATES,N_MODES,N_ODOM,N_SSRV cpp
+    class A_MOVE autre
+    style SG_CTRL fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+    style NODE fill:#1d4ed8,stroke:#1e40af,stroke-width:2px,color:#ffffff
+    style SG_CACT fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
+">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+flowchart LR
     A_MOVE{{&quot;`action/Move.action`&quot;}}
 
     subgraph SG_CACT[&quot;Nœud client_action&quot;]
@@ -1410,8 +1614,49 @@ flowchart TB
     style SG_CACT fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
 </pre></div>
 <p>Voici le fonctionnement de <code>ServeurAction</code> selon l'événement reçu :</p>
-<div class="mermaid-box" data-zoom="75"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TB
+<div class="mermaid-box"><pre class="mermaid" data-src-portrait="%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+flowchart TD
+    EVT([&quot;`Événement dans le serveur d'action`&quot;])
+    TYPE{&quot;`Que se passe-t-il ?`&quot;}
+    ACC[&quot;`Accepter le nouvel objectif&lt;br/&gt;Réinitialiser le compteur de temps et la distance de départ`&quot;]
+    PRE_IMM{&quot;`Annulation déjà demandée ?`&quot;}
+    SET_T[&quot;`Transmettre la cible (x, y) aux mouvements&lt;br/&gt;Activer le suivi dans la FSM`&quot;]
+    ACT{&quot;`Un objectif est-il actif ?`&quot;}
+    NOOP[&quot;`Ne rien faire`&quot;]
+    TICK[&quot;`Incrémenter le temps si le robot n'est pas en pause&lt;br/&gt;Publier le feedback (pose, vitesse, distance, temps, mode, pause)`&quot;]
+    REACH{&quot;`Cible atteinte ?`&quot;}
+    SUCC[&quot;`Désactiver le suivi dans la FSM&lt;br/&gt;Publier le résultat réussi et clore l'objectif`&quot;]
+    CANCEL[&quot;`Désactiver le suivi, mettre la vitesse à 0&lt;br/&gt;Publier le résultat annulé et clore l'objectif`&quot;]
+    RST[&quot;`Annuler l'objectif actif ou en attente&lt;br/&gt;puis recréer le serveur après reset simulation`&quot;]
+
+    EVT --&gt; TYPE
+    TYPE --&gt;|&quot;Nouvel objectif reçu&quot;| ACC
+    ACC --&gt; PRE_IMM
+    PRE_IMM --&gt;|&quot;oui&quot;| CANCEL
+    PRE_IMM --&gt;|&quot;non&quot;| SET_T
+    TYPE --&gt;|&quot;Itération de boucle&quot;| ACT
+    ACT --&gt;|&quot;non&quot;| NOOP
+    ACT --&gt;|&quot;oui&quot;| TICK
+    TICK --&gt; REACH
+    REACH --&gt;|&quot;oui&quot;| SUCC
+    REACH --&gt;|&quot;non&quot;| NOOP
+    TYPE --&gt;|&quot;Annulation client&quot;| CANCEL
+    TYPE --&gt;|&quot;Réinitialisation globale&quot;| RST
+
+    style EVT fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
+    style TYPE fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style PRE_IMM fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style ACT fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style REACH fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style SUCC fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style SET_T fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style CANCEL fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
+    style RST fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
+    style NOOP fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
+    style ACC fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
+    style TICK fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
+">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+flowchart LR
     EVT([&quot;`Événement dans le serveur d'action`&quot;])
     TYPE{&quot;`Que se passe-t-il ?`&quot;}
     ACC[&quot;`Accepter le nouvel objectif&lt;br/&gt;Réinitialiser le compteur de temps et la distance de départ`&quot;]
@@ -1464,14 +1709,13 @@ flowchart TB
 <p>La capture ci-dessous montre cet enchaînement dans les logs : préemption de l'objectif en cours, réinitialisation du robot, reconnexion automatique au serveur <code>/moving</code> recréé, puis prise en charge immédiate d'une nouvelle trajectoire :</p>
 <p><em>Logs lors d'un reset : préemption (<code>PREEMPTED</code>), redémarrage du serveur <code>/moving</code>, puis réception et lancement d'une nouvelle trajectoire de 5 waypoints.</em></p>
 <img src="media/reset_effet.png" alt="Effet d'un reset dans les logs ROS : préemption, reconnexion au serveur et reprise d'une nouvelle trajectoire" width="80%">
-<hr>
 <h3 id="63-gestion-des-trajectoires--path">6.3 Gestion des trajectoires : Path<a class="anchor" href="#63-gestion-des-trajectoires--path" aria-label="Lien vers cette section">#</a></h3>
 <h4 id="choix-fonctionnels-9">Choix fonctionnels<a class="anchor" href="#choix-fonctionnels-9" aria-label="Lien vers cette section">#</a></h4>
 <ul>
 <li>Nous avons regroupé la gestion des waypoints dans <code>client_action.cpp</code> autour d'un seul vecteur <code>std::vector&lt;Pose2D&gt; trajectoire</code> :
 <ul>
 <li>en mode <code>manual</code>, nous construisons la liste au clavier (flèches pour déplacer <code>waypoint_virtuel</code> par pas de <code>waypoint_step</code>, <code>w</code> pour ajouter, <code>x</code> pour vider la file en attente) ;</li>
-<li>en mode <code>auto</code>, nous recevons un <code>nav_msgs/Path</code> sur <code>/robot_path</code> (publié par <code>path_generator</code>, voir la <a href="#72-navigation-%C3%A0-base-de-slam">section 7.2, Navigation à base de SLAM</a>). Quand une nouvelle trajectoire arrive pendant qu'une précédente est en cours, nous avons choisi de <strong>remplacer complètement l'ancienne trajectoire</strong> : <code>robotPathCallback()</code> appelle <code>resetClient()</code> (qui demande l'annulation du goal actif et vide <code>trajectoire</code>), puis copie la nouvelle liste.</li>
+<li>en mode <code>auto</code>, nous recevons un <code>nav_msgs/Path</code> sur <code>/robot_path</code> (publié par <code>path_generator</code>, voir la <a href="#72-navigation-%C3%A0-base-de-slam">section 7.2, Navigation à base de SLAM</a>). Quand une nouvelle trajectoire arrive pendant qu'une précédente est en cours, nous avons choisi de remplacer complètement l'ancienne trajectoire : <code>robotPathCallback()</code> appelle <code>resetClient()</code> (qui demande l'annulation du goal actif et vide <code>trajectoire</code>), puis copie la nouvelle liste.</li>
 </ul>
 </li>
 <li>Comme <code>SimpleActionClient(&quot;moving&quot;, false)</code> partage <code>spinOnce()</code> avec nos callbacks clavier, <code>/reset</code> et <code>/robot_path</code>, nos callbacks n'appellent pas <code>cancelGoal()</code> directement. Ils lèvent un drapeau <code>annulation_demandee</code>, traité dans la boucle principale par <code>traiterAnnulation()</code>.</li>
@@ -1488,8 +1732,51 @@ flowchart TB
 <h4 id="version-finale-9">Version finale<a class="anchor" href="#version-finale-9" aria-label="Lien vers cette section">#</a></h4>
 <p>Le nœud <code>client_action.cpp</code> (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/client_action.cpp#L94-L113" target="_blank" rel="noopener noreferrer"><code>robotPathCallback()</code></a>, <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/client_action.cpp#L193-L200" target="_blank" rel="noopener noreferrer"><code>traiterAnnulation()</code></a> et la <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/client_action.cpp#L231-L262" target="_blank" rel="noopener noreferrer">boucle principale</a>) envoie les waypoints un par un vers <code>/moving</code> (clavier en <code>manual</code>, <code>/robot_path</code> en <code>auto</code>), avec une attente non-bloquante du serveur (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/client_action.cpp#L202-L213" target="_blank" rel="noopener noreferrer"><code>attendreServeur()</code></a>).</p>
 <p>Voici un schéma qui illustre le fonctionnement de <code>client_action.cpp</code> :</p>
-<div class="mermaid-box" data-zoom="75"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TB
+<div class="mermaid-box"><pre class="mermaid" data-src-portrait="%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+flowchart TD
+    LOOP([&quot;`Boucle principale (non bloquante)`&quot;])
+    EVT{&quot;`Événement ou étape de boucle ?`&quot;}
+    PATH[&quot;`Nouveau chemin /robot_path (mode auto)&lt;br/&gt;Annuler l'objectif actif et remplacer toute la file`&quot;]
+    KEY[&quot;`Clavier (mode manuel)&lt;br/&gt;Flèches : déplacer · w : ajouter · x : vider la file`&quot;]
+    RST[&quot;`Reset reçu sur /reset&lt;br/&gt;Annuler l'objectif, vider la file, cible virtuelle à (0, 0)`&quot;]
+    SRV{&quot;`Annulations traitées et&lt;br/&gt;serveur /moving connecté ?`&quot;}
+    WAIT[&quot;`Attendre le serveur sans bloquer&lt;br/&gt;les autres messages`&quot;]
+    SEND{&quot;`Aucun objectif actif, file non vide&lt;br/&gt;et séquence non bloquée ?`&quot;}
+    GO[&quot;`Envoyer le premier waypoint&lt;br/&gt;vers /moving`&quot;]
+    DONE{&quot;`Objectif actif terminé ?`&quot;}
+    OK{&quot;`Déplacement réussi ?`&quot;}
+    POP[&quot;`Supprimer le waypoint de la file&lt;br/&gt;et passer au suivant`&quot;]
+    BLK[&quot;`Garder la file et suspendre&lt;br/&gt;l'envoi des points suivants`&quot;]
+
+    LOOP --&gt; EVT
+    EVT --&gt;|&quot;Trajectoire&quot;| PATH
+    EVT --&gt;|&quot;Clavier&quot;| KEY
+    EVT --&gt;|&quot;Reset&quot;| RST
+    EVT --&gt;|&quot;Suivi de la file&quot;| SRV
+    SRV --&gt;|&quot;non&quot;| WAIT
+    SRV --&gt;|&quot;oui&quot;| SEND
+    SEND --&gt;|&quot;oui&quot;| GO
+    SEND --&gt;|&quot;non&quot;| DONE
+    GO --&gt; DONE
+    DONE --&gt;|&quot;oui&quot;| OK
+    OK --&gt;|&quot;oui&quot;| POP
+    OK --&gt;|&quot;non&quot;| BLK
+
+    style LOOP fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
+    style EVT fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style SRV fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style SEND fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style DONE fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style OK fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style GO fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style POP fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style BLK fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
+    style RST fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
+    style PATH fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
+    style KEY fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
+    style WAIT fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
+">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+flowchart LR
     LOOP([&quot;`Boucle principale (non bloquante)`&quot;])
     EVT{&quot;`Événement ou étape de boucle ?`&quot;}
     PATH[&quot;`Nouveau chemin /robot_path (mode auto)&lt;br/&gt;Annuler l'objectif actif et remplacer toute la file`&quot;]
@@ -1536,7 +1823,7 @@ flowchart TB
 <p><em>Logs lors de l'atteinte d'un waypoint, suivie immédiatement de l'envoi et de l'activation du waypoint suivant.</em></p>
 <img src="media/atteinte_waypoint.png" alt="Atteinte d'un waypoint et envoi du waypoint suivant dans les logs" width="80%">
 <p>Voici un schéma qui illustre les échanges de <code>client_action.cpp</code> :</p>
-<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+<div class="mermaid-box" data-zoom-paysage="90" data-zoom-portrait="100"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
 flowchart TB
     C_PARAMS[(&quot;`config/params.yaml`&quot;)]
     M_PARAMS([&quot;`src/parametres.cpp`&quot;])
@@ -1585,12 +1872,11 @@ flowchart TB
     style SG_PG fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
     style SG_CTRL fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
 </pre></div>
-<hr>
 <h2 id="7-évitement-dobstacle-et-planification-de-trajectoire--slam">7. Évitement d'obstacle et planification de trajectoire : SLAM<a class="anchor" href="#7-évitement-dobstacle-et-planification-de-trajectoire--slam" aria-label="Lien vers cette section">#</a></h2>
 <h3 id="71-slam-cartographie-et-localisation-simultanées">7.1 SLAM (Cartographie et Localisation simultanées)<a class="anchor" href="#71-slam-cartographie-et-localisation-simultanées" aria-label="Lien vers cette section">#</a></h3>
 <h4 id="choix-fonctionnels-10">Choix fonctionnels<a class="anchor" href="#choix-fonctionnels-10" aria-label="Lien vers cette section">#</a></h4>
 <ul>
-<li>Pour simplifier nos tests répétés en simulation comme sur le robot réel, nous avons écrit le script <code>tabdk.sh</code> à la racine du projet. Il ajoute sans doublon dans <code>~/.bash_aliases</code> nos raccourcis de compilation et de lancement (<code>cm</code>, <code>slam</code>, <code>teleop</code>, <code>robot_vide</code>, <code>robot_maison</code>, <code>astar</code>, <code>tabdk</code>, <code>tabdk_rviz</code>), source le workspace catkin et installe automatiquement les paquets nécessaires sur <strong>TheConstructSim</strong> (<a href="#11-simulation-en-ligne--theconstructsim">section 1.1, Simulation en ligne : TheConstructSim</a>) :</li>
+<li>Pour simplifier nos tests répétés en simulation comme sur le robot réel, nous avons écrit le script <code>tabdk.sh</code> à la racine du projet. Il ajoute sans doublon dans <code>~/.bash_aliases</code> nos raccourcis de compilation et de lancement (<code>cm</code>, <code>slam</code>, <code>teleop</code>, <code>robot_vide</code>, <code>robot_maison</code>, <code>astar</code>, <code>tabdk</code>, <code>tabdk_rviz</code>), source le workspace catkin et installe automatiquement les paquets nécessaires sur TheConstructSim (<a href="#11-simulation-en-ligne--theconstructsim">section 1.1, Simulation en ligne : TheConstructSim</a>) :</li>
 </ul>
 <div class="code-block"><div class="code-frame" data-lang="bash" data-filename="tabdk.sh"><div class="code-bar"><div class="code-actions"><button class="copy-btn" type="button" title="Copier le code" aria-label="Copier le code"></button><button class="expand-btn" type="button" title="Agrandir le code" aria-label="Agrandir le code"></button><button class="download-btn" type="button" title="Télécharger le code" aria-label="Télécharger le code"></button></div><span class="code-lang custom" title="tabdk.sh">tabdk.sh</span></div><pre><code class="hljs language-bash">add_alias <span class="hljs-string">&#x27;alias cm=&quot;cd ~/catkin_ws &amp;&amp; catkin_make &amp;&amp; source devel/setup.bash &amp;&amp; cd&quot;&#x27;</span>
 add_alias <span class="hljs-string">&#x27;alias slam=&quot;roslaunch turtlebot3_slam turtlebot3_slam.launch&quot;&#x27;</span>
@@ -1608,13 +1894,13 @@ add_alias <span class="hljs-string">&#x27;alias tabdk_rviz=&quot;roslaunch TABDK
 <li>Nous avons rangé nos cartes dans <code>AStar-ROS/map/</code> pour passer facilement de la simulation au labyrinthe réel dans <code>AStar-ROS/launch/run.launch</code>.</li>
 </ul>
 <h4 id="première-implémentation-9">Première implémentation<a class="anchor" href="#première-implémentation-9" aria-label="Lien vers cette section">#</a></h4>
-<p>Nous avons d'abord passé environ <strong>30 minutes</strong> à cartographier un environnement personnalisé en simulation (<code>map_simu_tabdk</code>, en plus de <code>map_tb3_house</code>), puis nous avons enregistré la grille avec <code>map_saver</code> :</p>
+<p>Nous avons d'abord passé environ 30 minutes à cartographier un environnement personnalisé en simulation (<code>map_simu_tabdk</code>, en plus de <code>map_tb3_house</code>), puis nous avons enregistré la grille avec <code>map_saver</code> :</p>
 <p><em>Cartographie SLAM en simulation sur TheConstructSim : construction de la carte dans RViz (à gauche), environnement Gazebo (au centre) et téléopération au clavier (à droite).</em></p>
 <img src="media/cartographie_simu.png" alt="Cartographie SLAM réalisée en simulation sur TheConstructSim" width="100%">
-<p>Nous avons ensuite cartographié le <strong>labyrinthe physique de la salle 4105</strong> (<code>map_4105</code>, puis <code>map_4105_00</code> à partir d'un point de départ repéré au sol).</p>
+<p>Nous avons ensuite cartographié le labyrinthe physique de la salle 4105 (<code>map_4105</code>, puis <code>map_4105_00</code> à partir d'un point de départ repéré au sol).</p>
 <h4 id="difficultés-rencontrées-10">Difficultés rencontrées<a class="anchor" href="#difficultés-rencontrées-10" aria-label="Lien vers cette section">#</a></h4>
 <ul>
-<li>Sur <strong>TheConstructSim</strong>, <code>ros-noetic-turtlebot3-slam</code> et <code>ros-noetic-turtlebot3-navigation</code> n'étaient pas préinstallés et disparaissaient entre deux sessions, et <code>apt</code> refusait de les télécharger faute de clé GPG ROS valide. Nous avons réglé ça en mettant <code>apt-key adv</code>, <code>apt update</code> et <code>apt install</code> directement dans <code>tabdk.sh</code>.</li>
+<li>Sur TheConstructSim, <code>ros-noetic-turtlebot3-slam</code> et <code>ros-noetic-turtlebot3-navigation</code> n'étaient pas préinstallés et disparaissaient entre deux sessions, et <code>apt</code> refusait de les télécharger faute de clé GPG ROS valide. Nous avons réglé ça en mettant <code>apt-key adv</code>, <code>apt update</code> et <code>apt install</code> directement dans <code>tabdk.sh</code>.</li>
 <li>En simulation, RViz se lançait normalement, mais sur le robot réel nous n'arrivions pas à l'ouvrir depuis VS Code. Nous avons vu que cela marchait dans MobaXterm parce qu'un serveur X y tournait déjà pour l'affichage graphique. Nous avons donc ajouté un serveur X à notre environnement VS Code pour ouvrir RViz sur le robot réel.</li>
 <li>Lorsque nous avons sauvegardé la première carte directement sur le robot, elle n'existait pas encore dans notre dossier local. À la synchronisation suivante depuis VS Code, la carte sur le robot a été écrasée. Ensuite, nous avons pris l'habitude de copier les cartes du robot vers notre PC avant de modifier le code.</li>
 <li>Sans point de départ précis lors du SLAM, le repère de la carte ne correspondait plus à l'odométrie du robot au moment de la navigation (nous détaillons ce point dans la <a href="#72-navigation-%C3%A0-base-de-slam">section 7.2, Navigation à base de SLAM</a>).</li>
@@ -1623,7 +1909,6 @@ add_alias <span class="hljs-string">&#x27;alias tabdk_rviz=&quot;roslaunch TABDK
 <p>Nous disposons dans <code>AStar-ROS/map/</code> de cartes validées pour la simulation et pour la salle 4105, avec <code>map_4105_00.pgm</code> et <code>map_4105_00.yaml</code> faites à partir d'un repère physique au sol en <code>(0, 0)</code> et chargées par défaut dans <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/launch/run.launch#L13" target="_blank" rel="noopener noreferrer">AStar-ROS/launch/run.launch</a>, ainsi que notre script <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/tabdk.sh#L1-L29" target="_blank" rel="noopener noreferrer">tabdk.sh</a>.</p>
 <p><em>Visualisation dans RViz du labyrinthe de la salle 4105 (<code>map_4105_00</code>) avec le TurtleBot3 positionné sur la carte et nos marqueurs LiDAR alignés sur les parois réelles.</em></p>
 <img src="media/labyrinthe_salle_4105_rviz.png" alt="Visualisation dans RViz du labyrinthe de la salle 4105 avec le TurtleBot3 et les marqueurs LiDAR" width="90%">
-<hr>
 <h3 id="72-navigation-à-base-de-slam">7.2 Navigation à base de SLAM<a class="anchor" href="#72-navigation-à-base-de-slam" aria-label="Lien vers cette section">#</a></h3>
 <h4 id="choix-fonctionnels-11">Choix fonctionnels<a class="anchor" href="#choix-fonctionnels-11" aria-label="Lien vers cette section">#</a></h4>
 <ul>
@@ -1641,10 +1926,42 @@ Nous avons donc défini ce que nous voulions (repérer les segments directs sans
 <p><em>Trajectoire générée par l'A* initial : chemin en escalier composé d'angles droits et passant très près du coin central.</em></p>
 <img src="media/ancien_astar.png" alt="Trajectoire produite par l'algorithme A* initial en escalier et au ras des murs" width="55%">
 <ul>
-<li>La solution générée avec l'IA dans <code>path_simplifier.cpp</code> utilise un <strong>BFS</strong> (parcours en largeur) pour trouver, parmi les points visibles en ligne droite sans obstacle, le chemin qui demande le moins de segments jusqu'à l'arrivée :</li>
+<li>La solution générée avec l'IA dans <code>path_simplifier.cpp</code> utilise un BFS (parcours en largeur) pour trouver, parmi les points visibles en ligne droite sans obstacle, le chemin qui demande le moins de segments jusqu'à l'arrivée :</li>
 </ul>
-<div class="mermaid-box" data-zoom="75"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TB
+<div class="mermaid-box" data-zoom-paysage="95" data-zoom-portrait="86"><pre class="mermaid" data-src-portrait="---
+config:
+  layout: dagre
+---
+flowchart TD
+    S([&quot;`Partir du premier point du chemin A*`&quot;])
+    NEXT[&quot;`Examiner les points suivants du chemin`&quot;]
+    LOS{&quot;`Un segment direct est-il possible&lt;br/&gt;sans traverser d'obstacle ?`&quot;}
+    ADD[&quot;`Relier ces deux points et poursuivre&lt;br/&gt;l'exploration des possibilités`&quot;]
+    SKIP[&quot;`Ignorer ce raccourci`&quot;]
+    ENDQ{&quot;`Fin du chemin atteinte ?`&quot;}
+    KEEP([&quot;`Retenir le chemin utilisant&lt;br/&gt;le moins de segments`&quot;])
+
+    S --&gt; NEXT
+    NEXT --&gt; LOS
+    LOS --&gt;|&quot;oui&quot;| ADD
+    LOS --&gt;|&quot;non&quot;| SKIP
+    ADD --&gt; ENDQ
+    SKIP --&gt; NEXT
+    ENDQ --&gt;|&quot;non&quot;| NEXT
+    ENDQ --&gt;|&quot;oui&quot;| KEEP
+
+    style S fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
+    style NEXT fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
+    style LOS fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style ENDQ fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    style ADD fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style KEEP fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style SKIP fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
+">---
+config:
+  layout: dagre
+---
+flowchart LR
     S([&quot;`Partir du premier point du chemin A*`&quot;])
     NEXT[&quot;`Examiner les points suivants du chemin`&quot;]
     LOS{&quot;`Un segment direct est-il possible&lt;br/&gt;sans traverser d'obstacle ?`&quot;}
@@ -1704,8 +2021,8 @@ flowchart TB
 <ul>
 <li>Sur le labyrinthe physique, <code>2D Pose Estimate</code> ne suffisait pas et le robot se décalait en suivant la trajectoire du <code>2D Nav Goal</code>. Dans <code>path_generator.cpp</code> (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/path_generator.cpp#L142-L148" target="_blank" rel="noopener noreferrer"><code>odomCallback()</code></a>), la position de départ pour A* vient directement de <code>/odom</code> (et non d'AMCL). Cela nous a aidés à repérer l'erreur pendant les essais, car nous pouvions comparer dans RViz la position odométrique réelle du robot au comportement attendu. Après échange avec vous, nous avons suivi une procédure fiable sur le terrain :
 <ol>
-<li>poser un <strong>marquage physique au sol</strong> au point de départ exact du SLAM (<code>map_4105_00</code>) ;</li>
-<li>placer le robot sur ce repère et faire un <strong>reset du robot (et donc de son odométrie)</strong> pour aligner l'origine <code>/odom</code> sur l'origine <code>(0, 0)</code> de la carte dans RViz ;</li>
+<li>poser un marquage physique au sol au point de départ exact du SLAM (<code>map_4105_00</code>) ;</li>
+<li>placer le robot sur ce repère et faire un reset du robot (et donc de son odométrie) pour aligner l'origine <code>/odom</code> sur l'origine <code>(0, 0)</code> de la carte dans RViz ;</li>
 <li>ajuster à la main la position du robot sur le marquage, sans utiliser <code>2D Pose Estimate</code>, jusqu'à ce qu'il apparaisse sur l'origine RViz après un reset.
 Pendant nos essais sur le robot réel, nous avions mis la pose initiale du lancement à <code>(0, 0, 0)</code>. Dans le fichier actuellement versionné sur GitHub (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/launch/run.launch#L26-L30" target="_blank" rel="noopener noreferrer">AStar-ROS/launch/run.launch</a>), <code>map_file</code> pointe bien vers <code>map_4105_00.yaml</code>, mais <code>initial_pose_x</code> et <code>initial_pose_y</code> valent encore <code>-3.0</code> et <code>1.0</code> (les valeurs de nos réglages de simulation).</li>
 </ol>
@@ -1733,8 +2050,38 @@ Pendant nos essais sur le robot réel, nous avions mis la pose initiale du lance
 <span class="hljs-tag">&lt;/<span class="hljs-name">group</span>&gt;</span>
 </code></pre></div></div>
 <p>Voici un schéma qui illustre comment nous relions <code>AStar-ROS</code> amélioré (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/config/params.yaml" target="_blank" rel="noopener noreferrer">AStar-ROS/config/params.yaml</a>, <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/a_star.cpp#L78-L199" target="_blank" rel="noopener noreferrer">AStar-ROS/src/a_star.cpp</a>, <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/path_simplifier.cpp#L9-L94" target="_blank" rel="noopener noreferrer">AStar-ROS/src/path_simplifier.cpp</a>, <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/path_generator.cpp#L72-L148" target="_blank" rel="noopener noreferrer">AStar-ROS/src/path_generator.cpp</a>) à <code>TABDK</code> :</p>
-<div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TB
+<div class="mermaid-box" data-zoom-paysage="100" data-zoom-portrait="60"><pre class="mermaid" data-src-portrait="---
+config:
+  layout: dagre
+---
+flowchart TD
+    RVIZ[&quot;`RViz : 2D Nav Goal`&quot;]
+    MAP[(&quot;`map_server&lt;br/&gt;map_4105_00`&quot;)]
+    ASTAR([&quot;`Algorithme A* amélioré&lt;br/&gt;a_star.cpp`&quot;])
+    SIMP([&quot;`Lissage de trajectoire&lt;br/&gt;path_simplifier.cpp`&quot;])
+    CACT([&quot;`client_action.cpp&lt;br/&gt;File de waypoints`&quot;])
+    CTRL([&quot;`controleur&lt;br/&gt;reachPositionSmoothBack`&quot;])
+    DET([&quot;`detector.cpp&lt;br/&gt;LiDAR évitement d'obstacles`&quot;])
+
+    RVIZ --&gt;|&quot;/move_base_simple/goal&quot;| ASTAR
+    MAP --&gt;|&quot;/map&quot;| ASTAR
+    ASTAR --&gt;|&quot;chemin brut (grille)&quot;| SIMP
+    SIMP --&gt;|&quot;/robot_path (Path simplifié)&quot;| CACT
+    CACT &lt;--&gt;|&quot;action /moving&quot;| CTRL
+    DET --&gt;|&quot;service /global_control&lt;br/&gt;(pause / play)&quot;| CTRL
+
+    style RVIZ fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
+    style MAP fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
+    style ASTAR fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style SIMP fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    style CACT fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
+    style CTRL fill:#1d4ed8,stroke:#1e40af,stroke-width:2px,color:#ffffff
+    style DET fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
+">---
+config:
+  layout: dagre
+---
+flowchart LR
     RVIZ[&quot;`RViz : 2D Nav Goal`&quot;]
     MAP[(&quot;`map_server&lt;br/&gt;map_4105_00`&quot;)]
     ASTAR([&quot;`Algorithme A* amélioré&lt;br/&gt;a_star.cpp`&quot;])
@@ -1761,11 +2108,10 @@ flowchart TB
 <p>Le robot planifie son itinéraire depuis RViz (<code>2D Nav Goal</code>), suit une trajectoire simplifiée loin des murs et s'arrête tout seul devant les obstacles dynamiques :</p>
 <p><em>Navigation complète en simulation : trajectoire lissée à grands segments directs (diagonale incluse) passant par la porte, avec détection LiDAR en temps réel dans RViz.</em></p>
 <img src="media/suivi_astar_ameliore_simu.png" alt="Suivi d'une trajectoire lissée avec l'algorithme A* amélioré en simulation" width="100%">
-<hr>
 <h2 id="8-migration-architecturale--passage-dun-fichier-contrôleur-unique-à-un-découpage-en-classes">8. Migration architecturale : passage d'un fichier contrôleur unique à un découpage en classes<a class="anchor" href="#8-migration-architecturale--passage-dun-fichier-contrôleur-unique-à-un-découpage-en-classes" aria-label="Lien vers cette section">#</a></h2>
 <h3 id="81-motivation-et-étapes-du-découpage">8.1 Motivation et étapes du découpage<a class="anchor" href="#81-motivation-et-étapes-du-découpage" aria-label="Lien vers cette section">#</a></h3>
-<p>Dans l'énoncé, il n'était pas demandé de découper le code en classes distinctes. Au début du projet (<a href="#3-pilotage-de-base-et-param%C3%A9trage-du-tb3">section 3, Pilotage de base et paramétrage du TB3</a> et <a href="#4-contr%C3%B4le-et-navigation-du-tb3">section 4, Contrôle et navigation du TB3</a>), tout notre code tenait dans un seul fichier <code>controleur.cpp</code>, qui a fini par dépasser <strong>700 lignes</strong> (variables globales, callbacks ROS, calculs trigonométriques, odométrie, clavier, modes, FSM et asservissements). Dès que nous avons ajouté les services puis le serveur d'action, ce fichier unique est devenu difficile à lire et à faire évoluer.</p>
-<p>Nous avons donc réorganisé le contrôleur en <strong>classes distinctes</strong> pour éviter les variables globales et rendre les dépendances claires via les attributs de chaque classe. Nous avons fait cette migration en trois étapes :</p>
+<p>Dans l'énoncé, il n'était pas demandé de découper le code en classes distinctes. Au début du projet (<a href="#3-pilotage-de-base-et-param%C3%A9trage-du-tb3">section 3, Pilotage de base et paramétrage du TB3</a> et <a href="#4-contr%C3%B4le-et-navigation-du-tb3">section 4, Contrôle et navigation du TB3</a>), tout notre code tenait dans un seul fichier <code>controleur.cpp</code>, qui a fini par dépasser 700 lignes (variables globales, callbacks ROS, calculs trigonométriques, odométrie, clavier, modes, FSM et asservissements). Dès que nous avons ajouté les services puis le serveur d'action, ce fichier unique est devenu difficile à lire et à faire évoluer.</p>
+<p>Nous avons donc réorganisé le contrôleur en classes distinctes pour éviter les variables globales et rendre les dépendances claires via les attributs de chaque classe. Nous avons fait cette migration en trois étapes :</p>
 <ol>
 <li>Nous avons extrait les fonctions de base dans <code>calculs.cpp</code>, <code>parametres.cpp</code> (<code>Params</code>), <code>odometry.cpp</code> (<code>Odometry</code>), <code>mouvements.cpp</code> (<code>Mouvements</code>) et un fichier temporaire <code>clavier.cpp</code>.</li>
 <li>Nous avons déplacé les serveurs ROS dans <code>serveur_services.cpp</code> (<code>ServeurServices</code>) et <code>serveur_action.cpp</code> (<code>ServeurAction</code>), et sorti le clavier du contrôleur vers <code>client_services.cpp</code> et <code>client_action.cpp</code> (<a href="#42-mode-navigation-manuelle">section 4.2, Mode navigation manuelle</a>).</li>
@@ -6960,7 +7306,9 @@ lodash-es/lodash.js:
     document.addEventListener('keydown', onKey, true);
   }
 
+  const portraitMq = matchMedia('(orientation: portrait)');
   $$('pre.mermaid').forEach((n) => { n.dataset.src = n.textContent; });
+  const hasResponsiveMermaid = $$('.mermaid-box').some((b) => b.dataset.zoomPortrait !== undefined || b.dataset.zoomPaysage !== undefined || ($('pre.mermaid', b) && $('pre.mermaid', b).dataset.srcPortrait !== undefined));
   let mermaidQueue = Promise.resolve();
   function renderMermaid() {
     if (!window.mermaid) return mermaidQueue;
@@ -6970,13 +7318,17 @@ lodash-es/lodash.js:
       const dark = root.dataset.theme === 'dark';
       const css = CFG.mermaidCss;
       mermaid.initialize({ startOnLoad: false, theme, securityLevel: 'strict', themeCSS: `${css.common}\n${dark ? css.dark : css.light}` });
+      const portrait = portraitMq.matches;
       const nodes = $$('pre.mermaid');
       nodes.forEach((n) => {
         const box = n.parentElement;
         if (box._pz) { try { box._pz.destroy(); } catch (_) {} box._pz = null; }
         box.style.maxWidth = '';
         $$('.mm-ui', box).forEach((x) => x.remove());
-        n.textContent = n.dataset.src;
+        const zoom = portrait ? (box.dataset.zoomPortrait ?? box.dataset.zoom) : (box.dataset.zoomPaysage ?? box.dataset.zoom);
+        if (zoom && Number(zoom) !== 100) box.dataset.zoom = zoom;
+        else delete box.dataset.zoom;
+        n.textContent = (portrait && n.dataset.srcPortrait) ? n.dataset.srcPortrait : n.dataset.src;
         n.removeAttribute('data-processed');
       });
       try { await mermaid.run({ nodes }); } catch (e) { console.error('Mermaid :', e); }
@@ -6984,6 +7336,7 @@ lodash-es/lodash.js:
     });
     return mermaidQueue;
   }
+  if (hasResponsiveMermaid) portraitMq.addEventListener('change', () => renderMermaid());
 
   themeBtn.textContent = labels[mode];
   window.addEventListener('load', async () => {

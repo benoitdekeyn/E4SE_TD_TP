@@ -1,8 +1,50 @@
+
 # Rapport : Projet robotique mobile et navigation autonome appliqué au robot TurtleBot3
 
 **Binôme :** Benoît de Keyn & Thibault Agueh  
 **Date :** 26 novembre 2026
 
+## Table des matières
+
+<!-- TOC -->
+
+<b>• [Introduction](#introduction)</b><br>
+<b>• [1. Environnement de développement](#1-environnement-de-d%C3%A9veloppement)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [1.1 Simulation en ligne : TheConstructSim](#11-simulation-en-ligne--theconstructsim)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [1.2 Développement local et déploiement sur le robot : VS Code, GitHub et SSH](#12-d%C3%A9veloppement-local-et-d%C3%A9ploiement-sur-le-robot--vs-code-github-et-ssh)<br>
+<b>• [2. Architecture finale du projet](#2-architecture-finale-du-projet)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [2.1 Arborescence du paquet TABDK](#21-arborescence-du-paquet-tabdk)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [2.2 Découpage du nœud contrôleur en classes](#22-d%C3%A9coupage-du-n%C5%93ud-contr%C3%B4leur-en-classes)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [2.3 Interaction des différents nœuds](#23-interaction-des-diff%C3%A9rents-n%C5%93uds)<br>
+<b>• [3. Pilotage de base et paramétrage du TB3](#3-pilotage-de-base-et-param%C3%A9trage-du-tb3)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [3.1 Pilotage de base du TB3](#31-pilotage-de-base-du-tb3)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [3.2 Paramètres de l'application](#32-param%C3%A8tres-de-lapplication)<br>
+<b>• [4. Contrôle et navigation du TB3](#4-contr%C3%B4le-et-navigation-du-tb3)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [4.1 Les modes de navigation](#41-les-modes-de-navigation)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [4.2 Mode navigation manuelle](#42-mode-navigation-manuelle)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [4.3 Mode navigation autonome](#43-mode-navigation-autonome)<br>
+<b>• [5. Perception de l'environnement à l'aide du LiDAR](#5-perception-de-lenvironnement-%C3%A0-laide-du-lidar)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [Énoncé](#%C3%A9nonc%C3%A9-6)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Choix fonctionnels](#choix-fonctionnels-6)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Première implémentation](#premi%C3%A8re-impl%C3%A9mentation-5)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Difficultés rencontrées](#difficult%C3%A9s-rencontr%C3%A9es-6)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [5.1 Conception des marqueurs RViz](#51-conception-des-marqueurs-rviz)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Version finale](#version-finale-6)<br>
+<b>• [6. Services, actions et gestion de trajectoires](#6-services-actions-et-gestion-de-trajectoires)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [6.1 Configuration à la volée du comportement du robot : service](#61-configuration-%C3%A0-la-vol%C3%A9e-du-comportement-du-robot--service)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [6.2 Navigation : serveur d'action](#62-navigation--serveur-daction)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [6.3 Gestion des trajectoires : Path](#63-gestion-des-trajectoires--path)<br>
+<b>• [7. Évitement d'obstacle et planification de trajectoire : SLAM](#7-%C3%A9vitement-dobstacle-et-planification-de-trajectoire--slam)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [7.1 SLAM (Cartographie et Localisation simultanées)](#71-slam-cartographie-et-localisation-simultan%C3%A9es)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [7.2 Navigation à base de SLAM](#72-navigation-%C3%A0-base-de-slam)<br>
+<b>• [8. Migration architecturale : passage d'un fichier contrôleur unique à un découpage en classes](#8-migration-architecturale--passage-dun-fichier-contr%C3%B4leur-unique-%C3%A0-un-d%C3%A9coupage-en-classes)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [8.1 Motivation et étapes du découpage](#81-motivation-et-%C3%A9tapes-du-d%C3%A9coupage)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [8.2 Organisation des fichiers .cpp et namespaces](#82-organisation-des-fichiers-cpp-et-namespaces)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [8.3 Patron init() différé et association des classes par pointeurs](#83-patron-init-diff%C3%A9r%C3%A9-et-association-des-classes-par-pointeurs)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [8.4 Cas critique : intégration de ServeurAction](#84-cas-critique--int%C3%A9gration-de-serveuraction)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [8.5 Conduite du refactoring](#85-conduite-du-refactoring)
+
+<!-- /TOC -->
 ## Introduction
 
 Ce rapport présente la conception, l'implémentation et la validation de notre projet de **robotique mobile et navigation autonome** sous **ROS Noetic**, appliqué au robot **TurtleBot3 Burger** (en simulation Gazebo et en conditions réelles dans le labyrinthe de la salle 4105).
@@ -755,6 +797,10 @@ Nous avons construit progressivement une visualisation claire dans RViz (repère
 
 **Problème rencontré après le décalage des régions** : juste après avoir décalé les régions de 22,5°, nous avons constaté que la barre représentant l'obstacle placé devant le robot s'affichait derrière lui dans RViz. En cherchant, nous avons vu que le centre de la région frontale (qui commence vers 338° et finit vers 23°) était calculé avec la moyenne `(debut + fin) / 2.0`, ce qui tombait à 180° au lieu de 0°. Nous avons corrigé le calcul dans `angle_region_rad()` en prenant `(debut + ANGLE_REGION / 2.0)`, afin que la barre frontale s'affiche bien devant le robot.
 
+| Vue d'ensemble des 8 régions décalées de 22,5° | Zoom sur le code couleur (rouge sous 30 cm) et les labels `cm` / `m` |
+| :---: | :---: |
+| ![Vue d'ensemble des marqueurs RViz autour du robot](media/markers_rviz_zoom_10m.png) | ![Zoom sur les marqueurs RViz avec détection d'obstacles proches en rouge](media/markers_rviz_zoom_4m.png) |
+
 ### Version finale
 
 Le nœud `detector.cpp` ([TABDK/src/nodes/detector.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L64-L233) pour les marqueurs et le scan, et [L330-L377](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L330-L377) pour l'anti-collision) analyse les 8 régions à chaque réception sur `/scan`, publie la visualisation sur `/obstacles_markers` (lancée avec [TABDK/launch/rviz_tb3.launch](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/launch/rviz_tb3.launch) et `tb3_lidar.rviz`) et gère l'arrêt et la reprise anti-collision via `/global_control` ([section 6.1, Configuration à la volée du comportement du robot : service](#61-configuration-à-la-volée-du-comportement-du-robot--service)).
@@ -1136,9 +1182,10 @@ bool pause
 
 #### Première implémentation
 
-Au départ, nous avons utilisé les deux nœuds indépendants que vous nous aviez fournis (`nodes/serveur_action.cpp` et `nodes/client_action.cpp`), accompagnés d'un fichier `Move.action` minimal (`pos_x`, `reached`, `pos_x_intermediaire`). Nous avons d'abord ajouté `Move.action` dans `add_action_files()` de `CMakeLists.txt`, compilé en deux temps (`cm`), puis testé ces deux nœuds séparément.
+Au départ, nous avons utilisé les deux nœuds indépendants que vous nous aviez fournis (`nodes/serveur_action.cpp` et `nodes/client_action.cpp`), accompagnés d'un fichier `Move.action` minimal (`pos_x`, `reached`, `pos_x_intermediaire`). Nous avons d'abord ajouté `Move.action` dans `add_action_files()` de `CMakeLists.txt`, compilé en deux temps (`cm`), puis testé ces deux nœuds séparément :
 
-> *[Capture d'écran à insérer : premier test réussi entre le serveur d'action et le client d'action de test]*
+![Premier test réussi entre le serveur d'action et le client d'action fournis](media/test_serveur_client_action_enonce.png)
+*Premier test unitaire réussi entre `serveur_action` (à gauche) et `client_action` (à droite) sur le robot.*
 
 En comparant cet exemple de départ à notre version finale, nous avons profondément adapté son fonctionnement pour l'intégrer à notre architecture :
 
@@ -1282,6 +1329,11 @@ void preempter() {
 }
 ```
 
+Pendant le suivi d'un waypoint, `client_action.cpp` affiche ainsi un retour complet toutes les secondes grâce à `ROS_INFO_THROTTLE(1.0)` :
+
+![Exemple de feedbacks affichés côté client_action à une seconde d'intervalle](media/2_feedback_suivi_goal.png)
+*Exemple de deux feedbacks consécutifs affichés à 1 seconde d'intervalle côté `client_action.cpp` (position, orientation, vitesses, distance restante, temps écoulé et mode).*
+
 Enfin, lors d'une réinitialisation globale demandée au serveur de services, `ServeurServices::resetRobot()` ([TABDK/src/serveur_services.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/serveur_services.cpp#L31-L42)) interagit avec `ServeurAction` dans un ordre précis pour éviter le blocage évoqué plus haut :
 
 <!-- code:TABDK/src/serveur_services.cpp -->
@@ -1295,6 +1347,11 @@ void resetRobot() {
   pub_reset->publish(std_msgs::Empty());  // 5. notifie le TB3 réel et les clients ROS
 }
 ```
+
+La capture ci-dessous montre cet enchaînement dans les logs : préemption de l'objectif en cours, réinitialisation du robot, reconnexion automatique au serveur `/moving` recréé, puis prise en charge immédiate d'une nouvelle trajectoire :
+
+![Effet d'un reset dans les logs ROS : préemption, reconnexion au serveur et reprise d'une nouvelle trajectoire](media/reset_effet.png)
+*Logs lors d'un reset : préemption (`PREEMPTED`), redémarrage du serveur `/moving`, puis réception et lancement d'une nouvelle trajectoire de 5 waypoints.*
 
 ---
 
@@ -1393,6 +1450,11 @@ if (goal_active && client.getState().isDone()) {
 }
 ```
 
+Lorsque le robot atteint un waypoint, `client_action.cpp` affiche le résultat final (temps total, distance parcourue, position et orientation) et enchaîne aussitôt avec le waypoint suivant de la file :
+
+![Atteinte d'un waypoint et envoi du waypoint suivant dans les logs](media/atteinte_waypoint.png)
+*Logs lors de l'atteinte d'un waypoint, suivie immédiatement de l'envoi et de l'activation du waypoint suivant.*
+
 Le diagramme ci-dessous présente la version finale complète des interactions de `client_action.cpp` :
 
 ```mermaid
@@ -1478,9 +1540,10 @@ sudo apt install -y ros-noetic-turtlebot3-navigation ros-noetic-turtlebot3-slam
 
 #### Première implémentation
 
-Nous avons d'abord passé environ **30 minutes** à cartographier un environnement personnalisé en simulation (`map_simu_tabdk`, en plus de `map_tb3_house`), puis nous avons enregistré la grille avec `map_saver`.
+Nous avons d'abord passé environ **30 minutes** à cartographier un environnement personnalisé en simulation (`map_simu_tabdk`, en plus de `map_tb3_house`), puis nous avons enregistré la grille avec `map_saver` :
 
-> *[Capture d'écran à insérer : cartographie SLAM réalisée en simulation (`map_simu_tabdk`)]*
+![Cartographie SLAM réalisée en simulation sur TheConstructSim](media/cartographie_simu.png)
+*Cartographie SLAM en simulation sur TheConstructSim : construction de la carte dans RViz (à gauche), environnement Gazebo (au centre) et téléopération au clavier (à droite).*
 
 Nous avons ensuite réalisé la cartographie SLAM du **labyrinthe physique de la salle 4105** (`map_4105`, puis `map_4105_00` à partir d'un point de départ repéré au sol).
 
@@ -1495,7 +1558,8 @@ Nous avons ensuite réalisé la cartographie SLAM du **labyrinthe physique de la
 
 Nous disposons dans `AStar-ROS/map/` de cartes validées pour la simulation et pour la salle 4105, avec `map_4105_00.pgm` et `map_4105_00.yaml` réalisées à partir d'un repère physique au sol en `(0, 0)` et chargées par défaut dans [AStar-ROS/launch/run.launch](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/launch/run.launch#L13), ainsi que notre script [tabdk.sh](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/tabdk.sh#L1-L29).
 
-> *[Capture d'écran à insérer : visualisation dans RViz du labyrinthe de la salle 4105 (`map_4105_00`) avec le TurtleBot3 affiché dessus]*
+![Visualisation dans RViz du labyrinthe de la salle 4105 avec le TurtleBot3 et les marqueurs LiDAR](media/labyrinthe_salle_4105_rviz.png)
+*Visualisation dans RViz du labyrinthe de la salle 4105 (`map_4105_00`) avec le TurtleBot3 positionné sur la carte et nos marqueurs LiDAR alignés sur les parois réelles.*
 
 ---
 
@@ -1516,6 +1580,10 @@ Importer et compiler `AStar-ROS` (`roslaunch path_generator run.launch`), calibr
   1. il générait parfois un waypoint tous les 5 cm. Même si le passage d'un point au suivant était rapide, notre asservissement proportionnel ralentissait le robot à chaque cible, ce qui produisait un déplacement saccadé avec des ralentissements répétés ;
   2. le chemin suivait souvent des angles droits en escalier alors qu'un segment direct en diagonale était possible sans traverser d'obstacle.
   Nous avons donc défini le comportement attendu (repérer les segments directs possibles sans obstacle et réduire au maximum le nombre de waypoints tout en gardant notre marge `ecart_obstacle`), puis nous avons guidé l'IA pour implémenter cette étape dans `path_simplifier.cpp`.
+
+![Trajectoire produite par l'algorithme A* initial en escalier et au ras des murs](media/ancien_astar.png)
+*Trajectoire générée par l'A\* initial : chemin en escalier composé d'angles droits et passant très près du coin central.*
+
 - **Principe du BFS utilisé pour le lissage** : la solution générée avec l'aide de l'IA s'appuie sur un **BFS** (parcours en largeur). Cet algorithme explore les possibilités par étapes successives pour trouver, dans le graphe des points visibles entre eux, le chemin qui utilise le moins de segments directs possible jusqu'à l'arrivée :
 
 ```mermaid zoom=75
@@ -1555,7 +1623,20 @@ Nous avons d'abord importé le package `AStar-ROS` brut (`map_server`, `amcl`, `
 #### Difficultés rencontrées
 
 - **Trajectoire en escalier, échecs de recherche et manque de temps** : après avoir constaté les blocages du A\* d'origine sur certains contournements et le comportement saccadé lié aux waypoints espacés de 5 cm, nous avons mis en place `ecart_obstacle`, l'amélioration de `a_star.cpp` et le lissage dans `path_simplifier.cpp` avec l'aide de l'IA. Nous aurions aimé approfondir davantage cette partie et mieux comprendre tous les détails internes de ces algorithmes, mais nous manquions de temps et nous étions déjà en retard sur le projet. Nous avons donc privilégié une solution fonctionnelle en guidant l'IA sur le comportement attendu.
-- **Décalage entre Gazebo et RViz en simulation** : en simulation, le robot n'apparaissait pas au même endroit dans Gazebo que sur la carte RViz, ce qui nous obligeait à utiliser `2D Pose Estimate` à chaque lancement. Nous avons réglé ce problème en ajustant `initial_pose_x`, `initial_pose_y` et `initial_pose_a` dans `AStar-ROS/launch/run.launch` pour les aligner avec le spawn du robot.
+- **Erreurs de transformation dans RViz** : lors de la mise en place de la navigation, nous avons aussi rencontré des erreurs de transformation dans RViz (`No transform from [base_footprint/base_scan] to [map]`) tant que la chaîne entre le repère `map` et les repères du robot n'était pas correctement publiée :
+
+![Erreurs de transformation dans RViz entre les repères du robot et le repère map](media/erreurs_rviz.png)
+*Exemple d'erreurs de transformation rencontrées dans RViz (`No transform ... to [map]`) sur `RobotModel` et `LaserScan`.*
+
+- **Décalage entre Gazebo et RViz en simulation** : au départ, en voyant où le robot apparaissait dans RViz, nous avons cru qu'il apparaissait dans le carré vert visible dans Gazebo. En cherchant plus loin et en affichant les axes dans Gazebo, nous avons compris que ce carré vert correspondait simplement au soleil de Gazebo, positionné en `(0, 0)` en 2D. En comparant ensuite Gazebo et RViz, nous avons mesuré un décalage exact de 3 carreaux en longueur et 1 carreau en largeur (la grille faisant 1 m par carreau) : Gazebo faisait en réalité apparaître le robot en `x = -3.0` m et `y = 1.0` m. Nous avons donc réglé la pose initiale d'AMCL (`initial_pose_x = -3.0`, `initial_pose_y = 1.0`, `initial_pose_a = 0.0`) dans `AStar-ROS/launch/run.launch` pour que le robot soit placé directement au bon endroit sans avoir à utiliser `2D Pose Estimate` à chaque lancement.
+
+| Le carré vert dans Gazebo : le soleil placé en `(0, 0)` (le robot est plus bas) | Robot affiché par erreur sur la position du soleil dans RViz |
+| :---: | :---: |
+| ![Carré vert du soleil en (0,0) et position réelle du robot dans Gazebo](media/soleil_gazebo.png) | ![Robot affiché sur la position du soleil dans RViz](media/robot_sur_soleil_de_gazebo_dans_rviz.png) |
+
+![Comparaison côte à côte Gazebo et RViz pour identifier le décalage AMCL](media/correspondance_robot_rviz_pour_decalage_acml.png)
+*Comparaison entre Gazebo (à gauche) et RViz (à droite) ayant permis de mesurer le décalage et de régler AMCL.*
+
 - **Dérive sur le terrain réel (repère carte vs repère odométrie)** : sur le labyrinthe physique, `2D Pose Estimate` ne suffisait pas et le robot se décalait en suivant la trajectoire du `2D Nav Goal`. Dans `path_generator.cpp`, la position de départ pour A\* vient directement de `/odom` (et non d'AMCL). Cela nous a aidés à repérer l'erreur pendant les essais, car nous pouvions comparer dans RViz la position odométrique réelle du robot au comportement attendu. Après échange avec vous, nous avons adopté une procédure fiable sur le terrain :
   1. poser un **marquage physique au sol** au point de départ exact du SLAM (`map_4105_00`) ;
   2. placer le robot sur ce repère et faire un **reset du robot (et donc de son odométrie)** pour faire correspondre l'origine `/odom` avec l'origine `(0, 0)` de la carte dans RViz ;
@@ -1565,7 +1646,30 @@ Nous avons d'abord importé le package `AStar-ROS` brut (`map_server`, `amcl`, `
 
 #### Version finale
 
-Dans notre version finale, nous relions `AStar-ROS` amélioré ([AStar-ROS/config/params.yaml](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/config/params.yaml), [AStar-ROS/src/a_star.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/a_star.cpp#L78-L199), [AStar-ROS/src/path_simplifier.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/path_simplifier.cpp#L9-L94), [AStar-ROS/src/path_generator.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/path_generator.cpp#L72-L148)) à `TABDK` de la façon suivante :
+Dans notre version finale, nous avons personnalisé [AStar-ROS/launch/run.launch](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/launch/run.launch#L13-L37) sur trois points : le choix de la carte (`map_file`) et le chargement de `ecart_obstacle`, la pose initiale d'AMCL (`initial_pose_x`, `initial_pose_y`, `initial_pose_a`) pour éviter d'utiliser `2D Pose Estimate` à chaque lancement, et notre vue RViz personnalisée (`turtlebot3_navigation_tabdk.rviz`) afin de retenir nos affichages et leurs topics (`Goal` sur `/move_base_simple/goal`, `Path` sur `/robot_path`, `MarkerArray` sur `/obstacles_markers`, en plus de `/map` et `/scan`) :
+
+<!-- code:AStar-ROS/launch/run.launch -->
+```xml
+<!-- Carte chargée et paramètre ecart_obstacle -->
+<arg name="map_file" default="$(find path_generator)/map/map_4105_00.yaml"/>
+<arg name="open_rviz" default="true"/>
+<rosparam command="load" file="$(find path_generator)/config/params.yaml" />
+...
+<!-- Pose initiale AMCL pour éviter 2D Pose Estimate à chaque lancement -->
+<include file="$(find turtlebot3_navigation)/launch/amcl.launch">
+  <arg name="initial_pose_x" value="-3.0"/>
+  <arg name="initial_pose_y" value="1.0"/>
+  <arg name="initial_pose_a" value="0.0"/>
+</include>
+
+<!-- Configuration RViz personnalisée (affichages et topics sauvegardés) -->
+<group if="$(arg open_rviz)">
+  <node pkg="rviz" type="rviz" name="rviz" required="true"
+        args="-d $(find path_generator)/rviz/turtlebot3_navigation_tabdk.rviz"/>
+</group>
+```
+
+Nous relions ainsi `AStar-ROS` amélioré ([AStar-ROS/config/params.yaml](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/config/params.yaml), [AStar-ROS/src/a_star.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/a_star.cpp#L78-L199), [AStar-ROS/src/path_simplifier.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/path_simplifier.cpp#L9-L94), [AStar-ROS/src/path_generator.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/path_generator.cpp#L72-L148)) à `TABDK` de la façon suivante :
 
 ```mermaid
 flowchart TB
@@ -1593,7 +1697,10 @@ flowchart TB
     style DET fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
 ```
 
-Le robot planifie son itinéraire depuis RViz (`2D Nav Goal`), suit une trajectoire simplifiée et fluide loin des murs, et s'arrête automatiquement devant tout obstacle dynamique.
+Le robot planifie son itinéraire depuis RViz (`2D Nav Goal`), suit une trajectoire simplifiée et fluide loin des murs, et s'arrête automatiquement devant tout obstacle dynamique :
+
+![Suivi d'une trajectoire lissée avec l'algorithme A* amélioré en simulation](media/suivi_astar_ameliore_simu.png)
+*Navigation complète en simulation : trajectoire lissée à grands segments directs (diagonale incluse) passant par la porte, avec détection LiDAR en temps réel dans RViz.*
 
 ---
 

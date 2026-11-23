@@ -100,7 +100,7 @@
     "zoom": 100,            // affinement du zoom en % (10 à 200), multiplié par global.zoom : 100 = identique au global, 90 = 10 % de moins que le global
     // Affinement des polices pour le PDF seulement. fontScale : % multiplié par global.fontScale (100 = identique).
     // fonts : null = reprend global.fonts ; une valeur la remplace pour le PDF (mêmes clés : headings, body, code, math).
-    "fontScale": 80,
+    "fontScale": 70,
     "fonts": { "headings": null, "body": null, "code": null, "math": null },
     "margins": { "top": "20mm", "right": "18mm", "bottom": "20mm", "left": "18mm" },      // mm, cm, in, pt ou px
     "pageBreakBefore": [1, 2],   // niveaux de titres qui commencent une nouvelle page ; [] = aucun

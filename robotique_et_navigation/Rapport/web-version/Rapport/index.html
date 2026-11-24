@@ -759,7 +759,7 @@ classDiagram
 <li>Nous avons laissé dans la classe <code>States</code> (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/states.cpp#L4-L115" target="_blank" rel="noopener noreferrer">TABDK/src/states.cpp</a>) les états ajoutés au fil du projet, mais en pratique, les modes <code>manual</code> et <code>auto</code> utilisent tous deux le suivi de cible (<code>STOP</code> ↔ <code>REACH_POSITION</code>), seule la provenance des waypoints change (clavier ou <code>/robot_path</code>).</li>
 </ul>
 <p>Voici un schéma qui illustre la gestion des modes et de la pause :</p>
-<div class="mermaid-box" data-zoom-paysage="80" data-zoom-portrait="70"><pre class="mermaid">---
+<div class="mermaid-box" data-zoom-paysage="80" data-zoom-portrait="90"><pre class="mermaid">---
 config:
   layout: dagre
 ---
@@ -864,7 +864,7 @@ flowchart TB
 </tbody>
 </table>
 <p>Voici un schéma qui illustre les interactions de <code>keyboard_input.cpp</code> :</p>
-<div class="mermaid-box" data-zoom-paysage="95" data-zoom-portrait="55"><pre class="mermaid" data-src-portrait="---
+<div class="mermaid-box" data-zoom-paysage="95" data-zoom-portrait="75"><pre class="mermaid" data-src-portrait="---
 config:
   layout: dagre
 ---
@@ -1814,10 +1814,11 @@ Nous avons donc défini ce que nous voulions (repérer les segments directs sans
 </ul>
 <p><em>Trajectoire générée par l'A* initial : chemin en escalier composé d'angles droits et passant très près du coin central.</em></p>
 <img src="media/ancien_astar.png" alt="Trajectoire produite par l'algorithme A* initial en escalier et au ras des murs" width="55%">
+<div class="pagebreak"></div>
 <ul>
-<li>La solution générée avec l'IA dans <code>path_simplifier.cpp</code> utilise un BFS (parcours en largeur) pour trouver, parmi les points visibles en ligne droite sans obstacle, le chemin qui demande le moins de segments jusqu'à l'arrivée :</li>
+<li>Notre solution développée pas mal avec l'IA dans <code>path_simplifier.cpp</code> utilise un BFS (parcours en largeur) pour trouver, parmi les points visibles en ligne droite sans obstacle, le chemin qui demande le moins de segments jusqu'à l'arrivée :</li>
 </ul>
-<div class="mermaid-box" data-zoom-paysage="95" data-zoom-portrait="86"><pre class="mermaid" data-src-portrait="---
+<div class="mermaid-box" data-zoom-paysage="95" data-zoom-portrait="80"><pre class="mermaid" data-src-portrait="---
 config:
   layout: dagre
 ---

@@ -1,22 +1,22 @@
-  frequence         : 5
-  linear_speed      : 0.5
-  angular_speed     : 0.5
+  frequence         : 5   # Hz
+  linear_speed      : 0.5 # m/s
+  angular_speed     : 0.5 # rad/s
 
-  Kp_linear         : 1.0
-  precision_linear  : 0.02
-  Kp_pivot          : 1.0
-  trigger_pivot     : 20.0
-  Kp_angular        : 1.0
-  precision_angular : 1.0
+  Kp_linear         : 1.0  # sans unité
+  precision_linear  : 0.02 # m
+  Kp_pivot          : 1.0  # sans unité
+  trigger_pivot     : 20.0 # °
+  Kp_angular        : 1.0  # sans unité
+  precision_angular : 1.0  # °
 
-  waypoint_step     : 0.1
+  waypoint_step     : 0.1  # m
   move_smooth       : true
   move_back         : true
-  default_mode      : auto
+  default_mode      : auto # auto, manual
 
-  move_fwd_tm       : 3000
-  move_bwd_tm       : 4000
-  move_stp_tm       : 2000
+  move_fwd_tm       : 3000  # ms
+  move_bwd_tm       : 4000  # ms
+  move_stp_tm       : 2000  # ms
 
   delay_collision      : 500  # ms
   debut_collision_face : 0.12 # m

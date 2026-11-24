@@ -767,7 +767,15 @@ flowchart TB
 
 ### 5.2 Conception des marqueurs RViz
 
-Nous avons d'abord codé nous-mêmes la logique trigonométrique de calcul des positions de départ et de fin pour afficher des premiers marqueurs simples (points et traits). Comme le tutoriel restait assez évasif sur le tracé de lignes dans RViz et qu'il s'agissait d'une partie purement graphique, nous nous sommes ensuite aidés d'une IA pour implémenter la syntaxe RViz d'un affichage plus abouti (repère `base_scan`, publié sur `/obstacles_markers`) afin de voir d'un coup d'œil ce que le robot détecte autour de lui :
+Au départ, nous avons codé toute la logique avec le publisher du MarkerArray sur un topic, et la trigonométrique de calcul des positions de départ et de fin de tracé des premiers marqueurs simples (point sur le minimum et traits pour afficher les rayons).
+
+Cependant, nous voulions obtenir un design plus abouti comme c'est la cas actuellement. Or, comme le tutoriel restait assez évasif, qu'il s'agissait d'une partie purement graphique, et que nous manquions de temps, nous nous sommes ensuite aidés d'une IA pour implémenter la syntaxe RViz dans des fonctions dont nous avions d'abord défini les paramètres et le fonctionnement, afin d'obtenir ce rendu final, graphiquement difficile à coder : 
+
+| Vue d'ensemble des 8 régions décalées de 22,5° | Zoom sur le code couleur (rouge sous 30 cm) et les labels `cm` / `m` |
+| :---: | :---: |
+| <img src="media/markers_rviz_zoom_10m.png" alt="Vue d'ensemble des marqueurs RViz autour du robot" width="100%"> | <img src="media/markers_rviz_zoom_4m.png" alt="Zoom sur les marqueurs RViz avec détection d'obstacles proches en rouge" width="100%"> |
+
+Voici un aperçu des fonctions principales utilisées pour générer les marqueurs RViz :  
 
 - [`make_rays()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L135-L150) trace huit rayons gris partant du centre du robot aux frontières entre régions, et [`make_ray_labels()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L153-L168) affiche l'angle correspondant au bout de chaque rayon.
 - [`make_stripline()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L111-L132) trace dans chaque secteur une barre perpendiculaire à l'axe central de la région, placée à la distance minimale détectée et étendue jusqu'aux bords du secteur. Pour passer de `(distance, angle)` aux coordonnées 2D, nous utilisons notre fonction [`polar_to_point()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L79-L85).
@@ -775,11 +783,7 @@ Nous avons d'abord codé nous-mêmes la logique trigonométrique de calcul des p
 - [`make_labels()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L171-L185) place un texte de distance juste à l'extérieur du milieu de chaque barre, mis en forme par [`format_label()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L88-L95) (en `cm` sous 1 m, en `m` au-delà) pour rester lisible de près comme de loin.
 - Chaque marqueur est initialisé par [`init_marker()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L97-L107), puis [`update_markers()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L187-L200) rassemble les rayons, les barres et tous les labels dans un `MarkerArray` publié sur `/obstacles_markers`.
 
-Juste après avoir décalé les régions de 22,5°, nous avons remarqué un bug : la barre représentant un obstacle devant le robot s'affichait derrière lui dans RViz. En cherchant, nous avons vu que le centre de la région frontale (qui va de 338° à 23°) était calculé avec la moyenne `(debut + fin) / 2.0`, ce qui tombait à 180° au lieu de 0°. Nous avons corrigé [`angle_region_rad()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L64-L68) avec `(debut + ANGLE_REGION / 2.0)` pour que la barre frontale s'affiche bien devant le robot.
-
-| Vue d'ensemble des 8 régions décalées de 22,5° | Zoom sur le code couleur (rouge sous 30 cm) et les labels `cm` / `m` |
-| :---: | :---: |
-| <img src="media/markers_rviz_zoom_10m.png" alt="Vue d'ensemble des marqueurs RViz autour du robot" width="100%"> | <img src="media/markers_rviz_zoom_4m.png" alt="Zoom sur les marqueurs RViz avec détection d'obstacles proches en rouge" width="100%"> |
+Au passage, juste après avoir décalé les régions de 22,5°, nous avons remarqué un bug : la barre représentant un obstacle devant le robot s'affichait derrière lui dans RViz. En cherchant, nous avons vu que le centre de la région frontale (qui va de 338° à 23°) était calculé avec la moyenne `(debut + fin) / 2.0`, ce qui tombait à 180° au lieu de 0°. Nous avons corrigé [`angle_region_rad()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L64-L68) avec `(debut + ANGLE_REGION / 2.0)` pour que la barre frontale s'affiche bien devant le robot.
 
 ## 6. Services, actions et gestion de trajectoires
 
@@ -805,14 +809,18 @@ bool success
 string mode_courant
 ```
 
-- Nous publions aussi les topics *latched* `/mode` et `/pause` en continu dans `controleur.cpp` pour que chaque nœud qui se connecte reçoive tout de suite le dernier état connu.
+- Nous publions aussi les topics `/mode` et `/pause` en continu dans `controleur.cpp` pour que chaque nœud qui se connecte reçoive tout de suite le dernier état connu grâce aux publications latched (`, true)`): 
 
 #### Première implémentation
 
 Nous sommes partis de l'exemple de serveur de service du cours, puis nous l'avons adapté en quatre étapes :
 
 1. Nous avons créé `TABDK/srv/set_mode.srv` et `TABDK/srv/global_control.srv`.
-2. Nous avons adapté la compilation dans [TABDK/CMakeLists.txt](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/CMakeLists.txt#L66-L86) et [L149-L178](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/CMakeLists.txt#L149-L178) : ajout des `.srv` dans `add_service_files()`, décommentage de `generate_messages()` avec nos paquets de messages (`actionlib_msgs`, `geometry_msgs`, `nav_msgs`, `sensor_msgs`, `std_msgs`), et liaison des exécutables via `add_dependencies()`. Dans [TABDK/package.xml](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/package.xml#L55-L86), `message_generation` était déjà en `build_depend`, et nous avons ajouté `<exec_depend>message_generation</exec_depend>`.
+2. Nous avons adapté la compilation dans [TABDK/CMakeLists.txt](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/CMakeLists.txt#L66-L86) et [L149-L178](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/CMakeLists.txt#L149-L178) : 
+   - ajout des `.srv` dans `add_service_files()`
+   - décommentage de `generate_messages()` avec nos paquets de messages (`actionlib_msgs`, `geometry_msgs`, `nav_msgs`, `sensor_msgs`, `std_msgs`)
+   - liaison des exécutables via `add_dependencies()`. Dans [TABDK/package.xml](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/package.xml#L55-L86), `message_generation` était déjà en `build_depend`
+   - ajout de `<exec_depend>message_generation</exec_depend>`.
 3. Nous avons d'abord mis les serveurs de services directement dans `controleur.cpp` et les appels clients dans un nœud `keyboard.cpp`, puis validé les services avec `rosservice call` et sur le robot réel.
 4. Enfin, nous avons extrait les serveurs dans la classe `ServeurServices` (`serveur_services.cpp`) et séparé le client clavier dans `client_services.cpp`.
 
@@ -821,7 +829,7 @@ Nous sommes partis de l'exemple de serveur de service du cours, puis nous l'avon
 - Nous avons passé pas mal de temps à déboguer la compilation CMake de nos services (puis de nos actions). En relisant `CMakeLists.txt`, nous avons vu que nous avions mal lu ses commentaires : nous avions placé nos `add_dependencies(...)` juste sous `add_executable(...)` avec seulement `${catkin_EXPORTED_TARGETS}`, en oubliant `${${PROJECT_NAME}_EXPORTED_TARGETS}` (indispensable pour générer les headers `.srv` et `.action` de notre paquet avant les exécutables). Nous avons réglé le problème en déplaçant tous les `add_dependencies(...)` dans la section prévue plus bas avec les deux variables (et en pensant aussi à ajouter `global_control.srv` dans `add_service_files()`).
 - Au départ, la pause était encore un mode dans `controleur.cpp`, ce qui compliquait les changements de mode en pause (voir la [section 4.1, Les modes de navigation](#41-les-modes-de-navigation)). Nous avons donc séparé `pause_active` pour qu'il soit piloté uniquement par `/global_control`.
 - Comme `client_services.cpp` bascule `manual ↔ auto` et `pause ↔ play` avec les touches `m` et `p`, son état local devenait faux dès qu'un autre client (`detector.cpp` ou `rosservice call`) appelait un service. Nous l'avons donc abonné aux topics `/mode`, `/pause` et `/reset`.
-- Nous avons ensuite extrait les serveurs dans `ServeurServices` ([section 8.1, Motivation et étapes du découpage](#81-motivation-et-étapes-du-découpage)), séparé `client_services.cpp` de `keyboard_input.cpp` ([section 4.2, Mode navigation manuelle](#42-mode-navigation-manuelle)) et remplacé l'ancienne `enum` des modes par des `std::string`.
+- Nous avons ensuite extrait les serveurs dans `ServeurServices` ([section 8.1, Motivation et étapes du découpage](#81-motivation-et-étapes-du-découpage)), séparé `client_services.cpp` de `keyboard_input.cpp` ([section 4.2, Mode navigation manuelle](#42-mode-navigation-manuelle)) et remplacé l'ancienne `enum` des modes par des `std::string` pour qu'il suffise de taper le nom du mode en toutes lettres dans le client de de service (plus facile à comprendre et utiliser).
 
 #### Version finale
 
@@ -1419,7 +1427,7 @@ Nous avons d'abord importé le package `AStar-ROS` brut (`map_server`, `amcl`, `
 #### Difficultés rencontrées
 
 - Face aux blocages du A\* d'origine sur certains contournements et aux saccades liées aux waypoints espacés de 5 cm, nous avons mis en place `ecart_obstacle`, l'amélioration de `a_star.cpp` et le lissage dans `path_simplifier.cpp` avec l'aide de l'IA. Nous aurions aimé creuser davantage ces algorithmes pour bien maîtriser tous leurs détails internes, mais nous manquions de temps et nous étions déjà en retard sur le projet. Nous avons donc privilégié une solution qui fonctionne en guidant l'IA sur le résultat attendu.
-- Pendant la mise en place de la navigation, nous avons aussi eu des erreurs de transformation dans RViz (`No transform from [base_footprint/base_scan] to [map]`) tant que la chaîne entre le repère `map` et les repères du robot n'était pas correctement publiée :
+- Pendant la mise en place de la navigation, nous avons aussi eu des erreurs de transformation dans RViz (`No transform from [base_footprint/base_scan] to [map]`) qui nous arrivaient régulièrement de manière aléatoires. Nous devions souvent arrêter et relancer le launch de AStar-ROS pour que la transformation soit correctement publiée :
 
 *Exemple d'erreurs de transformation rencontrées dans RViz (`No transform ... to [map]`) sur `RobotModel` et `LaserScan`.*
 
@@ -1436,20 +1444,20 @@ Nous avons d'abord importé le package `AStar-ROS` brut (`map_server`, `amcl`, `
 <img src="media/correspondance_robot_rviz_pour_decalage_acml.png" alt="Comparaison côte à côte Gazebo et RViz pour identifier le décalage AMCL" width="100%">
 
 - Sur le labyrinthe physique, `2D Pose Estimate` ne suffisait pas et le robot se décalait en suivant la trajectoire du `2D Nav Goal`. Dans `path_generator.cpp` ([`odomCallback()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/path_generator.cpp#L142-L148)), la position de départ pour A\* vient directement de `/odom` (et non d'AMCL). Cela nous a aidés à repérer l'erreur pendant les essais, car nous pouvions comparer dans RViz la position odométrique réelle du robot au comportement attendu. Après échange avec vous, nous avons suivi une procédure fiable sur le terrain :
-  1. poser un marquage physique au sol au point de départ exact du SLAM (`map_4105_00`) ;
-  2. placer le robot sur ce repère et faire un reset du robot (et donc de son odométrie) pour aligner l'origine `/odom` sur l'origine `(0, 0)` de la carte dans RViz ;
-  3. ajuster à la main la position du robot sur le marquage, sans utiliser `2D Pose Estimate`, jusqu'à ce qu'il apparaisse sur l'origine RViz après un reset.
-  Pendant nos essais sur le robot réel, nous avions mis la pose initiale du lancement à `(0, 0, 0)`. Dans le fichier actuellement versionné sur GitHub ([AStar-ROS/launch/run.launch](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/launch/run.launch#L26-L30)), `map_file` pointe bien vers `map_4105_00.yaml`, mais `initial_pose_x` et `initial_pose_y` valent encore `-3.0` et `1.0` (les valeurs de nos réglages de simulation).
+  1. placer le robot sur un repère au sol et faire un reset du robot (et donc de son odométrie) pour aligner l'origine `/odom` sur l'origine `(0, 0)` de la carte dans RViz ;
+  2. ajuster à la main la position du robot sur le marquage, sans utiliser `2D Pose Estimate`, jusqu'à ce qu'il apparaisse sur l'origine RViz après un reset.
+  Pendant nos essais sur le robot réel, nous avions mis la pose initiale du lancement à `(0, 0, 0)`.
 - Un obstacle ajouté dans le labyrinthe après le SLAM n'apparaît pas sur la carte statique. Grâce à `detector.cpp` ([section 5, Perception de l'environnement à l'aide du LiDAR](#5-perception-de-lenvironnement-à-laide-du-lidar)), le robot s'arrête tout seul devant lui puis repart quand la voie se libère.
 
 #### Version finale
 
 Dans notre version finale, nous avons personnalisé [AStar-ROS/launch/run.launch](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/launch/run.launch#L13-L37) sur trois points : le choix de la carte (`map_file`) et le chargement de `ecart_obstacle`, la pose initiale d'AMCL (`initial_pose_x`, `initial_pose_y`, `initial_pose_a`) pour éviter d'utiliser `2D Pose Estimate` à chaque lancement, et notre config RViz ([`turtlebot3_navigation_tabdk.rviz`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/rviz/turtlebot3_navigation_tabdk.rviz)) pour retenir nos affichages et leurs topics (`Goal` sur `/move_base_simple/goal`, `Path` sur `/robot_path`, `MarkerArray` sur `/obstacles_markers`, en plus de `/map` et `/scan`) :
 
+*Extrait de configuration finale dans `AStar-ROS/launch/run.launch` pour la simulation sur TheConstructSim par exemple :*
 <!-- code:AStar-ROS/launch/run.launch -->
 ```xml
 <!-- Carte chargée et paramètre ecart_obstacle -->
-<arg name="map_file" default="$(find path_generator)/map/map_4105_00.yaml"/>
+<arg name="map_file" default="$(find path_generator)/map/map_simu_tabdk.yaml"/>
 <arg name="open_rviz" default="true"/>
 <rosparam command="load" file="$(find path_generator)/config/params.yaml" />
 ...

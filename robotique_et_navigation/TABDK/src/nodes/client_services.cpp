@@ -32,6 +32,7 @@ bool is_paused = false;
 bool mode_received = false;
 bool pause_received = false;
 
+// Après un reset, invalide l'état local pour ne pas basculer sur un mode ou une pause obsolète (rapport § 6.1).
 void resetCallback(const Empty::ConstPtr &) {
   current_mode.clear();
   is_paused = false;
@@ -76,6 +77,7 @@ bool callGlobalControl(const string &state) {
   return true;
 }
 
+// Traduit les touches m/p/r en appels de services à partir de l'état publié par le contrôleur (rapport § 4.2 et § 6.1).
 void keyboardCallback(const Int8::ConstPtr &message) {
   switch (message->data) {
   case KEY_M: {

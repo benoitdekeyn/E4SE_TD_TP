@@ -27,6 +27,7 @@ using std_msgs::Bool;
 // VARIABLES GLOBALES
 int NBR_REGION = 8;
 int SCAN_SAMPLE = 360;
+// Décalage de 22,5° pour centrer les régions sur les axes X/Y du robot : région 0 devant, région 4 derrière (rapport § 5.1).
 int OFFSET_REGIONS = -22.5f;
 int ANGLE_REGION = SCAN_SAMPLE / NBR_REGION;
 float linear_speed = 0.0f;
@@ -61,6 +62,7 @@ const char* FRAME_MARKERS = "base_scan";
 const float OFFSET_LABEL = 0.18; // m, décalage du texte vers l'extérieur
 const float LONGUEUR_RAYON = SEUIL_MAX + 0.5; // m, longueur des rayons pour la visualisation
 
+// Utilise (debut + largeur/2) et non (debut + fin)/2 pour que la région avant (338° -> 23°) pointe bien vers 0° (rapport § 5.2).
 float angle_region_rad(int i) {
   int debut, fin;
   get_region_angle_limites(i, &debut, &fin);
@@ -107,7 +109,7 @@ Marker init_marker(const string& ns, int id, int type) {
 }
 
 // Un segment par région, perpendiculaire à la direction centrale de la région,
-// passant par le point minimum. Rouge si l'obstacle est sous le seuil.
+// passant par le point minimum. Rouge si l'obstacle est sous le seuil (rapport § 5.2).
 Marker make_stripline() {
   Marker line = init_marker("stripline", 0, Marker::LINE_LIST);
   line.scale.x = 0.05;
@@ -269,7 +271,7 @@ float get_minimum(vector<float> data, double angle_debut, double angle_fin, int 
 
   int index_debut = angle_debut / angle_per_index;
   int index_fin = angle_fin / angle_per_index;
-  // CAS 1 ou on demande le minimum sur un intervalle qui traverse le 0 deg (ex: 350° à 10°)
+  // Région à cheval sur 0° (ex. région avant 338° -> 23° après décalage) : parcours en deux segments (rapport § 5.1).
   if (index_fin < index_debut) 
   {
     for (int i = index_debut; i < data.size(); i++) {
@@ -298,6 +300,7 @@ float get_minimum(vector<float> data, double angle_debut, double angle_fin, int 
   return min(SEUIL_MAX, distance_min);
 }
 
+// Remplace les mesures hors plage fiable par FLT_MAX pour ne pas fausser la recherche du minimum (rapport § 5.1).
 void filtrer_distances(vector<float>& data, float seuil_min, float seuil_max) {
   for (size_t i = 0; i < data.size(); i++) {
     if (data[i] < seuil_min || data[i] > seuil_max) {
@@ -327,15 +330,15 @@ bool callGlobalControl(const string &state) {
   return true;
 }
 
+// Évitement d'obstacles basé sur le temps avant collision selon le sens de marche (rapport § 8).
 void prevent_collision() {
-  // Le robot est en pause indépendamment des obstacles
+  // Respecte une pause demandée manuellement au clavier ou par service.
   if (robot_pause && !collision_pause) {
     return;
   }
 
-  // On avait mis le robot en pause
+  // Pause déclenchée par un obstacle : on relance dès que la voie s'éloigne du même côté.
   if (robot_pause && collision_pause) {
-    // on play le robot des qu'on a plus d'obstacle sous la distance et dans la region où l'obastacle a declenché une pause
     if (was_obstacle_on_back) {
       if (min_distances[REGION_DOS] > distance_to_last_obstacle) {
         collision_pause = false;
@@ -350,8 +353,7 @@ void prevent_collision() {
     return;
   }
 
-  // Le robot est ici en play 
-
+  // En mouvement : retranche le gabarit (12 cm depuis le centre du LiDAR) pour estimer le délai avant contact réel (rapport § 8).
   if (linear_speed > 0.001) {
     ROS_INFO_THROTTLE(1, "distance to obstacle: %f", min_distances[REGION_FACE]);
     int delay_before_collision = fabs((min_distances[REGION_FACE] - debut_collision_face) / linear_speed * 1000); // ms

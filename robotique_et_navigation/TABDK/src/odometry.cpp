@@ -13,7 +13,7 @@ using namespace tf;
 using geometry_msgs::Pose2D;
 using geometry_msgs::Twist;
 
-// Écoute /odom et conserve la dernière position et les dernières vitesses
+// Suit la position, les vitesses et la distance cumulée depuis /odom (rapport § 4.3.1).
 class Odometry {
 public:
   Pose2D position;
@@ -39,7 +39,7 @@ private:
   bool position_recue = false;
 
   void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
-    // Additionne les déplacements entre deux mesures successives.
+    // Ignore la première mesure pour éviter un saut initial dans le cumul de distance.
     if (position_recue) {
       distance_parcourue += distanceToPosition(msg->pose.pose.position.x,
                                               msg->pose.pose.position.y);

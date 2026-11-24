@@ -11,6 +11,7 @@ Params params;
 int getch();
 Int8 keyboard_input;
 
+// Nœud dédié à la saisie clavier brute pour ne pas bloquer la boucle du contrôleur (rapport § 4.2).
 int main(int argc, char **argv) {
   init(argc, argv, "keyboard_input");
 
@@ -31,6 +32,7 @@ int main(int argc, char **argv) {
   return 0;
 }
 
+// Désactive temporairement le mode canonique du terminal pour lire chaque touche sans attendre Entrée.
 int getch() {
   static struct termios oldt, newt;
   tcgetattr(STDIN_FILENO, &oldt); // save old settings

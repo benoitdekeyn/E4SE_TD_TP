@@ -14,6 +14,7 @@ using namespace TABDK;
 using namespace actionlib;
 using namespace ros;
 
+// Serveur d'action /moving non bloquant intégré au contrôleur (rapport § 6.2 et § 9.4).
 class ServeurAction {
 public:
   typedef SimpleActionServer<MoveAction> Server;
@@ -52,18 +53,18 @@ public:
     }
   }
 
-  // Actionlib conserve les dates des anciens goals même après leur préemption.
+  // Recrée le serveur après un reset de simulation, car actionlib conserve les dates des anciens goals (rapport § 6.2).
   void redemarrer() {
     delete server;
     server = nullptr;
     demarrer();
   }
 
-  // Appelee achaque tour de la while(ok) de ros
+  // Appelée à chaque tour de boucle pour suivre l'objectif sans bloquer le contrôleur.
   void step() {
     if (!goal) return;
 
-    // Un tick représente une période de la boucle, sauf pendant la pause.
+    // Compte uniquement le temps en mouvement (hors pauses manuelles ou obstacles, rapport § 6.2).
     if (!modes->paused()) {
       ++ticks_ecoules;
     }
@@ -105,6 +106,7 @@ private:
   std::uint64_t ticks_ecoules = 0;
   double distance_depart = 0.0;
 
+  // Allocation dynamique et boost::bind nécessaires car SimpleActionServer exige un NodeHandle dès sa création (rapport § 9.4).
   void demarrer() {
     server = new Server(*nh, "moving", false);
     server->registerGoalCallback(boost::bind(&ServeurAction::execute, this));
@@ -119,6 +121,7 @@ private:
     // Le compteur d'odométrie est cumulé ; on mémorise son début pour ce goal.
     distance_depart = odometry->distanceParcourue();
     
+    // Un goal peut être annulé avant même son premier tour de boucle.
     if (server->isPreemptRequested()) {
       preempter();
       return;

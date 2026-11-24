@@ -1,6 +1,7 @@
 #ifndef STATES_CPP
 #define STATES_CPP
 
+// Regroupe tous les états créés au fil du projet ; en version finale seuls STOP et REACH_POSITION servent (rapport § 4.1 et § 4.3).
 enum RobotState {
   FORWARD,
   BACKWARD,
@@ -55,7 +56,7 @@ private:
   int ticks_counter = 0;
 
 public:
-  // Le suivi des cibles est utilisé dans les deux modes.
+  // Suivi de cible utilisé en mode manuel comme en auto : seule l'origine des waypoints change (rapport § 4.1 et § 4.3).
   void updateFSMManual() {
     switch (current_state) {
     case STOP:
@@ -114,6 +115,7 @@ public:
     }
   }
 
+  // Ancienne séquence avancer/arrêter/reculer conservée pour référence, mais plus appelée en version finale (rapport § 3.1 et § 4.3).
   void updateFSMAuto() {
     switch (current_state) {
     case FORWARD:

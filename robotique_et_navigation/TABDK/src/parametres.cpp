@@ -7,7 +7,7 @@
 #include "calculs.cpp"
 using namespace ros;
 
-// Paramètres du contrôleur : valeurs par défaut, écrasées par params.yaml dans load()
+// Paramètres partagés entre les 5 nœuds : valeurs par défaut écrasées par params.yaml (rapport § 3.2).
 class Params {
 public:
   double frequence = 5;
@@ -54,6 +54,7 @@ public:
     nh.getParam("debut_collision_face", debut_collision_face);
     nh.getParam("debut_collision_dos", debut_collision_dos);
 
+    // Réglés en degrés dans params.yaml pour plus de lisibilité, puis convertis en radians (rapport § 3.2).
     precision_angular = deg_to_rad(precision_angular);
     trigger_pivot = deg_to_rad(trigger_pivot);
   }

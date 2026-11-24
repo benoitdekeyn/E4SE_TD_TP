@@ -13,6 +13,7 @@ using std::string;
 const string MODES[] = {AUTO, MANUAL};
 const int NBR_MODES = sizeof(MODES) / sizeof(MODES[0]);
 
+// Gère le mode actif ("manual"/"auto") et la pause de façon indépendante (rapport § 4.1).
 class Modes {
 public:
   void init(States &states, const string &default_mode) {
@@ -28,6 +29,7 @@ public:
   }
 
   void step() {
+    // En pause, on coupe les moteurs et on fige la FSM sans bloquer la boucle ROS ni les services.
     if (pause_active) {
       states->stop();
       if (current_mode == AUTO) {

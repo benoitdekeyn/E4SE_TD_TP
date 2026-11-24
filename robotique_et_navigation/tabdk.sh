@@ -23,6 +23,7 @@ echo "Init aliases done !"
 
 # Source l'environnement ROS dans le terminal courant
 source ~/catkin_ws/devel/setup.bash 2>/dev/null
+# Réinstalle les paquets SLAM/navigation manquants sur The Construct après mise à jour de la clé GPG ROS (rapport § 7.1)
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F42ED6FBAB17C654
 sudo apt update
 sudo apt install -y ros-noetic-turtlebot3-navigation

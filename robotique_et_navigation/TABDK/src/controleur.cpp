@@ -5,6 +5,7 @@
 #include <std_msgs/String.h>
 #include <std_srvs/Empty.h>
 
+// Classes incluses directement dans l'ordre de leurs dépendances (rapport § 2.2 et § 9.2).
 #include "calculs.cpp"
 #include "parametres.cpp"
 #include "odometry.cpp"
@@ -21,6 +22,7 @@ using ResetMessage = std_msgs::Empty;
 using ResetService = std_srvs::Empty;
 using init_options::NoSigintHandler;
 
+// Sur CTRL+C, on sort proprement de la boucle pour réinitialiser le robot avant de quitter (rapport § 3.1).
 bool arret_demande = false;
 
 void sigintHandler(int) {
@@ -44,6 +46,7 @@ int main(int argc, char **argv) {
 
   NodeHandle nh;
 
+  // Initialisation en deux temps (init + pointeurs partagés) après création du NodeHandle (rapport § 9.3).
   Params params;
   params.load(nh);
 
@@ -54,6 +57,7 @@ int main(int argc, char **argv) {
   mouvements.init(nh, &params, &odometry);
 
   Publisher pub_reset = nh.advertise<ResetMessage>("/reset", 1);
+  // Topics latched (true) : tout nœud qui se connecte reçoit aussitôt l'état courant (rapport § 6.1).
   Publisher pub_mode = nh.advertise<String>("/mode", 1, true);
   Publisher pub_pause = nh.advertise<Bool>("/pause", 1, true);
   ServiceClient client_reset_sim =
@@ -74,6 +78,7 @@ int main(int argc, char **argv) {
   publishStatus(modes, pub_mode, pub_pause);
   Rate loop_rate(params.frequence);
 
+  // Boucle principale non bloquante : fait avancer la FSM et le suivi d'action à chaque tour.
   while (ok() && !arret_demande) {
     modes.step();
     serveur_action.step();

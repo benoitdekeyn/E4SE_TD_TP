@@ -22,7 +22,7 @@
 <!-- Map server -->
 <node pkg="map_server" type="map_server" name="map_server" args="$(arg map_file)" />
 
-<!-- AMCL -->
+<!-- AMCL : (0, 0, 0) sur le repère au sol en salle 4105 ; (-3.0, 1.0, 0.0) en simulation Gazebo (rapport § 7.2) -->
 <include file="$(find turtlebot3_navigation)/launch/amcl.launch">
   <arg name="initial_pose_x" value="0.0"/>
   <arg name="initial_pose_y" value="0.0"/>

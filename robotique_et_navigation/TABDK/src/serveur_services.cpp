@@ -13,6 +13,7 @@
 using namespace ros;
 using namespace TABDK;
 
+// Expose /set_mode et /global_control pour séparer le mode de la pause et du reset (rapport § 6.1).
 class ServeurServices {
 public:
   void init(NodeHandle &nh, Modes &modes, ServeurAction &action_server,
@@ -28,6 +29,7 @@ public:
         "/global_control", &ServeurServices::globalControlCallback, this);
   }
 
+  // Ordre précis : annuler les goals, réinitialiser contrôleur et Gazebo, recréer le serveur d'action, puis prévenir les clients (rapport § 6.2).
   void resetRobot() {
     action_server->reset();
     modes->reset();

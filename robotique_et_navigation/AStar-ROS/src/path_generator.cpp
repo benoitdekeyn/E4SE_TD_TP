@@ -87,7 +87,7 @@ void PathGenerator::navGoalHandler(
            map_info_.origin.position.x, map_info_.origin.position.y);
   ROS_INFO("\033[1;32mOrigin resolution = %f  \033[0m", map_info_.resolution);
 
-  // Remmaping coordinate
+  // Le point de départ vient de /odom (et non d'AMCL), d'où l'alignement du reset sur l'origine de la carte (rapport § 7.2).
   AStar::Vec2i source;
   source = map_generator_.xy_to_ij(odom_pos.x, odom_pos.y, map_info_);
   ROS_INFO("\033[1;32m remap coordinante source x = %d y = %d \033[0m",
@@ -108,6 +108,7 @@ void PathGenerator::navGoalHandler(
     return;
   }
 
+  // A* renvoie le chemin de l'arrivée vers le départ : on l'inverse puis on supprime les waypoints intermédiaires inutiles (rapport § 7.2).
   std::reverse(path.begin(), path.end());
   size_t path_size = path.size();
   path = simplifyPath(path, map_generator_);

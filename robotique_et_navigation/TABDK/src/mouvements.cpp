@@ -60,7 +60,7 @@ public:
 
   /**
    * Avance le robot à une vitesse linéaire donnée sur l'axe x.
-   * @param v La vitesse linéaire poisitive.
+   * @param v La vitesse linéaire positive.
    */
   void forward(double v) {
     Twist velocity;
@@ -180,7 +180,7 @@ public:
    * Atteint une position donnée sur l'axe x et y en suivant ces étapes :
    * 1. Pivoter pour s'aligner avec la direction de la cible.
    * 2. Avancer ou reculer jusqu'à atteindre la position cible,
-   *    en ajustant l'angle EN PARRALLÈLE si nécessaire en cours de route.
+   *    en ajustant l'angle EN PARALLÈLE si nécessaire en cours de route (rapport § 4.3.2).
    * Correcteur PROPORTIONNEL -> Kp_POS pour la distance,
    * Correcteur PROPORTIONNEL -> Kp_ANG pour l'angle.
    * @param x La position cible sur l'axe x.
@@ -193,16 +193,14 @@ public:
     double erreur_distance = odom->distanceToPosition(x, y);
     double erreur_angle = calculerErreurAngle(x, y, arriere);
 
-    // Si la distance à la cible est déjà dans la précision, on s'arrête immédiatement.
+    // Vérifié avant l'angle pour éviter des pivots inutiles si le robot dépasse légèrement la cible (rapport § 4.3.2).
     if (erreur_distance < precision_linear) {
       stop();
       position_atteinte = true;
       return;
     }
 
-    // Si l'erreur angulaire est supérieure au seuil de pivot bloquant, 
-    // on pivote pour s'aligner avec la cible.
-
+    // Hystérésis de pivot : au-delà de trigger_pivot, on finit l'alignement sur place jusqu'à precision_angular.
     if (fabs(erreur_angle) > trigger_pivot) {
       pivot_en_cours = true;
     }
@@ -242,7 +240,7 @@ public:
 
   /**
    * Comme reachPositionSmooth, mais choisit la marche arrière quand la cible
-   * est à plus de 90° de l'axe avant du robot (derrière lui).
+   * est à plus de 90° de l'axe avant du robot (derrière lui) pour éviter un demi-tour (rapport § 4.3.2).
    */
   void reachPositionSmoothBack(double x, double y) {
     double erreur_angle_abs = fabs(calculerErreurAngle(x, y, false));

@@ -6,6 +6,7 @@
 
 namespace {
 
+// Vérifie case par case si un segment direct évite tout obstacle avec la marge de sécurité (rapport § 7.2).
 bool hasLineOfSight(AStar::Vec2i start, AStar::Vec2i end,
                     AStar::Generator &generator) {
   int dx = end.x - start.x;
@@ -25,7 +26,7 @@ bool hasLineOfSight(AStar::Vec2i start, AStar::Vec2i end,
     long long cross_x = (1LL + 2LL * ix) * ny;
     long long cross_y = (1LL + 2LL * iy) * nx;
     if (cross_x == cross_y) {
-      // A segment crossing a cell corner touches both adjacent cells.
+      // Un segment qui passe par un coin de case touche les deux cases adjacentes : les deux doivent être libres.
       AStar::Vec2i side_x = {current.x + step_x, current.y};
       AStar::Vec2i side_y = {current.x, current.y + step_y};
       if (generator.isCollision_in_OCG(side_x) ||
@@ -55,8 +56,7 @@ AStar::CoordinateList simplifyPath(const AStar::CoordinateList &path,
   if (path.empty())
     return {};
 
-  // Each edge connects two visible path points; breadth-first search finds
-  // the fewest segments while keeping all waypoints on the original path.
+  // Parcourt les raccourcis visibles en ligne droite (BFS) pour retenir le chemin avec le moins de segments possible (rapport § 7.2).
   const size_t count = path.size();
   std::vector<size_t> parent(count, count);
   std::vector<size_t> queue;

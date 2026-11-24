@@ -47,6 +47,7 @@ bool mode_received = false;
 bool goal_termine = false;
 bool annulation_demandee = false;
 
+// L'annulation du goal est différée hors des callbacks ROS pour éviter les conflits avec spinOnce() (rapport § 6.3).
 void viderTrajectoire() {
   if (goal_active) {
     annulation_demandee = true;
@@ -91,6 +92,7 @@ void printNouvelleTrajectoire() {
   ROS_INFO("%s", msg.c_str());
 }
 
+// En mode auto, toute nouvelle trajectoire reçue de AStar-ROS remplace intégralement celle en cours (rapport § 6.3).
 void robotPathCallback(const Path::ConstPtr &message) {
   ROS_INFO("\n##    Nouvelle trajectoire recue    ##\n");
 
@@ -173,6 +175,7 @@ void activeCb() {
 }
 
 void feedbackCallback(const MoveFeedbackConstPtr &feedback) {
+  // Ignore les feedbacks tardifs reçus après la fin ou l'annulation d'un goal (rapport § 6.2).
   if (!goal_active || goal_termine) return;
 
   if (feedback->pause) {
@@ -199,6 +202,7 @@ void traiterAnnulation(Client &client) {
   }
 }
 
+// Attente non bloquante du serveur /moving pour continuer à traiter reset, mode et clavier (rapport § 6.3).
 bool attendreServeur(Client &client) {
   Rate attente_serveur(params.frequence); // Hz
   while (ok() && !client.isServerConnected()) {
@@ -248,6 +252,7 @@ int main(int argc, char **argv) {
       ROS_INFO("\nEnvoi du nouveau waypoint a suivre\n > x=%.2f\n > y=%.2f\n", goal.position_x, goal.position_y);
     }
 
+    // Enchaîne le waypoint suivant si réussi, sinon fige la file pour éviter de sauter un point après un échec (rapport § 6.3).
     if (goal_active && client.getState().isDone()) {
       goal_active = false;
       if (client.getState() == SimpleClientGoalState::SUCCEEDED) {

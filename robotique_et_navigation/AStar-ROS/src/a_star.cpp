@@ -75,6 +75,7 @@ void AStar::Generator::setHeuristic(HeuristicFunction heuristic_) {
       std::bind(heuristic_, std::placeholders::_1, std::placeholders::_2);
 }
 
+// Dilate chaque obstacle de "ecart_obstacle" cases pour tenir le robot à distance des murs et coins (rapport § 7.2).
 bool AStar::Generator::isCollision_in_OCG(Vec2i coordinates_) {
   if (coordinates_.x < 0 || coordinates_.x >= worldSize.x ||
       coordinates_.y < 0 || coordinates_.y >= worldSize.y)
@@ -108,6 +109,7 @@ bool AStar::Generator::isCollision_in_OCG(Vec2i coordinates_, int size) {
   return false;
 }
 
+// Recherche A* par file de priorité (coût 10 en droit, 14 en diagonal) pour gérer les contournements complexes (rapport § 7.2).
 AStar::CoordinateList AStar::Generator::findPath(Vec2i source_, Vec2i target_) {
   CoordinateList path;
   if (worldSize.x <= 0 || worldSize.y <= 0 ||
@@ -154,6 +156,7 @@ AStar::CoordinateList AStar::Generator::findPath(Vec2i source_, Vec2i target_) {
   while (!open.empty() && ros::ok()) {
     OpenEntry current = open.top();
     open.pop();
+    // Ignore une entrée périmée si un chemin plus court vers cette case a déjà été trouvé.
     if (current.cost != costs[current.index])
       continue;
 
@@ -175,6 +178,7 @@ AStar::CoordinateList AStar::Generator::findPath(Vec2i source_, Vec2i target_) {
       Vec2i next = position + direction[i];
       if (isCollision_in_OCG(next))
         continue;
+      // En déplacement diagonal, empêche de couper à travers le coin d'un obstacle.
       if (i >= 4 &&
           (isCollision_in_OCG({position.x + direction[i].x, position.y}) ||
            isCollision_in_OCG({position.x, position.y + direction[i].y})))

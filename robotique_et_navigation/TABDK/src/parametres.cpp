@@ -30,8 +30,8 @@ public:
   int move_bwd_tm = 4000; // ms
   int move_stp_tm = 2000; // ms
   int delay_collision = 1000; // ms
-  float debut_collision_face = 0.12; // s
-  float debut_collision_dos = 0.12; // s
+  float debut_collision_face = 0.12; // m
+  float debut_collision_dos = 0.12; // m
 
   void load(NodeHandle &nh) {
     nh.getParam("frequence", frequence);

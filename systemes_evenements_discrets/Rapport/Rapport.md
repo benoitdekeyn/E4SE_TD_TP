@@ -70,24 +70,24 @@
 
 ### Contexte et objectifs
 
-Ce projet porte sur la spécification, la modélisation comportementale par **Statecharts** et la simulation temps réel en C++ (framework OXF) de plusieurs systèmes embarqués automobiles sous **IBM Engineering Systems Design Rhapsody (v9.0.2)**, à partir du socle `BaseProjectVehicule2022` (renommé et restructuré en `Projet_TABDK_E4SE`).
+Ce projet porte sur la spécification, la modélisation comportementale par Statecharts et la simulation temps réel en C++ de plusieurs systèmes embarqués automobiles sous IBM Engineering Systems Design Rhapsody (v9.0.2).
 
-Le système final couvre cinq axes majeurs, enrichis d'une gestion énergétique complète, d'un autoradio multi-pistes à arbitrage de priorités, d'une gestion sonore centralisée ainsi que d'un outillage maison permettant de piloter le code C++ généré depuis une **interface graphique Web via API REST** :
+Le système final couvre cinq axes majeurs, enrichis d'une gestion énergétique complète, d'un autoradio multi-pistes, ainsi que d'une interface de simulation temps réel, permettant de tester et valider le comportement du véhicule simulé.
 
-1. **Modélisation et simulation du véhicule** : couplage entre un moteur de dynamique longitudinale, le contrôle d'injection par pédales (priorité freinage > accélération), le cycle de vie contact/moteur (arrêt d'urgence avec conservation d'inertie) et la gestion des ressources/pannes (carburant et batterie).
-2. **Régulateur de vitesse** : maintien d'une vitesse cible compensant le profil routier ($\alpha \in [-20^\circ, +20^\circ]$) via un correcteur PI discret auto-dimensionné avec anti-windup et transfert sans à-coup.
-3. **Limiteur de vitesse** : fonctionnement strictement mutuellement exclusif avec le régulateur, double appui rapide ($< 500\text{ ms}$ pour $\pm 10\text{ km/h}$), kick-down, activation différée (inhibition) et alarme sonore de dépassement.
-4. **Kit Bluetooth « mains libres », téléphonie, SMS et autoradio** : dialogue maître/esclave par événements, jumelage par code PIN verrouillé moteur éteint, reconnexion automatique, gestion parallèle des appels et SMS, redirection Bluetooth sans perte de contexte, et autoradio avec reprise par connecteur d'historique (`H`).
-5. **Extension Régulateur de vitesse adaptatif (ACC)** : simulation d'un véhicule précédent et basculement dynamique entre asservissement en vitesse et asservissement en distance de sécurité.
+1. **Modélisation et simulation du véhicule** : couplage entre un moteur de dynamique, contrôle d'injection par pédales, cycle de vie contact/moteur (arrêt d'urgence avec conservation d'inertie) et gestion des ressources/pannes (carburant et batterie).
+2. **Régulateur de vitesse** : maintien d'une vitesse cible via un correcteur PI discret.
+3. **Limiteur de vitesse** : fonctionnement strictement mutuellement exclusif avec le régulateur de vitesse, activation différée et alarme sonore de dépassement.
+4. **Kit Bluetooth « mains libres »** : dialogue  par événements, jumelage par code PIN, reconnexion automatique, gestion parallèle des appels et SMS, redirection Bluetooth sans perte de données, et autoradio avec reprise par connecteur d'historique.
+5. **Extension Régulateur de vitesse adaptatif** : simulation d'un véhicule précédent le notre et basculement dynamique entre asservissement en vitesse et asservissement en distance de sécurité.
 
 ### Méthodologie adoptée
 
-Après une première prise en main des Statecharts et régions orthogonales sur le `TD1` (système d'éclairage domotique), notre démarche de conception a suivi quatre principes directeurs :
+Notre démarche de conception a suivi 3 principes directeurs :
 
-* **Repartir d'une architecture orthogonale propre** : dès le démarrage du projet véhicule, le statechart squelette de `BaseProjectVehicule2022` (10 états rudimentaires) a été intégralement supprimé afin de concevoir une grille modulaire d'**AND-lines** au sein d'un unique état composite racine `Systeme` (`And`) dans la classe active `_SysVehicule` (instance `objetSysVehicule`).
-* **Séparation stricte entre logique événementielle et calculs continus** : les opérations de simulation physique/numérique (héritées ou adaptées d'un modèle fournisseur) sont encapsulées dans des opérations C++ atomiques (`calcul_*`, `accelerer`, `freiner_injection`), tandis que l'ensemble de la logique décisionnelle, des priorités, des sécurités et des protocoles réside dans les Statecharts.
-* **Normalisation sémantique des identifiants** : adoption systématique de préfixes (`PARAM_SIMU_*`, `SEUIL_*`, `cmd_*`, `SWITCH_*`, `ev_*`, `ex_*`, `calcul_*`, `VOYANT_*`) afin de maintenir la lisibilité malgré la croissance du modèle (77 attributs, 105 événements, 29 opérations, 154 états).
-* **Développement incrémental et collaboratif** : chaque module a été validé immédiatement sur le **Panel Diagram** en mode animation (`ModeAnimation`). Le développement en binôme a été réparti par domaines (socle véhicule, régulateur, limiteur, ACC et architecture `EVAL` / audio d'un côté ; téléphonie, messagerie SMS, autoradio et intégration kit de l'autre), avec suivi de version sur Git et gestion manuelle des merges sur les fichiers XML Rhapsody (`.sbsx`).
+* **Architecture propre** : Remaniement du statechart  squelette de BaseProjectVehicule2022 en une grille modulaire d'AND-lines au sein d'un unique état racine `Systeme`.
+* **Séparation stricte entre logique événementielle et calculs continus** : les opérations de simulation physique/numérique sont manipulées dans des fonctions (appelées opérations) C++ , tandis que l'ensemble de la logique décisionnelle, des priorités, des sécurités et des protocoles réside dans les Statecharts.
+* **Conventions de nommage** : adoption systématique de préfixes et de normes de nommage, des attributs et des événements ,afin de maintenir la lisibilité malgré la croissance du modèle. 
+//redirection vers les conventions de nommage détaillées dans l'annexe A
 
 ---
 
@@ -97,26 +97,28 @@ Après une première prise en main des Statecharts et régions orthogonales sur 
 
 #### De deux modules conceptuels à une grille d'AND-lines dans `_SysVehicule`
 
-Le sujet introduisait le simulateur selon deux rôles conceptuels (`dyn_deplacement` et `gestion_pedales_moteur`). Afin de garantir un accès direct et déterministe aux variables d'état partagées (`speed`, `float_speed`, `throttle`, `ignition`, `IS_IN(...)`) sans multiplier les ports et les classes d'interface dès l'ajout du régulateur, du limiteur et du Bluetooth, nous avons centralisé l'ensemble du comportement dans la classe active `_SysVehicule` (`OMThread`, `OMReactive`).
+Le sujet introduisait le simulateur selon deux rôles conceptuels (`dyn_deplacement` et `gestion_pedales_moteur`). Afin de garantir un accès direct aux variables d'état partagées (`speed`, `float_speed`, `throttle`, `ignition`, `IS_IN(...)`) sans multiplier les ports et les classes d'interface dès l'ajout du régulateur, du limiteur et du Bluetooth, nous avons centralisé l'ensemble du comportement dans la classe active `_SysVehicule`.
 
-Son Statechart racine `Systeme` est découpé en **AND-lines (régions orthogonales exécutées en parallèle)** disposées en grille logique. Pour la partie véhicule de base, cinq AND-lines assurent le découplage des responsabilités :
+Son Statechart racine `Systeme` est découpé en **AND-lines (régions orthogonales exécutées en parallèle, nommée module dans la suite du rapport pour simplifier la terminologie)** disposées en grille logique. Pour la partie **véhicule de base**, cinq AND-lines assurent le découplage des responsabilités :
 
-| AND-line (intitulé Rhapsody) | ID interne | Entrées (Événements / Attributs) | Sorties (Événements / Attributs) | Opérations appelées |
-| :--- | :--- | :--- | :--- | :--- |
-| **Horloge rafraichissement** | `state_62` | `PARAM_SIMU_freq_rafraichissement` (`20 Hz`) | `GEN(EVAL)` | — |
-| **Simulation du vehicule** | `state_72` | `EVAL`, `throttle`, `brakePedal`, `alpha`, `ignition`, `PARAM_SIMU_*` | `float_speed`, `speed`, `float_distance`, `distance` | `init()`, `calcul_vitesse_distance()` |
-| **Débit de l'injection d'essence** | `state_60` | `EVAL`, `accelPedal`, `brakePedal`, `IS_IN(moteur_on)`, `IS_IN(limiteur_effectif)`, `IS_IN(mode_regulateur)` | `throttle` | `accelerer()`, `freiner_injection()`, `calcul_regulateur_*()` |
-| **Clé du véhicule** | `state_61` | `EVAL`, `cmd_contact`, `ev_demarrer`, `IS_IN(fonctionelle)` | `ignition`, `throttle`, `niveau_batterie`, `reservoir_carburant` | `ex_demarrer()`, `arreter()`, `calcul_batterie()`, `calcul_carburant()` |
-| **Ressources et pannes** | `state_252` | `EVAL`, `reservoir_carburant`, `niveau_batterie`, `ev_remplir_carburant`, `ev_depanner_batterie`, `speed`, `IS_IN(contact_off)` | `carburant_faible`, `batterie_faible`, état `fonctionelle` | `ex_remplir_carburant()`, `ex_depanner_batterie()` |
+| AND-line  | Objectifs |
+| :--- | :--- |
+| **Horloge rafraichissement** | Générer périodiquement l'événement `EVAL` à la fréquence de rafraichissement du simulateur (`20 Hz`) (son fonctionnement est décrit dans la section suivante) |
+| **Simulation du vehicule** | Calculer la vitesse et la distance du véhicule en fonction des commandes et paramètres | 
+|  |  | 
+| **Débit de l'injection d'essence** | Calculer le débit d'injection en fonction des commandes et de l'état du moteur | 
+| **Clé du véhicule** | Gérer l'allumage et l'arrêt du véhicule, ainsi que l'état des ressources | 
+| **Ressources et pannes** | Surveiller les ressources et gérer les pannes | 
 
 #### Pivot architectural majeur : de la boucle `tm() -> History` à l'horloge centrale `GEN(EVAL)`
 
-* **Première implémentation (problématique)** : dans Rhapsody, une transition portant uniquement une garde booléenne `[condition]` sans événement déclencheur n'est réévaluée qu'à l'entrée de l'état ou lors de la consommation d'un événement. Dans nos premières versions, pour forcer la réévaluation périodique des gardes (changement d'un slider ou d'un interrupteur IHM), **chaque AND-line possédait sa propre auto-transition `tm(1000/PARAM_SIMU_freq_rafraichissement)` rebouclant sur un connecteur d'historique** (`cle_du_vehicule -> History`, `ressources_pannes -> History`, `mode_pilotage -> History`, `debit_injection_essence -> History`, `limiteur_vitesse -> History`).
+* **Première implémentation (problématique)** : dans Rhapsody, une transition portant uniquement une garde booléenne `[condition]` sans événement déclencheur n'est réévaluée qu'à l'entrée de l'état ou lors de la consommation d'un événement. Une des solutions pour évaluter périodiquement les gardes consiste à utiliser des timers retournant dans l'état choisit. Dans nos premières versions, pour forcer la réévaluation périodique des gardes, **chaque Module possédait sa propre auto-transition `tm(1000/PARAM_SIMU_freq_rafraichissement)` rebouclant sur un connecteur d'historique** (`cle_du_vehicule -> History`, `ressources_pannes -> History`, `mode_pilotage -> History`, `debit_injection_essence -> History`, `limiteur_vitesse -> History`).
 * **Difficultés rencontrées** :
-  1. Multiplication de timers OXF asynchrones indépendants, rendant l'ordre de réévaluation non déterministe entre régions dépendantes (ex. une coupure moteur détectée avant ou après le calcul d'injection).
+  1. Multiplication de timers asynchrones indépendants, rendant l'ordre de réévaluation indéterminé entre régions dépendantes (ex. une coupure moteur détectée avant ou après le calcul d'injection).
   2. Déclenchement intempestif d'actions d'entrée/sortie sur les super-états lors des sorties/réentrées périodiques par le connecteur d'historique, et saturation des traces d'animation.
-  3. Complexité visuelle importante du Statechart et risque d'oubli lors des refactorisations (un dernier rebouclage `tm()` résiduel sur `state_61/contact_on` n'a d'ailleurs été repéré et nettoyé que tardivement lors du nettoyage global de fin de projet)
-* **Solution retenue (validée sur la branche `eval-tm-test`)** : création d'une **AND-line dédiée `Horloge rafraichissement` (`state_62`)** contenant un unique état qui émet `GEN(EVAL)` à $20\text{ Hz}$ (`tm(1000/PARAM_SIMU_freq_rafraichissement)`). Toutes les transitions purement gardées du projet sont déclenchées par `EVAL [garde]`, supprimant les boucles `tm() -> History` et offrant un véritable **bus de synchronisation périodique** commun à tout le véhicule.
+  3. Complexité visuelle importante du Statechart et risque d'oubli lors des refactorisations
+
+* **Solution retenue** : création d'un **module`Horloge rafraichissement`** contenant un unique état qui émet `GEN(EVAL)` à $20\text{ Hz}$ (`tm(1000/PARAM_SIMU_freq_rafraichissement)`). Toutes les transitions purement gardées du projet sont déclenchées par `EVAL [garde]`, supprimant les boucles `tm() -> History` et offrant un véritable **bus de synchronisation périodique** commun à tout le véhicule.
 
 > **[Capture Rhapsody à insérer — Version finale]** : AND-line **`Horloge rafraichissement`** (`state_62`, haut-centre de la zone véhicule) montrant l'état `horloge_rafraichissement` (`entry / GEN(EVAL);`) et sa transition `tm(1000/PARAM_SIMU_freq_rafraichissement)`.
 
@@ -129,7 +131,7 @@ Mettre en œuvre le calcul périodique (50 ms) de la vitesse (`speed`) et de la 
 
 #### Choix fonctionnels et fonctionnement des primitives de simulation
 
-L'AND-line **`Simulation du vehicule` (`state_72`)** est volontairement minimaliste : elle ne contient qu'un unique état `simulation_du_vehicule` qui exécute `calcul_vitesse_distance()` à chaque événement `EVAL` (20 Hz). Toute la mécanique est encapsulée dans deux primitives de simulation (`init()` et `calcul_vitesse_distance()`), adaptées en un modèle Newtonien paramétrable (`PARAM_SIMU_*`) :
+Le module **`Simulation du vehicule`** est volontairement minimaliste : il ne contient qu'un unique état `simulation_du_vehicule` qui exécute `calcul_vitesse_distance()` à chaque événement `EVAL` (20 Hz). Toute la mécanique est encapsulée dans deux primitives de simulation (`init()` et `calcul_vitesse_distance()`), adaptées en un modèle Newtonien paramétrable (`PARAM_SIMU_*`) :
 
 ```mermaid
 flowchart LR
@@ -170,14 +172,12 @@ distance = (int)float_distance;
 
 #### Première implémentation
 
-La première version conservait les équations empiriques de `BaseProjectVehicule2022` (utilisant `fspeed`, `fdist`, `airResistance`), puis a été remplacée par le modèle Newtonien déclenché initialement par un timer local `tm(50)`. À cette étape, `calcul_vitesse_distance()` modifiait aussi elle-même le `throttle` (décélération de régime moteur et remontée autonome au ralenti).
+La première version conservait les équations empiriques de `BaseProjectVehicule2022` (utilisant `fspeed`, `fdist`, `airResistance`), puis a été remplacée par le modèle Newtonien. À cette étape, `calcul_vitesse_distance()` modifiait aussi elle-même le `throttle` (décélération de régime moteur et remontée autonome au ralenti).
 
 #### Difficultés rencontrées et erreurs corrigées
 
-* **Couplage indésirable entre dynamique et commande d'injection** : le fait que `calcul_vitesse_distance()` modifie `throttle` en parallèle des états d'accélération et du régulateur créait des conflits d'écriture impossibles à déboguer. Nous avons extrait toute gestion de `throttle` hors de `calcul_vitesse_distance()` (sauf la mise à sécurité `if (ignition == false) throttle = 0.0;`), faisant de `state_60` le seul écrivain de `throttle`.
-* **Réinitialisation involontaire de l'odomètre dans `init()`** : `init()` contenait au départ `distance = 0;`, écrasant la valeur initiale de $200\,000\text{ m}$ configurée sur l'IHM. L'instruction a été retirée puis remplacée par `float_distance = (double)distance;`.
-* **Erreur de compilation sur les attributs renommés** : lors de la refonte `fspeed`/`fdist` → `float_speed`/`float_distance`, une version intermédiaire de `init()` a brièvement assigné `speed = (double)int_speed;` (attribut inexistant), immédiatement corrigé.
-* **Calibration itérative des paramètres et léger écart résiduel** : la masse, la puissance et les frottements ont été ajustés à plusieurs reprises (`masse` : `1200` → `500` → `800` → `1500 kg`) pour rendre la simulation réactive sur l'IHM et permettre à l'ACC de décélérer efficacement au frein moteur. Lors de la dernière recalibration ACC, `CST_COEFF_ROULEMENT` a été monté à `0.05` dans `calcul_vitesse_distance()` alors que `init()` conserve `0.015` pour le calcul de `throttle_repos` — un petit écart identifié lors de l'audit du code C++ généré.
+* **Couplage indésirable entre dynamique et commande d'injection** : le fait que `calcul_vitesse_distance()` modifie `throttle` en parallèle des états d'accélération et du régulateur créait des conflits d'écriture impossibles à déboguer. Nous avons extrait toute gestion de `throttle` hors de `calcul_vitesse_distance()` (sauf la mise à sécurité `if (ignition == false) throttle = 0.0;`), faisant de `Débit d'injection d'essence` le seul écrivain de `throttle`.
+* **Calibration itérative des paramètres et léger écart résiduel** : la masse, la puissance et les frottements ont été ajustés à plusieurs reprises (`masse` : `1200` → `500` → `800` → `1500 kg`) pour rendre la simulation réactive sur l'IHM et permettre à l'ACC de décélérer efficacement au frein moteur.
 
 #### Version finale
 
@@ -192,7 +192,7 @@ Acquérir la position de la pédale d'accélération (`accelPedal` $\in [0{,}0, 
 
 #### Choix fonctionnels
 
-Dans l'AND-line **`Débit de l'injection d'essence` (`state_60`)**, la conduite manuelle est regroupée dans le super-état `pedales`, contenant l'état `acceleration`. Celui-ci rafraîchit `accelerer(accelPedal)` toutes les $50\text{ ms}$ (`tm(1000/PARAM_SIMU_freq_rafraichissement)`) via une mise à l'échelle linéaire directe sur la plage utile $[\text{throttle\_repos}, \text{PARAM\_SIMU\_max\_throttle}]$ :
+Dans le module **`Débit de l'injection d'essence`**, la conduite manuelle est regroupée dans le super-état `pedales`, contenant l'état `acceleration`. Celui-ci rafraîchit `accelerer(accelPedal)` toutes les $50\text{ ms}$ (`tm(1000/PARAM_SIMU_freq_rafraichissement)`) via une mise à l'échelle linéaire directe sur la plage utile $[\text{throttle\_repos}, \text{PARAM\_SIMU\_max\_throttle}]$ :
 
 ```cpp
 // accelerer(double accelPedal) : projection directe [0..10] -> [throttle_repos..10.0]
@@ -206,8 +206,7 @@ La première implémentation de `accelerer()` intégrait une rampe d'inertie log
 
 #### Difficultés rencontrées et erreurs corrigées
 
-* **Double inertie et sensation « molle »** : cumuler une rampe sur `throttle` dans `accelerer()` et l'inertie de masse dans `calcul_vitesse_distance()` dégradait la réactivité du slider IHM et faussait la transition vers le régulateur. Le passage à une projection affine instantanée a nettoyé le comportement.
-* **Duplication de la logique de garde entre C++ et Statechart** : garder `if (ignition == true)` à l'intérieur de `accelerer()` masquait des bugs de transitions dans le Statechart (l'état pouvait rester en `acceleration` moteur éteint sans que cela se voie sur `throttle`). La condition a été supprimée du C++ afin que **seule la garde d'état `IS_IN(moteur_on)`** du Statechart autorise l'entrée dans `acceleration`.
+* **Double inertie et sensation « molle »** : cumuler une rampe sur `throttle` dans `accelerer()` et l'inertie de masse dans `calcul_vitesse_distance()` dégradait la réactivité du slider de l'IHM et faussait la transition vers le régulateur. Par la suite, le passage à une projection affine instantanée a pu  améliorer la réactivité et nettoyer le comportement.
 
 #### Version finale
 
@@ -223,8 +222,8 @@ Ajouter la gestion de la pédale de frein (`brakePedal` $\in [0{,}0, 10{,}0]$) a
 #### Choix fonctionnels
 
 La gestion du freinage est dissociée en deux actions complémentaires :
-1. **Coupure prioritaire d'injection dans `state_60/pedales`** : l'état initial est `freinage_injection`. L'entrée dans `acceleration` exige `brakePedal < 0.5 && IS_IN(moteur_on)` (zone morte de $0{,}5$ évitant le bruit sur le slider). Dès que `brakePedal >= 0.5`, la transition vers `freinage_injection` coupe immédiatement l'injection via `freiner_injection()` (`if (throttle > throttle_repos) throttle = throttle_repos;`), quelle que soit la position de `accelPedal`.
-2. **Application continue du frein mécanique dans `state_72`** : l'effort mécanique $F_{\text{frein}}$ est calculé à $20\text{ Hz}$ (période **50 ms**, donc quatre fois plus réactif que la borne de 200 ms demandée) dans `calcul_vitesse_distance()`, y compris moteur éteint.
+1. **Coupure prioritaire d'injection dans `pedales`** : l'état initial est `freinage_injection`. L'entrée dans `acceleration` exige `brakePedal < 0.5 && IS_IN(moteur_on)` (zone morte de $0{,}5$ évitant le bruit sur le slider). Dès que `brakePedal >= 0.5`, la transition vers `freinage_injection` coupe immédiatement l'injection via `freiner_injection()` (`if (throttle > throttle_repos) throttle = throttle_repos;`), quelle que soit la position de `accelPedal`.
+2. **Application continue du frein mécanique** : l'effort mécanique $F_{\text{frein}}$ est calculé à $20\text{ Hz}$ (période **50 ms**, donc quatre fois plus réactif que la borne de 200 ms demandée) dans `calcul_vitesse_distance()`, y compris moteur éteint.
 
 ```cpp
 // freiner_injection(double brakePedal) : neutralisation immédiate de l'accélérateur
@@ -235,13 +234,11 @@ if (throttle > throttle_repos) {
 
 #### Première implémentation
 
-À l'origine (`68894a12`), le super-état `commandes_du_vehicule` était cadencé à `tm(200)` et utilisait une opération `freiner()` tentant de modéliser un « étouffement mécanique du moteur » (`if (brakePedal > 3.0 && float_speed < 8.0) throttle -= brakePedal * 0.01;`), couplé à une garde `throttle < 0.5` dans `Clé du véhicule` destinée à faire caler le moteur.
+À l'origine, le super-état `commandes_du_vehicule` était cadencé à `tm(200)` et utilisait une opération `freiner()` tentant de modéliser un « étouffement mécanique du moteur » (`if (brakePedal > 3.0 && float_speed < 8.0) throttle -= brakePedal * 0.01;`), couplé à une garde `throttle < 0.5` dans `Clé du véhicule` destinée à faire caler le moteur.
 
 #### Difficultés rencontrées et erreurs corrigées
 
-* **Calage intempestif au freinage et conflit avec le ralenti** : le mécanisme d'étouffement faisait régulièrement caler la voiture dès qu'on s'arrêtait franchement, obligeant à redémarrer le moteur à chaque arrêt. Il a été abandonné au profit de `freiner_injection()` (qui plafonne proprement à `throttle_repos` sans jamais caler).
-* **Disparition accidentelle de la transition de retour (`ecc87045` → `76d0448a`)** : lors d'une restructuration de l'AND-line d'injection, la transition `acceleration -> freinage_injection` avait été supprimée par erreur : une fois en accélération, l'appui sur le frein ne coupait plus les gaz !
-* **Faute de frappe `brakePedal >= 05` (`76d0448a`)** : lors de la recréation de cette transition, le point décimal a été omis (`brakePedal >= 05`, interprété comme `5` en C++ !). Résultat : tout freinage modéré entre `0.5` et `4.9` laissait l'accélérateur actif simultanément. La garde a dû être corrigée en `brakePedal >= 0.5`.
+* **Calage au freinage et conflit avec le ralenti** : le mécanisme d'étouffement faisait régulièrement caler la voiture dès qu'on s'arrêtait franchement, obligeant à redémarrer le moteur à chaque arrêt. Il a été abandonné au profit de `freiner_injection()` (qui plafonne proprement à `throttle_repos` sans jamais caler).
 
 #### Version finale
 
@@ -256,11 +253,11 @@ Gérer la clé de contact (`cmd_contact`), le démarrage moteur (`ev_demarrer`) 
 
 #### Choix fonctionnels
 
-L'AND-line **`Clé du véhicule` (`state_61`)** organise le cycle de vie de façon hiérarchique :
+Le module **`Clé du véhicule`** organise le cycle de vie de façon hiérarchique :
 * `contact_off` ↔ `contact_on` sur `EVAL [cmd_contact == true / false]`.
-* À l'intérieur de `contact_on` (qui appelle `calcul_batterie()` à l'entrée) :
+* À l'intérieur de `contact_on`:
   * `moteur_off` (état initial) exécute `arreter()` (`ignition = false;`).
-  * `moteur_on` n'est atteint que sur événement poussoir `ev_demarrer` sous la garde `[IS_IN(fonctionelle)]`, en exécutant `ex_demarrer()` (`ignition = true; throttle = throttle_repos; niveau_batterie -= 10;`). Il appelle `calcul_carburant()`.
+  * `moteur_on` n'est atteint que sur événement poussoir `ev_demarrer` sous la garde `[IS_IN(fonctionelle)]`, en exécutant `ex_demarrer()` (`ignition = true; throttle = throttle_repos; niveau_batterie -= 10;`). Il appelle `calcul_carburant()`. Dans un état parallèle, il calcule l'évolution de la batterie (`calcul_batterie()`), au rythme de la fréquence de rafraîchissement (`PARAM_SIMU_freq_rafraichissement`).
   * La coupure moteur intervient sur `EVAL [!IS_IN(fonctionelle) || cmd_contact == false]`.
 * **Arrêt d'urgence à haute vitesse** : basculer `cmd_contact` à `false` en roulant fait sortir de `moteur_on` → `arreter()` passe `ignition = false` → `state_60` bascule en `freinage_injection` → `calcul_vitesse_distance()` annule `throttle` tout en **conservant `float_speed`** et en maintenant la pédale de frein active. Simultanément, le régulateur, le limiteur, le Bluetooth et l'autoradio se coupent proprement.
 
@@ -270,10 +267,8 @@ Au départ, le système utilisait deux attributs booléens (`cle_contact` et `cl
 
 #### Difficultés rencontrées et erreurs corrigées
 
-* **Moteur restant « allumé » lors d'une panne sèche (`3115059e`)** : tant que `arreter()` n'était appelé qu'à l'entrée de `contact_off`, une panne de carburant ou de batterie faisait bien passer `state_61` dans `moteur_off`, mais **sans exécuter `arreter()`** puisque le contact restait mis ! `ignition` restait donc à `true`. Le déplacement de `arreter()` en `entry` de `moteur_off` (et la suppression de l'appel en `contact_off`) a garanti la cohérence `IS_IN(moteur_off) ⇔ ignition == false`.
-* **Consommation de carburant moteur coupé (`3115059e`)** : tant que `calcul_carburant()` résidait dans `simulation_du_vehicule`, la voiture pouvait consommer dès que `throttle > 0`. Son déplacement dans `moteur_on` a éliminé le problème.
-* **État initial `moteur_on` laissé par mégarde (`a6f535d8`)** : durant les tests intensifs du régulateur de vitesse, la transition par défaut avait été temporairement pointée sur `moteur_on` pour gagner du temps au lancement de la simulation ; il a fallu penser à la remettre sur `moteur_off` pour respecter le scénario nominal de démarrage.
-* **Doublon `cle_demarrer` (bool) → `ev_demarrer` (événement)** : le démarrage étant une impulsion et non un état maintenu, remplacer `cle_demarrer` par un bouton poussoir émettant `ev_demarrer` a évité le redémarrage en boucle après une coupure.
+* **Moteur restant « allumé » lors d'une panne sèche** : tant que `arreter()` n'était appelé qu'à l'entrée de `contact_off`, une panne de carburant ou de batterie faisait bien passer dans `moteur_off`, mais **sans exécuter `arreter()`** puisque le contact restait mis ! `ignition` restait donc à `true`. Le déplacement de `arreter()` en `entry` de `moteur_off` (et la suppression de l'appel en `contact_off`) a garanti la cohérence `IS_IN(moteur_off) ⇔ ignition == false`.
+* **Consommation de carburant moteur coupé** : tant que `calcul_carburant()` résidait dans `simulation_du_vehicule`, la voiture pouvait consommer dès que `throttle > 0`. Son déplacement dans `moteur_on` a éliminé le problème.
 
 #### Version finale
 
@@ -288,7 +283,7 @@ Modéliser la consommation de carburant, la charge/décharge de la batterie (alt
 
 #### Choix fonctionnels
 
-Cette partie optionnelle a été pleinement implémentée dans l'AND-line **`Ressources et pannes` (`state_252`)**, couplée aux opérations `calcul_carburant()` et `calcul_batterie()` :
+Cette partie optionnelle a été pleinement implémentée dans le module **`Ressources et pannes`**, couplée aux opérations `calcul_carburant()` et `calcul_batterie()` :
 
 * **Carburant** : consommation de `throttle * 0.005` par pas dans `calcul_carburant()` (réservoir initial `40.0 L`, max `50.0 L`, plein de `+5 L` par appui sur `ev_remplir_carburant`). Seuil de panne : `SEUIL_carburant = 5.0 L` → état `panne_carburant` (`carburant_faible = true`).
 * **Batterie** : impulsion de `-10 %` au démarrage (`ex_demarrer()`). Dans `calcul_batterie()`, si `throttle > 1.5`, l'alternateur recharge proportionnellement jusqu'à $+2{,}5\,\%/\text{s}$ (saturé à `throttle = 5.0`) ; sinon la batterie se décharge de $-0{,}25\,\%/\text{s}$ (initiale `80.0 %`). Seuil de panne : `SEUIL_batterie = 40.0 %` → état `panne_batterie` (`batterie_faible = true`).
@@ -306,13 +301,12 @@ if (throttle > 1.5) {
 
 #### Première implémentation
 
-Dans la première version (`ecc87045`), l'état `fonctionelle` était lui-même subdivisé en deux sous-états **`garee`** et **`non_garee`** (`[speed == 0 && IS_IN(contact_off)]`), et les états `remplir_carburant` / `depanner_batterie` utilisaient une transition vers un connecteur d'historique pour revenir dans `fonctionelle`. Par ailleurs, `ex_depanner_batterie()` remontait la batterie à `25 %` puis exactement à `SEUIL_batterie` (`40 %`).
+Dans la première version , l'état `fonctionelle` était lui-même subdivisé en deux sous-états **`garee`** et **`non_garee`** (`[speed == 0 && IS_IN(contact_off)]`), et les états `remplir_carburant` / `depanner_batterie` utilisaient une transition vers un connecteur d'historique pour revenir dans `fonctionelle`.
 
 #### Difficultés rencontrées et erreurs corrigées
 
-* **Piège du blocage infini après dépannage batterie (`76d0448a`)** : lorsque `ex_depanner_batterie()` remettait `niveau_batterie = SEUIL_batterie` ($40\,\%$), le véhicule sortait bien de `panne_batterie`, mais dès le premier coup de démarreur (`ex_demarrer()` retirant $10\,\%$), la batterie chutait à $30\,\% < 40\,\%$, déclenchant immédiatement une nouvelle `panne_batterie` et rendant le véhicule impossible à redémarrer ! La correction `niveau_batterie = SEUIL_batterie + 15;` ($55\,\%$) a garanti la marge nécessaire au démarrage.
-* **Complexité inutile des états `garee` / `non_garee` (`76d0448a`)** : cette sous-hiérarchie créait un problème dès qu'on était en `panne_batterie` ou `panne_carburant` (puisqu'on avait quitté `fonctionelle`, `IS_IN(garee)` devenait faux et empêchait toute réparation !). La suppression de `garee`/`non_garee` au profit de la garde directe `[speed == 0 && IS_IN(contact_off)]` sur chaque transition de dépannage a résolu ce blocage critique.
-* **Dépendance à la fréquence de simulation** : les premiers coefficients fixes (`-0.05` par tick) changeaient de vitesse physique dès qu'on modifiait `PARAM_SIMU_freq_rafraichissement`. L'expression en taux physiques par seconde multipliés par `dt` dans `calcul_batterie()` a rendu le modèle invariant à la fréquence.
+* **Piège du blocage infini après dépannage batterie** : lorsque `ex_depanner_batterie()` remettait `niveau_batterie = SEUIL_batterie` ($40\,\%$), le véhicule sortait bien de `panne_batterie`, mais dès le premier coup de démarreur (`ex_demarrer()` retirant $10\,\%$), la batterie chutait à $30\,\% < 40\,\%$, déclenchant immédiatement une nouvelle `panne_batterie` et rendant le véhicule impossible à redémarrer ! La correction `niveau_batterie = SEUIL_batterie + 15;` ($55\,\%$) a garanti la marge nécessaire au démarrage.
+* **Complexité inutile des états `garee` / `non_garee`** : cette sous-hiérarchie créait un problème dès qu'on était en `panne_batterie` ou `panne_carburant` (puisqu'on avait quitté `fonctionelle`, `IS_IN(garee)` devenait faux et empêchait toute réparation !). La suppression de `garee`/`non_garee` au profit de la garde directe `[speed == 0 && IS_IN(contact_off)]` sur chaque transition de dépannage a résolu ce blocage critique.
 
 #### Version finale
 
@@ -327,17 +321,17 @@ Maintenir une vitesse cible (`vitesseConsigne`) sur route dénivelée ($\alpha \
 
 ### Choix fonctionnels
 
-#### Découplage Pilotage (`state_71`) vs Injection (`state_60`)
+#### Découplage Pilotage vs Injection
 
-Plutôt que d'écrire `throttle` directement depuis l'état du régulateur (ce qui créerait des conflits avec les pédales), nous avons séparé le fonctionnement en deux AND-lines :
-* **`Mode de pilotage` (`state_71`)** : gère le mode logique (`mode_manuel` ↔ `mode_regulateur`), l'allumage du voyant `voyant_regulateur`, et les sous-états `maintien` / `plus` / `moins` appelant `ex_vitesseConsigne(±1)` (bornée dans $[0, 120]\text{ km/h}$).
-* **`Débit de l'injection d'essence` (`state_60`)** : bascule entre `pedales` et `regulateur` sur `EVAL [IS_IN(mode_regulateur) && accelPedal < 0.5]` et inversement sur `EVAL [IS_IN(mode_manuel) || accelPedal >= 0.5]`.
+Plutôt que d'écrire `throttle` directement depuis l'état du régulateur (ce qui créerait des conflits avec les pédales), nous avons séparé le fonctionnement en deux modules :
+* **`Mode de pilotage`** : gère le mode logique (`mode_manuel` ↔ `mode_regulateur`), l'allumage du voyant `voyant_regulateur`, et les sous-états `maintien` / `plus` / `moins` appelant `ex_vitesseConsigne(±1)` (bornée dans $[0, 120]\text{ km/h}$).
+* **`Débit de l'injection d'essence`** : bascule entre `pedales` et `regulateur` sur `EVAL [IS_IN(mode_regulateur) && accelPedal < 0.5]` et inversement sur `EVAL [IS_IN(mode_manuel) || accelPedal >= 0.5]`.
 
-Grâce à ce découplage, **la suspension sur accélérateur est naturelle et sans état supplémentaire** : appuyer sur la pédale (`accelPedal >= 0.5`) rend la main à `pedales` dans `state_60` tout en laissant `state_71` actif en `mode_regulateur` (mémorisant `vitesseConsigne`), puis le relâchement restitue immédiatement le contrôle à `regulateur`.
+Grâce à ce découplage, **la suspension sur accélérateur est naturelle et sans état supplémentaire** : appuyer sur la pédale rend la main à `pedales` dans `Débit de l'injection d'essence` tout en laissant `Mode de pilotage` actif en `mode_regulateur` (mémorisant `vitesseConsigne`), puis le relâchement restitue immédiatement le contrôle à `regulateur`.
 
 #### Loi de commande : correcteur PI discret auto-dimensionné
 
-La loi statique fournie dans l'énoncé n'était pas adaptée au modèle physique Newtonien en forte pente. L'asservissement final (`calcul_regulateur_vitesse()`, cadencé à `PARAM_SIMU_freq_regulateur = 3 Hz`) repose sur un **correcteur PI discret avec saturation anti-windup**, dont les gains sont calculés automatiquement dans `init()` à partir de la masse, de la puissance et de la fréquence :
+La loi statique fournie dans l'énoncé n'était pas adaptée au modèle physique Newtonien en forte pente. L'asservissement final (`calcul_regulateur_vitesse()`, cadencé à `PARAM_SIMU_freq_regulateur = 3 Hz`) repose sur un **correcteur PI discret avec saturation**, dont les gains sont calculés automatiquement dans `init()` à partir de la masse, de la puissance et de la fréquence :
 
 ```mermaid
 flowchart LR
@@ -365,17 +359,16 @@ Ki_regulateur = Kp_regulateur / PARAM_SIMU_Ki_regulateur;
 ### Première implémentation
 
 Notre implémentation du régulateur a traversé **trois générations distinctes** :
-1. **V1 — Formule linéaire du sujet (`fe89426d`)** : `error = 5*(vitesseConsigne - float_speed)/6.0`, `steady = vitesseConsigne/12.0`, commandée par un interrupteur booléen `cmd_regulateur`.
-2. **V2 — Correcteurs non-linéaires (`248574c2`, `0e5102b2`)** : expérimentation d'une intégration quadratique signée (`throttle += 0.05 * e * |e|`), puis cubique (`throttle += K_cube * e³`, jugée *« agréable »* sur petits écarts).
-3. **V3 — Correcteur PI auto-dimensionné (`a6f535d8` → `7e69e249`)** : retour à une structure PI classique rigoureuse avec anti-windup (l'opération `regulateur_Prof()` étant conservée à titre de référence).
+1. **V1 — Formule linéaire du sujet** : `error = 5*(vitesseConsigne - float_speed)/6.0`, `steady = vitesseConsigne/12.0`, commandée par un interrupteur booléen `cmd_regulateur`.
+2. **V2 — Correcteurs non-linéaires** : expérimentation d'une intégration quadratique signée (`throttle += 0.05 * e * |e|`), puis cubique (`throttle += K_cube * e³`, jugée *« agréable »* sur petits écarts).
+3. **V3 — Correcteur PI auto-dimensionné** : retour à une structure PI classique rigoureuse (l'opération `regulateur_Prof()` étant conservée à titre de référence).
 
 ### Difficultés rencontrées et erreurs corrigées
 
-* **Désynchronisation critique du switch booléen `cmd_regulateur` (`fe89426d` → `8999114b`)** : lorsque le régulateur se désactivait automatiquement au freinage (`brakePedal >= 0.5`), le Statechart forçait `cmd_regulateur = false;`, mais l'interrupteur visuel de l'IHM restait parfois en position enclenchée, réactivant le régulateur dès le relâchement du frein ! Le passage à un **bouton poussoir événementiel `ev_regulateur`** (couplé au témoin lecture seule `voyant_regulateur`) a définitivement éliminé cet effet.
+* **Désynchronisation critique du switch booléen `cmd_regulateur`** : lorsque le régulateur se désactivait automatiquement au freinage, le Statechart forçait `cmd_regulateur = false;`, mais l'interrupteur visuel de l'IHM restait parfois en position enclenchée, réactivant le régulateur dès le relâchement du frein ! Le passage à un **bouton poussoir événementiel `ev_regulateur`** (couplé au témoin lecture seule `voyant_regulateur`) a définitivement éliminé cet effet.
 * **Divergence du correcteur cubique sur grands échelons** : avec `K_cube * e³`, une erreur de $30\text{ km/h}$ générait une variation $30^3 = 27\,000$ fois plus forte qu'une erreur de $1\text{ km/h}$, saturant violemment `throttle` et induisant des oscillations. Le PI auto-dimensionné a garanti une réponse homogène quelle que soit l'amplitude d'erreur ou la masse configurée.
-* **À-coup à l'enclenchement (*bumpless transfer*, `3115059e`)** : initialement, `steady` n'était réinitialisé qu'à la *sortie* du régulateur, provoquant un saut brutal de `throttle` à l'activation suivante si le conducteur avait accéléré entre-temps. L'action `entry / vitesseConsigne = speed; steady = throttle;` sur `mode_regulateur` assure une reprise imperceptible.
-* **Scintillement de la vitesse affichée (`7e69e249`)** : comme `speed = (int)float_speed` tronque vers le bas, une régulation centrée sur `50.0` oscillait entre `49.98` (affiché `49`) et `50.02` (affiché `50`). Viser `vitesseConsigne + 0.5` stabilise parfaitement l'entier affiché.
-* **Erreurs de nommage de variables à la refonte PI (`a6f535d8` → `7e69e249`)** : un renommage incomplet (`GLOB_SIMU_Kp_regulateur` / `GLOB_SIMU_Ki_regulateur` au lieu de `Kp_regulateur` / `Ki_regulateur`) avait cassé la compilation entre deux commits avant d'être corrigé.
+* **À-coup à l'enclenchement** : initialement, `steady` n'était réinitialisé qu'à la *sortie* du régulateur, provoquant un saut brutal de `throttle` à l'activation suivante si le conducteur avait accéléré entre-temps. L'action `entry / vitesseConsigne = speed; steady = throttle;` sur `mode_regulateur` assure une reprise imperceptible.
+* **Scintillement de la vitesse affichée** : comme `speed = (int)float_speed` tronque vers le bas, une régulation centrée sur `50.0` oscillait entre `49.98` (affiché `49`) et `50.02` (affiché `50`). Viser `vitesseConsigne + 0.5` stabilise parfaitement l'entier affiché.
 
 ### Version finale
 
@@ -390,10 +383,10 @@ Notre implémentation du régulateur a traversé **trois générations distincte
 
 ### Choix fonctionnels
 
-L'AND-line **`Limiteur de vitesse` (`state_76`)** met en œuvre les mécanismes suivants :
+Le module **`Limiteur de vitesse`** met en œuvre les mécanismes suivants :
 
-* **Exclusion mutuelle symétrique** : `ev_limiteur` active le limiteur (si `IS_IN(moteur_on)`) et renvoie `state_71` vers `mode_manuel` ; réciproquement, `ev_regulateur` éteint `state_76` vers `limiteur_off`.
-* **Consigne initiale et double appui `< 500 ms`** : l'entrée dans `consigne_fixe` initialise `vitesseConsigne = valeur_initiale_limiteur` ($50\text{ km/h}$). Un appui sur `+` passe en `plus` (`entry / ex_vitesseConsigne(+1);`). Si un second `+` survient avant `tm(500)`, la transition de retour exécute `ex_vitesseConsigne(+9)` (total exact : $+10\text{ km/h}$). Sinon, `tm(500)` ramène en `consigne_fixe` (total : $+1\text{ km/h}$). Logique strictement symétrique pour `-` (`-1` puis `-9`).
+* **Exclusion mutuelle symétrique** : `ev_limiteur` active le limiteur (si `IS_IN(moteur_on)`) et renvoie vers `mode_manuel` ; réciproquement, `ev_regulateur` renvoie vers `limiteur_off`.
+* **Consigne initiale et double appui** : l'entrée dans `consigne_fixe` initialise `vitesseConsigne = valeur_initiale_limiteur` ($50\text{ km/h}$). Un appui sur `+` passe en `plus`(`ex_vitesseConsigne(+1)`). Si un second `+` survient avant ($500\text{ ms}$), la transition de retour exécute `ex_vitesseConsigne(+9)` (total exact : $+10\text{ km/h}$). Sinon, `tm(500)` ramène en `consigne_fixe` (total : $+1\text{ km/h}$). Logique strictement symétrique pour `-` (`-1` puis `-9`).
 * **Activation différée (`limiteur_inhibe` → `limiteur_effectif`)** : tant que `speed > vitesseConsigne`, le limiteur reste en `limiteur_inhibe` (`limiteur_attente = true`) sans brider ni déclencher d'alarme. Dès que `speed <= vitesseConsigne`, il bascule en `limiteur_effectif` (`limiteur_attente = false`).
 * **Bridage d'injection dans `state_60`** : `acceleration` bascule vers `freinage_injection` dès que `IS_IN(limiteur_effectif) && float_speed >= vitesseConsigne + 0.5`.
 * **Kick-down** : désactivation automatique sur `EVAL [IS_IN(moteur_off) || ((vitesseConsigne - speed) < 10 && accelPedal > 7)]`.
@@ -401,22 +394,21 @@ L'AND-line **`Limiteur de vitesse` (`state_76`)** met en œuvre les mécanismes 
 
 ### Première implémentation
 
-La première implémentation (`7e69e249` → `b59e5d70`) utilisait un interrupteur `cmd_limiteur`, un seuil de kick-down à `accelPedal > 5`, un état temporaire `stabilisation` (`tm(2000)`), et surtout une **décomposition orthogonale interne (`And`) à l'intérieur de `limiteur_on`** séparant `state_81` (`limiteur_inhibe` ↔ `limiteur_effectif`) et `state_82` (`maintien_consigne` → `stabilisation` / `limite_tenue` / `depassement`).
+La première implémentation utilisait un interrupteur `cmd_limiteur`, un seuil de kick-down à `accelPedal > 5`, un état temporaire `stabilisation` (`tm(2000)`), et surtout une **décomposition orthogonale interne (`And`) à l'intérieur de `limiteur_on`** séparant  `limiteur_inhibe` ↔ `limiteur_effectif` et `maintien_consigne` → `stabilisation` / `limite_tenue` / `depassement`.
 
 ### Difficultés rencontrées et erreurs corrigées
 
 Cette fonctionnalité a concentré certains des bugs comportementaux les plus instructifs du projet :
 
-1. **Double appui : latence de 500 ms vs bug du `+11 km/h` (`7e69e249` → `cec0a9cf`)** :
+1. **Double appui : latence de 500 ms vs bug du `+11 km/h`** :
    * En V1, l'état `plus` attendait la fin du `tm(500)` pour appliquer `+1` (ou `+10` sur second appui) : un simple clic avait donc une latence pénible d'une demi-seconde sur l'affichage.
-   * En déplaçant `+1` en action d'entrée pour un retour visuel immédiat, un second clic qui ajoutait `+10` produisait **`+11 km/h`** ! La solution propre a consisté à appliquer **`+1` à l'entrée et `+9` sur le second appui** (et `-1` / `-9` sur `-`).
-2. **Faux déclenchement d'alarme pendant l'inhibition (`b59e5d70` → `2bbf29c0`)** :
-   * Avec `limiteur_on` découpé en deux régions parallèles (`state_81` et `state_82`), activer le limiteur à $90\text{ km/h}$ (pour une consigne initiale de $50\text{ km/h}$) plaçait `state_81` en `limiteur_inhibe`, mais `state_82` quittait `stabilisation` au bout de $2\text{ s}$ (`tm(2000)`) et entrait en `depassement` — **faisant hurler la sirène alors que le limiteur était encore en attente !**
+2. **Faux déclenchement d'alarme pendant l'inhibition** :
+   * Avec `limiteur_on` découpé en deux régions parallèles, activer le limiteur à $90\text{ km/h}$ (pour une consigne initiale de $50\text{ km/h}$) nous plaçait en `limiteur_inhibe`, mais quittait `stabilisation` au bout de $2\text{ s}$ (`tm(2000)`) et entrait en `depassement` — **faisant sonner l'alarme alors que le limiteur était encore en attente !**
    * De plus, une transition `limiteur_effectif -> limiteur_inhibe` sur `[speed >= vitesseConsigne + 3]` entrait en conflit direct avec `limite_tenue -> depassement` sur `[vitesseConsigne < speed - 3]`.
-   * **Correction architecturale (`2bbf29c0`)** : suppression complète de l'orthogonalité interne et de l'état rustine `stabilisation`. Les états `limite_tenue` et `depassement` ont été **emboîtés hiérarchiquement à l'intérieur de `limiteur_effectif`**, rendant par construction toute alarme impossible tant que le limiteur est inhibé.
-3. **Effet yo-yo sur le bridage d'injection (`b59e5d70` → `2bbf29c0`)** : tester l'entier `speed >= vitesseConsigne + 0.5` puis `speed >= vitesseConsigne - 0.5` dans `state_60` créait des oscillations saccadées d'injection. Le passage à `float_speed >= vitesseConsigne + 0.5` a lissé le maintien à la limite.
-4. **Sensibilité excessive du kick-down (`cec0a9cf` → `8999114b`)** : le seuil initial `accelPedal > 5` désactivait le limiteur lors d'une simple accélération franche ; il a été relevé à `accelPedal > 7`.
-5. **Égalité stricte ratée et inversion résiduelle sur la sortie de `depassement`** : en V1 (`8999114b`), le retour `depassement -> limite_tenue` testait `[vitesseConsigne == speed]`, condition fragile qui pouvait être sautée lors d'un freinage appuyé faisant passer `speed` de `51` à `49` en un pas ! Lors de sa réécriture en inégalité (`2bbf29c0`), la garde `EVAL [vitesseConsigne <= speed]` comporte une inversion de sens (l'attendu étant `speed <= vitesseConsigne`) : l'audit du modèle final a permis de la relever (l'alarme reste coupée par `alerte_depassement(0)` dès qu'on désactive le limiteur).
+   * **Correction architecturale** : suppression complète de l'orthogonalité interne et de l'état rustine `stabilisation`. Les états `limite_tenue` et `depassement` ont été **emboîtés hiérarchiquement à l'intérieur de `limiteur_effectif`**, rendant par construction toute alarme impossible tant que le limiteur est inhibé.
+3. **Effet yo-yo sur le bridage d'injection** : tester l'entier `speed >= vitesseConsigne + 0.5` puis `speed >= vitesseConsigne - 0.5` créait des oscillations saccadées d'injection. Le passage à `float_speed >= vitesseConsigne + 0.5` a lissé le maintien à la limite.
+4. **Sensibilité excessive du kick-down** : le seuil initial `accelPedal > 5` désactivait le limiteur lors d'une simple accélération franche ; il a été relevé à `accelPedal > 7`.
+5. **Égalité stricte ratée et inversion résiduelle sur la sortie de `depassement`** : en V1, le retour `depassement -> limite_tenue` testait `[vitesseConsigne == speed]`, condition fragile qui pouvait être sautée lors d'un freinage appuyé faisant passer `speed` de `51` à `49` en un pas ! Lors de sa réécriture en inégalité, la garde `EVAL [vitesseConsigne <= speed]` comporte une inversion de sens (l'attendu étant `speed <= vitesseConsigne`) : l'audit du modèle final a permis de la relever (l'alarme reste coupée par `alerte_depassement(0)` dès qu'on désactive le limiteur).
 
 ### Version finale
 
@@ -426,14 +418,14 @@ Cette fonctionnalité a concentré certains des bugs comportementaux les plus in
 
 ## 5. Contrôleur de Kit Bluetooth « mains libres » et infodivertissement
 
-Compte tenu de l'ampleur fonctionnelle de cet ensemble — qui mobilise **8 AND-lines** du Statechart final — il est présenté en **quatre sous-parties** : protocole Bluetooth/PIN et batterie, appels et redirection mains-libres, messagerie SMS, et autoradio à priorités audio.
+Compte tenu de l'ampleur fonctionnelle de cet ensemble il est présenté en **quatre sous-parties** : protocole Bluetooth/PIN et batterie, appels et redirection mains-libres, messagerie SMS, et autoradio à priorités audio.
 
 ### Principe de simulation réaliste du Bluetooth : cloisonnement strict et paquets `params->`
 
-Bien que toutes les AND-lines cohabitent au sein de la classe `_SysVehicule` pour les besoins de la simulation Rhapsody, nous avons volontairement conçu le système comme **deux équipements physiques totalement indépendants** (d'un côté le **Téléphone** : `state_96`, `state_126`, `state_139` ; de l'autre le **Kit Véhicule** : `state_87`, `state_166`, `state_218`, auxquels s'ajoutent les simulateurs réseau `state_146` et `state_206`).
+Bien que toutes les modules cohabitent au sein de la classe `_SysVehicule` pour les besoins de la simulation Rhapsody, nous avons volontairement conçu le système comme **deux équipements physiques totalement indépendants** (d'un côté le **Téléphone** : `state_96`, `state_126`, `state_139` ; de l'autre le **Kit Véhicule** : `state_87`, `state_166`, `state_218`, auxquels s'ajoutent les simulateurs réseau `state_146` et `state_206`).
 
-* **Exécution autonome sans mémoire partagée** : chaque bloc d'AND-lines est capable de s'exécuter de manière autonome sur son propre système matériel, **sans aucun état (`IS_IN`), aucun attribut ni aucune opération partagés entre le téléphone et le véhicule**. La **seule exception** concerne l'accès au périphérique audio Windows (`play_sound()` / `PlaySound`, cf. [§ 8](#8-implémentation-de-la-gestion-sonore-sous-rhapsody)), imposée par le fait que les deux systèmes s'exécutent sur le même poste de simulation.
-* **Transmission d'informations par événements paramétrés (`GEN(...)` → `params->`)** : pour simuler fidèlement l'échange de **paquets Bluetooth** sur une liaison radio, toute donnée devant franchir la frontière entre le téléphone et le kit véhicule est encapsulée dans un **événement Rhapsody paramétré**. Côté émetteur, la macro `GEN(ev_nom(valeur))` sérialise la donnée dans l'instance d'événement ; côté récepteur, la transition déclenchée extrait la charge utile via le pointeur généré **`params->nom_du_parametre`** (mécanisme OXF standard de Rhapsody C++), sans jamais lire directement un attribut de l'autre système :
+* **Exécution autonome sans mémoire partagée** : chaque bloc de modules est capable de s'exécuter de manière autonome sur son propre système matériel, **sans aucun état (`IS_IN`), aucun attribut ni aucune opération partagés entre le téléphone et le véhicule**. La **seule exception** concerne l'accès au périphérique audio Windows (`play_sound()` / `PlaySound`, cf. [§ 8](#8-implémentation-de-la-gestion-sonore-sous-rhapsody)), imposée par le fait que les deux systèmes s'exécutent sur le même poste de simulation.
+* **Transmission d'informations par événements paramétrés (`GEN(...)` → `params->`)** : pour simuler fidèlement l'échange de **paquets Bluetooth** sur une liaison radio, toute donnée devant franchir la frontière entre le téléphone et le kit véhicule est encapsulée dans un **événement paramétré**. Côté émetteur, la macro `GEN(ev_nom(valeur))` permet d'envoyer la donnée encapsulée ; côté récepteur, la transition déclenchée extrait la donnée via le pointeur généré **`params->nom_du_parametre`**, sans jamais lire directement un attribut de l'autre système :
 
 | Fonctionnalité | Événement (paquet Bluetooth) | Émission côté Téléphone | Réception côté Kit Véhicule (`params->`) |
 | :--- | :--- | :--- | :--- |
@@ -452,7 +444,7 @@ Modéliser le dialogue entre un kit véhicule esclave (actif contact mis) et un 
 
 #### Choix fonctionnels
 
-Trois AND-lines collaborent exclusivement par échanges de paquets événementiels :
+Trois modules collaborent exclusivement par échanges de paquets événementiels :
 * **`Jumelage kit main libre` (`state_87`, côté véhicule)** : démarre après `tm(325)` lorsque `IS_IN(contact_on)`, diffuse sa présence via `GEN(ev_kit_vehicule_pret)` toutes les `500 ms` en `recherche_telephone`, n'accepte `ev_demande_jumelage` que sous **`[IS_IN(moteur_off)]`**, demande le PIN (`GEN(ev_demande_mdp)`), et vérifie `verifier_mdp(params->mdp)` sur réception de `ev_tentative_mdp`.
 * **`Telephone` (`state_96`, côté téléphone)** : encapsule le Bluetooth dans `telephone_actif` (dépendant de `telephone_allume && niveau_batterie_telephone > 0`). Une fois le kit détecté (`ev_kit_vehicule_pret`), aiguille automatiquement vers `connexion` si `kit_jumele == true`, ou vers `jumelage` (`attente_jumelage` → `attente_reponse` → `jumelage_effectif`) sinon.
 * **`Batterie téléphone` (`state_126`, côté téléphone)** : décharge de $-1\,\%/\text{s}$ lorsque `IS_IN(telephone_actif)`, recharge de $+5\,\%$ toutes les $1{,}5\text{ s}$ si `charge_vehicule_telephone == true`, et émet le paquet `ev_actualisation_batterie_telephone_vehicule(niveau_batterie_telephone)`.
@@ -521,15 +513,13 @@ sequenceDiagram
 
 #### Première implémentation
 
-Dans la première ébauche (`6ce1ad56` → `ebe690e7`), le téléphone n'avait ni bouton marche/arrêt ni état `bluetooth_telephone_desactive`, et la vérification `verifier_mdp()` était exécutée **localement côté téléphone** (sans aucun échange avec le kit), en comparant directement la variable globale `champ_mdp == mot_de_passe`.
+Dans la première ébauche, le téléphone n'avait ni bouton marche/arrêt ni état `bluetooth_telephone_desactive`, et la vérification `verifier_mdp()` était exécutée **localement côté téléphone** (sans aucun échange avec le kit), en comparant directement la variable globale `champ_mdp == mot_de_passe`.
 
 #### Difficultés rencontrées et erreurs corrigées
 
-* **Oubli de la macro `GEN(...)` et mauvaise action sur `bluetooth_desactive` (`ebe690e7` → `ffaf2fb6`)** : dans la première version, l'action de sortie de `bluetooth_desactive` contenait simplement `ev_bluetooth_kit_desactive` (sans `GEN(...)`, donc sans rien émettre, et déclenchée à la *sortie* au lieu de l'*entrée* !). Corrigé en `entry / VOYANT_bluetooth_vehicule = false; GEN(ev_bluetooth_kit_desactive);`.
-* **Contournement involontaire de la règle « moteur éteint » (`ebe690e7` → `ffaf2fb6`)** : tant que le téléphone validait lui-même le PIN, le jumelage réussissait même moteur allumé ! Déporter `jumelage_kit` sur le kit (`state_87`, gardé par `[IS_IN(moteur_off)]`) et ajouter l'état `attente_reponse` avec timeout `tm(500)` côté téléphone a permis de détecter et signaler proprement le refus moteur tournant.
-* **Passage du PIN par événement paramétré (`ffaf2fb6` → `5bcb9ea4`)** : au lieu de lire une variable partagée `champ_mdp` (qui conservait l'ancien code erroné à l'écran), `ev_tentative_mdp(champ_mdp)` transmet le mot de passe en paramètre (`params->mdp`) et `verifier_mdp()` réinitialise systématiquement `champ_mdp = ""`.
-* **Confusion de variable batterie : batterie voiture vs batterie téléphone (`9d5036e2`)** : lors de l'ajout de l'extinction automatique du téléphone, la garde de `telephone_actif -> telephone_eteint` testait par mégarde **`niveau_batterie == 0`** (la batterie du **véhicule** !) au lieu de `niveau_batterie_telephone <= 0` — le téléphone ne s'éteignait donc jamais sur batterie vide ! Corrigé par la suite en `EVAL [niveau_batterie_telephone <= 0 || !(telephone_allume)]`.
-* **Décharge fantôme téléphone éteint (`f18e79d3` → `9d5036e2`)** : dans `state_126`, l'état `batterie_telephone` bouclait inconditionnellement sur `tm(1000)` en appelant `decharge_telephone()`, vidant la batterie même lorsque le téléphone était éteint. L'ajout de l'état intermédiaire `verifiaction_telephone_allume` gardé par `EVAL [IS_IN(telephone_actif)]` a corrigé cette fuite.
+* **Oubli de la macro `GEN(...)` et mauvaise action sur `bluetooth_desactive`** : dans la première version, l'action de sortie de `bluetooth_desactive` contenait simplement `ev_bluetooth_kit_desactive` (sans `GEN(...)`, donc sans rien émettre, et déclenchée à la *sortie* au lieu de l'*entrée* !). Corrigé en `entry / VOYANT_bluetooth_vehicule = false; GEN(ev_bluetooth_kit_desactive);`.
+* **Contournement involontaire de la règle « moteur éteint »** : tant que le téléphone validait lui-même le PIN, le jumelage réussissait même moteur allumé ! Déporter `jumelage_kit` sur le kit (`state_87`, gardé par `[IS_IN(moteur_off)]`) et ajouter l'état `attente_reponse` avec timeout `tm(500)` côté téléphone a permis de détecter et signaler proprement le refus moteur tournant.
+* **Passage du PIN par événement paramétré** : au lieu de lire une variable partagée `champ_mdp` (qui conservait l'ancien code erroné à l'écran), `ev_tentative_mdp(champ_mdp)` transmet le mot de passe en paramètre (`params->mdp`) et `verifier_mdp()` réinitialise systématiquement `champ_mdp = ""`.
 
 #### Version finale
 
@@ -547,7 +537,7 @@ Gérer la réception d'appels entrants (sonneries visuelle et sonore, acceptatio
 
 #### Choix fonctionnels
 
-Le traitement des appels s'articule autour de trois AND-lines découplées :
+Le traitement des appels s'articule autour de trois modules découplées :
 1. **`Appel Extérieur` (`state_146`)** : simule le réseau appelant (`telephone_SIM` → `tentative_appel` émettant `GEN(ev_SIM_appel)` toutes les `100 ms` pendant `5 s` max → `discussion_telephonique` sur `ev_appel_en_cours` → retour sur `ev_SIM_raccrocher`).
 2. **`Communication telephone` (`state_139`)** : bascule entre `arret_de_communication` (quand `IS_IN(telephone_eteint)`) et `gestion_communication` → `gestion_communication_telephone` (**état `And` à 3 sous-régions parallèles**) :
    * `state_183` : appels sur le téléphone (`attente_appel_tel`, `gestion_sonnerie` [clignotement voyant + `sonnerie.wav` en parallèle, voir [§ 8](#8-implémentation-de-la-gestion-sonore-sous-rhapsody)], `appel_en_cours`).
@@ -587,14 +577,12 @@ sequenceDiagram
 
 #### Première implémentation
 
-Dans la première version (`d165757a` → `caa1ac20`), `gestion_communication_telephone` et `redirection_kit_bluetooth_communication` étaient **deux états frères mutuellement exclusifs (`OR`)**. Le réseau appelant se nommait `telephone_exterieur` et sortait de `discussion_telephonique` en écoutant directement `ev_raccrocher_kit` et `ev_raccrocher_telephone`.
+Dans la première version, `gestion_communication_telephone` et `redirection_kit_bluetooth_communication` étaient **deux états frères mutuellement exclusifs (`OR`)**. Le réseau appelant se nommait `telephone_exterieur` et sortait de `discussion_telephonique` en écoutant directement `ev_raccrocher_kit` et `ev_raccrocher_telephone`.
 
 #### Difficultés rencontrées et erreurs corrigées
 
-* **Perte de contexte d'appel lors d'une connexion/déconnexion Bluetooth (`3feef2e1`)** : avec l'architecture initiale `OR`, connecter le kit ou couper le contact en plein appel détruisait l'état actif de `gestion_communication_telephone` et désynchronisait les boutons téléphone vs volant. La refactorisation finale (`3feef2e1`) a transformé la redirection Bluetooth en **sous-région orthogonale interne `state_262`** à l'intérieur de `gestion_communication_telephone`, tout en ajoutant les transitions croisées (`ev_decrocher_telephone`, `ev_raccrocher_telephone`, `ev_btn_telephone_sms`) sur la branche kit : décrocher sur le téléphone ou au volant maintient désormais les deux côtés parfaitement cohérents.
+* **Perte de contexte d'appel lors d'une connexion/déconnexion Bluetooth (`3feef2e1`)** : avec l'architecture initiale `OR`, connecter le kit ou couper le contact en plein appel détruisait l'état actif de `gestion_communication_telephone` et désynchronisait les boutons téléphone vs volant. La refactorisation finale a transformé la redirection Bluetooth en **sous-région orthogonale interne `state_262`** à l'intérieur de `gestion_communication_telephone`, tout en ajoutant les transitions croisées (`ev_decrocher_telephone`, `ev_raccrocher_telephone`, `ev_btn_telephone_sms`) sur la branche kit : décrocher sur le téléphone ou au volant maintient désormais les deux côtés parfaitement cohérents.
 * **Simulateur SIM bloqué en `discussion_telephonique` (`9c50bc77` – *fix ev_SIM_appel*)** : écouter uniquement les boutons manuels `ev_raccrocher_*` dans `state_146` laissait le correspondant bloqué en communication lorsque l'appel se terminait par extinction du téléphone ou perte de liaison. La solution a consisté à renommer l'état en `telephone_SIM`, unifier le flux sur `ev_btn_SIM_appel` / `ev_SIM_appel`, et émettre **`GEN(ev_SIM_raccrocher)` en action de sortie (`exit`)** de `appel_en_cours` et `transfer_appel`.
-* **Sonnerie sonore qui ne s'arrêtait pas au décrochage ou au timeout (`3feef2e1`)** : la lecture asynchrone en boucle continuait en tâche de fond après la prise d'appel ou la fin des 5 secondes de sonnerie ; ce problème a été résolu via l'ajout de `play_sound("stop")` (détaillé en [§ 8 — Implémentation de la gestion sonore](#8-implémentation-de-la-gestion-sonore-sous-rhapsody)).
-* **Piège Rhapsody : création silencieuse d'événements sur fautes de frappe** : lors du développement rapide des transitions téléphonie/SMS, Rhapsody crée automatiquement un nouvel événement dans le package à chaque coquille saisie sur une flèche (laissant apparaître dans le modèle des événements parasites tels que `ev_raccrocher_telephonel`, `ev_raccroher_telephone`, `ev_eppel_termine_kit`, `ev_bnt_appel_externe`). Ce retour d'expérience nous a amenés à vérifier systématiquement le navigateur d'événements pour traquer les transitions qui ne se déclenchaient jamais à cause d'une lettre de différence.
 
 #### Version finale
 
@@ -613,8 +601,8 @@ Recevoir des SMS en parallèle des appels, afficher leur nombre et un témoin lu
 #### Choix fonctionnels
 
 * **Générateur externe (`SMS Extérieur`, `state_206`)** : transforme `ev_sms` en `GEN(ev_envoi_sms)`.
-* **Parallélisme natif** : les automates SMS vivent dans leurs propres sous-régions orthogonales (`state_184` sur téléphone, `state_189` dans la redirection BT, `state_199` sur le kit), garantissant qu'un SMS reçu en plein appel est comptabilisé sans perturber la conversation.
-* **Source de vérité unique et sécurité routière** : seul le téléphone modifie `nbr_sms_telephone` (via `actualisation_sms_telephone(±1)`) et pousse la valeur exacte vers le kit via des événements paramétrés (`ev_transfert_sms_to_kit`, `ev_nv_sms_kit`, `ev_actualisation_sms_kit`). Côté kit (`state_199`), la transition `messagerie_kit -> lire_message_kit` est gardée par **`[speed <= 0]`** (lecture impossible en roulant).
+* **Parallélisme** : les automatismes SMS sont totalement indépendants (`state_184` sur téléphone, `state_189` dans la redirection BT, `state_199` sur le kit), garantissant qu'un SMS reçu en plein appel est comptabilisé sans perturber la conversation.
+* **Source de vérité unique et sécurité routière** : seul le téléphone modifie la sauvegarde des SMS non lus et pousse la valeur exacte vers le kit via des événements paramétrés (`ev_transfert_sms_to_kit`, `ev_nv_sms_kit`, `ev_actualisation_sms_kit`). Côté kit (`state_199`), la transition `messagerie_kit -> lire_message_kit` est gardée par **`[speed <= 0]`** (lecture impossible en roulant).
 * **Persistance à l'extinction** : lorsque le téléphone s'éteint (`arret_de_communication`), `nbr_sauvegarde_sms_telephone = nbr_sms_telephone` sauvegarde les SMS non lus, qui sont restaurés à la sortie lors du rallumage. À la déconnexion Bluetooth, `VOYANT_kit(false)` remet `nbr_sms_kit = 0` et éteint les voyants tableau de bord.
 
 ##### Échange 5 — Synchronisation et lecture de SMS via paquets Bluetooth (`params->`)
@@ -643,12 +631,12 @@ sequenceDiagram
 
 #### Première implémentation
 
-Dans la première version (`fe4c06a2`), les sous-régions SMS utilisaient 5 états côté redirection (`init_sms_kit`, `transfert_sms`, `attente_sms_kit`, `reception_sms_kit`, `lire_sms_kit`), incrémentaient **deux compteurs séparément** (`actualisation_sms_kit(1); actualisation_sms_telephone(1)`), et s'appuyaient sur des événements booléens `ev_nv_message_kit` et `ev_messagerie_vide_kit` pour allumer ou éteindre manuellement les voyants.
+Dans la première version, les sous-régions SMS utilisaient 5 états côté redirection (`init_sms_kit`, `transfert_sms`, `attente_sms_kit`, `reception_sms_kit`, `lire_sms_kit`), incrémentaient **deux compteurs séparément** (`actualisation_sms_kit(1); actualisation_sms_telephone(1)`), et s'appuyaient sur des événements booléens `ev_nv_message_kit` et `ev_messagerie_vide_kit` pour allumer ou éteindre manuellement les voyants.
 
 #### Difficultés rencontrées et erreurs corrigées
 
-* **Dérive entre `nbr_sms_telephone` et `nbr_sms_kit` (`fe4c06a2` → `9d5036e2`)** : maintenir deux compteurs indépendants et tenter de recopier `nbr_sms_telephone = nbr_sms_kit` à la lecture créait des décalages dès qu'un SMS arrivait pendant une déconnexion. La refactorisation (`9d5036e2`) a supprimé `init_sms_kit`/`transfert_sms`/`attente_sms_kit` pour faire de `nbr_sms_telephone` l'unique référence et calculer les voyants de manière déclarative : `VOYANT_vehicule_sms = (nbr_sms_kit > 0)` et `VOYANT_telephone_sms = (nbr_sms_telephone > 0)`.
-* **Blocage de la lecture SMS sur téléphone (`9d5036e2` → `b1047c59`)** : dans `state_184`, la transition de retour `lire_sms -> reception_sms` portait initialement la garde **`[nbr_sms_telephone == 0]`** ! Dès lors qu'il y avait au moins 2 SMS non lus, lire le premier faisait passer le compteur à `1 != 0`, **bloquant définitivement la machine dans `lire_sms`** ! Remplacer cette garde par `tm(10)` a débloqué la lecture successive de plusieurs messages.
+* **Dérive entre `nbr_sms_telephone` et `nbr_sms_kit`** : maintenir deux compteurs indépendants et tenter de recopier `nbr_sms_telephone = nbr_sms_kit` à la lecture créait des décalages dès qu'un SMS arrivait pendant une déconnexion. La refactorisation (`9d5036e2`) a supprimé `init_sms_kit`/`transfert_sms`/`attente_sms_kit` pour faire de `nbr_sms_telephone` l'unique référence et calculer les voyants de manière déclarative : `VOYANT_vehicule_sms = (nbr_sms_kit > 0)` et `VOYANT_telephone_sms = (nbr_sms_telephone > 0)`.
+* **Blocage de la lecture SMS sur téléphone** : dans `state_184`, la transition de retour `lire_sms -> reception_sms` portait initialement la garde **`[nbr_sms_telephone == 0]`** ! Dès lors qu'il y avait au moins 2 SMS non lus, lire le premier faisait passer le compteur à `1 != 0`, **bloquant définitivement la machine dans `lire_sms`** ! Remplacer cette garde par `tm(10)` a débloqué la lecture successive de plusieurs messages.
 * **SMS non synchronisés quand lus sur le téléphone alors que le kit est connecté (`3feef2e1`)** : ajouter la transition `reception_sms_kit -> lire_sms_kit` sur `ev_btn_telephone_sms` (en plus de `ev_lire_sms_kit`) a assuré la mise à jour instantanée du compteur tableau de bord quel que soit l'écran utilisé.
 
 #### Version finale
@@ -703,13 +691,11 @@ flowchart LR
 
 #### Première implémentation
 
-Dans la première version (`caa1ac20`), la région radio comportait des états nommés `contac_active` et `contact_eteint`, et déclenchait directement des appels Win32 `PlaySound` locaux depuis chaque piste musicale (voir l'historique audio complet en [§ 8](#8-implémentation-de-la-gestion-sonore-sous-rhapsody)).
+Dans la première version, la région radio comportait des états nommés `contac_active` et `contact_eteint`, et déclenchait directement des appels Win32 `PlaySound` locaux depuis chaque piste musicale (voir l'historique audio complet en [§ 8](#8-implémentation-de-la-gestion-sonore-sous-rhapsody)).
 
 #### Difficultés rencontrées et erreurs corrigées
 
-* **Harmonisation des noms d'états (`b1047c59`)** : les premiers noms `contac_active` et `contact_eteint` pouvaient prêter à confusion avec `contact_on`/`contact_off` de `Clé du véhicule` lors des tests `IS_IN(...)` ; ils ont été renommés en `contact_radio_actif` et `contact_radio_eteint`.
 * **Anti-rebond du changement de piste** : afin d'éviter qu'un clic rapide ou un rebond sur le bouton `Skip` ne saute plusieurs pistes d'un coup, la sous-région orthogonale `state_260` (`attente_btn_radio` → `appui_btn_radio` → `tm(500) / GEN(ev_skip_musique)`) filtre la commande.
-* **Problèmes de lecture et de chemins `.wav`** : initialement rencontrés sur `musique_1..3` (extension oubliée et fichiers non versionnés), ils ont conduit à la refonte globale de la gestion sonore présentée en [§ 8 — Implémentation de la gestion sonore](#8-implémentation-de-la-gestion-sonore-sous-rhapsody).
 
 #### Version finale
 
@@ -724,7 +710,7 @@ Dans la première version (`caa1ac20`), la région radio comportait des états n
 
 ### Choix fonctionnels
 
-L'extension a été intégrée de façon non intrusive en ajoutant une AND-line d'environnement et en subdivisant l'état `regulateur` existant dans `state_60` :
+L'extension a été intégrée de façon non intrusive en ajoutant un module d'environnement et en subdivisant l'état `regulateur` existant dans `state_60` :
 
 1. **AND-line `Simulation voiture régulateur adaptatif` (`state_256`)** :
    * En `reglage_voiture_devant`, l'utilisateur règle la distance initiale et la vitesse cible `vitesse_voiture_devant`.
@@ -768,7 +754,6 @@ L'ACC a été prototypé en parallèle sur la branche Git dédiée **`teste-treg
 
 ### Difficultés rencontrées et erreurs corrigées
 
-* **Fusion manuelle des fichiers XML Rhapsody (`b35f069a` → `c4d4f1fa` → `3c0fedbf`)** : les fichiers `_MonPkg.sbsx` (~60 000 lignes XML) ne se fusionnent pas automatiquement sous Git sans corrompre les GUID internes. Le report manuel de la branche ACC vers `main` a entraîné dans un premier temps deux fautes de frappe (`distance_entire_voiture_devant` et `calcul_vitesse_voiture_devant()`), détectées à la compilation et corrigées dans les commits suivants (`f40bff72`, `3c0fedbf`), suivis d'un nettoyage des valeurs par défaut (`distance_securite` portée à `30.0 m`, suppression de `target_throttle`, `7d3df9f4`).
 * **Capacité de décélération limitée sans frein mécanique** : comme `calcul_regulateur_distance()` agit uniquement sur `throttle` (plancher à `throttle_repos` + frein moteur $-300\text{ N}$), la voiture ralentissait initialement trop lentement face à un véhicule très lent. Rehausser `CST_COEFF_ROULEMENT` à `0.05` et `PARAM_SIMU_masse` à `1500 kg` a amélioré la décélération naturelle, mais **l'absence d'actionnement automatique du frein mécanique et d'alerte collision dédiée** reste la limite assumée de cette V1 en cas de freinage brutal de la cible.
 * **Cas limite d'égalité exacte dans `verif_distance_secu`** : l'audit du modèle montre que les deux transitions sortantes utilisent `< distance_securite` et `> distance_securite` (inégalités strictes). Bien que statistiquement quasi impossible en `double`, remplacer l'une des deux par `>=` garantirait mathématiquement l'absence de blocage sur le cas exact `distance_inter_voiture == distance_securite`.
 
@@ -792,7 +777,7 @@ Le Statechart final de `_SysVehicule` se structure en **16 AND-lines actives** r
 
 ### Scénarios testés
 
-| # | Scénario testé | AND-lines impliquées | Comportement vérifié en animation | Statut |
+| # | Scénario testé | modules impliquées | Comportement vérifié en animation | Statut |
 | :---: | :--- | :--- | :--- | :---: |
 | 1 | Coupure contact à 90 km/h sous régulateur + radio active | `state_61`, `state_60`, `state_71`, `state_72`, `state_218`, `state_87` | Passage en `moteur_off`, arrêt régulateur/radio/Bluetooth, `throttle = 0`, décélération par inertie et frein mécanique actif | Validé |
 | 2 | Panne batterie puis dépannage et redémarrage | `state_252`, `state_61`, `state_72` | Coupure moteur sous $40\,\%$, dépannage bloqué tant que `speed > 0` ou `contact_on`, recharge à $55\,\%$, redémarrage réussi (chute à $45\,\% > 40\,\%$) | Validé |
@@ -934,3 +919,9 @@ Pour prolonger `Projet_TABDK_E4SE` vers une V2 encore plus aboutie, quatre amél
 2. **Freinage d'urgence autonome (AEB) et distance de sécurité dynamique** : doter l'ACC d'une commande bornée de frein mécanique, d'une alerte visuelle/sonore anti-collision en cas de freinage brutal de la cible, et d'une distance de sécurité adaptative selon la règle des 2 secondes ($d_{\text{sécu}} = 2 \cdot v$).
 3. **Arbitrage audio unifié incluant la sécurité ADAS** : intégrer les alarmes limiteur et ACC comme niveau de priorité supérieur dans `state_218` (**Sécurité > Appel > Sonnerie > Radio**) afin qu'une alarme coupe puis restitue la musique proprement via le connecteur `H`.
 4. **Scénarios routiers automatisés et multi-téléphones** : profils de pente préprogrammés et gestion d'une liste de plusieurs terminaux Bluetooth jumelés.
+
+// a faire : 
+ajouter annexe avec un screen de l'ihm avec références,
+ajouter annexe attributs et opérations. 
+ajouter annexe état plus proches (au moins les modules )
+enlever toutes les premières version et remplacé par version actuelle.Expliquer le fonctionemment (via IHM et ce qui se passe derrière), puis noter les changments majeure par rappor au consignes, choix personnel et erreur qui explique nos décisions.

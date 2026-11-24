@@ -4,6 +4,8 @@
 **Binôme :** Benoît de Keyn & Thibault Agueh  
 **Date :** 26 novembre 2026
 
+![Turtlebot 3](media/turtlebot-3-burger.jpg)
+
 ## Table des matières
 
 <!-- TOC -->
@@ -35,7 +37,7 @@
 &ensp;&ensp;&ensp;&ensp;◦ [7.1 SLAM (Cartographie et Localisation simultanées)](#71-slam-cartographie-et-localisation-simultan%C3%A9es)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [7.2 Navigation à base de SLAM](#72-navigation-%C3%A0-base-de-slam)<br>
 <b>• [8. Évitement d'obstacles](#8-%C3%A9vitement-dobstacles)</b><br>
-<b>• [9. Migration architecturale : passage d'un fichier contrôleur unique à un découpage en classes](#9-migration-architecturale--passage-dun-fichier-contr%C3%B4leur-unique-%C3%A0-un-d%C3%A9coupage-en-classes)</b><br>
+<b>• [9. Passage d'un fichier controleur.cpp à un découpage en classes](#9-passage-dun-fichier-controleurcpp-%C3%A0-un-d%C3%A9coupage-en-classes)</b><br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.1 Motivation et étapes du découpage](#91-motivation-et-%C3%A9tapes-du-d%C3%A9coupage)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.2 Organisation des fichiers .cpp et namespaces](#92-organisation-des-fichiers-cpp-et-namespaces)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.3 Fonction init() et accès par pointeurs](#93-fonction-init-et-acc%C3%A8s-par-pointeurs)<br>
@@ -182,7 +184,7 @@ Dans notre version finale, `controleur.cpp` est le point d'entrée du contrôleu
 - le chargement des paramètres et leur conversion (`Params`) ;
 - les échanges avec ROS par services et par action (`ServeurServices` et `ServeurAction`).
 
-Nous expliquons dans la [section 9, Migration architecturale : passage d'un fichier contrôleur unique à un découpage en classes](#9-migration-architecturale--passage-dun-fichier-contrôleur-unique-à-un-découpage-en-classes) comment nous sommes passés d'un seul fichier `controleur.cpp` à cette organisation en classes.
+Nous expliquons dans la [section 9, Passage d'un fichier controleur.cpp à un découpage en classes](#9-passage-dun-fichier-controleurcpp-%C3%A0-un-d%C3%A9coupage-en-classes) comment nous sommes passés d'un seul fichier `controleur.cpp` à cette organisation en classes.
 
 > Le fichier `calculs.cpp` est le seul fichier `.cpp` dsitué directement dans `src/` qui ne contient pas une classe mais simplement des fonctions utilitaires.
 
@@ -345,7 +347,7 @@ Le paquet `TABDK` contient le nœud contrôleur ainsi que quatre autres nœuds, 
 | `client_services.cpp` | Commandes clavier `m`/`p`/`r` → `/set_mode` et `/global_control` | [section 6.1, Configuration à la volée du comportement du robot : service](#61-configuration-à-la-volée-du-comportement-du-robot--service) |
 | `client_action.cpp` | Liste de waypoints (via clavier ou topic) → action `/moving`  | [section 6.3, Gestion des trajectoires : Path](#63-gestion-des-trajectoires--path) |
 
-> Nous expliquons dans la [section 9, Migration architecturale : passage d'un fichier contrôleur unique à un découpage en classes](#9-migration-architecturale--passage-dun-fichier-contrôleur-unique-à-un-découpage-en-classes) comment nous sommes passés d'un fichier `controleur.cpp` unique à ce découpage en classes.
+> Nous expliquons dans la [section 9, Passage d'un fichier controleur.cpp à un découpage en classes](#9-passage-dun-fichier-controleurcpp-%C3%A0-un-d%C3%A9coupage-en-classes) comment nous sommes passés d'un fichier `controleur.cpp` unique à ce découpage en classes.
 
 ## 3. Pilotage de base et paramétrage du TB3
 
@@ -423,7 +425,7 @@ Nous avons ajouté la pause comme un troisième mode (`PAUSE`) dans `enum RobotM
 
 - Au début, la mise en pause ne remettait pas la direction clavier à `NONE`, donc le robot repartait dans l'ancienne direction à la reprise. Ensuite, dès que nous avons ajouté plusieurs nœuds ROS, des services ([section 6.1, Configuration à la volée du comportement du robot : service](#61-configuration-à-la-volée-du-comportement-du-robot--service)) et l'arrêt devant un obstacle ([section 8, Évitement d'obstacles](#8-évitement-dobstacles)), garder la pause comme un mode est devenu difficile à gérer. Il fallait par exemple mettre à jour `previous_mode` si nous changions de mode pendant une pause.
 - Quand nous avons réparti les commandes sur plusieurs nœuds, chacun devait connaître le mode et la pause courants. C'est à ce stade plus tardif que nous avons ajouté la publication continue de `/mode` (`std_msgs/String`) et `/pause` (`std_msgs/Bool`) dans `controleur.cpp`.
-- Comme le fichier `controleur.cpp` rassemblait trop de code, nous avons séparé la gestion des modes (`Modes`) de la machine à états des déplacements (`States`). Nous détaillons ce découpage dans la [section 9, Migration architecturale : passage d'un fichier contrôleur unique à un découpage en classes](#9-migration-architecturale--passage-dun-fichier-contrôleur-unique-à-un-découpage-en-classes).
+- Comme le fichier `controleur.cpp` rassemblait trop de code, nous avons séparé la gestion des modes (`Modes`) de la machine à états des déplacements (`States`). Nous détaillons ce découpage dans la [section 9, Passage d'un fichier controleur.cpp à un découpage en classes](#9-passage-dun-fichier-controleurcpp-%C3%A0-un-d%C3%A9coupage-en-classes).
 
 #### Version finale
 
@@ -841,6 +843,8 @@ flowchart TB
     style SG_CACT fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
 ```
 
+<!-- newpage -->
+
 Voici un schéma qui illustre le fonctionnement de `serveur_services.cpp` selon la requête reçue :
 
 <!-- paysage : zoom = 85 -->
@@ -876,6 +880,7 @@ flowchart LR
     style BAD_M fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
     style BAD_C fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
 ```
+<!-- newpage -->
 
 Côté client, voici le fonctionnement de `client_services.cpp` :
 
@@ -913,6 +918,8 @@ flowchart LR
     style KP fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
     style KR fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
 ```
+
+<!-- newpage -->
 
 Voici les échanges du nœud `client_services.cpp` :
 
@@ -1063,6 +1070,8 @@ flowchart LR
     style SG_CACT fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
 ```
 
+<!-- newpage -->
+
 Voici le fonctionnement de `ServeurAction` selon l'événement reçu :
 
 <!-- paysage : zoom = 100 -->
@@ -1120,6 +1129,8 @@ Pendant le suivi d'un waypoint, [`feedbackCallback()`](https://github.com/benoit
 *Exemple de deux feedbacks consécutifs affichés à 1 seconde d'intervalle côté `client_action.cpp` (position, orientation, vitesses, distance restante, temps écoulé et mode).*
 
 <img src="media/2_feedback_suivi_goal.png" alt="Exemple de feedbacks affichés côté client_action à une seconde d'intervalle" width="75%">
+
+<!-- newpage -->
 
 Enfin, lors d'un reset demandé au serveur de services, [`ServeurServices::resetRobot()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/serveur_services.cpp#L31-L42) suit un ordre précis pour éviter le blocage vu plus haut : elle annule d'abord les objectifs en cours ([`action_server->reset()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/serveur_action.cpp#L38-L53)), réinitialise `Modes` (vitesse à 0, mode et pause), remet la simulation et `/clock` à 0 (`/gazebo/reset_simulation`), recrée le serveur d'action ([`action_server->redemarrer()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/serveur_action.cpp#L56-L60)), puis publie sur `/reset` pour prévenir le TB3 réel et les clients ROS.
 
@@ -1201,6 +1212,7 @@ flowchart LR
     style KEY fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
     style WAIT fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
 ```
+<!-- newpage -->
 
 Lorsque le robot atteint un waypoint, [`doneCb()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/client_action.cpp#L156-L169) affiche le résultat final (temps total, distance parcourue, position et orientation) et la [boucle d'envoi](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/client_action.cpp#L238-L259) enchaîne aussitôt avec le waypoint suivant de la file :
 
@@ -1420,6 +1432,8 @@ Dans notre version finale, nous avons personnalisé [AStar-ROS/launch/run.launch
 </group>
 ```
 
+<!-- newpage -->
+
 Voici un schéma qui illustre comment nous relions `AStar-ROS` amélioré ([AStar-ROS/config/params.yaml](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/config/params.yaml), [AStar-ROS/src/a_star.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/a_star.cpp#L78-L199), [AStar-ROS/src/path_simplifier.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/path_simplifier.cpp#L9-L94), [AStar-ROS/src/path_generator.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/path_generator.cpp#L72-L148)) à `TABDK` :
 
 <!-- paysage : zoom = 100 -->
@@ -1530,7 +1544,7 @@ flowchart LR
     style CALC fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
 ```
 
-## 9. Migration architecturale : passage d'un fichier contrôleur unique à un découpage en classes
+## 9. Passage d'un fichier controleur.cpp à un découpage en classes
 
 ### 9.1 Motivation et étapes du découpage
 

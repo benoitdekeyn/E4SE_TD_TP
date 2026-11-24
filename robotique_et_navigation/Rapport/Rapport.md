@@ -10,9 +10,10 @@
 
 <!-- TOC -->
 
+<b>• [Table des matières](#table-des-mati%C3%A8res)</b><br>
 <b>• [Introduction](#introduction)</b><br>
 <b>• [1. Environnement de développement](#1-environnement-de-d%C3%A9veloppement)</b><br>
-&ensp;&ensp;&ensp;&ensp;◦ [1.1 Simulation en ligne : *The Construct*](#11-simulation-en-ligne--the-construct)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [1.1 Simulation en ligne : The Construct](#11-simulation-en-ligne--the-construct)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [1.2 Développement local et déploiement sur le robot : VS Code, GitHub et SSH](#12-d%C3%A9veloppement-local-et-d%C3%A9ploiement-sur-le-robot--vs-code-github-et-ssh)<br>
 <b>• [2. Architecture finale du projet](#2-architecture-finale-du-projet)</b><br>
 &ensp;&ensp;&ensp;&ensp;◦ [2.1 Arborescence du paquet TABDK](#21-arborescence-du-paquet-tabdk)<br>
@@ -603,23 +604,85 @@ Nous avons d'abord codé et validé `reachPositionX()`, `reachAngle()` et `reach
 
 ##### Version finale
 
-Dans la version finale, `Mouvements` ([TABDK/src/mouvements.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L158-L277), avec [`reachPosition()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L158-L177), [`reachPositionSmooth()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L191-L239) et [`reachPositionSmoothBack()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L245-L250)), `calculs.cpp` ([TABDK/src/calculs.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/calculs.cpp#L16-L48)) et l'état `REACH_POSITION` de `States` ([TABDK/src/states.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/states.cpp#L103-L111)) gèrent le déplacement vers une cible selon `move_smooth` et `move_back`.
+Dans la version finale, `Mouvements` ([TABDK/src/mouvements.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L158-L277), avec [`reachPosition()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L158-L177), [`reachPositionSmooth()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L191-L239) et [`reachPositionSmoothBack()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L245-L250)), `calculs.cpp` ([TABDK/src/calculs.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/calculs.cpp#L16-L48)) et l'état `REACH_POSITION` de `States` ([TABDK/src/states.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/states.cpp#L103-L111)) gèrent le déplacement vers une cible selon `move_smooth` et `move_back`. Nous détaillons ci-dessous les formules mathématiques, le principe d'amortissement et le rôle des trois commandes proportionnelles.
 
-Voici un schéma qui résume la logique de [`reachPositionSmoothBack()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L245-L250) :
+<!-- samepage -->
+#### 4.3.3 Fonctionnement détaillé de l'asservissement
 
-<!-- paysage : zoom = 95 -->
-<!-- portrait : direction = TB, zoom = 100 -->
+À chaque tour de la boucle de contrôle (5 Hz), la fonction [`reachPositionSmoothBack()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L245-L250) (qui appelle [`reachPositionSmooth()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L191-L239)) s'appuie sur quatre mécanismes simples et indépendants pour guider le robot jusqu'au point demandé.
+
+##### 1. Situer la cible par rapport au robot
+
+À partir de la position du robot fournie par `/odom`, nous calculons d'abord la distance restante jusqu'à la cible ([`Odometry::distanceToPosition()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/odometry.cpp#L26-L30)) et la direction à viser ([`Mouvements::calculerErreurAngle()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L255-L263)) :
+
+$$\text{distance} = \sqrt{(x_{\text{cible}} - x_{\text{robot}})^2 + (y_{\text{cible}} - y_{\text{robot}})^2}$$
+
+$$\text{angle\_cible} = \operatorname{atan2}(y_{\text{cible}} - y_{\text{robot}},\; x_{\text{cible}} - x_{\text{robot}})$$
+
+La première formule donne la distance en ligne droite jusqu'au point demandé ; la seconde donne l'orientation absolue vers ce point. Dès que $\text{distance} < \text{precision\_linear}$ (2 cm), le robot s'arrête immédiatement et considère la cible atteinte.
+
+##### 2. Choisir la marche avant ou arrière
+
+Avant de bouger, `reachPositionSmoothBack()` vérifie si la cible se trouve devant ou derrière le robot :
+
+- si l'écart d'angle en marche avant est inférieur ou égal à 90°, le robot avance normalement vers $\text{angle\_cible}$ ;
+- s'il dépasse 90°, la cible est derrière lui : plutôt que de faire un grand demi-tour, nous passons en marche arrière.
+
+Pour reculer vers la cible, nous retournons simplement la direction visée de 180° avec notre fonction [`cal_angle_offset()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/calculs.cpp#L17-L22), qui ajoute ce décalage puis ajoute ou retranche 360° tant que nécessaire pour garder l'angle dans $[-180^\circ,\, +180^\circ]$ :
+
+$$\text{angle\_visé} = \text{angle\_cible} + 180^\circ \quad (\text{ramené entre } -180^\circ \text{ et } +180^\circ)$$
+
+L'écart angulaire signé `erreur_angle` entre cet angle visé et le cap du robot est ensuite obtenu avec la fonction `cal_delta_Theta()` fournie dans l'énoncé. En marche arrière, il suffit alors d'inverser le signe de la vitesse linéaire.
+
+##### 3. L'amortissement à l'approche de la cible
+
+Toutes les vitesses (linéaires comme angulaires) sont calculées par la même fonction [`commande_proportionnelle()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/calculs.cpp#L25-L28) :
+
+$$\text{vitesse} = \min\!\big(|K_p \times \text{erreur}|,\; \text{vitesse}_{\max}\big)$$
+
+Cette formule réalise naturellement un amortissement en deux temps :
+
+- **loin de la cible**, $|K_p \times \text{erreur}|$ dépasse la limite autorisée : la vitesse reste donc plafonnée à $\text{vitesse}_{\max}$ (vitesse de croisière constante) ;
+- **près de la cible**, dès que l'erreur passe sous $\frac{\text{vitesse}_{\max}}{K_p}$, la vitesse diminue proportionnellement à l'erreur restante jusqu'à tendre vers zéro, ce qui freine le robot en douceur avant l'arrêt.
+
+Avec nos réglages de [TABDK/config/params.yaml](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/config/params.yaml#L2-L10) (`linear_speed = 0,5 m/s`, `angular_speed = 0,5 rad/s` et `Kp = 1,0`), le ralentissement démarre à 50 cm du point visé et sur les derniers 29° d'une rotation.
+
+##### 4. Les trois commandes proportionnelles et le pivot sur place
+
+Pour garder une trajectoire propre sans multiplier les arrêts, `reachPositionSmooth()` utilise trois commandes proportionnelles indépendantes, réparties en deux phases :
+
+- **Phase 1 : pivot sur place (`Kp_pivot`)**. Si l'erreur d'angle dépasse `trigger_pivot` (20°), le robot arrête d'avancer et pivote sur place via [`pivoterVersCible()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L266-L277). Un drapeau `pivot_en_cours` maintient ce pivot jusqu'à revenir sous `precision_angular` (1°), ce qui évite d'hésiter entre pivoter et avancer autour du seuil de 20°.
+- **Phase 2 : avance ou recul amorti (`Kp_linear`)**. Une fois aligné, le robot avance (ou recule en inversant le signe) à une vitesse proportionnelle à `distance`, plafonnée à `linear_speed`.
+- **Phase 2 (en parallèle) : correction de cap en roulant (`Kp_angular`)**. En même temps qu'il se déplace via `move()`, le robot corrige les petits écarts de direction (entre 1° et 20°) sans s'arrêter, avec une vitesse angulaire plafonnée à `angular_speed`. Sous 1°, la vitesse angulaire est forcée à 0 pour rouler bien droit.
+
+Séparer `Kp_pivot` et `Kp_angular` permet de régler indépendamment la vivacité d'un pivot sur place et la douceur de la correction de cap en mouvement (même si nous avons gardé `1.0` pour les trois gains dans notre réglage final).
+
+| Commande et gain | Erreur et plafond | Rôle |
+| --- | --- | --- |
+| Pivot sur place (`Kp_pivot`) | erreur d'angle (plafond `angular_speed`) | Active dès que l'écart dépasse 20°, maintenue jusqu'à revenir sous 1° |
+| Avance / recul (`Kp_linear`) | distance restante (plafond `linear_speed`) | Hors pivot, tant que la distance dépasse 2 cm (signe inversé en marche arrière) |
+| Correction de cap (`Kp_angular`) | erreur d'angle (plafond `angular_speed`) | En parallèle de `Kp_linear` entre 1° et 20° (0 sous 1°) |
+
+<!-- newpage -->
+
+Voici le schéma complet de [`reachPositionSmoothBack()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L245-L250) (choix du sens, pivot sur place et déplacement fluide) :
+
+<!-- paysage : zoom = 100 -->
+<!-- portrait : direction = TB, zoom = 88 -->
 ```mermaid
 flowchart LR
-    START(["`Navigation vers la cible (x, y)`"])
-    DIST{"`Distance inférieure à la précision linéaire ?`"}
-    DONE["`Arrêt du robot<br/>Cible atteinte`"]
-    BACK{"`Angle à parcourir supérieur à 90° ?`"}
-    FWD_M["`Marche avant<br/>Vise l'angle cible`"]
-    BWD_M["`Marche arrière<br/>Angle cible inversé de 180°`"]
-    TRIG{"`Erreur angulaire supérieure au seuil de pivot<br/>ou pivot en cours ?`"}
-    PIV["`Pivot sur place<br/>jusqu'à la précision angulaire`"]
-    MOVE["`Avance ou recul<br/>avec correction angulaire simultanée`"]
+    START(["`Cible (x, y) + Pose /odom<br/>Calcul de la distance et de l'angle cible`"])
+    DIST{"`Distance < precision_linear (2 cm) ?`"}
+    DONE["`Arrêt immédiat (vitesse nulle)<br/>Cible atteinte`"]
+    BACK{"`Cible derrière le robot<br/>(écart > 90°) ?`"}
+    FWD_M["`Marche avant<br/>Vise angle cible (sens +)`"]
+    BWD_M["`Marche arrière (cal_angle_offset)<br/>Vise angle cible + 180° (sens −)`"]
+    TRIG{"`Erreur d'angle > trigger_pivot (20°)<br/>ou pivot_en_cours ?`"}
+    PIV["`Phase 1 : Pivot sur place<br/>Vitesse angulaire amortie par Kp_pivot<br/>(plafond angular_speed)`"]
+    HYST["`Pivot maintenu (hystérésis)<br/>jusqu'à revenir sous 1°`"]
+    LIN["`Vitesse linéaire (Kp_linear)<br/>Amortie selon la distance<br/>(plafond linear_speed, sens ±)`"]
+    ANG["`Correction de cap (Kp_angular)<br/>Amortie selon l'erreur d'angle<br/>(plafond angular_speed, 0 sous 1°)`"]
+    MOVE["`Phase 2 : Déplacement fluide<br/>Envoi simultané move(linéaire, angulaire)`"]
 
     START --> DIST
     DIST -->|"oui"| DONE
@@ -629,7 +692,11 @@ flowchart LR
     FWD_M --> TRIG
     BWD_M --> TRIG
     TRIG -->|"oui"| PIV
-    TRIG -->|"non"| MOVE
+    PIV --> HYST
+    TRIG -->|"non"| LIN
+    TRIG -->|"non"| ANG
+    LIN --> MOVE
+    ANG --> MOVE
 
     style START fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
     style DONE fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
@@ -637,6 +704,11 @@ flowchart LR
     style BACK fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
     style TRIG fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
     style PIV fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
+    style HYST fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
+    style FWD_M fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
+    style BWD_M fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
+    style LIN fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
+    style ANG fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
     style MOVE fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
 ```
 

@@ -344,6 +344,7 @@ li.task-item { list-style: none; }
 <h1 id="rapport--projet-robotique-mobile-et-navigation-autonome-appliqué-au-robot-turtlebot3">Rapport : Projet robotique mobile et navigation autonome appliqué au robot TurtleBot3<a class="anchor" href="#rapport--projet-robotique-mobile-et-navigation-autonome-appliqué-au-robot-turtlebot3" aria-label="Lien vers cette section">#</a></h1>
 <p><strong>Binôme :</strong> Benoît de Keyn &amp; Thibault Agueh<br>
 <strong>Date :</strong> 26 novembre 2026</p>
+<p><img src="media/turtlebot-3-burger.jpg" alt="Turtlebot 3"></p>
 <h2 id="table-des-matières">Table des matières<a class="anchor" href="#table-des-matières" aria-label="Lien vers cette section">#</a></h2>
 <!-- TOC -->
 <p><b>• <a href="#table-des-mati%C3%A8res">Table des matières</a></b><br>
@@ -1227,8 +1228,9 @@ flowchart TB
     style SG_DET fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
     style SG_CACT fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
 </pre></div>
+<div class="pagebreak"></div>
 <p>Voici un schéma qui illustre le fonctionnement de <code>serveur_services.cpp</code> selon la requête reçue :</p>
-<div class="mermaid-box" data-zoom-paysage="85" data-zoom-portrait="78"><pre class="mermaid" data-src-portrait="%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
+<div class="mermaid-box" data-zoom-paysage="85" data-zoom-portrait="100"><pre class="mermaid" data-src-portrait="%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
 flowchart TD
     REQ([&quot;`Requête reçue par le serveur de services`&quot;])
     WHICH{&quot;`Quel service est appelé ?`&quot;}
@@ -1289,38 +1291,9 @@ flowchart LR
     style BAD_M fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
     style BAD_C fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
 </pre></div>
+<div class="pagebreak"></div>
 <p>Côté client, voici le fonctionnement de <code>client_services.cpp</code> :</p>
-<div class="mermaid-box" data-zoom-paysage="85" data-zoom-portrait="57"><pre class="mermaid" data-src-portrait="---
-config:
-  layout: dagre
----
-flowchart TD
-    EVT([&quot;`Message reçu par le client de services`&quot;])
-    SRC{&quot;`Source du message ?`&quot;}
-    SYNC[&quot;`Mettre à jour l'état local connu&lt;br/&gt;(mode ou pause)`&quot;]
-    CLR[&quot;`Effacer l'état local et attendre&lt;br/&gt;les nouveaux états du contrôleur`&quot;]
-    KEY{&quot;`Quelle touche ?`&quot;}
-    KM[&quot;`Si le mode est connu :&lt;br/&gt;demander le basculement manual ↔ auto`&quot;]
-    KP[&quot;`Si la pause est connue :&lt;br/&gt;demander le basculement pause ↔ play`&quot;]
-    KR[&quot;`Demander une réinitialisation globale`&quot;]
-
-    EVT --&gt; SRC
-    SRC --&gt;|&quot;/mode ou /pause&quot;| SYNC
-    SRC --&gt;|&quot;/reset&quot;| CLR
-    SRC --&gt;|&quot;/keyboard_input&quot;| KEY
-    KEY --&gt;|&quot;m&quot;| KM
-    KEY --&gt;|&quot;p&quot;| KP
-    KEY --&gt;|&quot;r&quot;| KR
-
-    style EVT fill:#dbeafe,stroke:#1d4ed8,stroke-width:1.5px,color:#1e3a8a
-    style SRC fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
-    style KEY fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
-    style SYNC fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
-    style CLR fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
-    style KM fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
-    style KP fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
-    style KR fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
-">---
+<div class="mermaid-box" data-zoom="85"><pre class="mermaid">---
 config:
   layout: dagre
 ---
@@ -1526,6 +1499,7 @@ flowchart LR
     style NODE fill:#1d4ed8,stroke:#1e40af,stroke-width:2px,color:#ffffff
     style SG_CACT fill:#f3f4f6,stroke:#9ca3af,stroke-width:1.5px,color:#374151
 </pre></div>
+<div class="pagebreak"></div>
 <p>Voici le fonctionnement de <code>ServeurAction</code> selon l'événement reçu :</p>
 <div class="mermaid-box"><pre class="mermaid" data-src-portrait="%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
 flowchart TD
@@ -1618,6 +1592,7 @@ flowchart LR
 <p>Pendant le suivi d'un waypoint, <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/client_action.cpp#L175-L191" target="_blank" rel="noopener noreferrer"><code>feedbackCallback()</code></a> dans <code>client_action.cpp</code> affiche un retour complet toutes les secondes grâce à <code>ROS_INFO_THROTTLE(1.0)</code> :</p>
 <p><em>Exemple de deux feedbacks consécutifs affichés à 1 seconde d'intervalle côté <code>client_action.cpp</code> (position, orientation, vitesses, distance restante, temps écoulé et mode).</em></p>
 <img src="media/2_feedback_suivi_goal.png" alt="Exemple de feedbacks affichés côté client_action à une seconde d'intervalle" width="75%">
+<div class="pagebreak"></div>
 <p>Enfin, lors d'un reset demandé au serveur de services, <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/serveur_services.cpp#L31-L42" target="_blank" rel="noopener noreferrer"><code>ServeurServices::resetRobot()</code></a> suit un ordre précis pour éviter le blocage vu plus haut : elle annule d'abord les objectifs en cours (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/serveur_action.cpp#L38-L53" target="_blank" rel="noopener noreferrer"><code>action_server-&gt;reset()</code></a>), réinitialise <code>Modes</code> (vitesse à 0, mode et pause), remet la simulation et <code>/clock</code> à 0 (<code>/gazebo/reset_simulation</code>), recrée le serveur d'action (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/serveur_action.cpp#L56-L60" target="_blank" rel="noopener noreferrer"><code>action_server-&gt;redemarrer()</code></a>), puis publie sur <code>/reset</code> pour prévenir le TB3 réel et les clients ROS.</p>
 <p>La capture ci-dessous montre cet enchaînement dans les logs : préemption de l'objectif en cours, réinitialisation du robot, reconnexion automatique au serveur <code>/moving</code> recréé, puis prise en charge immédiate d'une nouvelle trajectoire :</p>
 <p><em>Logs lors d'un reset : préemption (<code>PREEMPTED</code>), redémarrage du serveur <code>/moving</code>, puis réception et lancement d'une nouvelle trajectoire de 5 waypoints.</em></p>
@@ -1732,6 +1707,7 @@ flowchart LR
     style KEY fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
     style WAIT fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#1f2937
 </pre></div>
+<div class="pagebreak"></div>
 <p>Lorsque le robot atteint un waypoint, <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/client_action.cpp#L156-L169" target="_blank" rel="noopener noreferrer"><code>doneCb()</code></a> affiche le résultat final (temps total, distance parcourue, position et orientation) et la <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/client_action.cpp#L238-L259" target="_blank" rel="noopener noreferrer">boucle d'envoi</a> enchaîne aussitôt avec le waypoint suivant de la file :</p>
 <p><em>Logs lors de l'atteinte d'un waypoint, suivie immédiatement de l'envoi et de l'activation du waypoint suivant.</em></p>
 <img src="media/atteinte_waypoint.png" alt="Atteinte d'un waypoint et envoi du waypoint suivant dans les logs" width="80%">
@@ -1961,6 +1937,7 @@ Pendant nos essais sur le robot réel, nous avions mis la pose initiale du lance
         <span class="hljs-attr">args</span>=<span class="hljs-string">&quot;-d $(find path_generator)/rviz/turtlebot3_navigation_tabdk.rviz&quot;</span>/&gt;</span>
 <span class="hljs-tag">&lt;/<span class="hljs-name">group</span>&gt;</span>
 </code></pre></div></div>
+<div class="pagebreak"></div>
 <p>Voici un schéma qui illustre comment nous relions <code>AStar-ROS</code> amélioré (<a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/config/params.yaml" target="_blank" rel="noopener noreferrer">AStar-ROS/config/params.yaml</a>, <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/a_star.cpp#L78-L199" target="_blank" rel="noopener noreferrer">AStar-ROS/src/a_star.cpp</a>, <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/path_simplifier.cpp#L9-L94" target="_blank" rel="noopener noreferrer">AStar-ROS/src/path_simplifier.cpp</a>, <a href="https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/AStar-ROS/src/path_generator.cpp#L72-L148" target="_blank" rel="noopener noreferrer">AStar-ROS/src/path_generator.cpp</a>) à <code>TABDK</code> :</p>
 <div class="mermaid-box" data-zoom-paysage="100" data-zoom-portrait="60"><pre class="mermaid" data-src-portrait="---
 config:

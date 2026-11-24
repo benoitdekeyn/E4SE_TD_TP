@@ -438,7 +438,7 @@ Dans notre version finale, le mode (`"manual"` ou `"auto"`) et la pause (`pause_
 Voici un schéma qui illustre la gestion des modes et de la pause : 
 
 <!-- paysage : zoom = 80 -->
-<!-- portrait : zoom = 70 -->
+<!-- portrait : zoom = 90 -->
 ```mermaid
 ---
 config:
@@ -513,7 +513,7 @@ Dans notre version finale, `keyboard_input.cpp` ([TABDK/src/nodes/keyboard_input
 Voici un schéma qui illustre les interactions de `keyboard_input.cpp` :
 
 <!-- paysage : zoom = 95 -->
-<!-- portrait : direction = TB, zoom = 55 -->
+<!-- portrait : direction = TB, zoom = 75 -->
 ```mermaid
 ---
 config:
@@ -848,7 +848,7 @@ flowchart TB
 Voici un schéma qui illustre le fonctionnement de `serveur_services.cpp` selon la requête reçue :
 
 <!-- paysage : zoom = 85 -->
-<!-- portrait : direction = TB, zoom = 78 -->
+<!-- portrait : direction = TB, zoom = 100 -->
 ```mermaid
 flowchart LR
     REQ(["`Requête reçue par le serveur de services`"])
@@ -885,7 +885,7 @@ flowchart LR
 Côté client, voici le fonctionnement de `client_services.cpp` :
 
 <!-- paysage : zoom = 85 -->
-<!-- portrait : direction = TB, zoom = 57 -->
+<!-- portrait : zoom = 85 -->
 ```mermaid
 ---
 config:
@@ -918,8 +918,6 @@ flowchart LR
     style KP fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
     style KR fill:#f3e8ff,stroke:#9333ea,stroke-width:1.5px,color:#581c87
 ```
-
-<!-- newpage -->
 
 Voici les échanges du nœud `client_services.cpp` :
 
@@ -1340,10 +1338,12 @@ Nous disposons dans `AStar-ROS/map/` de cartes validées pour la simulation et p
 
 <img src="media/ancien_astar.png" alt="Trajectoire produite par l'algorithme A* initial en escalier et au ras des murs" width="55%">
 
-- La solution générée avec l'IA dans `path_simplifier.cpp` utilise un BFS (parcours en largeur) pour trouver, parmi les points visibles en ligne droite sans obstacle, le chemin qui demande le moins de segments jusqu'à l'arrivée :
+<!-- newpage -->
+
+- Notre solution développée pas mal avec l'IA dans `path_simplifier.cpp` utilise un BFS (parcours en largeur) pour trouver, parmi les points visibles en ligne droite sans obstacle, le chemin qui demande le moins de segments jusqu'à l'arrivée :
 
 <!-- paysage : zoom = 95 -->
-<!-- portrait : direction = TB, zoom = 86 -->
+<!-- portrait : direction = TB, zoom = 80 -->
 ```mermaid
 ---
 config:

@@ -38,7 +38,7 @@
 <b>• [9. Migration architecturale : passage d'un fichier contrôleur unique à un découpage en classes](#9-migration-architecturale--passage-dun-fichier-contr%C3%B4leur-unique-%C3%A0-un-d%C3%A9coupage-en-classes)</b><br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.1 Motivation et étapes du découpage](#91-motivation-et-%C3%A9tapes-du-d%C3%A9coupage)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.2 Organisation des fichiers .cpp et namespaces](#92-organisation-des-fichiers-cpp-et-namespaces)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [9.3 Patron init() différé et association des classes par pointeurs](#93-patron-init-diff%C3%A9r%C3%A9-et-association-des-classes-par-pointeurs)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [9.3 Fonction init() et accès par pointeurs](#93-fonction-init-et-acc%C3%A8s-par-pointeurs)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.4 Cas critique : intégration de ServeurAction](#94-cas-critique--int%C3%A9gration-de-serveuraction)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.5 Conduite du refactoring](#95-conduite-du-refactoring)
 
@@ -779,7 +779,7 @@ Nous sommes partis de l'exemple de serveur de service du cours, puis nous l'avon
 
 #### Version finale
 
-- Côté serveur, la classe `ServeurServices` ([TABDK/src/serveur_services.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/serveur_services.cpp#L16-L75)) expose `/set_mode` ([TABDK/srv/set_mode.srv](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/srv/set_mode.srv)) et `/global_control` ([TABDK/srv/global_control.srv](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/srv/global_control.srv)) dans le nœud `controleur`, et gère la réinitialisation globale dans `resetRobot()` (voir la [section 9.3, Patron init() différé et association des classes par pointeurs](#93-patron-init-différé-et-association-des-classes-par-pointeurs)).
+- Côté serveur, la classe `ServeurServices` ([TABDK/src/serveur_services.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/serveur_services.cpp#L16-L75)) expose `/set_mode` ([TABDK/srv/set_mode.srv](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/srv/set_mode.srv)) et `/global_control` ([TABDK/srv/global_control.srv](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/srv/global_control.srv)) dans le nœud `controleur`, et gère la réinitialisation globale dans `resetRobot()` (voir la [section 9.3, Fonction init() et accès par pointeurs](#93-fonction-init-et-acc%C3%A8s-par-pointeurs)).
 - Côté client, `client_services.cpp` ([TABDK/src/nodes/client_services.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/client_services.cpp#L79-L126)) gère les touches `m`, `p`, `r`, et `detector.cpp` appelle `/global_control` pour l'évitement d'obstacles ([section 8, Évitement d'obstacles](#8-évitement-dobstacles)).
 
 Voici un schéma qui illustre les échanges de `serveur_services.cpp` avec le contrôleur, les autres classes et les nœuds ROS :

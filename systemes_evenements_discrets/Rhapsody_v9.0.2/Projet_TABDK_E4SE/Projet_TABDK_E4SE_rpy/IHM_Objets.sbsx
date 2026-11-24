@@ -12,10 +12,10 @@
 			<_id type="a">GUID 01dd56fe-298e-423f-8f52-a5e5dff6dbdc</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">IHM_Objets</_name>
-			<_modifiedTimeWeak type="a">11.16.2026::19:5:13</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.16.2026::19:55:2</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.24.2026::1:4:45</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.24.2026::1:5:27</_modifiedTime>
 			<_lastID type="a">2</_lastID>
-			<weakCGTime type="a">11.16.2026::19:5:13</weakCGTime>
+			<weakCGTime type="a">11.24.2026::1:4:45</weakCGTime>
 			<strongCGTime type="a">10.3.2016::22:41:54</strongCGTime>
 			<_defaultComposite type="s">GUID c6ebe487-749a-424c-8c16-94f16e9ee15a</_defaultComposite>
 			<_eventsBaseID type="a">-1</_eventsBaseID>
@@ -368,8 +368,8 @@
 			</_properties>
 			<_name type="a">MainDiagram</_name>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.16.2026::19:7:1</_modifiedTime>
-			<_lastModifiedTime type="a">11.16.2026::19:7:1</_lastModifiedTime>
+			<_modifiedTime type="a">11.24.2026::1:9:33</_modifiedTime>
+			<_lastModifiedTime type="a">11.24.2026::1:9:33</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -679,7 +679,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">527112</m_drawBehavior>
-			<m_transform type="a">0.681934 0 0 0.885937 64.3662 120.593 </m_transform>
+			<m_transform type="a">0.684422 0 0 0.927976 63.0466 51.4865 </m_transform>
 			<m_bIsPreferencesInitialized type="a">0</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -697,10 +697,11 @@
 					<m_nOrientationCtrlPt type="a">1</m_nOrientationCtrlPt>
 				</CGIText>
 			</m_AdditionalLabel>
+			<m_bFramesetModified type="a">1</m_bFramesetModified>
 			<m_polygon type="a">4 2 329  2 1451  1061 1451  1061 329  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
-			<frameset type="a">&lt;frameset rows=50%25,50%25&gt;
+			<frameset type="a">&lt;frameset rows=46%25,54%25&gt;
 &lt;frame name=AttributeListCompartment&gt;
 &lt;frame name=OperationListCompartment&gt;</frameset>
 			<Attrs type="c">
@@ -824,7 +825,30 @@
 			<m_displayOption type="a">Public</m_displayOption>
 			<m_bShowInherited type="a">0</m_bShowInherited>
 			<m_bOrdered type="a">0</m_bOrdered>
-			<_itemValueOfFontPropertiesMapCount type="a">109</_itemValueOfFontPropertiesMapCount>
+			<_itemValueOfFontPropertiesMapCount type="a">132</_itemValueOfFontPropertiesMapCount>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
@@ -1058,15 +1082,15 @@
 			<_id type="a">GUID 187c4360-fdb2-4b6f-996d-5c38ed7c9d37</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">Main</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::15:20:0</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">11.24.2026::1:6:26</_modifiedTimeWeak>
 			<_theMainDiagram type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IDiagram</_hm2Class>
 					<_hid type="a">GUID 157a46cf-adcc-4952-aec9-4db509148774</_hid>
 				</IHandle>
 			</_theMainDiagram>
-			<_modifiedTime type="a">11.10.2026::15:20:0</_modifiedTime>
-			<weakCGTime type="a">11.10.2026::15:20:0</weakCGTime>
+			<_modifiedTime type="a">11.24.2026::1:6:26</_modifiedTime>
+			<weakCGTime type="a">11.24.2026::1:6:26</weakCGTime>
 			<strongCGTime type="a">9.26.2017::14:35:36</strongCGTime>
 			<_itsStateChart type="r">
 				<IHandle type="e">
@@ -1183,8 +1207,8 @@ return done;</_bodyData>
 			<_id type="a">GUID 2731af7b-953d-4383-ac71-d3660a0ae942</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">objetSysVehicule</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::15:20:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::15:20:0</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.24.2026::1:6:26</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.24.2026::1:6:26</_modifiedTime>
 			<_multiplicity type="a">1</_multiplicity>
 			<_otherClass type="r">
 				<IClassifierHandle type="e">
@@ -1208,6 +1232,9 @@ return done;</_bodyData>
 				<value>GUID aa149c6e-c8ab-4d94-90a5-4f2db36d44c5</value>
 				<value>GUID 9001a0b4-b8ed-4c19-9ad7-6d0cb390cd4c</value>
 				<value>GUID 63d680d6-7f84-403b-8959-89c31817b15c</value>
+				<value>GUID 32a2a754-6bc1-4c3a-abf2-838e0dbfd7c0</value>
+				<value>GUID 673bc140-99b0-487a-b1ff-ad0fe8386e31</value>
+				<value>GUID f255755a-acfe-4143-ae7b-272981ac1dba</value>
 			</AggregatesList>
 		</IPart>
 		<ISlot type="e">
@@ -1343,6 +1370,57 @@ return done;</_bodyData>
 					<_hclass type="a">_SysVehicule</_hclass>
 					<_hname type="a">PARAM_SIMU_masse</_hname>
 					<_hid type="a">GUID 1cf82922-6da4-463a-a661-be932b5d33f7</_hid>
+				</IHandle>
+			</_definingVar>
+		</ISlot>
+		<ISlot type="e">
+			<_id type="a">GUID 32a2a754-6bc1-4c3a-abf2-838e0dbfd7c0</_id>
+			<_name type="a">VOYANT_kit_connecte_Value</_name>
+			<_modifiedTimeWeak type="a">11.24.2026::1:5:56</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.24.2026::1:5:56</_modifiedTime>
+			<_value type="a">false</_value>
+			<_definingVar type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IAttribute</_hm2Class>
+					<_hfilename type="a">.\_MonPkg.sbsx</_hfilename>
+					<_hsubsystem type="a">_MonPkg</_hsubsystem>
+					<_hclass type="a">_SysVehicule</_hclass>
+					<_hname type="a">VOYANT_kit_connecte</_hname>
+					<_hid type="a">GUID 0b758532-4190-45cb-9be2-9a8ceb595e15</_hid>
+				</IHandle>
+			</_definingVar>
+		</ISlot>
+		<ISlot type="e">
+			<_id type="a">GUID 673bc140-99b0-487a-b1ff-ad0fe8386e31</_id>
+			<_name type="a">VOYANT_kit_appel_Value</_name>
+			<_modifiedTimeWeak type="a">11.24.2026::1:6:7</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.24.2026::1:6:7</_modifiedTime>
+			<_value type="a">false</_value>
+			<_definingVar type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IAttribute</_hm2Class>
+					<_hfilename type="a">.\_MonPkg.sbsx</_hfilename>
+					<_hsubsystem type="a">_MonPkg</_hsubsystem>
+					<_hclass type="a">_SysVehicule</_hclass>
+					<_hname type="a">VOYANT_kit_appel</_hname>
+					<_hid type="a">GUID d88cafe1-67e4-428b-8944-1fd3d7f02286</_hid>
+				</IHandle>
+			</_definingVar>
+		</ISlot>
+		<ISlot type="e">
+			<_id type="a">GUID f255755a-acfe-4143-ae7b-272981ac1dba</_id>
+			<_name type="a">VOYANT_kit_sonnerie_Value</_name>
+			<_modifiedTimeWeak type="a">11.24.2026::1:6:26</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.24.2026::1:6:26</_modifiedTime>
+			<_value type="a">false</_value>
+			<_definingVar type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IAttribute</_hm2Class>
+					<_hfilename type="a">.\_MonPkg.sbsx</_hfilename>
+					<_hsubsystem type="a">_MonPkg</_hsubsystem>
+					<_hclass type="a">_SysVehicule</_hclass>
+					<_hname type="a">VOYANT_kit_sonnerie</_hname>
+					<_hid type="a">GUID d86237fc-8e93-4ee0-b485-514ff63ac5e6</_hid>
 				</IHandle>
 			</_definingVar>
 		</ISlot>

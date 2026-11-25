@@ -180,7 +180,7 @@ public:
    * Atteint une position donnée sur l'axe x et y en suivant ces étapes :
    * 1. Pivoter pour s'aligner avec la direction de la cible.
    * 2. Avancer ou reculer jusqu'à atteindre la position cible,
-   *    en ajustant l'angle EN PARALLÈLE si nécessaire en cours de route (rapport § 4.3.2).
+   *    en ajustant l'angle EN PARALLÈLE si nécessaire en cours de route (rapport § 4.5).
    * Correcteur PROPORTIONNEL -> Kp_POS pour la distance,
    * Correcteur PROPORTIONNEL -> Kp_ANG pour l'angle.
    * @param x La position cible sur l'axe x.
@@ -193,7 +193,7 @@ public:
     double erreur_distance = odom->distanceToPosition(x, y);
     double erreur_angle = calculerErreurAngle(x, y, arriere);
 
-    // Vérifié avant l'angle pour éviter des pivots inutiles si le robot dépasse légèrement la cible (rapport § 4.3.2).
+    // Vérifié avant l'angle pour éviter des pivots inutiles si le robot dépasse légèrement la cible (rapport § 4.5).
     if (erreur_distance < precision_linear) {
       stop();
       position_atteinte = true;
@@ -240,7 +240,7 @@ public:
 
   /**
    * Comme reachPositionSmooth, mais choisit la marche arrière quand la cible
-   * est à plus de 90° de l'axe avant du robot (derrière lui) pour éviter un demi-tour (rapport § 4.3.2).
+   * est à plus de 90° de l'axe avant du robot (derrière lui) pour éviter un demi-tour (rapport § 4.5).
    */
   void reachPositionSmoothBack(double x, double y) {
     double erreur_angle_abs = fabs(calculerErreurAngle(x, y, false));

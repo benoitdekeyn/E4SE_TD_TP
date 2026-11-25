@@ -13,7 +13,7 @@ double deg_to_rad(double degrees) {
   return degrees * (M_PI / 180.0);
 }
 
-// Décale un angle (ex. +180° en marche arrière) tout en restant entre -π et π (rapport § 4.3.2).
+// Décale un angle (ex. +180° en marche arrière) tout en restant entre -π et π (rapport § 4.5).
 double cal_angle_offset(double current_angle, double offset) {
   double new_angle = current_angle + offset;
   while (new_angle > M_PI) new_angle -= 2 * M_PI;

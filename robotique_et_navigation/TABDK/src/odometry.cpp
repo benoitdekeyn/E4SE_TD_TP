@@ -13,7 +13,7 @@ using namespace tf;
 using geometry_msgs::Pose2D;
 using geometry_msgs::Twist;
 
-// Suit la position, les vitesses et la distance cumulée depuis /odom (rapport § 4.3.1).
+// Suit la position, les vitesses et la distance cumulée depuis /odom (rapport § 4.4).
 class Odometry {
 public:
   Pose2D position;

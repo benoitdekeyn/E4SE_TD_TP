@@ -26,6 +26,8 @@
 &ensp;&ensp;&ensp;&ensp;◦ [4.1 Les modes de navigation](#41-les-modes-de-navigation)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [4.2 Mode navigation manuelle](#42-mode-navigation-manuelle)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [4.3 Mode navigation autonome](#43-mode-navigation-autonome)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [4.4 Localisation et odométrie](#44-localisation-et-odom%C3%A9trie)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [4.5 Suivi de cible et asservissement](#45-suivi-de-cible-et-asservissement)<br>
 <b>• [5. Perception de l'environnement à l'aide du LiDAR](#5-perception-de-lenvironnement-%C3%A0-laide-du-lidar)</b><br>
 &ensp;&ensp;&ensp;&ensp;◦ [5.1 Analyse du scan LiDAR et découpage en régions](#51-analyse-du-scan-lidar-et-d%C3%A9coupage-en-r%C3%A9gions)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [5.2 Conception des marqueurs RViz](#52-conception-des-marqueurs-rviz)<br>
@@ -54,7 +56,7 @@ L'objectif du projet était de développer progressivement notre package `TABDK`
 
 - le pilotage bas niveau (`/cmd_vel`) et le paramétrage global via YAML ([section 3, Pilotage de base et paramétrage du TB3](#3-pilotage-de-base-et-paramétrage-du-tb3)) ;
 - la gestion des modes (`manual` et `auto`), de la pause, du pilotage manuel et de la localisation odométrique (`/odom`) ([section 4, Contrôle et navigation du TB3](#4-contrôle-et-navigation-du-tb3)) ;
-- l'asservissement en position et en orientation, étendu vers des déplacements fluides en marche avant et arrière ([section 4.3.2, Navigation vers un but](#432-navigation-vers-un-but)) ;
+- l'asservissement en position et en orientation, étendu vers des déplacements fluides en marche avant et arrière ([section 4.5, Suivi de cible et asservissement](#45-suivi-de-cible-et-asservissement)) ;
 - la perception 360° par LiDAR (`/scan`), le découpage en huit régions et la visualisation dans RViz ([section 5, Perception de l'environnement à l'aide du LiDAR](#5-perception-de-lenvironnement-à-laide-du-lidar)) ;
 - les commandes par services ROS (`/set_mode`, `/global_control`), le suivi asynchrone de waypoints par action (`/moving`) et la gestion de trajectoires `nav_msgs/Path` ([section 6, Services, actions et gestion de trajectoires](#6-services-actions-et-gestion-de-trajectoires)) ;
 - la cartographie SLAM (Gmapping) et la planification de chemin A\* améliorée avec lissage de trajectoire ([section 7, Planification de trajectoire : SLAM](#7-planification-de-trajectoire--slam)) ;
@@ -486,7 +488,7 @@ flowchart TB
 Voici les trois versions de notre mode manuel, développées au fur et à mesure des exercices :
 
 1. **Première version : commandes directes** : au début, `key_input_node.cpp` publiait les touches sur `/keyboard_input` et nous les lisions directement dans `controleur.cpp`. Chaque touche du clavier déclenchait un mouvement élémentaire dans la FSM (`FORWARD`, `BACKWARD`, `PIVOTER_GAUCHE`, `PIVOTER_DROITE`, `STOP`), avec la barre espace pour la pause et la touche `0` (`KEY_ZERO`) pour remettre la direction à `NONE`.
-2. **Deuxième version : déplacement vers des coordonnées cibles** : quand nous avons implémenté `reachPosition()` ([section 4.3.2, Navigation vers un but](#432-navigation-vers-un-but)), nous sommes passés à un pilotage par position cible. Les flèches du clavier ne commandaient plus un mouvement direct, mais déplaçaient une cible de coordonnées absolues `(x, y)` dans le repère d'odométrie (par pas de `0,1 m` : haut/bas sur `x`, gauche/droite sur `y`, stockée dans `target_position` puis dans l'attribut `targets` de `Mouvements`). La FSM passait alors dans `REACH_POSITION` pour rejoindre cette cible.
+2. **Deuxième version : déplacement vers des coordonnées cibles** : quand nous avons implémenté `reachPosition()` ([section 4.5, Suivi de cible et asservissement](#45-suivi-de-cible-et-asservissement)), nous sommes passés à un pilotage par position cible. Les flèches du clavier ne commandaient plus un mouvement direct, mais déplaçaient une cible de coordonnées absolues `(x, y)` dans le repère d'odométrie (par pas de `0,1 m` : haut/bas sur `x`, gauche/droite sur `y`, stockée dans `target_position` puis dans l'attribut `targets` de `Mouvements`). La FSM passait alors dans `REACH_POSITION` pour rejoindre cette cible.
 3. **Troisième version : déplacement d'un waypoint virtuel (version finale)** : avec les services et le serveur d'action, nous avons retiré la lecture clavier du contrôleur pour la confier à `client_services.cpp` et `client_action.cpp`. Dans `client_action.cpp`, une variable `waypoint_virtuel` est initialisée à `(0, 0)` (et remise à `(0, 0)` lors d'un reset). En mode manuel, les flèches déplacent ce waypoint virtuel par pas de "`waypoint_step`" mètres. Quand nous appuyons sur `w`, ce waypoint est ajouté à la liste `trajectoire`, et le robot suit les points de la liste dans l'ordre via l'action `/moving`.
 
 #### Difficultés rencontrées
@@ -554,47 +556,64 @@ flowchart LR
 
 ### 4.3 Mode navigation autonome
 
-Au fil du projet, nous avons fait évoluer le mode automatique : nous sommes passés d'une séquence prédéfinie (avancer, s'arrêter, reculer) à une navigation par waypoints. Dans notre version finale, nous n'appelons plus `States::updateFSMAuto()` dans `Modes::step()`. Les modes `auto` et `manual` passent tous deux par `States::updateFSMManual()` et l'état `REACH_POSITION`, et le serveur d'action ([section 6.2, Navigation : serveur d'action](#62-navigation--serveur-daction)) met directement à jour la cible de `reachPosition()`. Nous avons tout de même gardé `updateFSMAuto()` et les noms historiques dans `states.cpp` pour pouvoir relire l'ancien fonctionnement ou y revenir facilement si besoin (en désactivant le serveur d'action et en réactivant l'appel à `updateFSMAuto()`).
+#### Choix fonctionnels
 
-#### 4.3.1 Localisation du TB3 et odométrie
+- Le mode `auto` a pour rôle d'exécuter les déplacements du robot de façon autonome, sans pilotage au clavier (qui reste uniquement disponible pour changer de mode, mettre en pause ou réinitialiser).
+- Comme le mode manuel ([section 4.2, Mode navigation manuelle](#42-mode-navigation-manuelle)), il a évolué en trois étapes jusqu'à une architecture unifiée : dans notre version finale, les modes `auto` et `manual` partagent exactement la même machine à états (`STOP` ↔ `REACH_POSITION`) et le même asservissement vers une cible ([section 4.5, Suivi de cible et asservissement](#45-suivi-de-cible-et-asservissement)), seule la provenance des waypoints change (`/robot_path` en mode `auto`, clavier en mode `manual`).
 
-##### Choix fonctionnels
+#### Première implémentation et évolution du mode autonome
+
+Voici les trois versions successives de notre mode autonome :
+
+1. **Première version : séquence prédéfinie** : au début du projet, le mode `AUTO` exécutait en boucle une séquence fixe dans `States::updateFSMAuto()` (avancer, s'arrêter, reculer), avec des durées d'abord exprimées en périodes puis en millisecondes converties en ticks ([section 3.1, Pilotage de base du TB3](#31-pilotage-de-base-du-tb3)).
+2. **Deuxième version : suivi d'une cible `(x, y)`** : une fois la lecture de l'odométrie ([section 4.4, Localisation et odométrie](#44-localisation-et-odométrie)) et `reachPosition()` ([section 4.5, Suivi de cible et asservissement](#45-suivi-de-cible-et-asservissement)) en place, le robot a pu rejoindre de façon autonome une position cible donnée, d'abord en pivotant sur place puis de manière fluide en marche avant et arrière (`reachPositionSmooth()` et `reachPositionSmoothBack()`).
+3. **Troisième version : suivi autonome de trajectoires (version finale)** : avec l'ajout du serveur d'action `/moving` ([section 6.2, Navigation : serveur d'action](#62-navigation--serveur-daction)), de `client_action.cpp` ([section 6.3, Gestion des trajectoires : Path](#63-gestion-des-trajectoires--path)) et du planificateur `AStar-ROS` ([section 7.2, Navigation à base de SLAM](#72-navigation-à-base-de-slam)), le mode `auto` enchaîne automatiquement tous les waypoints des trajectoires `nav_msgs/Path` reçues sur `/robot_path` après un `2D Nav Goal` dans RViz, tout en restant supervisé par l'évitement d'obstacles ([section 8, Évitement d'obstacles](#8-évitement-dobstacles)).
+
+#### Difficultés rencontrées
+
+- Maintenir deux machines à états différentes (`updateFSMAuto()` pour l'ancienne séquence et `updateFSMManual()` pour le suivi de cible) n'avait plus d'intérêt dès lors que le mode autonome suivait lui aussi des waypoints. Nous avons donc unifié les deux modes autour de `States::updateFSMManual()` et de l'état `REACH_POSITION`.
+- Pour éviter qu'une saisie clavier et une trajectoire issue d'A\* ne se mélangent dans la file de `client_action.cpp`, nous avons filtré les entrées selon le topic `/mode` : les touches de déplacement de waypoint sont ignorées en mode `auto`, et les messages `/robot_path` sont ignorés en mode `manual`.
+
+#### Version finale
+
+Dans notre version finale, [`Modes::step()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/modes.cpp#L31-L49) appelle [`States::updateFSMManual()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/states.cpp#L60-L78) aussi bien en mode `auto` qu'en mode `manual`. En mode `auto`, [`client_action.cpp`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/client_action.cpp#L96-L115) reçoit les trajectoires sur `/robot_path` et transmet chaque waypoint au serveur d'action `/moving`, qui met directement à jour la cible suivie par `reachPosition()` ([section 4.5, Suivi de cible et asservissement](#45-suivi-de-cible-et-asservissement)). Nous avons tout de même conservé [`States::updateFSMAuto()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/states.cpp#L119-L147) et les noms historiques dans `states.cpp` pour pouvoir relire l'ancien fonctionnement ou y revenir facilement si besoin.
+
+### 4.4 Localisation et odométrie
+
+#### Choix fonctionnels
 
 - Nous nous sommes abonnés au topic `/odom` (`nav_msgs/Odometry`), sur lequel nous avons mesuré directement avec ROS une fréquence d'environ 20 Hz.
 - Dans chaque message `nav_msgs/Odometry`, nous lisons les coordonnées `x` et `y`, le cap `theta` extrait du quaternion avec `tf::getYaw()`, et les vitesses linéaire et angulaire (`msg->twist.twist`).
-- Nous avons ajouté dans `Odometry` le cumul de distance (`distanceParcourue()`) et la méthode `distanceToPosition(x, y)` pour les réutiliser dans l'asservissement ([section 4.3.2, Navigation vers un but](#432-navigation-vers-un-but)) et le serveur d'action ([section 6.2, Navigation : serveur d'action](#62-navigation--serveur-daction)).
+- Nous avons ajouté dans `Odometry` le cumul de distance (`distanceParcourue()`) et la méthode `distanceToPosition(x, y)` pour les réutiliser dans l'asservissement ([section 4.5, Suivi de cible et asservissement](#45-suivi-de-cible-et-asservissement)) et le serveur d'action ([section 6.2, Navigation : serveur d'action](#62-navigation--serveur-daction)).
 
-##### Première implémentation
+#### Première implémentation
 
 Au début, nous avons placé le subscriber `/odom` et la réinitialisation (`/reset` et `/gazebo/reset_simulation`, déclenchés par la touche `r`) directement dans `controleur.cpp`, avec une structure personnalisée pour stocker `x`, `y` et la rotation. Lors du passage en classe `Odometry`, nous avions gardé notre propre `struct Pose2D`. Nous avons ensuite découvert que ROS proposait déjà `geometry_msgs::Pose2D` et nous l'avons adopté à la place. Plus tard, nous avons ajouté le stockage de `vitesse` dans `Odometry` pour donner plus d'informations dans les feedbacks de `Move.action` ([section 6.2, Navigation : serveur d'action](#62-navigation--serveur-daction)).
 
-##### Difficultés rencontrées
+#### Difficultés rencontrées
 
 - Pendant nos premiers essais d'asservissement sur l'axe `x`, nous pensions que l'odométrie dysfonctionnait car les mesures semblaient incohérentes avec la position physique du robot malgré des resets. Après un redémarrage complet du robot, nous avons constaté que l'odométrie était finalement assez précise.
 - Nous nous sommes longtemps demandé d'où venait le fait que le reset ne gardait pas l'axe `x` face au robot lorsque nous le déplacions pendant nos essais en `(x, y)`. Au moment du reset, l'axe `x` est bien orienté devant le robot, mais comme l'orientation odométrique s'appuie sur l'IMU du robot, cet axe reste ensuite fixe par rapport à l'environnement lorsque nous déplaçons le robot à la main.
 
-##### Version finale
+#### Version finale
 
 La classe `Odometry` ([TABDK/src/odometry.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/odometry.cpp#L17-L60)) met à jour `position` (`geometry_msgs::Pose2D`), `vitesse` (`geometry_msgs::Twist`) et `distance_parcourue` dans [`odomCallback()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/odometry.cpp#L41-L59) (ainsi que [`distanceToPosition()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/odometry.cpp#L26-L30) et [`distanceParcourue()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/odometry.cpp#L32-L34)) qui est appelée à la fréquence non pas du topic `/odom`, mais de la boucle ROS (donc 5 Hz pour notre cas).
 
-#### 4.3.2 Navigation vers un but
+### 4.5 Suivi de cible et asservissement
 
-##### Choix fonctionnels
+#### Choix fonctionnels
 
-- Nous avons choisi un asservissement proportionnel (`commande_proportionnelle()` dans `calculs.cpp`, plafonné aux vitesses maximales `linear_speed` et `angular_speed`). La vitesse est ainsi élevée lorsque l'erreur est grande, puis diminue progressivement à l'approche de la cible, ce qui rend le déplacement fluide et évite les oscillations. Nos essais à 5 Hz ont donné des résultats satisfaisants sans terme intégral ni dérivé : l'asservissement interne des moteurs derrière `/cmd_vel`, ainsi que la vitesse et l'inertie du robot réel, ne provoquaient pas de dépassements à l'arrêt même sans PID et sans avoir à ralentir longtemps à l'avance.
-- Pour obtenir une trajectoire droite sans grands arcs de cercle et sans arrêts répétés, nous avons ajouté `move(linear, angular)` (vitesse linéaire et angulaire combinées) et deux options dans `config/params.yaml` (`move_smooth` et `move_back`) :
-  - **`reachPositionSmooth(x, y, arriere)`** : utilisée quand `move_smooth` vaut `true`. Tant que l'erreur angulaire reste sous le seuil de pivot (`trigger_pivot`), le robot avance et corrige son cap en même temps avec `move()` (sans tourner du tout si l'erreur reste dans `precision_angular`).  
-  Si l'erreur dépasse `trigger_pivot`, le robot pivote sur place (`pivot_en_cours`, avec `Kp_pivot`) jusqu'à revenir dans `precision_angular`.
-  - **`reachPositionSmoothBack(x, y)`** : utilisée quand `move_smooth` et `move_back` valent tous deux `true`. Si l'angle à parcourir pour viser la cible dépasse 90°, le robot fait marche arrière plutôt que d'effectuer un grand demi-tour : nous décalons l'angle cible de 180° et nous inversons le signe de la vitesse linéaire.  
-  Si `move_back` est désactivé, le robot corrige son cap jusqu'à 180° maximum pour aller en marche avant.
-- Pour gérer les additions/soustractions d'angles en restant entre -180° et 180°, nous utilisons deux fonctions distinctes dans `calculs.cpp`. Vous nous avez fourni la première dans l'énoncé, `cal_delta_Theta()`, pour calculer la différence signée `delta` la plus courte entre 2 angles.  
-Nous avons développé la seconde, `cal_angle_offset()`, d'abord dans nos essais pour modifier la valeur de l'angle cible depuis le clavier par incrémentation ou décrémentation d'un pas, puis nous l'avons réutilisée dans `calculerErreurAngle()` pour décaler l'angle cible de 180° en marche arrière.
+- Nous avons choisi un asservissement purement proportionnel plafonné aux vitesses maximales (`linear_speed`, `angular_speed`), sans terme intégral ni dérivé : à 5 Hz, l'asservissement interne des moteurs derrière `/cmd_vel` et l'inertie du TurtleBot3 suffisent à obtenir des déplacements fluides sans dépassement à l'arrêt.
+- Pour éviter les arrêts répétés à chaque correction de cap et les demi-tours inutiles, nous avons combiné vitesse linéaire et angulaire dans `move(linear, angular)` et rendu le comportement configurable dans `config/params.yaml` via `move_smooth` (correction en roulant avec `reachPositionSmooth()`) et `move_back` (marche arrière automatique avec `reachPositionSmoothBack()`).
+- Pour manipuler les angles entre -180° et 180°, nous utilisons `cal_delta_Theta()` (fournie dans l'énoncé) et nous avons écrit `cal_angle_offset()`, d'abord pour décaler un angle cible par pas au clavier lors de nos essais, puis pour la marche arrière.
 
-##### Première implémentation
+Le détail des calculs, de l'amortissement et des trois commandes proportionnelles est expliqué ci-dessous dans [Fonctionnement détaillé de l'asservissement](#fonctionnement-détaillé-de-lasservissement).
+
+#### Première implémentation
 
 Nous avons d'abord codé et validé `reachPositionX()`, `reachAngle()` et `reachPosition()` (pivot sur place puis avancer) directement dans `controleur.cpp`. Quand nous avons créé la classe `Mouvements` (`mouvements.cpp`), nous avons ajouté `move()` pour développer `reachPositionSmooth()` et enfin `reachPositionSmoothBack()`.
 
-##### Difficultés rencontrées
+#### Difficultés rencontrées
 
 - Dans nos premiers essais de `reachPositionSmooth()`, nous avions inversé `Kp_pivot` et `Kp_angular`, et une erreur de frappe empêchait la limitation de vitesse. Nous avons corrigé ces deux erreurs et centralisé le calcul dans `commande_proportionnelle()`.
 - Dans `reachPositionSmooth()`, sans vérifier la distance en premier, les erreurs angulaires explosaient à proximité du point visé (à cause du dépassement du point en quelques centimètres) et déclenchaient des pivots inutiles. Nous avons donc placé le test de distance au début de la fonction pour arrêter immédiatement le robot dès qu'il entre dans la tolérance `precision_linear`.
@@ -602,12 +621,12 @@ Nous avons d'abord codé et validé `reachPositionX()`, `reachAngle()` et `reach
 - Pendant nos essais dans Gazebo, nous avons eu des dépassements et des pertes d'adhérence. Des accélérations ou décélérations trop brusques pouvaient faire tourner le robot sur lui-même, et une vitesse trop élevée le faisait dériver sur le côté. Nous avons donc abaissé et ajusté les vitesses dans `config/params.yaml`. Mais c'est un comportement qui est resté exclusif à la simulation.
 - Nous avions d'abord créé trois états dans `states.cpp` (`REACH_POSITION`, `REACH_POSITION_SMOOTH` et `REACH_POSITION_SMOOTH_BACK`). Nous les avons regroupés dans un seul état `REACH_POSITION`, piloté par `move_smooth` et `move_back`. La FSM est ainsi plus simple, tout en gardant les mêmes comportements.
 
-##### Version finale
+#### Version finale
 
 Dans la version finale, `Mouvements` ([TABDK/src/mouvements.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L158-L277), avec [`reachPosition()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L158-L177), [`reachPositionSmooth()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L191-L239) et [`reachPositionSmoothBack()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L245-L250)), `calculs.cpp` ([TABDK/src/calculs.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/calculs.cpp#L16-L48)) et l'état `REACH_POSITION` de `States` ([TABDK/src/states.cpp](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/states.cpp#L103-L111)) gèrent le déplacement vers une cible selon `move_smooth` et `move_back`. Nous détaillons ci-dessous les formules mathématiques, le principe d'amortissement et le rôle des trois commandes proportionnelles.
 
 <!-- samepage -->
-#### 4.3.3 Fonctionnement détaillé de l'asservissement
+#### Fonctionnement détaillé de l'asservissement
 
 À chaque tour de la boucle de contrôle (5 Hz), la fonction [`reachPositionSmoothBack()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L245-L250) (qui appelle [`reachPositionSmooth()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/mouvements.cpp#L191-L239)) s'appuie sur quatre mécanismes simples et indépendants pour guider le robot jusqu'au point demandé.
 
@@ -1554,7 +1573,7 @@ Le robot planifie son itinéraire depuis RViz (`2D Nav Goal`) et suit une trajec
   - si le robot avance très lentement, il peut se rapprocher davantage d'un obstacle avant de s'arrêter, sans déclencher d'alerte inutile ;
   - à l'inverse, s'il avance vite, il s'arrête plus loin pour un même délai avant collision.
   Il suffit donc de ralentir pour pouvoir naviguer proche de certains obstacles.
-- Comme notre asservissement `reachPositionSmoothBack()` ([section 4.3.2, Navigation vers un but](#432-navigation-vers-un-but)) peut faire reculer le robot, nous avons abonné `detector.cpp` à `/cmd_vel` ([`cmdVelCallback()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L237-L239)) pour connaître la vitesse linéaire commandée et surveiller uniquement le côté vers lequel le robot se déplace (`REGION_FACE` si `linear_speed > 0,001`, `REGION_DOS` si `linear_speed < -0,001`). Nous retranchons aussi le gabarit du robot (`debut_collision_face` et `debut_collision_dos`, réglés à 12 cm dans [TABDK/config/params.yaml](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/config/params.yaml#L21-L23)) à la distance minimale mesurée depuis le centre du LiDAR, pour qu'un délai de 0 corresponde à un obstacle qui touche le bord extérieur du robot et non son centre :
+- Comme notre asservissement `reachPositionSmoothBack()` ([section 4.5, Suivi de cible et asservissement](#45-suivi-de-cible-et-asservissement)) peut faire reculer le robot, nous avons abonné `detector.cpp` à `/cmd_vel` ([`cmdVelCallback()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L237-L239)) pour connaître la vitesse linéaire commandée et surveiller uniquement le côté vers lequel le robot se déplace (`REGION_FACE` si `linear_speed > 0,001`, `REGION_DOS` si `linear_speed < -0,001`). Nous retranchons aussi le gabarit du robot (`debut_collision_face` et `debut_collision_dos`, réglés à 12 cm dans [TABDK/config/params.yaml](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/config/params.yaml#L21-L23)) à la distance minimale mesurée depuis le centre du LiDAR, pour qu'un délai de 0 corresponde à un obstacle qui touche le bord extérieur du robot et non son centre :
   $$t_{\text{collision}} = \frac{|d_{\min} - d_{\text{gabarit}}|}{|v|} \times 1000 \text{ (ms)}$$
 - Plutôt que de publier sur `/cmd_vel` en concurrence avec le contrôleur, nous utilisons le service `/global_control` ([section 6.1, Configuration à la volée du comportement du robot : service](#61-configuration-à-la-volée-du-comportement-du-robot--service)) via [`callGlobalControl()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L320-L331) pour mettre le robot en pause puis le relancer, sans connaître ni changer le mode actif (`manual` ou `auto`). Quand le délai passe sous `delay_collision`, nous envoyons `"pause"` et mémorisons la distance de l'obstacle (`distance_to_last_obstacle`) ainsi que le côté concerné (`was_obstacle_on_back`). Dès que la distance mesurée de ce côté repasse au-dessus de `distance_to_last_obstacle`, nous envoyons `"play"`.
 - Pour ne jamais annuler une pause demandée manuellement au clavier ou par service, `detector.cpp` écoute aussi `/pause` ([`pauseCallback()`](https://github.com/benoitdekeyn/E4SE_TD_TP/blob/main/robotique_et_navigation/TABDK/src/nodes/detector.cpp#L241-L243)) et distingue `robot_pause` de `collision_pause`.

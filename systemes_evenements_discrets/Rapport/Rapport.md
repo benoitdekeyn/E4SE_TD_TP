@@ -116,30 +116,6 @@ Le tableau suivant résume le rôle de chaque zone :
 | **J** | Autoradio | Allumer la radio, lancer et changer de piste | § 6.4 |
 | **K** | Téléphone | Allumer le téléphone, activer le Bluetooth, jumeler, gérer appels et SMS | § 6 |
 
-### Premier scénario : démarrer et rouler
-
-Pour démarrer et tester le régulateur, nous suivons les étapes suivantes :
-
-1. Mettre le contact avec l'interrupteur **E1** : la LED **E2** s'allume.
-2. Appuyer sur **Démarrer** (**E3**) : la LED moteur **E4** s'allume, le véhicule tient son ralenti (environ 10 km/h sur le plat).
-3. Monter la pédale d'accélération **H2** : le throttle (**F2**, **F3**) et la vitesse (**F4**, **F5**) augmentent.
-4. Au-dessus de 30 km/h, appuyer sur **Régulateur** (**G5**) : la LED **G6** s'allume et la vitesse courante devient la consigne (**G3**). Nous pouvons alors relâcher la pédale.
-5. Faire varier la pente (**A1**) : le régulateur compense et maintient la consigne.
-6. Appuyer sur la pédale de frein **H1** : le régulateur se désactive.
-
-### Deuxième scénario : connecter le téléphone
-
-Pour connecter le téléphone au kit mains libres, nous suivons les étapes suivantes :
-
-1. Contact mis et moteur à l'arrêt, allumer le téléphone (**K1**) puis son Bluetooth (**K3**).
-2. « Kit Bluetooth Vehicule » apparaît dans la liste (**K4**) : valider avec **OK** (**K5**).
-3. Saisir le code `1234` dans **K7** puis appuyer sur **Appairer** (**K8**) : les LED **K9** et **I2** indiquent la connexion.
-4. Depuis la zone **C**, déclencher un appel : il sonne sur le téléphone et au volant, et peut être décroché depuis **I6** ou **K11**.
-
-La liste complète des widgets et de leurs attributs associés se trouve dans l'annexe A, IHM détaillée.
-
----
-
 ## 3. Modélisation et simulation du véhicule
 
 ### 3.1 Architecture globale en AND-lines, synchronisation EVAL et interfaces
@@ -163,7 +139,7 @@ Avant de développer les différentes fonctions, nous avons réfléchi à l'arch
 
 **Une horloge centrale `EVAL`.** Dans Rhapsody, une transition qui porte uniquement une garde `[condition]` n'est réévaluée qu'à l'entrée de l'état ou à la consommation d'un événement. Dans nos premières versions, nous utilisions un timer par AND-line, rebouclant sur un connecteur d'historique : l'ordre d'évaluation entre AND-lines devenait indéterminé et les actions d'entrée/sortie se redéclenchaient à chaque boucle. Nous avons donc créé l'AND-line **`Horloge rafraichissement`**, qui contient un unique état émettant `GEN(EVAL)` à $20\text{ Hz}$ (`tm(1000/PARAM_SIMU_freq_rafraichissement)`). Toutes les transitions gardées du projet sont de la forme `EVAL [garde]` : elles sont réévaluées au même rythme, dans un ordre déterministe.
 
-![AND-line Horloge rafraichissement](media/horloge.png)
+![AND-line Horloge rafraichissement](media/ANDL_EVAL.png)
 
 ---
 
@@ -171,7 +147,7 @@ Avant de développer les différentes fonctions, nous avons réfléchi à l'arch
 
 #### Statechart
 
-![AND-line Simulation du vehicule](media/taux_de_raffraichissement.png)
+![AND-line Simulation du vehicule](media/ANDL_simulation.png)
 
 Pour simuler la vitesse et la distance du véhicule, à partir de l'injection (throttle), nous avons repris la fonction `calcul_vitesse_distance()` qui est appelée à chaque évènement `EVAL` qui se déclenche à la fréquence de simulation comme détaillé [TBD lien vers la section sur EVAL ]
 
@@ -383,7 +359,7 @@ Ki_regulateur = (Kp_regulateur / RATIO_LENTEUR_I);
 
 #### Statechart
 
-<img src="media/injection_base.png" alt="Statechart du débit de l'injection d'essence" width="35%" />
+<img src="media/ANDL_injection_base.png" alt="Statechart du débit de l'injection d'essence" width="35%" />
 
 > La partie inférieure du AND-line qui gère le contrôle de l'injection d'essence par le régulateur est tronquée dans cette capture. Les conditions liées au limiteur apparaissent quand-même mais seront expliquées plus loin.
 
@@ -432,7 +408,7 @@ void _SysVehicule::freiner_injection(double brakePedal) {
 
 **Pourquoi ce fonctionnement.** À l'origine, la fonction `freiner()` fournie ne jouait que sur le `throttle` et non sur la vitesse mécanique. Dans une première version, nous avions même tenté d'y simuler un « étouffement » du moteur au freinage, qui faisait caler la voiture à chaque arrêt franc. Nous avons finalement séparé clairement les deux rôles : `freiner_injection()` coupe l'accélération en plafonnant l'injection au ralenti (sans jamais caler), tandis que `calcul_vitesse_distance()` applique directement l'effort de freinage mécanique sur la vitesse.
 
-![Super-état pedales de l'AND-line Débit de l'injection d'essence](media/pédalepng.png)
+![Super-état pedales de l'AND-line Débit de l'injection d'essence](media/ANDL_injection_base.png)
 
 ---
 
@@ -453,9 +429,7 @@ Le sujet demande de gérer la clé, le démarrage et l'arrêt d'urgence en roula
 
 **Pourquoi ce fonctionnement.** Nous avons placé `arreter()` en entrée de `moteur_off` et non de `contact_off` : sinon, une panne sèche, qui coupe le moteur sans couper le contact, laissait `ignition` à `true`. De la même façon, nous avons mis `calcul_carburant()` dans `moteur_on` pour qu'aucune consommation n'ait lieu moteur coupé.
 
-![AND-line Clé du véhicule](media/cle_du_vehicule.png)
-
-![Région calcul_batterie de contact_on](media/calcul_batterie.png)
+![AND-line Clé du véhicule (incluant la région calcul_batterie_voiture)](media/ANDL_cle_vehicule.png)
 
 ---
 
@@ -483,7 +457,7 @@ if (throttle > 1.5) {
 
 **Pourquoi ce fonctionnement.** Au début, le dépannage remettait la batterie au seuil exact : à 40 %, le premier démarrage (-10 %) rouvrait immédiatement une panne et le véhicule ne redémarrait jamais. Nous remettons donc la batterie à `SEUIL_batterie + 15` (55 %). De même, nous avions d'abord découpé la maintenance en sous-états `garee` / `non_garee`, mais ce découpage bloquait toute réparation une fois en panne. Nous portons donc la garde de maintenance directement sur chaque transition.
 
-![AND-line Ressources et pannes](media/ressources_et_pannes.png)
+![AND-line Ressources et pannes](media/ANDL_ressources_panne.png)
 
 ---
 
@@ -549,7 +523,7 @@ Ki_regulateur = (Kp_regulateur / RATIO_LENTEUR_I);
 * À l'activation, nous initialisons `steady = throttle` pour éviter un à-coup lorsque le conducteur a accéléré entre deux activations.
 * Comme `speed` est tronqué vers le bas, nous visons la consigne + 0,5 (50,5 au lieu de 50), ce qui évite que l'affichage oscille entre 49 et 50.
 
-![AND-line Mode de pilotage](media/mode_de_pilotage.png)
+![AND-line Mode de pilotage](media/ANDL_mode_pilotage.png)
 
 ---
 
@@ -563,8 +537,6 @@ Le limiteur bride l'accélérateur pour que le véhicule ne dépasse pas une vit
 * **Consigne** : à l'activation, **vitesse cible** (**G3**) affiche 50 km/h. Un appui sur **+** ou **−** (**G4**) change la consigne de 1 km/h, et un double appui en moins de 500 ms la change de 10 km/h.
 * **Voyants** (**G2**) : ils indiquent si le limiteur est actif, en attente (`limiteur_attente`) ou en dépassement (`limiteur_depasse`).
 * **Reprise de la main** : en enfonçant franchement la pédale **H2** près de la limite (kick-down), nous désactivons le limiteur.
-
-> **[Capture Rhapsody à insérer — Version finale]** : AND-line **`limiteur de vitesse`** (`state_72`, `limiteur_on` et ses sous-états).
 
 ### Côté statechart
 
@@ -587,7 +559,7 @@ La hiérarchie finale de `limiteur_on` est donc : `consigne_fixe` → `limiteur_
 * Nous avions d'abord réglé le seuil de kick-down à 5, mais une simple accélération franche désactivait le limiteur. Nous l'avons donc remonté à 7.
 * Nous avons préféré des inégalités plutôt que des égalités dans les gardes : une garde `[vitesseConsigne == speed]` pouvait être sautée lors d'un freinage appuyé (51 puis 49 en un pas). Il reste un point connu : la garde de sortie `depassement → limite_tenue` est actuellement écrite `[vitesseConsigne <= speed]` alors que l'attendu est `[speed <= vitesseConsigne]`.
 
-![AND-line Limiteur de vitesse](media/limitateur.png)
+![AND-line Limiteur de vitesse](media/ANDL_limiteur_vitesse.png)
 
 ---
 
@@ -703,10 +675,11 @@ sequenceDiagram
 * Nous faisons voyager le PIN en paramètre (`params->mdp`), et `verifier_mdp()` vide `champ_mdp` à chaque essai : comme ça, l'ancien code erroné ne reste plus affiché.
 * Nous émettons les événements avec `GEN(...)` en entrée d'état : la désactivation du Bluetooth s'écrit `entry / VOYANT_bluetooth_vehicule = false; GEN(ev_bluetooth_kit_desactive);`. Sans `GEN`, l'événement n'était jamais émis.
 
-> **[Capture Rhapsody à insérer — Version finale]** : Les trois AND-lines de la zone Bluetooth/Téléphone :
-> 1. **`Jumelage kit main libre`** (`state_87`, ligne du haut, au centre) ;
-> 2. **`Telephone`** (`state_96`, juste en dessous de `state_87`) ;
-> 3. **`Batterie téléphone`** (`state_126`, à droite de `state_96`).
+![AND-line Jumelage kit main libre](media/ANDL_jumelage_kit.png)
+
+![AND-line Batterie téléphone](media/ANDL_batterie_telephone.png)
+
+> **[Capture Rhapsody à insérer — Version finale]** : AND-line **`Telephone`** (`state_96`).
 
 ---
 
@@ -933,9 +906,9 @@ steady += Ki_regulateur * erreur;
 * L'ACC agit seulement sur `throttle` (plancher au ralenti et frein moteur de -300 N), sa décélération est donc limitée. Nous avons relevé le coefficient de roulement (0,05) et la masse (1500 kg) pour améliorer la décélération naturelle.
 * Nous n'avons pas développé de freinage mécanique automatique ni d'alerte visuelle et sonore en cas de freinage brutal de la cible. Il reste aussi un point connu : les deux gardes de `verif_distance_secu` sont strictes (`<` et `>`), et le cas d'égalité exacte n'est pas couvert.
 
-![AND-line Simulation voiture régulateur adaptatif](media/regulateur_adaptatif.png)
+![AND-line Simulation voiture régulateur adaptatif](media/ANDL_regulateur_adaptatif.png)
 
-![Sous-état regulateur de l'ACC](media/regulateur.png)
+![AND-line complète Débit de l'injection d'essence (pedales et regulateur ACC)](media/ANDL_injection_complet.png)
 
 ---
 
@@ -1155,33 +1128,29 @@ E = entrée (commande de l'utilisateur), S = sortie (affichage). Les liaisons ma
 
 Une capture par AND-line du statechart `Systeme`, dans l'ordre des blocs de la section 3.1, Architecture globale en AND-lines, synchronisation EVAL et interfaces.
 
-![B.1 Horloge rafraichissement](media/horloge.png)
+![B.1 Horloge rafraichissement](media/ANDL_EVAL.png)
 
-![B.2 Simulation du vehicule](media/taux_de_raffraichissement.png)
+![B.2 Simulation du vehicule](media/ANDL_simulation.png)
 
-![B.3 Débit de l'injection d'essence — pedales](media/pédalepng.png)
+![B.3 Débit de l'injection d'essence](media/ANDL_injection_complet.png)
 
-![B.3 Débit de l'injection d'essence — regulateur](media/regulateur.png)
+![B.4 Clé du véhicule](media/ANDL_cle_vehicule.png)
 
-![B.4 Clé du véhicule](media/cle_du_vehicule.png)
+![B.5 Ressources et pannes](media/ANDL_ressources_panne.png)
 
-![B.4 Clé du véhicule — région calcul_batterie](media/calcul_batterie.png)
+![B.6 Mode de pilotage](media/ANDL_mode_pilotage.png)
 
-![B.5 Ressources et pannes](media/ressources_et_pannes.png)
+![B.7 Limiteur de vitesse](media/ANDL_limiteur_vitesse.png)
 
-![B.6 Mode de pilotage](media/mode_de_pilotage.png)
-
-![B.7 Limiteur de vitesse](media/limitateur.png)
-
-![B.8 Simulation voiture régulateur adaptatif](media/regulateur_adaptatif.png)
+![B.8 Simulation voiture régulateur adaptatif](media/ANDL_regulateur_adaptatif.png)
 
 > **\[Image à insérer\]** B.9 Telephone
 
-> **\[Image à insérer\]** B.10 Batterie téléphone
+![B.10 Batterie téléphone](media/ANDL_batterie_telephone.png)
 
 > **\[Image à insérer\]** B.11 Communication telephone
 
-> **\[Image à insérer\]** B.12 Jumelage kit main libre
+![B.12 Jumelage kit main libre](media/ANDL_jumelage_kit.png)
 
 > **\[Image à insérer\]** B.13 Commande kit main libre
 

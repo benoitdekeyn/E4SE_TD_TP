@@ -184,6 +184,7 @@ pre.mermaid { text-align: center; background: transparent; margin: 0; padding: 8
 
 /* Diagrammes : cadre, boutons plein écran et pan/zoom, comme sur GitHub */
 .mermaid-box { position: relative; margin: 1em 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.mermaid-box[data-zoom] { margin-left: auto; margin-right: auto; }
 .mermaid-box svg { cursor: grab; }
 .mm-btn {
   width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center;
@@ -589,7 +590,7 @@ li.task-item { list-style: none; }
 <h4 id="choix-fonctionnels">Choix fonctionnels<a class="anchor" href="#choix-fonctionnels" aria-label="Lien vers cette section">#</a></h4>
 <p>Nous avons volontairement gardé l'AND-line <strong><code>Simulation du vehicule</code></strong> minimaliste : elle ne contient qu'un unique état <code>simulation_du_vehicule</code>, qui exécute <code>calcul_vitesse_distance()</code> à chaque événement <code>EVAL</code>. Toute la mécanique est encapsulée dans deux primitives de simulation (<code>init()</code> et <code>calcul_vitesse_distance()</code>), que nous avons adaptées en un modèle newtonien paramétrable (<code>PARAM_SIMU_*</code>). Voici un schéma qui illustre ce calcul :</p>
 <div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TD
+flowchart LR
     IN[&quot;`**Entrées**&lt;br/&gt;throttle, brakePedal, alpha&lt;br/&gt;ignition, PARAM_SIMU_*`&quot;]
     S1[&quot;`**1. Force motrice**&lt;br/&gt;Si throttle &lt;= ralenti ou moteur OFF :&lt;br/&gt;frein moteur (-300 N) si v &gt; 10 km/h&lt;br/&gt;sinon traction ralenti`&quot;]
     S2[&quot;`**2. Forces résistantes**&lt;br/&gt;Traînée air (k·v²)&lt;br/&gt;Roulement (Cr·m·g·cos α)&lt;br/&gt;Gravité pente (m·g·sin α)&lt;br/&gt;Freinage mécanique progressif`&quot;]
@@ -706,7 +707,7 @@ throttle = throttle_repos + (accelPedal / (<span class="hljs-type">double</span>
 <p>Nous avons remarqué que la formule fournie dans le sujet (
 <code>error  = (double) (5*(vitesseConsigne - speed) / 6.0)</code>;<code>steady = (double) (vitesseConsigne / 12.0);</code> <code>throttle = steady+error</code>) n'était pas adaptée au fonctionnement réel de la voiture. Avec l'aide de l'ia nous avons donc modélisé un modèle &quot;plus réalist&quot; newtonien en forte pente avec un correcteur PI discret avec saturation pour l'asservissement final (<code>calcul_regulateur_vitesse()</code>, cadencé à <code>PARAM_SIMU_freq_regulateur</code> = 3 Hz). Ses gains sont calculés dans <code>init()</code> à partir de la masse, de la puissance et de la fréquence. Nous avons tout de même gardé la loi du sujet dans l'opération <code>regulateur_Prof()</code>. Voici un schéma qui illustre ce correcteur :</p>
 <div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TD
+flowchart LR
     ERR[&quot;`**Erreur centrée**&lt;br/&gt;e = (vitesseConsigne + 0.5) - float_speed`&quot;]
     I[&quot;`**Terme Intégral (anti-windup)**&lt;br/&gt;steady += Ki · e&lt;br/&gt;bridé dans [throttle_repos, 10]`&quot;]
     P[&quot;`**Terme Proportionnel**&lt;br/&gt;Kp · e`&quot;]
@@ -1036,7 +1037,7 @@ sequenceDiagram
 </ul>
 <p>Voici un schéma qui illustre cet arbitrage des priorités :</p>
 <div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TD
+flowchart LR
     OFF[&quot;`**contact_radio_eteint**&lt;br/&gt;Contact OFF ou batterie &lt;= 0&lt;br/&gt;Coupure audio`&quot;]
     subgraph ACT[&quot;contact_radio_actif — Arbitrage des priorités audio&quot;]
         P1[&quot;`**Priorité 3 (basse) : priorite_radio**&lt;br/&gt;radio_desactive / lancement_radio / musique_1..3&lt;br/&gt;+ anti-rebond Skip (500 ms)`&quot;]
@@ -1093,7 +1094,7 @@ flowchart TD
 </ol>
 <p><code>calcul_regulateur_distance()</code> réutilise la même loi PI saturée que le régulateur de vitesse, appliquée à l'erreur de distance (<code>distance_securite</code> = 30 m par défaut). Voici un schéma qui illustre cet aiguillage :</p>
 <div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TD
+flowchart LR
     ENV[&quot;`**Simulateur cible (state_256, 20 Hz)**&lt;br/&gt;distance_voiture_devant += (v_devant/3.6)·dt&lt;br/&gt;distance_inter_voiture = d_devant - distance`&quot;]
     DEC{&quot;`distance_inter_voiture&lt;br/&gt;&lt; distance_securite&lt;br/&gt;ET cible active ?`&quot;}
     DIST[&quot;`**suivi_distance_consigne**&lt;br/&gt;PI sur e_d = d_inter - d_secu`&quot;]
@@ -1284,7 +1285,7 @@ steady += Ki_regulateur * erreur;
 </ol>
 <p>Voici un schéma qui illustre cette chaîne :</p>
 <div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart TD
+flowchart LR
     RPY[&quot;`**Modèle Rhapsody**&lt;br/&gt;Statechart Systeme&lt;br/&gt;(.rpyx / .sbsx)`&quot;]
     CPP[&quot;`**Code C++ généré**&lt;br/&gt;_SysVehicule + OXF&lt;br/&gt;(attributs &amp; événements)`&quot;]
     TOOL[&quot;`**Outil d'injection &amp; build**&lt;br/&gt;Injection serveur HTTP&lt;br/&gt;Binding attributs / GEN(ev_*)`&quot;]
@@ -7285,7 +7286,19 @@ lodash-es/lodash.js:
     const svg = $('svg', box);
     if (!svg || !window.svgPanZoom) return;
     box._raw = svg.outerHTML;
-    svg.style.height = `${svg.getBoundingClientRect().height}px`; // hauteur figée : svg-pan-zoom en a besoin
+    const z = Number(box.dataset.zoom || 100) / 100;
+    const r = svg.getBoundingClientRect();
+    if (z !== 1 && r.width > 0) {
+      const maxW = Math.max(80, box.clientWidth - 16);
+      const targetW = Math.min(maxW, r.width * z);
+      const targetH = r.height * (targetW / r.width);
+      svg.style.maxWidth = `${targetW.toFixed(1)}px`;
+      svg.style.width = `${targetW.toFixed(1)}px`;
+      svg.style.height = `${targetH.toFixed(1)}px`;
+      box.style.maxWidth = `${Math.ceil(targetW + 18)}px`;
+    } else {
+      svg.style.height = `${r.height}px`; // hauteur figée : svg-pan-zoom en a besoin
+    }
     box._pz = newPz(svg, false);
     const exp = mkBtn('mm-btn mm-expand mm-ui', '⤢', 'Plein écran');
     exp.addEventListener('click', () => openFull(box));
@@ -7363,6 +7376,7 @@ lodash-es/lodash.js:
       nodes.forEach((n) => {
         const box = n.parentElement;
         if (box._pz) { try { box._pz.destroy(); } catch (_) {} box._pz = null; }
+        box.style.maxWidth = '';
         $$('.mm-ui', box).forEach((x) => x.remove());
         n.textContent = n.dataset.src;
         n.removeAttribute('data-processed');

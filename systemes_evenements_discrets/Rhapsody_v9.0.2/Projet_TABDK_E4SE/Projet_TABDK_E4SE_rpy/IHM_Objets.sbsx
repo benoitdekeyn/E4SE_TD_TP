@@ -12,10 +12,10 @@
 			<_id type="a">GUID 01dd56fe-298e-423f-8f52-a5e5dff6dbdc</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">IHM_Objets</_name>
-			<_modifiedTimeWeak type="a">11.24.2026::1:4:45</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.24.2026::1:5:27</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.24.2026::17:11:43</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.24.2026::17:11:43</_modifiedTime>
 			<_lastID type="a">2</_lastID>
-			<weakCGTime type="a">11.24.2026::1:4:45</weakCGTime>
+			<weakCGTime type="a">11.24.2026::17:11:43</weakCGTime>
 			<strongCGTime type="a">10.3.2016::22:41:54</strongCGTime>
 			<_defaultComposite type="s">GUID c6ebe487-749a-424c-8c16-94f16e9ee15a</_defaultComposite>
 			<_eventsBaseID type="a">-1</_eventsBaseID>
@@ -1082,15 +1082,15 @@
 			<_id type="a">GUID 187c4360-fdb2-4b6f-996d-5c38ed7c9d37</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">Main</_name>
-			<_modifiedTimeWeak type="a">11.24.2026::1:6:26</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">11.24.2026::17:16:34</_modifiedTimeWeak>
 			<_theMainDiagram type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IDiagram</_hm2Class>
 					<_hid type="a">GUID 157a46cf-adcc-4952-aec9-4db509148774</_hid>
 				</IHandle>
 			</_theMainDiagram>
-			<_modifiedTime type="a">11.24.2026::1:6:26</_modifiedTime>
-			<weakCGTime type="a">11.24.2026::1:6:26</weakCGTime>
+			<_modifiedTime type="a">11.24.2026::17:16:34</_modifiedTime>
+			<weakCGTime type="a">11.24.2026::17:16:34</weakCGTime>
 			<strongCGTime type="a">9.26.2017::14:35:36</strongCGTime>
 			<_itsStateChart type="r">
 				<IHandle type="e">
@@ -1207,8 +1207,8 @@ return done;</_bodyData>
 			<_id type="a">GUID 2731af7b-953d-4383-ac71-d3660a0ae942</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">objetSysVehicule</_name>
-			<_modifiedTimeWeak type="a">11.24.2026::1:6:26</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.24.2026::1:6:26</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.24.2026::17:16:34</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.24.2026::17:16:34</_modifiedTime>
 			<_multiplicity type="a">1</_multiplicity>
 			<_otherClass type="r">
 				<IClassifierHandle type="e">
@@ -1235,13 +1235,14 @@ return done;</_bodyData>
 				<value>GUID 32a2a754-6bc1-4c3a-abf2-838e0dbfd7c0</value>
 				<value>GUID 673bc140-99b0-487a-b1ff-ad0fe8386e31</value>
 				<value>GUID f255755a-acfe-4143-ae7b-272981ac1dba</value>
+				<value>GUID fdeb5acd-c1fa-4542-9c8a-b8ff3a932196</value>
 			</AggregatesList>
 		</IPart>
 		<ISlot type="e">
 			<_id type="a">GUID 2591b7da-141b-40a6-9b89-1e7a4ea79d31</_id>
-			<_name type="a">radio_on_Value</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::9:52:51</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::9:52:51</_modifiedTime>
+			<_name type="a">cmd_radio_Value</_name>
+			<_modifiedTimeWeak type="a">11.24.2026::17:12:9</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.24.2026::17:12:9</_modifiedTime>
 			<_value type="a">false</_value>
 			<_definingVar type="r">
 				<IHandle type="e">
@@ -1249,7 +1250,7 @@ return done;</_bodyData>
 					<_hfilename type="a">.\_MonPkg.sbsx</_hfilename>
 					<_hsubsystem type="a">_MonPkg</_hsubsystem>
 					<_hclass type="a">_SysVehicule</_hclass>
-					<_hname type="a">radio_on</_hname>
+					<_hname type="a">cmd_radio</_hname>
 					<_hid type="a">GUID 83a5056b-b482-41d8-8b56-91f129e93ce9</_hid>
 				</IHandle>
 			</_definingVar>
@@ -1341,9 +1342,9 @@ return done;</_bodyData>
 		</ISlot>
 		<ISlot type="e">
 			<_id type="a">GUID 9001a0b4-b8ed-4c19-9ad7-6d0cb390cd4c</_id>
-			<_name type="a">SWITCH_simulation_voiture_devant_Value</_name>
-			<_modifiedTimeWeak type="a">11.10.2026::14:25:29</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.10.2026::14:25:29</_modifiedTime>
+			<_name type="a">cmd_simulation_voiture_devant_Value</_name>
+			<_modifiedTimeWeak type="a">11.24.2026::17:14:40</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.24.2026::17:14:40</_modifiedTime>
 			<_value type="a">false</_value>
 			<_definingVar type="r">
 				<IHandle type="e">
@@ -1351,7 +1352,7 @@ return done;</_bodyData>
 					<_hfilename type="a">.\_MonPkg.sbsx</_hfilename>
 					<_hsubsystem type="a">_MonPkg</_hsubsystem>
 					<_hclass type="a">_SysVehicule</_hclass>
-					<_hname type="a">SWITCH_simulation_voiture_devant</_hname>
+					<_hname type="a">cmd_simulation_voiture_devant</_hname>
 					<_hid type="a">GUID 20d68c9f-3bfd-4822-973a-b2a0e3c5f4e3</_hid>
 				</IHandle>
 			</_definingVar>
@@ -1421,6 +1422,23 @@ return done;</_bodyData>
 					<_hclass type="a">_SysVehicule</_hclass>
 					<_hname type="a">VOYANT_kit_sonnerie</_hname>
 					<_hid type="a">GUID d86237fc-8e93-4ee0-b485-514ff63ac5e6</_hid>
+				</IHandle>
+			</_definingVar>
+		</ISlot>
+		<ISlot type="e">
+			<_id type="a">GUID fdeb5acd-c1fa-4542-9c8a-b8ff3a932196</_id>
+			<_name type="a">cmd_bluetooth_telephone_actif_Value</_name>
+			<_modifiedTimeWeak type="a">11.24.2026::17:16:34</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.24.2026::17:16:34</_modifiedTime>
+			<_value type="a">false</_value>
+			<_definingVar type="r">
+				<IHandle type="e">
+					<_hm2Class type="a">IAttribute</_hm2Class>
+					<_hfilename type="a">.\_MonPkg.sbsx</_hfilename>
+					<_hsubsystem type="a">_MonPkg</_hsubsystem>
+					<_hclass type="a">_SysVehicule</_hclass>
+					<_hname type="a">cmd_bluetooth_telephone_actif</_hname>
+					<_hid type="a">GUID aaf7a6b3-ea6a-476b-a741-f94697f0c890</_hid>
 				</IHandle>
 			</_definingVar>
 		</ISlot>

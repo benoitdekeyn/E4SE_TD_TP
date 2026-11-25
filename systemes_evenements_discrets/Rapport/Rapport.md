@@ -169,50 +169,213 @@ Avant de développer les différentes fonctions, nous avons réfléchi à l'arch
 
 ### 3.2 Dynamique du véhicule (Simulation du vehicule)
 
+#### Statechart
+
+![AND-line Simulation du vehicule](media/taux_de_raffraichissement.png)
+
+Pour simuler la vitesse et la distance du véhicule, à partir de l'injection (throttle), nous avons repris la fonction `calcul_vitesse_distance()` qui est appelée à chaque évènement `EVAL` qui se déclenche à la fréquence de simulation comme détaillé [TBD lien vers la section sur EVAL ]
+
 #### Choix fonctionnels
 
-Nous avons volontairement gardé l'AND-line **`Simulation du vehicule`** minimaliste : elle ne contient qu'un unique état `simulation_du_vehicule`, qui exécute `calcul_vitesse_distance()` à chaque événement `EVAL`. Toute la mécanique est encapsulée dans deux primitives de simulation (`init()` et `calcul_vitesse_distance()`), que nous avons adaptées en un modèle newtonien paramétrable (`PARAM_SIMU_*`). Voici un schéma qui illustre ce calcul :
+Nous avons volontairement gardé l'AND-line **`Simulation du vehicule`** minimaliste : elle ne contient qu'un unique état `simulation_du_vehicule`, qui exécute `calcul_vitesse_distance()` à chaque événement `EVAL`.  
+Toute la mécanique est encapsulée dans le constructeur de la classe `_SysVehicule()` et l'opération `calcul_vitesse_distance()` qui sont décrits ci-après.
+
+**Évolution depuis les fonctions de base.** Les fonctions fournies au départ étaient très simplistes : `accelerer()` incrémentait le `throttle` proportionnellement à l'appui sur la pédale d'accélération, `freiner()` le décrémentait à l'appui sur le frein, et les frottements faisaient redescendre le `throttle` naturellement. En analysant ce fonctionnement, nous nous sommes d'abord rendu compte que la fonction `freiner()` n'agissait en réalité que sur le `throttle` (l'injection), et non directement sur la décélération du véhicule.
+
+Aussi, si nous ne faisions que freiner, la voiture ne faisait que doucement ralentir, ce qui était complètement irréaliste et embêtant pour les tests de notre système quand nous voulions ralentir rapidement.
+
+Nous avons donc décidé, avec l'aide de l'IA, de passer sur une simulation physique plus poussée en prenant en compte des caractéristiques du véhicule comme
+- la masse (`PARAM_SIMU_masse`)
+- les frottements aérodynamiques (`PARAM_SIMU_frottement_air`)
+- le frottement de roulement (`PARAM_SIMU_frottement_roulement`)
+- les puissances moteur (`PARAM_SIMU_puissance_moteur`)
+- la puissance de freinage (`PARAM_SIMU_puissance_frein`)
+- la pente (`PARAM_SIMU_pente`) qui était déjà prise en compte dans la version que vous nous avez fournie.
+
+Les avantages de notre nouvelle fonction `calcul_vitesse_distance()` physique sont :
+
+* **Freinage réaliste** : Elle prend en compte `brakePedal` comme un effort de freinage mécanique dans `calcul_vitesse_distance()`, en plus de la coupure d'injection (`freiner_injection()`).
+* **Maîtriser le ralentissement en mode régulateur ou limiteur** : Comme le régulateur ainsi que le limiteur ne pilotent que le `throttle` sans actionner les freins, le réglage de la masse et des frottements était le seul moyen d'obtenir un frein moteur et une décélération personalisable.
+* **Simuler différents types de véhicules** : En ajustant les paramètres `PARAM_SIMU_*`, le même modèle peut représenter aussi bien une petite voiture légère qu'un camion lourd avec beaucoup d'inertie, ou une voiture puissante donc nerveuse.
+
+##### Initialisation et vitesse de repos
+
+Au démarrage, le véhicule se comporte comme un moteur diesel : le `throttle` est maintenu à une valeur de ralenti `throttle_repos`, calculée en fonction des caractéristiques du véhicule, dès l'initialisation pour que sur du plat à vitesse basse, le véhicule se maintienne à la vitesse de repos paramétrable (`PARAM_SIMU_vitesse_repos`, 10 km/h par défaut).  
+Par ailleurs, en suivant vos conseils, nous n'utilisons plus l'opération `init()` appelée par le point d'entrée du statechart : toute l'initialisation a été déplacée directement dans le constructeur de la classe `_SysVehicule()`, ce qui garantit un état initial cohérent avant même le lancement du statechart.  
+
+Les attributs de la simulation initialisés dans le constructeur en fonctions des constantes sont :
+- le `throttle_repos` pour maintenir la vitesse de repos
+- les variables d'état `float_speed` et `float_distance`
+
+> D'autres attributs y sont calculés à l'initialisation mais c'est l'objet des parties suivantes.
+
+##### Implémentation dans les opérations
+
+Voici un schéma synthétique montrant comment `calcul_vitesse_distance()` calcule la vitesse et la distance à partir des variables d'état lues et des paramètres de simulation :
 
 ```mermaid
 flowchart LR
-    IN["`**Entrées**<br/>throttle, brakePedal, alpha<br/>ignition, PARAM_SIMU_*`"]
-    S1["`**1. Force motrice**<br/>Si throttle <= ralenti ou moteur OFF :<br/>frein moteur (-300 N) si v > 10 km/h<br/>sinon traction ralenti`"]
-    S2["`**2. Forces résistantes**<br/>Traînée air (k·v²)<br/>Roulement (Cr·m·g·cos α)<br/>Gravité pente (m·g·sin α)<br/>Freinage mécanique progressif`"]
-    S3["`**3. Intégration (dt = 50 ms)**<br/>a = ΣF / m<br/>float_speed += a·dt·3.6 (bridé [0, 120])<br/>float_distance += (v/3.6)·dt`"]
-    OUT["`**Sorties**<br/>float_speed, speed (int)<br/>float_distance, distance (int)`"]
+    subgraph VARS["Variables lues"]
+        direction TB
+        V_MOT["throttle"]
+        V_FREIN["brakePedal"]
+        V_PENTE["alpha (pente)"]
+        V_VIT["float_speed"]
+    end
 
-    IN --> S1 --> S2 --> S3 --> OUT
+    PARAMS[("Paramètres de simulation<br/>• PARAM_SIMU_masse<br/>• PARAM_SIMU_puissance_moteur<br/>• PARAM_SIMU_puissance_frein<br/>• PARAM_SIMU_frottement_air<br/>• PARAM_SIMU_max_speed<br/>• PARAM_SIMU_max_brake<br/>• PARAM_SIMU_freq_rafraichissement<br/>• throttle_repos")]
 
-    classDef io fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+    subgraph FORCES["Calcul des efforts"]
+        direction TB
+        F_MOT["Force motrice /<br/>frein moteur"]
+        F_FREIN["Force de freinage<br/>mécanique"]
+        F_RES["Forces résistantes<br/>(air, roulement, gravité)"]
+    end
+
+    BILAN["Bilan des forces<br/>et accélération"]
+    OUT_V["Mise à jour de la vitesse<br/>(float_speed & speed)"]
+    OUT_D["Intégration de la distance<br/>(float_distance & distance)"]
+
+    V_MOT --> F_MOT
+    V_VIT --> F_MOT
+    V_FREIN --> F_FREIN
+    V_PENTE --> F_RES
+    V_VIT --> F_RES
+
+    PARAMS --> FORCES
+    PARAMS --> BILAN
+    PARAMS --> OUT_V
+    PARAMS --> OUT_D
+
+    F_MOT --> BILAN
+    F_FREIN --> BILAN
+    F_RES --> BILAN
+
+    BILAN --> OUT_V --> OUT_D
+
+    classDef var fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+    classDef db fill:#fef3c7,stroke:#d97706,color:#78350f
     classDef step fill:#f1f5f9,stroke:#64748b,color:#1e293b
-    class IN,OUT io
-    class S1,S2,S3 step
+    classDef out fill:#dcfce7,stroke:#16a34a,color:#14532d
+    class V_MOT,V_FREIN,V_PENTE,V_VIT var
+    class PARAMS db
+    class F_MOT,F_FREIN,F_RES,BILAN step
+    class OUT_V,OUT_D out
 ```
 
-```cpp
-// Extrait de init() : calcul analytique du ralenti d'équilibre à plat (10 km/h)
-const double vit_repos_ms         = VITESSE_REPOS / 3.6;
-const double forceAir_repos       = AIR_DRAG * vit_repos_ms * vit_repos_ms;
-const double forceRoulement_repos = 0.015 * MASSE * 9.81;
-throttle_repos = (forceAir_repos + forceRoulement_repos) / PUISSANCE;
-throttle = throttle_repos;
-```
+Voici le code complet de notre nouvelle fonction calcul_vitesse_distance() qui reprend le schéma présenté juste au-dessus :  
 
+<!-- code:calcul_vitesse_distance() -->
 ```cpp
-// Extrait de calcul_vitesse_distance() : intégration newtonienne à 20 Hz
+// --- PARAMETRES EXTERNES ---
+const double MAX_SPEED            = (double)PARAM_SIMU_max_speed;        // ex: 120 km/h
+const double MASSE                = (double)PARAM_SIMU_masse;            // ex: 1200 kg
+const double PUISSANCE            = (double)PARAM_SIMU_puissance_moteur; // ex: 600 N par unité de throttle
+const double FORCE_FREINS         = (double)PARAM_SIMU_puissance_frein;  // ex: 80 N
+const double CST_RALENTI          = throttle_repos;                      // ex: 1.0
+const double MAX_BRAKE            = (double)PARAM_SIMU_max_brake;        // ex: 10.0
+const double AIR_DRAG             = PARAM_SIMU_frottement_air;           // en kg/m (mettre ~0.4)
+const double DELTA_T_MS           = (double)(1000/PARAM_SIMU_freq_rafraichissement);
+
+// --- CONSTANTES PHYSIQUES ET MATHEMATIQUES ---
+const double CST_COEFF_ROULEMENT   = 0.05;
+const double CST_MULTIPLICATEUR_F  = 10.0;
+const double CST_GRAVITE           = 9.81;
+const double CST_PI_SUR_180        = 3.14159 / 180.0;
+const double CST_CONVERSION_KMH_MS = 3.6;
+const double CST_CONVERSION_MS_S   = 1000.0;
+const double ZERO                  = 0.0;
+
+// --- LOGIQUE ---
+const double dt = DELTA_T_MS / CST_CONVERSION_MS_S; // 0.05 s
+
+if (ignition == false) {
+    throttle = ZERO;
+}
+
+// 1. Force motrice / Frein moteur
+double forceMoteur = ZERO;
+
+if (throttle <= CST_RALENTI || ignition == false) {
+    if (float_speed > 10.0) {
+        // Au-dessus de 10 km/h pied levé : couple résistant mécanique (frein moteur ~300 N)
+        forceMoteur = -300.0;
+    } else {
+        // En dessous de 10 km/h : traction douce du ralenti pour ne pas caler
+        forceMoteur = throttle * PUISSANCE;
+    }
+} else {
+    // Phase d'accélération active (pédale ou régulateur)
+    forceMoteur = throttle * PUISSANCE;
+}
+
+// 2. Calcul des forces résistantes (Unités SI : Newtons)
+const double vitesse_ms = float_speed / CST_CONVERSION_KMH_MS;
+
+// Traînée aérodynamique pure : F = (1/2 * rho * S * Cx) * v^2
+const double forceAir = AIR_DRAG * vitesse_ms * vitesse_ms;
+
+// Frottement au sol (roulement des pneumatiques)
+const double forceRoulement = CST_COEFF_ROULEMENT * MASSE * CST_GRAVITE * cos(alpha * CST_PI_SUR_180);
+
+// Gravité le long de la pente
+const double forceGravite = MASSE * CST_GRAVITE * sin(alpha * CST_PI_SUR_180);
+
+// Frein mécanique progressif
+double pedale_frein = brakePedal;
+if (pedale_frein > MAX_BRAKE) pedale_frein = MAX_BRAKE;
+if (pedale_frein < ZERO) pedale_frein = ZERO;
+const double forceFrein = (pedale_frein / MAX_BRAKE) * (FORCE_FREINS * CST_MULTIPLICATEUR_F * MASSE / 100.0);
+
+// 3. Somme des forces et accélération Newtonienne (m/s²)
 const double forceTotale = forceMoteur - forceFrein - forceAir - forceRoulement - forceGravite;
 const double acceleration = forceTotale / MASSE;
-float_speed += (acceleration * dt) * 3.6;
+
+// 4. Intégration temporelle et bridage
+float_speed += (acceleration * dt) * CST_CONVERSION_KMH_MS;
+
 if (float_speed > MAX_SPEED) float_speed = MAX_SPEED;
-if (float_speed < 0.0)       float_speed = 0.0;
-float_distance += (float_speed / 3.6) * dt;
-speed    = (int)float_speed;
+if (float_speed < ZERO) float_speed = ZERO;
+
+float_distance += (float_speed / CST_CONVERSION_KMH_MS) * dt;
+
+speed = (int)float_speed;
 distance = (int)float_distance;
 ```
 
-Dans une première version, `calcul_vitesse_distance()` modifiait elle-même `throttle`, ce qui créait des conflits d'écriture avec les pédales et le régulateur. Nous avons donc sorti toute la gestion de `throttle` de `calcul_vitesse_distance()` (sauf la mise en sécurité `if (ignition == false) throttle = 0.0;`) : comme ça, `Débit d'injection d'essence` est le seul écrivain de `throttle`. Nous avons aussi calibré les paramètres (masse finale de 1500 kg, puissance, frottements) pour que la simulation reste réactive sur l'IHM et que l'ACC puisse décélérer au frein moteur.
+Et voici un extrait de l'initialisation des attributs globaux nécessaires à la simulation dans le constructeur de la classe `_SysVehicule` : 
 
-![AND-line Simulation du vehicule](media/taux_de_raffraichissement.png)
+<!-- code:Constructeur de classe SysVehicule -->
+```cpp
+speed = 0;
+brakePedal = 0;
+accelPedal = 0;
+float_speed = (double)speed;
+float_distance = (double)distance;
+distance_voiture_devant = distance;
+
+const double MASSE         = (double)PARAM_SIMU_masse;
+const double PUISSANCE     = (double)PARAM_SIMU_puissance_moteur;
+const double AIR_DRAG      = PARAM_SIMU_frottement_air;
+const double VITESSE_REPOS = (double)PARAM_SIMU_vitesse_repos;
+
+// Calcul du throttle de repos (ralenti « diesel » à plat)
+const double vit_repos_ms         = VITESSE_REPOS / 3.6;
+const double forceAir_repos       = AIR_DRAG * vit_repos_ms * vit_repos_ms;
+const double forceRoulement_repos = 0.015 * MASSE * 9.81;
+
+throttle_repos = (forceAir_repos + forceRoulement_repos) / PUISSANCE;
+throttle = throttle_repos;
+
+// Calcul des paramètres du régulateur à partir des coefficients normalisés
+const double RATIO_CORRECTION_P   = PARAM_SIMU_Kp_regulateur;
+const double RATIO_LENTEUR_I      = PARAM_SIMU_Ki_regulateur;
+const double FREQ_REG             = (double)PARAM_SIMU_freq_regulateur;
+const double delta_v_par_throttle = (PUISSANCE / MASSE) * (1.0 / FREQ_REG) * 3.6;
+
+Kp_regulateur = RATIO_CORRECTION_P / delta_v_par_throttle;
+Ki_regulateur = (Kp_regulateur / RATIO_LENTEUR_I);
+```
 
 ---
 
@@ -225,9 +388,17 @@ Sur l'IHM, nous contrôlons la pédale d'accélération avec le slider `pédale 
 Dans l'AND-line `Débit de l'injection d'essence`, nous avons regroupé la conduite manuelle dans le super-état `pedales`, qui contient l'état `acceleration`. Celui-ci appelle `accelerer(accelPedal)` toutes les $50\text{ ms}$. La conversion est une projection linéaire directe sur la plage utile $[\text{throttle\_repos}, \text{PARAM\_SIMU\_max\_throttle}]$ :
 
 ```cpp
-// accelerer(double accelPedal) : projection directe [0..10] -> [throttle_repos..10.0]
-double plage_utile = PARAM_SIMU_max_throttle - throttle_repos;
-throttle = throttle_repos + (accelPedal / (double)PARAM_SIMU_max_accel) * plage_utile;
+void _SysVehicule::accelerer(double accelPedal) {
+    // --- PARAMETRES EXTERNES ---
+    const double MAX_THROTTLE = PARAM_SIMU_max_throttle;
+    const double CST_RALENTI  = throttle_repos;
+    const double MAX_ACCEL    = (double)PARAM_SIMU_max_accel;
+
+    // --- LOGIQUE ---
+    // Mise à l'échelle : 0->10 sur la pédale donne 1.0->10.0 sur le throttle
+    double plage_utile = MAX_THROTTLE - CST_RALENTI;
+    throttle = CST_RALENTI + (accelPedal / MAX_ACCEL) * plage_utile;
+}
 ```
 
 Dans une première version, nous ajoutions une rampe logicielle sur `throttle` : cumulée à l'inertie de la masse, elle rendait la réponse « molle » et faussait le passage au régulateur. Nous sommes donc passés à une projection affine instantanée, ce qui a amélioré la réactivité et nettoyé le comportement.
@@ -247,13 +418,14 @@ Dans une première version, nous ajoutions une rampe logicielle sur `throttle` :
 2. **Frein mécanique continu** : nous calculons l'effort de freinage à 20 Hz dans `calcul_vitesse_distance()`, y compris moteur éteint. La période de 50 ms est donc quatre fois plus courte que la borne de 200 ms demandée.
 
 ```cpp
-// freiner_injection(double brakePedal) : neutralisation immédiate de l'accélérateur
-if (throttle > throttle_repos) {
-    throttle = throttle_repos;
+void _SysVehicule::freiner_injection(double brakePedal) {
+    if (throttle > throttle_repos) {
+        throttle = throttle_repos;
+    }
 }
 ```
 
-**Pourquoi ce fonctionnement.** Dans une première version, nous simulions un « étouffement » du moteur au freinage, qui faisait caler la voiture à chaque arrêt franc. Avec `freiner_injection()`, nous plafonnons maintenant l'injection au ralenti, sans jamais caler.
+**Pourquoi ce fonctionnement.** À l'origine, la fonction `freiner()` fournie ne jouait que sur le `throttle` et non sur la vitesse mécanique. Dans une première version, nous avions même tenté d'y simuler un « étouffement » du moteur au freinage, qui faisait caler la voiture à chaque arrêt franc. Nous avons finalement séparé clairement les deux rôles : `freiner_injection()` coupe l'accélération en plafonnant l'injection au ralenti (sans jamais caler), tandis que `calcul_vitesse_distance()` applique directement l'effort de freinage mécanique sur la vitesse.
 
 ![Super-état pedales de l'AND-line Débit de l'injection d'essence](media/pédalepng.png)
 
@@ -332,8 +504,11 @@ La suspension n'a donc pas besoin d'état dédié : quand nous appuyons sur la p
 
 ### Loi de commande : correcteur PI discret auto-dimensionné
 
-Nous avons remarqué que la formule fournie dans le sujet (
-`error  = (double) (5*(vitesseConsigne - speed) / 6.0)`;`steady = (double) (vitesseConsigne / 12.0);` `throttle = steady+error`) n'était pas adaptée au fonctionnement réel de la voiture. Avec l'aide de l'ia nous avons donc modélisé un modèle "plus réalist" newtonien en forte pente avec un correcteur PI discret avec saturation pour l'asservissement final (`calcul_regulateur_vitesse()`, cadencé à `PARAM_SIMU_freq_regulateur` = 3 Hz). Ses gains sont calculés dans `init()` à partir de la masse, de la puissance et de la fréquence. Nous avons tout de même gardé la loi du sujet dans l'opération `regulateur_Prof()`. Voici un schéma qui illustre ce correcteur :
+Nous avons remarqué que la formule fournie dans le sujet (`error = (double)(5*(vitesseConsigne - speed) / 6.0); steady = (double)(vitesseConsigne / 12.0); throttle = steady + error;`) n'était pas adaptée au fonctionnement réel de la voiture. Avec l'aide de l'IA, nous avons donc couplé notre modèle newtonien en forte pente à un correcteur PI discret avec saturation pour l'asservissement final (`calcul_regulateur_vitesse()`, cadencé à `PARAM_SIMU_freq_regulateur` = 3 Hz). Nous avons tout de même gardé la loi du sujet dans l'opération `regulateur_Prof()`.
+
+**Normalisation des gains dans le constructeur `_SysVehicule()`.** Bien que les paramètres `PARAM_SIMU_Kp_regulateur` et `PARAM_SIMU_Ki_regulateur` existent déjà dans la configuration de simulation, ils ne représentent pas directement les gains bruts appliqués à la commande : ils servent de **coefficients normalisés** (`RATIO_CORRECTION_P` et `RATIO_LENTEUR_I`). À la construction de la classe `_SysVehicule()`, ces coefficients sont lus puis mis à l'échelle à partir des caractéristiques physiques du véhicule (`PARAM_SIMU_masse`, `PARAM_SIMU_puissance_moteur`) et de la fréquence du régulateur (`PARAM_SIMU_freq_regulateur`) afin de construire les véritables gains `Kp_regulateur` et `Ki_regulateur`. De cette manière, pour une même valeur de `PARAM_SIMU_Kp_regulateur` (et `PARAM_SIMU_Ki_regulateur`), le comportement du régulateur reste cohérent même en faisant varier complètement les caractéristiques du véhicule (voiture légère, berline, camion lourd, motorisations différentes), sans avoir à recalculer les gains à la main pour chaque configuration.
+
+Voici un schéma qui illustre ce correcteur :
 
 ```mermaid
 flowchart LR
@@ -352,10 +527,14 @@ flowchart LR
 ```
 
 ```cpp
-// init() : auto-dimensionnement des gains PI selon la physique du véhicule
+// Constructeur _SysVehicule() : construction des gains effectifs Kp et Ki à partir des coefficients normalisés
+const double RATIO_CORRECTION_P   = PARAM_SIMU_Kp_regulateur;
+const double RATIO_LENTEUR_I      = PARAM_SIMU_Ki_regulateur;
+const double FREQ_REG             = (double)PARAM_SIMU_freq_regulateur;
 const double delta_v_par_throttle = (PUISSANCE / MASSE) * (1.0 / FREQ_REG) * 3.6;
-Kp_regulateur = PARAM_SIMU_Kp_regulateur / delta_v_par_throttle;
-Ki_regulateur = Kp_regulateur / PARAM_SIMU_Ki_regulateur;
+
+Kp_regulateur = RATIO_CORRECTION_P / delta_v_par_throttle;
+Ki_regulateur = (Kp_regulateur / RATIO_LENTEUR_I);
 ```
 
 ### Pourquoi ce fonctionnement
@@ -892,7 +1071,7 @@ Nous avons abouti à un modèle Statechart complet, exécutable et validé en an
 
 ### Perspectives d'évolution
 
-1. **Correction des trois détails identifiés** : inverser la garde de sortie `depassement -> limite_tenue` (`speed <= vitesseConsigne`), passer l'une des gardes de `verif_distance_secu` en inégalité large (`>=`), et aligner `CST_COEFF_ROULEMENT` (0,05) dans `init()`.
+1. **Correction des trois détails identifiés** : inverser la garde de sortie `depassement -> limite_tenue` (`speed <= vitesseConsigne`), passer l'une des gardes de `verif_distance_secu` en inégalité large (`>=`), et aligner `CST_COEFF_ROULEMENT` (0,05) dans le constructeur `_SysVehicule()`.
 2. **Freinage d'urgence autonome (AEB) et distance de sécurité dynamique** : commande bornée du frein mécanique par l'ACC, alerte visuelle et sonore en cas de freinage brutal de la cible, et distance de sécurité selon la règle des 2 secondes (d = 2 · v).
 3. **Arbitrage audio incluant la sécurité** : intégrer les alarmes limiteur et ACC comme priorité la plus haute de l'AND-line Radio (Sécurité > Appel > Sonnerie > Radio), pour qu'une alarme coupe puis restitue la musique via le connecteur H.
 4. **Scénarios routiers automatisés et multi-téléphones** : profils de pente préprogrammés et liste de plusieurs téléphones jumelés.
@@ -1017,7 +1196,7 @@ Les 77 attributs de `_SysVehicule`, regroupés par domaine. Les types et valeurs
 | Véhicule | `brakePedal` | Position de la pédale de frein \[0 ; 10\] | H1 |
 | Véhicule | `alpha` | Pente de la route (°) | A1, A2 |
 | Véhicule | `throttle` | Commande d'injection, écrite par Débit de l'injection d'essence | F2, F3 |
-| Véhicule | `throttle_repos` | Throttle de ralenti, calculé dans `init()` |  |
+| Véhicule | `throttle_repos` | Throttle de ralenti, calculé dans le constructeur `_SysVehicule()` |  |
 | Véhicule | `float_speed` / `speed` | Vitesse réelle (km/h) et sa valeur entière affichée | F4, F5 |
 | Véhicule | `float_distance` / `distance` | Distance parcourue et sa valeur entière affichée | F1 |
 | Véhicule | `ignition` | Moteur en marche | E4 |
@@ -1026,13 +1205,13 @@ Les 77 attributs de `_SysVehicule`, regroupés par domaine. Les types et valeurs
 | Paramètres | `PARAM_SIMU_max_throttle`, `PARAM_SIMU_max_speed`, `PARAM_SIMU_max_accel`, `PARAM_SIMU_max_brake` | Bornes du throttle, de la vitesse et des pédales |  |
 | Paramètres | `PARAM_SIMU_masse`, `PARAM_SIMU_frottement_air`, `PARAM_SIMU_puissance_moteur`, `PARAM_SIMU_puissance_frein`, `PARAM_SIMU_vitesse_repos` | Paramètres physiques du modèle newtonien |  |
 | Paramètres | `PARAM_SIMU_freq_rafraichissement`, `PARAM_SIMU_freq_regulateur` | Fréquences de l'horloge `EVAL` (20 Hz) et du régulateur (3 Hz) |  |
-| Paramètres | `PARAM_SIMU_Kp_regulateur`, `PARAM_SIMU_Ki_regulateur` | Réglages des gains PI avant mise à l'échelle |  |
+| Paramètres | `PARAM_SIMU_Kp_regulateur`, `PARAM_SIMU_Ki_regulateur` | Coefficients normalisés du régulateur PI, lus dans `_SysVehicule()` pour calculer les gains effectifs selon les caractéristiques du véhicule |  |
 | Ressources | `reservoir_carburant` | Niveau de carburant (L) | D2 |
 | Ressources | `niveau_batterie` | Charge de la batterie (%) | D1 |
 | Ressources | `SEUIL_carburant`, `SEUIL_batterie` | Seuils de panne (5 L, 40 %) |  |
 | Ressources | `carburant_faible`, `batterie_faible` | Indicateurs de panne |  |
 | Régulateur / limiteur | `vitesseConsigne` | Vitesse cible commune au régulateur et au limiteur | G3 |
-| Régulateur / limiteur | `Kp_regulateur`, `Ki_regulateur` | Gains PI calculés dans `init()` |  |
+| Régulateur / limiteur | `Kp_regulateur`, `Ki_regulateur` | Gains PI effectifs calculés dans le constructeur `_SysVehicule()` à partir des coefficients normalisés et de la physique du véhicule |  |
 | Régulateur / limiteur | `steady` | Terme intégral du PI |  |
 | Régulateur / limiteur | `voyant_regulateur`, `voyant_limiteur` | Voyants d'activation | G6, G2 |
 | Régulateur / limiteur | `limiteur_attente`, `limiteur_depasse` | Voyants d'attente et de dépassement | G2 |
@@ -1066,7 +1245,7 @@ Les 77 attributs de `_SysVehicule`, regroupés par domaine. Les types et valeurs
 
 | Domaine | Opération | Rôle |
 | :--- | :--- | :--- |
-| Véhicule | `init()` | Initialise la simulation, calcule `throttle_repos` et les gains PI |
+| Véhicule | `_SysVehicule()` (constructeur) | Initialise la simulation dès l'instanciation (remplace `init()`), calcule `throttle_repos`, les gains PI et les messages Bluetooth |
 | Véhicule | `calcul_vitesse_distance()` | Intègre le modèle newtonien à 20 Hz |
 | Véhicule | `accelerer(accelPedal)` | Convertit la pédale en throttle |
 | Véhicule | `freiner_injection(brakePedal)` | Ramène le throttle au ralenti au freinage |

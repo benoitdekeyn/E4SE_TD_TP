@@ -118,13 +118,9 @@ Le tableau suivant résume le rôle de chaque zone :
 
 ## 3. Modélisation et simulation du véhicule
 
-### 3.1 Architecture globale en AND-lines, synchronisation EVAL et interfaces
+### 3.1 Résumé des AND-lines
 
-Avant de développer les différentes fonctions, nous avons réfléchi à l'architecture générale du modèle, afin de synchroniser les mécanismes de l'IHM avec ceux des différentes régions du statechart et de bien répartir le comportement du véhicule entre ces régions. Ces choix de conception sont le socle de tout le projet : les fonctionnalités que nous avons développées ensuite (régulateur, limiteur, Bluetooth, ACC) s'y intègrent sans modifier l'existant.
-
-**Une seule classe active.** Le sujet présentait le simulateur en deux modules (`dyn_deplacement` et `gestion_pedales_moteur`). Nous avons préféré centraliser tout le comportement dans la classe active `_SysVehicule` : comme ça, nous accédons directement aux variables partagées, sans multiplier les ports et les classes d'interface à chaque ajout (régulateur, limiteur, Bluetooth).
-
-**Une grille d'AND-lines.** Nous avons découpé le statechart racine `Systeme` en 16 AND-lines (régions orthogonales exécutées en parallèle). Nous les avons regroupées en blocs fonctionnels selon le tableau suivant :
+Nous avons découpé le statechart en 16 AND-lines (régions orthogonales exécutées en parallèle). Nous les avons regroupées en blocs fonctionnels selon le tableau suivant :
 
 | Bloc | AND-lines | Rôle | Section |
 | :--- | :--- | :--- | :---: |
@@ -135,11 +131,20 @@ Avant de développer les différentes fonctions, nous avons réfléchi à l'arch
 | Réseau extérieur | Appel Extérieur, SMS Extérieur | Simulation des appels et SMS entrants | § 6.2, 6.3 |
 | Infodivertissement | Radio | Lecture musicale et priorités audio | § 6.4 |
 
-> **\[Image à insérer\]** Vue d'ensemble du statechart `Systeme` avec les blocs ci-dessus encadrés.
-
-**Une horloge centrale `EVAL`.** Dans Rhapsody, une transition qui porte uniquement une garde `[condition]` n'est réévaluée qu'à l'entrée de l'état ou à la consommation d'un événement. Dans nos premières versions, nous utilisions un timer par AND-line, rebouclant sur un connecteur d'historique : l'ordre d'évaluation entre AND-lines devenait indéterminé et les actions d'entrée/sortie se redéclenchaient à chaque boucle. Nous avons donc créé l'AND-line **`Horloge rafraichissement`**, qui contient un unique état émettant `GEN(EVAL)` à $20\text{ Hz}$ (`tm(1000/PARAM_SIMU_freq_rafraichissement)`). Toutes les transitions gardées du projet sont de la forme `EVAL [garde]` : elles sont réévaluées au même rythme, dans un ordre déterministe.
+### 3.2 Horloge partagée via l'évènement EVAL
 
 ![AND-line Horloge rafraichissement](media/ANDL_EVAL.png)
+
+Certaines transistions n'ont pas d'évènement et ne dépendent que d'une garde.
+Nous devions mettre un `tm(X ms)` qui rebouclait sur l'état de chaque état qui avait une de ces transistions en sorties.
+
+Comme nous voulions éviter de noyer le statechart de `tm(X ms)` individuels, nous avons d'abord commencé par créer des états qui englobaient l'ensemble des des AND-line pour que toutes les transistions internes qui doivent s'activer sur des gardes soient évaluées via un `tm(X ms)` global à ce super-état.
+
+Cependant nous avons vite touché aux limites de cette approche : parfois nous voulions attendre un certain temps dans un AND-line, ce qui était empêché par la réinitialisation du timer global. De plus, on ne pouvait pas rester dans un état plus longtemps que la période du timer global sans que celui-ci ne se réinitialise, ce qui devenait vite ingérable.
+
+Finalement nous avons trouvé une solution parfaite : utiliser un événement global `EVAL` (comme "évaluer" une garde) qui est déclenché à intervalles réguliers par une AND-line dédiée à l'horloge. Toutes les transistions dépendant d'une garde temporelle écoutent cet événement plutôt que de créer des timers individuels.
+
+La fréquence de déclenchement de l'événement `EVAL` est directement calculée en fonction de l'attribut `PARAM_SIMU_frequence_simulation`, ce qui rend le changement de la fréquence de simulation très simple à changer car centralisé.
 
 ---
 

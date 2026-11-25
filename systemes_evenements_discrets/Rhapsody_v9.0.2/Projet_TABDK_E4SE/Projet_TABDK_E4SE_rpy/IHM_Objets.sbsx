@@ -12,10 +12,10 @@
 			<_id type="a">GUID 01dd56fe-298e-423f-8f52-a5e5dff6dbdc</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">IHM_Objets</_name>
-			<_modifiedTimeWeak type="a">11.24.2026::17:11:43</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.24.2026::17:11:43</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.25.2026::9:28:42</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.25.2026::10:7:59</_modifiedTime>
 			<_lastID type="a">2</_lastID>
-			<weakCGTime type="a">11.24.2026::17:11:43</weakCGTime>
+			<weakCGTime type="a">11.25.2026::9:28:42</weakCGTime>
 			<strongCGTime type="a">10.3.2016::22:41:54</strongCGTime>
 			<_defaultComposite type="s">GUID c6ebe487-749a-424c-8c16-94f16e9ee15a</_defaultComposite>
 			<_eventsBaseID type="a">-1</_eventsBaseID>
@@ -368,8 +368,8 @@
 			</_properties>
 			<_name type="a">MainDiagram</_name>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.24.2026::1:9:33</_modifiedTime>
-			<_lastModifiedTime type="a">11.24.2026::1:9:33</_lastModifiedTime>
+			<_modifiedTime type="a">11.25.2026::9:29:23</_modifiedTime>
+			<_lastModifiedTime type="a">11.25.2026::9:29:23</_lastModifiedTime>
 			<m_hReferencedDiagram type="r">
 				<IHandle type="e">
 				</IHandle>
@@ -679,7 +679,7 @@
 				</CGIText>
 			</m_name>
 			<m_drawBehavior type="a">527112</m_drawBehavior>
-			<m_transform type="a">0.684422 0 0 0.927976 63.0466 51.4865 </m_transform>
+			<m_transform type="a">0.684422 0 0 0.93438 63.0466 49.3799 </m_transform>
 			<m_bIsPreferencesInitialized type="a">0</m_bIsPreferencesInitialized>
 			<m_AdditionalLabel type="p">
 				<CGIText type="e">
@@ -701,7 +701,7 @@
 			<m_polygon type="a">4 2 329  2 1451  1061 1451  1061 329  </m_polygon>
 			<m_nNameFormat type="a">0</m_nNameFormat>
 			<m_nIsNameFormat type="a">0</m_nIsNameFormat>
-			<frameset type="a">&lt;frameset rows=46%25,54%25&gt;
+			<frameset type="a">&lt;frameset rows=33%25,67%25&gt;
 &lt;frame name=AttributeListCompartment&gt;
 &lt;frame name=OperationListCompartment&gt;</frameset>
 			<Attrs type="c">
@@ -825,8 +825,7 @@
 			<m_displayOption type="a">Public</m_displayOption>
 			<m_bShowInherited type="a">0</m_bShowInherited>
 			<m_bOrdered type="a">0</m_bOrdered>
-			<_itemValueOfFontPropertiesMapCount type="a">132</_itemValueOfFontPropertiesMapCount>
-			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
+			<_itemValueOfFontPropertiesMapCount type="a">131</_itemValueOfFontPropertiesMapCount>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>
 			<_fontPropValues type="a">Tahoma 8 400 0 0 0 0</_fontPropValues>

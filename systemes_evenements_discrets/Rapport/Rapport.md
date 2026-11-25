@@ -381,29 +381,34 @@ Ki_regulateur = (Kp_regulateur / RATIO_LENTEUR_I);
 
 ### 3.3 Gestion de la pédale d'accélération
 
-#### Choix fonctionnels
-Sur l'IHM, nous contrôlons la pédale d'accélération avec le slider `pédale d'accélération`, qui fixe `accelPedal`. Le throttle résultant s'affiche en valeur numérique et sur la jauge `injecteur`.
-//capture IHM
+#### Statechart
 
-Dans l'AND-line `Débit de l'injection d'essence`, nous avons regroupé la conduite manuelle dans le super-état `pedales`, qui contient l'état `acceleration`. Celui-ci appelle `accelerer(accelPedal)` toutes les $50\text{ ms}$. La conversion est une projection linéaire directe sur la plage utile $[\text{throttle\_repos}, \text{PARAM\_SIMU\_max\_throttle}]$ :
+<img src="media/injection_base.png" alt="Statechart du débit de l'injection d'essence" width="35%" />
 
-```cpp
-void _SysVehicule::accelerer(double accelPedal) {
-    // --- PARAMETRES EXTERNES ---
-    const double MAX_THROTTLE = PARAM_SIMU_max_throttle;
-    const double CST_RALENTI  = throttle_repos;
-    const double MAX_ACCEL    = (double)PARAM_SIMU_max_accel;
+> La partie inférieure du AND-line qui gère le contrôle de l'injection d'essence par le régulateur est tronquée dans cette capture. Les conditions liées au limiteur apparaissent quand-même mais seront expliquées plus loin.
 
-    // --- LOGIQUE ---
-    // Mise à l'échelle : 0->10 sur la pédale donne 1.0->10.0 sur le throttle
-    double plage_utile = MAX_THROTTLE - CST_RALENTI;
-    throttle = CST_RALENTI + (accelPedal / MAX_ACCEL) * plage_utile;
-}
-```
+#### IHM
 
-Dans une première version, nous ajoutions une rampe logicielle sur `throttle` : cumulée à l'inertie de la masse, elle rendait la réponse « molle » et faussait le passage au régulateur. Nous sommes donc passés à une projection affine instantanée, ce qui a amélioré la réactivité et nettoyé le comportement.
+- Sur l'IHM, nous contrôlons la pédale d'accélération avec le slider `pédale d'accélération`, qui fixe `accelPedal`. Le throttle résultant s'affiche en valeur numérique et sur la jauge `injecteur`.
 
-*La capture du super-état `pedales` est donnée dans la section 3.4, Intégration du système de freinage et priorité stricte.*
+#### Explications
+
+- C'est dans le AND-line `Débit de l'injection d'essence` qu'est gérée toute modification de l'attribut `throttle`.
+- Le super-état `pedales` gère à la fois l'accélération et le freinage manuels via les états `acceleration` et `freinage_injection`.
+- La priorité stricte est appliquée : dès que le frein est actionné, le throttle retombe au ralenti, indépendamment de l'accélération demandée (`brakePedal < 0.5`).
+- Le moteur doit être allumé pour que l'accélération soit effective, mais n'empêche pas le freinage.
+- La fréquence de polling des pédales se fait bien toutes les 200 ms comme demandé dans l'énoncé (via l'attribut `PARAM_SIMU_periode_pedales` qui vaut 200).
+
+#### Opérations
+
+Voici le code de l'opération `accelerer()` :  
+[TBD : code de l'acceleration]
+
+Voici le code de l'opération `freiner_injection()` (anciennement `freiner()`) :  
+[TBD : code de freiner_injection]
+
+Dans la version originale de ces fonctions, l'injection était incrémentée/décrémentée progressivement, alors que ce comportement est typique de la vitesse du moteur (en tours/minute) qui possède en effet une certaine inertie, et non du débit de l'injection d'essence (le throttle) qui est instantané.
+Nous avons donc modifié les opérations `accelerer()` et `freiner_injection()` pour qu'elles ajustent instantanément le débit d'injection (`throttle`) en fonction de la position des pédales.
 
 ---
 

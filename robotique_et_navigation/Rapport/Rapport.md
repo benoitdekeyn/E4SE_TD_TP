@@ -603,14 +603,11 @@ La classe `Odometry` ([TABDK/src/odometry.cpp](https://github.com/benoitdekeyn/E
 
 #### Choix fonctionnels
 
-- Nous avons choisi un asservissement proportionnel (`commande_proportionnelle()` dans `calculs.cpp`, plafonné aux vitesses maximales `linear_speed` et `angular_speed`). La vitesse est ainsi élevée lorsque l'erreur est grande, puis diminue progressivement à l'approche de la cible, ce qui rend le déplacement fluide et évite les oscillations. Nos essais à 5 Hz ont donné des résultats satisfaisants sans terme intégral ni dérivé : l'asservissement interne des moteurs derrière `/cmd_vel`, ainsi que la vitesse et l'inertie du robot réel, ne provoquaient pas de dépassements à l'arrêt même sans PID et sans avoir à ralentir longtemps à l'avance.
-- Pour obtenir une trajectoire droite sans grands arcs de cercle et sans arrêts répétés, nous avons ajouté `move(linear, angular)` (vitesse linéaire et angulaire combinées) et deux options dans `config/params.yaml` (`move_smooth` et `move_back`) :
-  - **`reachPositionSmooth(x, y, arriere)`** : utilisée quand `move_smooth` vaut `true`. Tant que l'erreur angulaire reste sous le seuil de pivot (`trigger_pivot`), le robot avance et corrige son cap en même temps avec `move()` (sans tourner du tout si l'erreur reste dans `precision_angular`).  
-  Si l'erreur dépasse `trigger_pivot`, le robot pivote sur place (`pivot_en_cours`, avec `Kp_pivot`) jusqu'à revenir dans `precision_angular`.
-  - **`reachPositionSmoothBack(x, y)`** : utilisée quand `move_smooth` et `move_back` valent tous deux `true`. Si l'angle à parcourir pour viser la cible dépasse 90°, le robot fait marche arrière plutôt que d'effectuer un grand demi-tour : nous décalons l'angle cible de 180° et nous inversons le signe de la vitesse linéaire.  
-  Si `move_back` est désactivé, le robot corrige son cap jusqu'à 180° maximum pour aller en marche avant.
-- Pour gérer les additions/soustractions d'angles en restant entre -180° et 180°, nous utilisons deux fonctions distinctes dans `calculs.cpp`. Vous nous avez fourni la première dans l'énoncé, `cal_delta_Theta()`, pour calculer la différence signée `delta` la plus courte entre 2 angles.  
-Nous avons développé la seconde, `cal_angle_offset()`, d'abord dans nos essais pour modifier la valeur de l'angle cible depuis le clavier par incrémentation ou décrémentation d'un pas, puis nous l'avons réutilisée dans `calculerErreurAngle()` pour décaler l'angle cible de 180° en marche arrière.
+- Nous avons choisi un asservissement purement proportionnel plafonné aux vitesses maximales (`linear_speed`, `angular_speed`), sans terme intégral ni dérivé : à 5 Hz, l'asservissement interne des moteurs derrière `/cmd_vel` et l'inertie du TurtleBot3 suffisent à obtenir des déplacements fluides sans dépassement à l'arrêt.
+- Pour éviter les arrêts répétés à chaque correction de cap et les demi-tours inutiles, nous avons combiné vitesse linéaire et angulaire dans `move(linear, angular)` et rendu le comportement configurable dans `config/params.yaml` via `move_smooth` (correction en roulant avec `reachPositionSmooth()`) et `move_back` (marche arrière automatique avec `reachPositionSmoothBack()`).
+- Pour manipuler les angles entre -180° et 180°, nous utilisons `cal_delta_Theta()` (fournie dans l'énoncé) et nous avons écrit `cal_angle_offset()`, d'abord pour décaler un angle cible par pas au clavier lors de nos essais, puis pour la marche arrière.
+
+Le détail des calculs, de l'amortissement et des trois commandes proportionnelles est expliqué ci-dessous dans [Fonctionnement détaillé de l'asservissement](#fonctionnement-détaillé-de-lasservissement).
 
 #### Première implémentation
 

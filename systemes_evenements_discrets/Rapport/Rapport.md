@@ -4,6 +4,10 @@
 **Binôme** : Benoît de Keyn, Thibault Agueh  
 **Date :** 24/11/2026  
 
+<p align="center">
+  <img src="media/logo_rap.jpg" alt="Logo Rhapsody" width="260" />
+</p>
+
 ## Table des matières
 
 <!-- TOC -->
@@ -317,7 +321,7 @@ throttle = throttle_repos;
 
 <img src="media/ANDL_injection_base.png" alt="Statechart du débit de l'injection d'essence" width="42%" />
 
-> La partie inférieure de la région qui gère le contrôle de l'injection d'essence par le régulateur est tronquée dans cette capture. Les conditions liées au limiteur apparaissent quand même mais seront expliquées plus loin.
+La partie inférieure de la région qui gère le contrôle de l'injection d'essence par le régulateur est tronquée dans cette capture. Les conditions liées au limiteur apparaissent quand même mais seront expliquées plus loin.
 
 ### 4.2 Utilisation depuis l'IHM
 
@@ -700,8 +704,6 @@ Enfin, nous avons affiné plusieurs seuils au fil des tests : nous avons remplac
 
 ### 9.1 Cycle de vie du téléphone et du kit
 
-> **[Capture Rhapsody à insérer — IHM téléphone et kit]** : 
-
 Le kit Bluetooth du véhicule permet de connecter un téléphone pour passer des appels et lire les SMS. Le téléphone et le kit mains libres ont chacun leur propre cycle de vie, qui conditionne tout le reste de cette section.
 
 * **Le téléphone** : toute manipulation du téléphone se réalise dans le super-état `telephone_actif`. Nous n'y entrons que si le téléphone est allumé et que sa batterie n'est pas vide (`EVAL[niveau_batterie_telephone > 0 && telephone_allume]`), et nous en sortons dès que l'une de ces deux conditions tombe. Dans `telephone_actif`, le Bluetooth a lui aussi son propre interrupteur : `bluetooth_telephone_desactive` ↔ `bluetooth_telephone_active` selon `cmd_bluetooth_telephone_actif`. Tant que le téléphone est dans `telephone_actif`, sa batterie se décharge de 1 %/s. Branché au véhicule, elle se recharge de 5 % toutes les 1,5 s.
@@ -711,10 +713,7 @@ En sortant de leur super-état respectif, le téléphone et le kit se mettent en
 
 ### 9.2 Principe : deux équipements cloisonnés qui échangent des paquets
 
-#### 9.2.1 Statechart associé
-> **[Capture Rhapsody à insérer — 3 zones]** :
-
-#### 9.2.2 Choix fonctionnels
+#### 9.2.1 Choix fonctionnels
 
 Dans la réalité, le téléphone et le kit mains libres sont deux appareils distincts qui ne communiquent que par Bluetooth. Ils ne partagent donc aucune mémoire commune : aucun état (`IS_IN`), attribut ni opération ne peut être partagé entre le téléphone et le véhicule. Le partage de données se fait uniquement par génération d'événements Bluetooth, qui peuvent transporter des paramètres.
 L'émetteur les envoie avec `GEN(ev_nom(valeur))`, et le récepteur les lit via `params->nom_du_parametre`. Chacune des sous-parties suivantes liste, dans un tableau, les paquets qu'elle utilise. Le nom de chaque paquet indique l'appareil qui l'émet, et pour le téléphone son destinataire.
@@ -728,7 +727,7 @@ Nous avons également choisi de diviser les tâches de chaque appareil en plusie
 Le réseau extérieur joue le rôle de l'opérateur : il ne parle qu'au téléphone (`ev_SIM_appel`, `ev_SIM_envoi_sms`), et c'est le téléphone qui relaie ensuite vers le kit.
 
 
-#### 9.2.3 Conventions de nommage des événements
+#### 9.2.2 Conventions de nommage des événements
 
 Pour différencier les différents échanges entre le téléphone, le kit et le réseau, nous avons adopté une convention de nommage. Le nom d'un événement indique donc **quel appareil l'émet** :
 

@@ -112,7 +112,7 @@
 			</_properties>
 			<_name type="a">_MonPkg</_name>
 			<_modifiedTimeWeak type="a">11.26.2026::0:27:56</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.26.2026::0:27:58</_modifiedTime>
+			<_modifiedTime type="a">11.26.2026::1:28:0</_modifiedTime>
 			<_lastID type="a">15</_lastID>
 			<weakCGTime type="a">11.26.2026::0:27:56</weakCGTime>
 			<strongCGTime type="a">11.4.2026::7:41:26</strongCGTime>
@@ -10449,7 +10449,7 @@
 			</IPropertyContainer>
 			</_properties>
 			<_name type="a">_SysVehicule</_name>
-			<_modifiedTimeWeak type="a">11.26.2026::0:31:18</_modifiedTimeWeak>
+			<_modifiedTimeWeak type="a">11.26.2026::0:42:48</_modifiedTimeWeak>
 			<_theMainDiagram type="r">
 				<IHandle type="e">
 					<_hm2Class type="a">IDiagram</_hm2Class>
@@ -10457,9 +10457,9 @@
 					<_hid type="a">GUID 1d39c820-40df-4404-926c-8610a8ce4194</_hid>
 				</IHandle>
 			</_theMainDiagram>
-			<_modifiedTime type="a">11.26.2026::0:27:56</_modifiedTime>
+			<_modifiedTime type="a">11.26.2026::0:42:48</_modifiedTime>
 			<_lastID type="a">218</_lastID>
-			<weakCGTime type="a">11.26.2026::0:31:18</weakCGTime>
+			<weakCGTime type="a">11.26.2026::0:42:48</weakCGTime>
 			<strongCGTime type="a">11.4.2026::7:41:26</strongCGTime>
 			<_itsStateChart type="r">
 				<IHandle type="e">
@@ -12245,8 +12245,8 @@ else %0D
 			<_id type="a">GUID 02e89b87-9c4d-47cd-85e4-8d46e287f386</_id>
 			<_myState type="a">8192</_myState>
 			<_name type="a">charge_telephone</_name>
-			<_modifiedTimeWeak type="a">11.4.2026::13:2:31</_modifiedTimeWeak>
-			<_modifiedTime type="a">11.4.2026::13:2:31</_modifiedTime>
+			<_modifiedTimeWeak type="a">11.26.2026::0:42:48</_modifiedTimeWeak>
+			<_modifiedTime type="a">11.26.2026::0:42:48</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
 				<IRPYRawContainer type="e">
@@ -12268,7 +12268,7 @@ else %0D
 			<_constant type="a">0</_constant>
 			<_itsBody type="p"><IBody type="e">
 				<_bodyData type="a">int new_niveau_batterie = niveau_batterie_telephone; %0D
-if (new_niveau_batterie &lt; 100){%0D
+if (new_niveau_batterie &lt; 96){%0D
 	new_niveau_batterie += 5;%0D
 	}%0D
 else{%0D
@@ -13808,7 +13808,7 @@ PlaySound(TEXT(chemin.GetBuffer(0)), NULL, SND_LOOP | SND_ASYNC);%0D
 			<_id type="a">GUID 08900b61-609c-49f3-bcd2-06f4ca53964d</_id>
 			<_myState type="a">8192</_myState>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
+			<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
 				<IRPYRawContainer type="e">
@@ -27970,7 +27970,7 @@ IS_IN(simulation_voiture_devant)</_body>
 		<ILabel type="e">
 			<_id type="a">GUID 9eb7cd79-8015-4b47-be21-3f1a06418e08</_id>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
+			<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
 			<_itsTrigger>NULL</_itsTrigger>
 			<_itsGuard>NULL</_itsGuard>
 			<_itsAction>NULL</_itsAction>
@@ -27992,7 +27992,7 @@ IS_IN(simulation_voiture_devant)</_body>
 		<ILabel type="e">
 			<_id type="a">GUID 38e8d7ee-e7b0-4489-9af5-87dad7fa7c3f</_id>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
+			<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
 			<_itsTrigger>NULL</_itsTrigger>
 			<_itsGuard>NULL</_itsGuard>
 			<_itsAction>NULL</_itsAction>
@@ -28035,7 +28035,7 @@ IS_IN(simulation_voiture_devant)</_body>
 		<IAction type="e">
 			<_id type="a">GUID 53a89b49-24ec-43fd-aeca-e19d336bc7d9</_id>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
+			<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
 			<_body type="a">nbr_sauvegarde_sms_telephone+=1</_body>
 		</IAction>
 		<IHistoryConnector type="e">
@@ -63448,7 +63448,7 @@ IS_IN(simulation_voiture_devant)]</m_str>
 			<_myState type="a">8192</_myState>
 			<_name type="a">ev</_name>
 			<_modifiedTimeWeak type="a">1.2.1990::0:0:0</_modifiedTimeWeak>
-			<_modifiedTime type="a">1.2.1990::0:0:0</_modifiedTime>
+			<_modifiedTime type="a">1.1.1970::1:0:0</_modifiedTime>
 			<_virtual type="a">0</_virtual>
 			<Args type="c">
 				<IRPYRawContainer type="e">

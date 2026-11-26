@@ -4,7 +4,7 @@
 **Date :** 26/11/2026  
 
 <p align="center">
-  <img src="media/logo_rap.png" alt="Logo Rhapsody" width="260" />
+  <img src="media/logo_rhapsody.png" alt="Logo Rhapsody" width="260" />
 </p>
 
 ## Table des matières
@@ -77,7 +77,7 @@
 
 ## 1. Vue d'ensemble de l'IHM de Rhapsody
 
-<img src="media/IHM.png" alt="Panel Diagram complet en cours de simulation" width="100%" />
+<img src="media/IHM_screen.png" alt="Panel Diagram complet en cours de simulation" width="100%" />
 
 ## 2. Architecture globale
 

@@ -1,69 +1,69 @@
 # Rapport de Projet - Systèmes à événements discrets
-## 1. Régulateur-Limiteur de Vitesse, Kit Mains-Libres Bluetooth, Autoradio et Régulateur Adaptatif
+## Régulateur-Limiteur de Vitesse, Kit Mains-Libres Bluetooth, Autoradio et Régulateur Adaptatif
 
 **Binôme** : Benoît de Keyn, Thibault Agueh  
 **Date :** 24/11/2026  
 
 ---
 
-## 2. Table des matières
+## Table des matières
 
 <!-- TOC -->
 
 <b>• [Rapport de Projet - Systèmes à événements discrets](#rapport-de-projet---syst%C3%A8mes-%C3%A0-%C3%A9v%C3%A9nements-discrets)</b><br>
-<b>• [1. Régulateur-Limiteur de Vitesse, Kit Mains-Libres Bluetooth, Autoradio et Régulateur Adaptatif](#1-r%C3%A9gulateur-limiteur-de-vitesse-kit-mains-libres-bluetooth-autoradio-et-r%C3%A9gulateur-adaptatif)</b><br>
-<b>• [2. Table des matières](#2-table-des-mati%C3%A8res)</b><br>
-<b>• [3. Vue d'ensemble de l'IHM](#3-vue-densemble-de-lihm)</b><br>
-<b>• [4. Architecture globale et horloge partagée EVAL](#4-architecture-globale-et-horloge-partag%C3%A9e-eval)</b><br>
-&ensp;&ensp;&ensp;&ensp;◦ [3.1 Vue d'ensemble des AND-lines](#31-vue-densemble-des-and-lines)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [3.2 Horloge partagée via l'évènement EVAL](#32-horloge-partag%C3%A9e-via-l%C3%A9v%C3%A8nement-eval)<br>
-<b>• [5. Simulation du véhicule](#5-simulation-du-v%C3%A9hicule)</b><br>
+<b>• [Régulateur-Limiteur de Vitesse, Kit Mains-Libres Bluetooth, Autoradio et Régulateur Adaptatif](#r%C3%A9gulateur-limiteur-de-vitesse-kit-mains-libres-bluetooth-autoradio-et-r%C3%A9gulateur-adaptatif)</b><br>
+<b>• [Table des matières](#table-des-mati%C3%A8res)</b><br>
+<b>• [1. Vue d'ensemble de l'IHM](#1-vue-densemble-de-lihm)</b><br>
+<b>• [2. Architecture globale et horloge partagée EVAL](#2-architecture-globale-et-horloge-partag%C3%A9e-eval)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [2.1 Vue d'ensemble des AND-lines](#21-vue-densemble-des-and-lines)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [2.2 Horloge partagée via l'évènement EVAL](#22-horloge-partag%C3%A9e-via-l%C3%A9v%C3%A8nement-eval)<br>
+<b>• [3. Simulation du véhicule](#3-simulation-du-v%C3%A9hicule)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [3.1 Statechart](#31-statechart)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [3.2 Fonctionnement](#32-fonctionnement)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [3.3 Initialisation et vitesse de repos](#33-initialisation-et-vitesse-de-repos)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [3.4 Implémentation dans les opérations](#34-impl%C3%A9mentation-dans-les-op%C3%A9rations)<br>
+<b>• [4. Gestion des pédales d'accélération et de frein](#4-gestion-des-p%C3%A9dales-dacc%C3%A9l%C3%A9ration-et-de-frein)</b><br>
 &ensp;&ensp;&ensp;&ensp;◦ [4.1 Statechart](#41-statechart)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [4.2 Fonctionnement](#42-fonctionnement)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [4.3 Initialisation et vitesse de repos](#43-initialisation-et-vitesse-de-repos)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [4.4 Implémentation dans les opérations](#44-impl%C3%A9mentation-dans-les-op%C3%A9rations)<br>
-<b>• [6. Gestion des pédales d'accélération et de frein](#6-gestion-des-p%C3%A9dales-dacc%C3%A9l%C3%A9ration-et-de-frein)</b><br>
-&ensp;&ensp;&ensp;&ensp;◦ [5.1 Statechart](#51-statechart)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [5.2 Utilisation depuis l'IHM](#52-utilisation-depuis-lihm)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [5.3 Fonctionnement](#53-fonctionnement)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [5.4 Implémentation des opérations](#54-impl%C3%A9mentation-des-op%C3%A9rations)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [5.5 Évolution](#55-%C3%A9volution)<br>
-<b>• [7. Gestion du contact et du démarrage](#7-gestion-du-contact-et-du-d%C3%A9marrage)</b><br>
-<b>• [8. Modélisation énergétique : carburant, batterie et pannes](#8-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes)</b><br>
-<b>• [9. Régulateur de vitesse simple](#9-r%C3%A9gulateur-de-vitesse-simple)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [4.2 Utilisation depuis l'IHM](#42-utilisation-depuis-lihm)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [4.3 Fonctionnement](#43-fonctionnement)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [4.4 Implémentation des opérations](#44-impl%C3%A9mentation-des-op%C3%A9rations)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [4.5 Évolution](#45-%C3%A9volution)<br>
+<b>• [5. Gestion du contact et du démarrage](#5-gestion-du-contact-et-du-d%C3%A9marrage)</b><br>
+<b>• [6. Modélisation énergétique : carburant, batterie et pannes](#6-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes)</b><br>
+<b>• [7. Régulateur de vitesse simple](#7-r%C3%A9gulateur-de-vitesse-simple)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [7.1 Fonctionnement depuis l'IHM](#71-fonctionnement-depuis-lihm)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [7.2 Statechart](#72-statechart)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [7.3 Correcteur PI pour le régulateur de vitesse](#73-correcteur-pi-pour-le-r%C3%A9gulateur-de-vitesse)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [7.4 Évolution](#74-%C3%A9volution)<br>
+<b>• [8. Limiteur de vitesse](#8-limiteur-de-vitesse)</b><br>
 &ensp;&ensp;&ensp;&ensp;◦ [8.1 Fonctionnement depuis l'IHM](#81-fonctionnement-depuis-lihm)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [8.2 Statechart](#82-statechart)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [8.3 Correcteur PI pour le régulateur de vitesse](#83-correcteur-pi-pour-le-r%C3%A9gulateur-de-vitesse)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [8.3 Opérations](#83-op%C3%A9rations)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [8.4 Évolution](#84-%C3%A9volution)<br>
-<b>• [10. Limiteur de vitesse](#10-limiteur-de-vitesse)</b><br>
-&ensp;&ensp;&ensp;&ensp;◦ [9.1 Fonctionnement depuis l'IHM](#91-fonctionnement-depuis-lihm)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [9.2 Statechart](#92-statechart)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [9.3 Opérations](#93-op%C3%A9rations)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [9.4 Évolution](#94-%C3%A9volution)<br>
-<b>• [11. Contrôleur de Kit Bluetooth « mains libres »](#11-contr%C3%B4leur-de-kit-bluetooth--mains-libres-)</b><br>
-&ensp;&ensp;&ensp;&ensp;◦ [10.1 Cycle de vie du téléphone et du kit](#101-cycle-de-vie-du-t%C3%A9l%C3%A9phone-et-du-kit)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [10.2 Principe : deux équipements cloisonnés qui échangent des paquets](#102-principe--deux-%C3%A9quipements-cloisonn%C3%A9s-qui-%C3%A9changent-des-paquets)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [10.3 Protocole Bluetooth et jumelage par code PIN](#103-protocole-bluetooth-et-jumelage-par-code-pin)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [10.4 Gestion des appels entrants et redirection mains-libres](#104-gestion-des-appels-entrants-et-redirection-mains-libres)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [10.5 Messagerie SMS et tableau de bord connecté](#105-messagerie-sms-et-tableau-de-bord-connect%C3%A9)<br>
-<b>• [12. Autoradio et arbitrage des priorités audio](#12-autoradio-et-arbitrage-des-priorit%C3%A9s-audio)</b><br>
-&ensp;&ensp;&ensp;&ensp;◦ [11.1 Statechart associé](#111-statechart-associ%C3%A9)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [11.2 Choix fonctionnels](#112-choix-fonctionnels)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [11.3 Choix de conception](#113-choix-de-conception)<br>
-<b>• [13. Régulateur de vitesse adaptatif](#13-r%C3%A9gulateur-de-vitesse-adaptatif)</b><br>
-&ensp;&ensp;&ensp;&ensp;◦ [12.1 Fonctionnement depuis l'IHM](#121-fonctionnement-depuis-lihm)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [12.2 Statechart](#122-statechart)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [12.3 Simulation de la cible et correcteur PI de distance](#123-simulation-de-la-cible-et-correcteur-pi-de-distance)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [12.4 Évolution et limites](#124-%C3%A9volution-et-limites)<br>
-<b>• [14. Implémentation de la gestion sonore sous Rhapsody](#14-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody)</b><br>
-&ensp;&ensp;&ensp;&ensp;◦ [14.1 Côté IHM](#141-c%C3%B4t%C3%A9-ihm)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [14.2 Côté statechart](#142-c%C3%B4t%C3%A9-statechart)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [14.3 Pourquoi ce fonctionnement](#143-pourquoi-ce-fonctionnement)<br>
-<b>• [15. Outillage complémentaire : injection d'une API REST et interface graphique Web](#15-outillage-compl%C3%A9mentaire--injection-dune-api-rest-et-interface-graphique-web)</b><br>
-&ensp;&ensp;&ensp;&ensp;◦ [15.1 Motivation](#151-motivation)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [15.2 Architecture et fonctionnement de l'outil](#152-architecture-et-fonctionnement-de-loutil)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [15.3 Liens vers la démonstration et le dépôt GitHub](#153-liens-vers-la-d%C3%A9monstration-et-le-d%C3%A9p%C3%B4t-github)<br>
-<b>• [16. Annexes](#16-annexes)</b><br>
+<b>• [9. Contrôleur de Kit Bluetooth « mains libres »](#9-contr%C3%B4leur-de-kit-bluetooth--mains-libres-)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [9.1 Cycle de vie du téléphone et du kit](#91-cycle-de-vie-du-t%C3%A9l%C3%A9phone-et-du-kit)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [9.2 Principe : deux équipements cloisonnés qui échangent des paquets](#92-principe--deux-%C3%A9quipements-cloisonn%C3%A9s-qui-%C3%A9changent-des-paquets)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [9.3 Protocole Bluetooth et jumelage par code PIN](#93-protocole-bluetooth-et-jumelage-par-code-pin)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [9.4 Gestion des appels entrants et redirection mains-libres](#94-gestion-des-appels-entrants-et-redirection-mains-libres)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [9.5 Messagerie SMS et tableau de bord connecté](#95-messagerie-sms-et-tableau-de-bord-connect%C3%A9)<br>
+<b>• [10. Autoradio et arbitrage des priorités audio](#10-autoradio-et-arbitrage-des-priorit%C3%A9s-audio)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [10.1 Statechart associé](#101-statechart-associ%C3%A9)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [10.2 Choix fonctionnels](#102-choix-fonctionnels)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [10.3 Choix de conception](#103-choix-de-conception)<br>
+<b>• [11. Régulateur de vitesse adaptatif](#11-r%C3%A9gulateur-de-vitesse-adaptatif)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [11.1 Fonctionnement depuis l'IHM](#111-fonctionnement-depuis-lihm)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [11.2 Statechart](#112-statechart)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [11.3 Simulation de la voiture devant](#113-simulation-de-la-voiture-devant)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [11.4 Correcteur PI pour le suivi de distance](#114-correcteur-pi-pour-le-suivi-de-distance)<br>
+<b>• [12. Implémentation de la gestion sonore sous Rhapsody](#12-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [12.1 Côté IHM](#121-c%C3%B4t%C3%A9-ihm)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [12.2 Côté statechart](#122-c%C3%B4t%C3%A9-statechart)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [12.3 Pourquoi ce fonctionnement](#123-pourquoi-ce-fonctionnement)<br>
+<b>• [13. Outillage complémentaire : injection d'une API REST et interface graphique Web](#13-outillage-compl%C3%A9mentaire--injection-dune-api-rest-et-interface-graphique-web)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [13.1 Motivation](#131-motivation)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [13.2 Architecture et fonctionnement de l'outil](#132-architecture-et-fonctionnement-de-loutil)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [13.3 Liens vers la démonstration et le dépôt GitHub](#133-liens-vers-la-d%C3%A9monstration-et-le-d%C3%A9p%C3%B4t-github)<br>
+<b>• [Annexes](#annexes)</b><br>
 &ensp;&ensp;&ensp;&ensp;◦ [Annexe A — IHM détaillée](#annexe-a--ihm-d%C3%A9taill%C3%A9e)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [Annexe B — États par AND-line](#annexe-b--%C3%A9tats-par-and-line)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [Annexe C — Attributs et opérations](#annexe-c--attributs-et-op%C3%A9rations)<br>
@@ -72,7 +72,7 @@
 
 <!-- /TOC -->
 
-## 3. Vue d'ensemble de l'IHM
+## 1. Vue d'ensemble de l'IHM
 
 ![Panel Diagram complet en cours de simulation](media/IHM.png)
 
@@ -81,35 +81,35 @@ Le tableau suivant résume le rôle de chaque zone :
 
 | Zone | Nom | Ce qu'elle permet | Détail |
 | :---: | :--- | :--- | :--- |
-| **A** | Environnement | Régler la pente de la route (-20° à +20°) | [Section 4 Simulation du véhicule](#5-simulation-du-v%C3%A9hicule) |
-| **B** | Voiture de devant | Activer un véhicule cible, régler sa distance initiale et sa vitesse | [Section 12 Régulateur de vitesse adaptatif (ACC)](#13-r%C3%A9gulateur-de-vitesse-adaptatif-acc) |
-| **C** | Réseau extérieur | Simuler un appel entrant ou l'envoi d'un SMS vers le téléphone | [Section 10.4 Gestion des appels entrants et redirection mains-libres](#104-gestion-des-appels-entrants-et-redirection-mains-libres), [Section 10.5 Messagerie SMS et tableau de bord connecté](#105-messagerie-sms-et-tableau-de-bord-connect%C3%A9) |
-| **D** | Ressources | Suivre batterie et carburant, faire le plein, dépanner la batterie | [Section 7 Modélisation énergétique : carburant, batterie et pannes](#8-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes) |
-| **E** | Clé | Mettre le contact, démarrer le moteur, voir l'état moteur | [Section 6 Gestion du contact et du démarrage](#7-gestion-du-contact-et-du-d%C3%A9marrage) |
-| **F** | Tableau de bord | Lire la distance parcourue, le throttle et la vitesse | [Section 4 Simulation du véhicule](#5-simulation-du-v%C3%A9hicule) |
-| **G** | Commandes au volant | Activer le limiteur ou le régulateur, régler la vitesse cible | [Section 8 Régulateur de vitesse simple](#9-r%C3%A9gulateur-de-vitesse-simple), [Section 9 Limiteur de vitesse](#10-limiteur-de-vitesse) |
-| **H** | Pédales | Freiner et accélérer | [Section 5 Gestion des pédales d'accélération et de frein](#6-gestion-des-p%C3%A9dales-dacc%C3%A9l%C3%A9ration-et-de-frein) |
-| **I** | Kit mains libres | Voir la connexion du téléphone, décrocher, lire les SMS au volant, brancher le téléphone | [Section 10 Contrôleur de Kit Bluetooth « mains libres »](#11-contr%C3%B4leur-de-kit-bluetooth--mains-libres-) |
-| **J** | Autoradio | Allumer la radio, lancer et changer de piste | [Section 11 Autoradio et arbitrage des priorités audio](#12-autoradio-et-arbitrage-des-priorit%C3%A9s-audio) |
-| **K** | Téléphone | Allumer le téléphone, activer le Bluetooth, jumeler, gérer appels et SMS | [Section 10 Contrôleur de Kit Bluetooth « mains libres »](#11-contr%C3%B4leur-de-kit-bluetooth--mains-libres-) |
+| **A** | Environnement | Régler la pente de la route (-20° à +20°) | [Section 3 Simulation du véhicule](#3-simulation-du-v%C3%A9hicule) |
+| **B** | Voiture de devant | Activer un véhicule cible, régler sa distance initiale et sa vitesse | [Section 11 Régulateur de vitesse adaptatif](#11-r%C3%A9gulateur-de-vitesse-adaptatif) |
+| **C** | Réseau extérieur | Simuler un appel entrant ou l'envoi d'un SMS vers le téléphone | [Section 9.4 Gestion des appels entrants et redirection mains-libres](#94-gestion-des-appels-entrants-et-redirection-mains-libres), [Section 9.5 Messagerie SMS et tableau de bord connecté](#95-messagerie-sms-et-tableau-de-bord-connect%C3%A9) |
+| **D** | Ressources | Suivre batterie et carburant, faire le plein, dépanner la batterie | [Section 6 Modélisation énergétique : carburant, batterie et pannes](#6-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes) |
+| **E** | Clé | Mettre le contact, démarrer le moteur, voir l'état moteur | [Section 5 Gestion du contact et du démarrage](#5-gestion-du-contact-et-du-d%C3%A9marrage) |
+| **F** | Tableau de bord | Lire la distance parcourue, le throttle et la vitesse | [Section 3 Simulation du véhicule](#3-simulation-du-v%C3%A9hicule) |
+| **G** | Commandes au volant | Activer le limiteur ou le régulateur, régler la vitesse cible | [Section 7 Régulateur de vitesse simple](#7-r%C3%A9gulateur-de-vitesse-simple), [Section 8 Limiteur de vitesse](#8-limiteur-de-vitesse) |
+| **H** | Pédales | Freiner et accélérer | [Section 4 Gestion des pédales d'accélération et de frein](#4-gestion-des-p%C3%A9dales-dacc%C3%A9l%C3%A9ration-et-de-frein) |
+| **I** | Kit mains libres | Voir la connexion du téléphone, décrocher, lire les SMS au volant, brancher le téléphone | [Section 9 Contrôleur de Kit Bluetooth « mains libres »](#9-contr%C3%B4leur-de-kit-bluetooth--mains-libres-) |
+| **J** | Autoradio | Allumer la radio, lancer et changer de piste | [Section 10 Autoradio et arbitrage des priorités audio](#10-autoradio-et-arbitrage-des-priorit%C3%A9s-audio) |
+| **K** | Téléphone | Allumer le téléphone, activer le Bluetooth, jumeler, gérer appels et SMS | [Section 9 Contrôleur de Kit Bluetooth « mains libres »](#9-contr%C3%B4leur-de-kit-bluetooth--mains-libres-) |
 -->
 
-## 4. Architecture globale et horloge partagée EVAL
+## 2. Architecture globale et horloge partagée EVAL
 
-### 3.1 Vue d'ensemble des AND-lines
+### 2.1 Vue d'ensemble des AND-lines
 
 Nous avons découpé le statechart en 16 AND-lines (régions orthogonales exécutées en parallèle). Nous les avons regroupées en blocs fonctionnels selon le tableau suivant :
 
 | Bloc | AND-lines | Rôle | Section |
 | :--- | :--- | :--- | :--- |
-| Véhicule | Horloge rafraichissement, Simulation du vehicule, Débit de l'injection d'essence, Clé du véhicule, Ressources et pannes | Physique, pédales, moteur, énergie | [Section 3 Architecture globale et horloge partagée EVAL](#4-architecture-globale-et-horloge-partag%C3%A9e-eval) à [Section 7 Modélisation énergétique : carburant, batterie et pannes](#8-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes) |
-| Aides à la conduite | Mode de pilotage, Limiteur de vitesse, Simulation voiture régulateur adaptatif | Régulateur, limiteur, ACC | [Section 8 Régulateur de vitesse simple](#9-r%C3%A9gulateur-de-vitesse-simple), [Section 9 Limiteur de vitesse](#10-limiteur-de-vitesse), [Section 12 Régulateur de vitesse adaptatif (ACC)](#13-r%C3%A9gulateur-de-vitesse-adaptatif) |
-| Téléphone | Telephone, Batterie téléphone, Communication telephone | Bluetooth côté téléphone, appels, SMS | [Section 10 Contrôleur de Kit Bluetooth « mains libres »](#11-contr%C3%B4leur-de-kit-bluetooth--mains-libres-) |
-| Kit véhicule | Jumelage kit main libre, Commande kit main libre | Bluetooth côté véhicule, affichage au volant | [Section 10 Contrôleur de Kit Bluetooth « mains libres »](#11-contr%C3%B4leur-de-kit-bluetooth--mains-libres-) |
-| Réseau extérieur | Appel Extérieur, SMS Extérieur | Simulation des appels et SMS entrants | [Section 10.4 Gestion des appels entrants et redirection mains-libres](#104-gestion-des-appels-entrants-et-redirection-mains-libres), [Section 10.5 Messagerie SMS et tableau de bord connecté](#105-messagerie-sms-et-tableau-de-bord-connect%C3%A9) |
-| Infodivertissement | Radio | Lecture musicale et priorités audio | [Section 11 Autoradio et arbitrage des priorités audio](#12-autoradio-et-arbitrage-des-priorit%C3%A9s-audio) |
+| Véhicule | Horloge rafraichissement, Simulation du vehicule, Débit de l'injection d'essence, Clé du véhicule, Ressources et pannes | Physique, pédales, moteur, énergie | [Section 2 Architecture globale et horloge partagée EVAL](#2-architecture-globale-et-horloge-partag%C3%A9e-eval) à [Section 6 Modélisation énergétique : carburant, batterie et pannes](#6-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes) |
+| Aides à la conduite | Mode de pilotage, Limiteur de vitesse, Simulation voiture régulateur adaptatif | Régulateur, limiteur, ACC | [Section 7 Régulateur de vitesse simple](#7-r%C3%A9gulateur-de-vitesse-simple), [Section 8 Limiteur de vitesse](#8-limiteur-de-vitesse), [Section 11 Régulateur de vitesse adaptatif](#11-r%C3%A9gulateur-de-vitesse-adaptatif) |
+| Téléphone | Telephone, Batterie téléphone, Communication telephone | Bluetooth côté téléphone, appels, SMS | [Section 9 Contrôleur de Kit Bluetooth « mains libres »](#9-contr%C3%B4leur-de-kit-bluetooth--mains-libres-) |
+| Kit véhicule | Jumelage kit main libre, Commande kit main libre | Bluetooth côté véhicule, affichage au volant | [Section 9 Contrôleur de Kit Bluetooth « mains libres »](#9-contr%C3%B4leur-de-kit-bluetooth--mains-libres-) |
+| Réseau extérieur | Appel Extérieur, SMS Extérieur | Simulation des appels et SMS entrants | [Section 9.4 Gestion des appels entrants et redirection mains-libres](#94-gestion-des-appels-entrants-et-redirection-mains-libres), [Section 9.5 Messagerie SMS et tableau de bord connecté](#95-messagerie-sms-et-tableau-de-bord-connect%C3%A9) |
+| Infodivertissement | Radio | Lecture musicale et priorités audio | [Section 10 Autoradio et arbitrage des priorités audio](#10-autoradio-et-arbitrage-des-priorit%C3%A9s-audio) |
 
-### 3.2 Horloge partagée via l'évènement EVAL
+### 2.2 Horloge partagée via l'évènement EVAL
 
 ![AND-line Horloge rafraichissement](media/ANDL_EVAL.png)
 
@@ -120,19 +120,19 @@ Comme nous voulions éviter de noyer le statechart de `tm(X ms)` individuels, no
 
 Cependant nous avons vite touché aux limites de cette approche : parfois nous voulions attendre un certain temps dans un AND-line, ce qui était empêché par la réinitialisation du timer global. De plus, on ne pouvait pas rester dans un état plus longtemps que la période du timer global sans que celui-ci ne se réinitialise, ce qui devenait vite ingérable.
 
-Finalement nous avons trouvé une solution parfaite : utiliser un événement global `EVAL` (comme "évaluer" une garde) qui est déclenché à intervalles réguliers par une AND-line dédiée à l'horloge. Toutes les transistions dépendant d'une garde temporelle écoutent cet événement plutôt que de créer des timers individuels.
+Finalement nous avons trouvé une solution parfaite : utiliser un événement global `EVAL` (comme "évaluer" une garde) qui est déclenché à intervalles réguliers par une AND-line dédiée à l'horloge. Toutes les transitions dépendant d'une garde temporelle écoutent cet événement plutôt que de créer des timers individuels.
 
 La fréquence de déclenchement de l'événement `EVAL` est directement calculée en fonction de l'attribut `PARAM_SIMU_frequence_simulation`, ce qui rend le changement de la fréquence de simulation très simple à changer car centralisé.
 
-## 5. Simulation du véhicule
+## 3. Simulation du véhicule
 
-### 4.1 Statechart
+### 3.1 Statechart
 
 ![AND-line Simulation du véhicule](media/ANDL_simulation.png)
 
-Pour simuler la vitesse et la distance du véhicule, à partir de l'injection (throttle), nous avons repris la fonction `calcul_vitesse_distance()` qui est appelée à chaque évènement `EVAL` qui se déclenche à la fréquence de simulation comme détaillé dans la [Section 3.2 Horloge partagée via l'évènement EVAL](#32-horloge-partag%C3%A9e-via-l%C3%A9v%C3%A8nement-eval).
+Pour simuler la vitesse et la distance du véhicule, à partir de l'injection (throttle), nous avons repris la fonction `calcul_vitesse_distance()` qui est appelée à chaque évènement `EVAL` qui se déclenche à la fréquence de simulation comme détaillé dans la [Section 2.2 Horloge partagée via l'évènement EVAL](#22-horloge-partag%C3%A9e-via-l%C3%A9v%C3%A8nement-eval).
 
-### 4.2 Fonctionnement
+### 3.2 Fonctionnement
 
 Nous avons volontairement gardé l'AND-line **`Simulation du vehicule`** minimaliste : elle ne contient qu'un unique état `simulation_du_vehicule`, qui exécute `calcul_vitesse_distance()` à chaque événement `EVAL`.  
 Toute la mécanique est encapsulée dans le constructeur de la classe `_SysVehicule()` et l'opération `calcul_vitesse_distance()` qui sont décrits ci-après.
@@ -155,7 +155,7 @@ Les avantages de notre nouvelle fonction `calcul_vitesse_distance()` physique so
 * **Maîtriser le ralentissement en mode régulateur ou limiteur** : Comme le régulateur ainsi que le limiteur ne pilotent que le `throttle` sans actionner les freins, le réglage de la masse et des frottements était le seul moyen d'obtenir un frein moteur et une décélération personalisable.
 * **Simuler différents types de véhicules** : En ajustant les paramètres `PARAM_SIMU_*`, le même modèle peut représenter aussi bien une petite voiture légère qu'un camion lourd avec beaucoup d'inertie, ou une voiture puissante donc nerveuse.
 
-### 4.3 Initialisation et vitesse de repos
+### 3.3 Initialisation et vitesse de repos
 
 Au démarrage, le véhicule se comporte comme un moteur diesel : le `throttle` est maintenu à une valeur de ralenti `throttle_repos`, calculée en fonction des caractéristiques du véhicule, dès l'initialisation pour que sur du plat à vitesse basse, le véhicule se maintienne à la vitesse de repos paramétrable (`PARAM_SIMU_vitesse_repos`, 10 km/h par défaut).  
 Par ailleurs, en suivant vos conseils, nous n'utilisons plus l'opération `init()` appelée par le point d'entrée du statechart : toute l'initialisation a été déplacée directement dans le constructeur de la classe `_SysVehicule()`, ce qui garantit un état initial cohérent avant même le lancement du statechart.  
@@ -166,7 +166,7 @@ Les attributs de la simulation initialisés dans le constructeur en fonctions de
 
 > D'autres attributs y sont calculés à l'initialisation mais c'est l'objet des parties suivantes.
 
-### 4.4 Implémentation dans les opérations
+### 3.4 Implémentation dans les opérations
 
 Voici un schéma synthétique montrant comment `calcul_vitesse_distance()` calcule la vitesse et la distance à partir des variables d'état lues et des paramètres de simulation :
 
@@ -326,19 +326,19 @@ throttle = throttle_repos;
 ```
 
 
-## 6. Gestion des pédales d'accélération et de frein
+## 4. Gestion des pédales d'accélération et de frein
 
-### 5.1 Statechart
+### 4.1 Statechart
 
 <img src="media/ANDL_injection_base.png" alt="Statechart du débit de l'injection d'essence" width="35%" />
 
 > La partie inférieure du AND-line qui gère le contrôle de l'injection d'essence par le régulateur est tronquée dans cette capture. Les conditions liées au limiteur apparaissent quand-même mais seront expliquées plus loin.
 
-### 5.2 Utilisation depuis l'IHM
+### 4.2 Utilisation depuis l'IHM
 
 - Sur l'IHM, nous contrôlons la pédale d'accélération avec le slider `pédale d'accélération`, qui fixe `accelPedal`. Le throttle résultant s'affiche en valeur numérique et sur la jauge `injecteur`.
 
-### 5.3 Fonctionnement
+### 4.3 Fonctionnement
 
 - C'est dans le AND-line `Débit de l'injection d'essence` qu'est gérée toute modification de l'attribut `throttle`.
 - Le super-état `pedales` gère à la fois l'accélération et le freinage manuels via les états `acceleration` et `freinage_injection`.
@@ -346,9 +346,9 @@ throttle = throttle_repos;
 - Le moteur doit être allumé pour que l'accélération soit effective, mais n'empêche pas le freinage.
 - La fréquence de polling des pédales se fait bien toutes les 200 ms comme demandé dans l'énoncé (via l'attribut `PARAM_SIMU_periode_pedales` qui vaut 200).
 
-### 5.4 Implémentation des opérations
+### 4.4 Implémentation des opérations
 
-#### 5.4.1 Opération `accelerer()`
+#### 4.4.1 Opération `accelerer()`
 
 Voici le code de l'opération `accelerer()` :
 
@@ -369,7 +369,7 @@ La fonction fait un mapping linéaire de la position de la pédale d'accélérat
 Si on appuie pas du tout sur la pédale d'accélération (`accelPedal = 0`), le `throttle` reste calé sur le ralenti `throttle_repos`.
 Si on appuie à fond sur la pédale d'accélération (`accelPedal = MAX_ACCEL`), le `throttle` atteint directement son maximum `MAX_THROTTLE`.
 
-#### 5.4.2 Opération `freiner_injection()`
+#### 4.4.2 Opération `freiner_injection()`
 
 Voici le code de l'opération `freiner_injection()` (anciennement `freiner()`) :
 
@@ -380,14 +380,14 @@ if (throttle > throttle_repos) {
 }
 ```
 
-Cette opération se limite volontairement à couper l'accélération en ramenant immédiatement le `throttle` au niveau du ralenti `throttle_repos` (sans jamais le faire passer en dessous, afin de ne pas étouffer le moteur à l'arrêt). L'effort de freinage mécanique progressif proportionnel à `brakePedal` est quant à lui appliqué directement sur la vitesse dans `calcul_vitesse_distance()` (voir [Section 4 Simulation du véhicule](#5-simulation-du-v%C3%A9hicule)), ce qui garantit que le freinage reste actif même moteur coupé.
+Cette opération se limite volontairement à couper l'accélération en ramenant immédiatement le `throttle` au niveau du ralenti `throttle_repos` (sans jamais le faire passer en dessous, afin de ne pas étouffer le moteur à l'arrêt). L'effort de freinage mécanique progressif proportionnel à `brakePedal` est quant à lui appliqué directement sur la vitesse dans `calcul_vitesse_distance()` (voir [Section 3 Simulation du véhicule](#3-simulation-du-v%C3%A9hicule)), ce qui garantit que le freinage reste actif même moteur coupé.
 
-### 5.5 Évolution
+### 4.5 Évolution
 
 Dans la version originale de ces fonctions, l'injection était incrémentée/décrémentée progressivement, alors que ce comportement est typique de la vitesse du moteur (en tours/minute) qui possède en effet une certaine inertie, et non du débit de l'injection d'essence (le throttle) qui est instantané.
 Nous avons donc modifié les opérations `accelerer()` et `freiner_injection()` pour qu'elles ajustent instantanément le débit d'injection (`throttle`) en fonction de la position des pédales.
 
-## 7. Gestion du contact et du démarrage
+## 5. Gestion du contact et du démarrage
 
 Le sujet demande de gérer la clé, le démarrage et l'arrêt d'urgence en roulant : coupure moteur immédiate, accélérateur désactivé, inertie conservée.
 
@@ -407,7 +407,7 @@ Le sujet demande de gérer la clé, le démarrage et l'arrêt d'urgence en roula
 ![AND-line Clé du véhicule (incluant la région calcul_batterie_voiture)](media/ANDL_cle_vehicule.png)
 
 
-## 8. Modélisation énergétique : carburant, batterie et pannes
+## 6. Modélisation énergétique : carburant, batterie et pannes
 
 Nous avons entièrement implémenté cette partie optionnelle du sujet : consommation, charge et décharge de la batterie, détection des pannes, plein et dépannage.
 
@@ -435,32 +435,32 @@ if (throttle > 1.5) {
 
 <!-- >>>>>>>>>>>>> TBD ↑ -->
 
-## 9. Régulateur de vitesse simple
+## 7. Régulateur de vitesse simple
 
 Le régulateur maintient une vitesse cible (`vitesseConsigne`) sur route dénivelée (α entre -20° et +20°).
 
-### 8.1 Fonctionnement depuis l'IHM
+### 7.1 Fonctionnement depuis l'IHM
 
 * **Activer / désactiver** : nous utilisons le bouton **Régulateur**, qui envoie l'événement `ev_regulateur`. La LED (`voyant_regulateur`) indique que le régulateur est actif.
 * **Consigne** : à l'activation, la vitesse courante s'affiche dans **vitesse cible**. Les boutons **+** et **−** la modifient de 1 km/h.
 * **Suspension** : en appuyant sur la pédale d'accélération, nous reprenons la main et au relâchement, le régulateur ramène la vitesse à la consigne.
 * **Désactivation implicite** : freiner, descendre sous 30 km/h ou couper le moteur éteint le voyant du régulateur.
 
-### 8.2 Statechart
+### 7.2 Statechart
 
-#### 8.2.1 Décision du mode manuel vs régulateur
+#### 7.2.1 Décision du mode manuel vs régulateur
 
 Un premier AND-line détermine si le pilotage du throttle doit se faire par le régulateur ou par le conducteur : 
 
 ![](media/ANDL_mode_pilotage.png)
 
-#### 8.2.2 Commande de l'injection d'essence
+#### 7.2.2 Commande de l'injection d'essence
 
 C'est dans le même AND-line 'Débit de l'injection d'essence' que nous déterminons la valeur du throttle en fonction du mode de pilotage et de la consigne de vitesse : 
 
 ![](media/ANDL_injection_complet.png)
 
-### 8.3 Correcteur PI pour le régulateur de vitesse
+### 7.3 Correcteur PI pour le régulateur de vitesse
 
 Nous avons remarqué que la formule fournie dans le sujet (`error = (double)(5*(vitesseConsigne - speed) / 6.0); steady = (double)(vitesseConsigne / 12.0); throttle = steady + error;`) n'était pas adaptée au fonctionnement réel de la voiture. En effet, cette formule est un simple correcteur proportionnel qui possède une erreur statique qui se voit notamment quand on change l'angle de la pente.
 
@@ -527,17 +527,17 @@ Kp_regulateur = RATIO_CORRECTION_P / delta_v_par_throttle;
 Ki_regulateur = (Kp_regulateur / RATIO_LENTEUR_I);
 ```
 
-### 8.4 Évolution
+### 7.4 Évolution
 
 Nous avions d'abord un interrupteur `cmd_regulateur` : le statechart désactivait le régulateur au freinage, mais l'interrupteur de l'IHM restait enclenché et le réactivait. Nous l'avons donc remplacé par un bouton poussoir qui envoie l'événement `ev_regulateur`, associé à un voyant en lecture seule : comme ça, il n'y a plus de décalage.
 
 Entre temps nous avons aussi essayé des corrections non linéaires en ±erreur² puis ±erreur³ pour augmenter la réactivité en fonction de l'erreur, mais nous n'arrivions pas à obtenir une correction à la fois réactive et douce dans toutes les situations. C'est pourquoi nous avons finalement opté pour un correcteur PI.
 
-## 10. Limiteur de vitesse
+## 8. Limiteur de vitesse
 
 Le limiteur de vitesse empêche le véhicule de dépasser une vitesse maximale programmée (`vitesseConsigne`) en bridant automatiquement le débit d'injection. Il est mutuellement exclusif avec le régulateur, s'active en différé si le véhicule roule déjà au-dessus de la limite, et déclenche une alarme sonore en cas de dépassement.
 
-### 9.1 Fonctionnement depuis l'IHM
+### 8.1 Fonctionnement depuis l'IHM
 
 * **Activer / désactiver** : nous utilisons le bouton **Limiteur**, qui envoie l'événement `ev_limiteur`. La LED (`voyant_limiteur`) indique que le limiteur est actif. Activer le limiteur désactive automatiquement le régulateur, et inversement.
 * **Consigne** : à l'activation, **vitesse cible** s'initialise à `50 km/h` (`valeur_initiale_limiteur`). Un appui simple sur les boutons **+** ou **−** modifie la consigne de `1 km/h`, et un double appui en moins de `500 ms` la modifie de `10 km/h`.
@@ -545,9 +545,9 @@ Le limiteur de vitesse empêche le véhicule de dépasser une vitesse maximale p
 * **Voyants de dépassement** : Si le véhicule dépasse la vitesse limite alors que le limiteur est effectif, le voyant rouge de l'IHM (`limiteur_depasse`) s'allume et une alarme sonore est déclenchée.
 * **Reprise de la main sur l'accélération** : En enfonçant franchement la pédale d'accélération (> 7/10) à proximité de la vitesse limite (< 10 km/h), le limiteur se désactive automatiquement pour permettre au conducteur de dépasser en cas d'urgence.
 
-### 9.2 Statechart
+### 8.2 Statechart
 
-#### 9.2.1 Gestion du limiteur, de la consigne et des alarmes
+#### 8.2.1 Gestion du limiteur, de la consigne et des alarmes
 
 L'AND-line **`Limiteur de vitesse`** gère l'activation du limiteur, le réglage de la consigne par simple ou double appui, l'activation différée et l'alerte de dépassement :
 
@@ -556,14 +556,14 @@ L'AND-line **`Limiteur de vitesse`** gère l'activation du limiteur, le réglage
 * **Exclusion mutuelle avec le régulateur** : l'événement `ev_limiteur` fait passer de `limiteur_off` à `limiteur_on` (uniquement moteur allumé, `[IS_IN(moteur_on)]`) et renvoie simultanément l'AND-line `Mode de pilotage` vers `mode_manuel`. À l'inverse, `ev_regulateur` fait immédiatement repasser le limiteur dans `limiteur_off`.
 * **Consigne initiale et double appui** : l'entrée dans `consigne_fixe` initialise `vitesseConsigne = valeur_initiale_limiteur` (`50 km/h`). Un premier appui sur **+** (`ev_vitesseConsigne_plus`) passe dans `plus` et applique tout de suite `ex_vitesseConsigne(+1)`. Si un second appui arrive avant `500 ms`, la transition de retour applique `ex_vitesseConsigne(+9)` (soit `+10 km/h` au total) ; sinon, `tm(500)` ramène dans `consigne_fixe` sans modification supplémentaire. Le bouton **−** suit exactement le même principe (`-1` puis `-9`).
 * **Activation différée** : à l'entrée dans `consigne_fixe`, le limiteur démarre dans `limiteur_inhibe` (`limiteur_attente = true`) : tant que le véhicule roule au-dessus de la consigne, il ne bride pas l'injection et ne déclenche aucune alarme. Dès que la vitesse repasse sous la consigne (`EVAL[speed <= vitesseConsigne]`), il bascule dans `limiteur_effectif` (`limiteur_attente = false`).
-* **Alarme de dépassement** : dans `limiteur_effectif`, si la vitesse dépasse la consigne de plus de `2 km/h` (`EVAL[speed > vitesseConsigne + 2]`, typiquement en forte descente), l'entrée dans `depassement` appelle `alerte_depassement(1)`, ce qui allume le voyant `limiteur_depasse` et lance l'alarme sonore en boucle (voir [Section 14 Implémentation de la gestion sonore sous Rhapsody](#14-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody)). Dès que la vitesse redescend sous la consigne (`EVAL[vitesseConsigne >= speed]`), l'action de sortie `alerte_depassement(0)` coupe l'alarme et éteint le voyant.
+* **Alarme de dépassement** : dans `limiteur_effectif`, si la vitesse dépasse la consigne de plus de `2 km/h` (`EVAL[speed > vitesseConsigne + 2]`, typiquement en forte descente), l'entrée dans `depassement` appelle `alerte_depassement(1)`, ce qui allume le voyant `limiteur_depasse` et lance l'alarme sonore en boucle (voir [Section 12 Implémentation de la gestion sonore sous Rhapsody](#12-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody)). Dès que la vitesse redescend sous la consigne (`EVAL[vitesseConsigne >= speed]`), l'action de sortie `alerte_depassement(0)` coupe l'alarme et éteint le voyant.
 * **Désactivation automatique** : le limiteur repasse dans `limiteur_off` dès que le moteur s'arrête ou que le conducteur appuie beaucoup sur l'accélérateur près de la limite (`EVAL[IS_IN(moteur_off) || ((vitesseConsigne - speed) < 10 && accelPedal > 7)]`).
 
-#### 9.2.2 Bridage de l'injection d'essence
+#### 8.2.2 Bridage de l'injection d'essence
 
-Le bridage effectif du `throttle` pour empecher le dépassement de la vitesse consigne, est géré dans l'AND-line **`Débit de l'injection d'essence`** (présentée en [Section 5 Gestion des pédales d'accélération et de frein](#6-gestion-des-p%C3%A9dales-dacc%C3%A9l%C3%A9ration-et-de-frein) et [Section 8.2 Statechart](#82-statechart)), afin de conserver un seul AND-line qui contrôle le `throttle`. Dans le super-état `pedales`, dès que `IS_IN(limiteur_effectif) && float_speed >= vitesseConsigne + 0.5`, la transition vers `freinage_injection` coupe l'accélération et ramène le `throttle` à son minimum, quelle que soit la position de la pédale d'accélération. Comme pour le régulateur, le seuil à `vitesseConsigne + 0.5` sur `float_speed` évite les oscillations autour de l'entier `speed`.
+Le bridage effectif du `throttle` pour empecher le dépassement de la vitesse consigne, est géré dans l'AND-line **`Débit de l'injection d'essence`** (présentée en [Section 4 Gestion des pédales d'accélération et de frein](#4-gestion-des-p%C3%A9dales-dacc%C3%A9l%C3%A9ration-et-de-frein) et [Section 7.2 Statechart](#72-statechart)), afin de conserver un seul AND-line qui contrôle le `throttle`. Dans le super-état `pedales`, dès que `IS_IN(limiteur_effectif) && float_speed >= vitesseConsigne + 0.5`, la transition vers `freinage_injection` coupe l'accélération et ramène le `throttle` à son minimum, quelle que soit la position de la pédale d'accélération. Comme pour le régulateur, le seuil à `vitesseConsigne + 0.5` sur `float_speed` évite les oscillations autour de l'entier `speed`.
 
-### 9.3 Opérations
+### 8.3 Opérations
 
 Voici le code de l'opération `ex_vitesseConsigne()` (partagée avec le régulateur de vitesse) :
 
@@ -594,11 +594,11 @@ if (actif == 0) {
 }
 ```
 
-> Pour la fonciton play_sound(), voir la section [14 Implémentation de la gestion sonore sous Rhapsody](#14-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody)
+> Pour la fonciton play_sound(), voir la [Section 12 Implémentation de la gestion sonore sous Rhapsody](#12-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody)
 
-Cette opération synchronise l'allumage du voyant `limiteur_depasse` avec la lecture ou l'arrêt de l'alarme sonore `alarme_depassement.wav` (voir [Section 14 Implémentation de la gestion sonore sous Rhapsody](#14-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody)).
+Cette opération synchronise l'allumage du voyant `limiteur_depasse` avec la lecture ou l'arrêt de l'alarme sonore `alarme_depassement.wav` (voir [Section 12 Implémentation de la gestion sonore sous Rhapsody](#12-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody)).
 
-### 9.4 Évolution
+### 8.4 Évolution
 
 Au début, nous avions modélisé `limiteur_on` avec deux régions parallèles (une pour l'inhibition et une pour le dépassement), mais l'alarme sonnait dès que le limiteur était activé au-dessus de `50 km/h` alors qu'il devait rester en attente. Nous avons donc imbriqué `limite_tenue` et `depassement` directement à l'intérieur de `limiteur_effectif`, ce qui garantit qu'aucune alarme ne peut se déclencher tant que le limiteur est inhibé.
 
@@ -606,9 +606,9 @@ Pour le double appui, nous attendions initialement la fin des `500 ms` avant d'a
 
 Enfin, nous avons affiné plusieurs seuils au fil des tests : nous avons remplacé la comparaison sur l'entier `speed` par `float_speed >= vitesseConsigne + 0.5` pour supprimer les à-coups d'injection autour de la limite, relevé le seuil de kick-down de `5` à `7` pour éviter des coupures involontaires lors d'une accélération normale, et utilisé des inégalités (`<=` / `>=`) à la place d'égalités strictes qui pouvaient être sautées entre deux ticks `EVAL` lors d'un freinage fort.
 
-## 11. Contrôleur de Kit Bluetooth « mains libres »
+## 9. Contrôleur de Kit Bluetooth « mains libres »
 
-### 10.1 Cycle de vie du téléphone et du kit
+### 9.1 Cycle de vie du téléphone et du kit
 
 > **[Capture Rhapsody à insérer — IHM téléphone et kit]** : 
 
@@ -619,12 +619,12 @@ Le kit Bluetooth du véhicule permet de connecter un téléphone pour passer des
 
 En sortant de leur super-état respectif, le téléphone et le kit se mettent en veille et ne peuvent plus communiquer. Ils préviennent alors l'autre appareil : le téléphone émet `GEN(ev_bluetooth_telephone_desactive)` en entrée de `telephone_eteint` et de `bluetooth_telephone_desactive`, et le kit émet `GEN(ev_kit_bluetooth_desactive)` en entrée de `bluetooth_desactive`. Côté téléphone, les écrans sont aussi vidés et affichent « Standby ».
 
-### 10.2 Principe : deux équipements cloisonnés qui échangent des paquets
+### 9.2 Principe : deux équipements cloisonnés qui échangent des paquets
 
-#### 10.2.1 Statechart associé
+#### 9.2.1 Statechart associé
 > **[Capture Rhapsody à insérer — 3 zones]** :
 
-#### 10.2.2 Choix fonctionnels
+#### 9.2.2 Choix fonctionnels
 
 Dans la réalité, le téléphone et le kit mains libres sont deux appareils distincts qui ne communiquent que par Bluetooth. Ils ne partagent donc aucune mémoire commune : aucun état (`IS_IN`), attribut ni opération ne peut être partagé entre le téléphone et le véhicule. Le partage de données se fait uniquement par génération d'événements Bluetooth, qui peuvent transporter des paramètres.
 L'émetteur les envoie avec `GEN(ev_nom(valeur))`, et le récepteur les lit via `params->nom_du_parametre`. La liste complète de ces paquets, dans les deux sens, est donnée dans l'[Annexe E — Paquets Bluetooth et messages du téléphone](#annexe-e--paquets-bluetooth-et-messages-du-t%C3%A9l%C3%A9phone).
@@ -632,22 +632,22 @@ L'émetteur les envoie avec `GEN(ev_nom(valeur))`, et le récepteur les lit via 
 Nous avons également choisi de diviser les tâches de chaque appareil en plusieurs AND-lines, par souci de lisibilité et de place. Au lieu d'avoir une seule AND-line dédiée au téléphone ou au kit, plusieurs AND-lines sont regroupées en trois ensembles distincts :
 
 * **le téléphone** : AND-lines Telephone, Batterie téléphone et Communication telephone ;
-* **le kit véhicule** : AND-lines Jumelage kit main libre et Commande kit main libre (l'AND-line Radio, également côté véhicule, forme le bloc infodivertissement et est traitée dans la [Section 11 Autoradio et arbitrage des priorités audio](#12-autoradio-et-arbitrage-des-priorit%C3%A9s-audio)) ;
+* **le kit véhicule** : AND-lines Jumelage kit main libre et Commande kit main libre (l'AND-line Radio, également côté véhicule, forme le bloc infodivertissement et est traitée dans la [Section 10 Autoradio et arbitrage des priorités audio](#10-autoradio-et-arbitrage-des-priorit%C3%A9s-audio)) ;
 * **le réseau extérieur**, simulé par les AND-lines Appel Extérieur et SMS Extérieur.
 
 Le réseau extérieur joue le rôle de l'opérateur : il ne parle qu'au téléphone (`ev_SIM_appel`, `ev_SIM_envoi_sms`), et c'est le téléphone qui relaie ensuite vers le kit.
 
 
-### 10.3 Protocole Bluetooth et jumelage par code PIN
+### 9.3 Protocole Bluetooth et jumelage par code PIN
  
-#### 10.3.1 Statechart associé
+#### 9.3.1 Statechart associé
 ![AND-line Jumelage kit main libre](media/ANDL_jumelage_kit.png)
 
 > **[Capture Rhapsody à insérer]** : AND-line **`Telephone`** (`state_96`).
 
 ![AND-line Batterie téléphone](media/ANDL_batterie_telephone.png)
 
-#### 10.3.2 Choix fonctionnels
+#### 9.3.2 Choix fonctionnels
 Le Bluetooth du kit véhicule s'active à la mise du contact. Le téléphone (maître) détecte le kit, se jumelle avec le code `1234` uniquement moteur à l'arrêt, puis se reconnecte automatiquement. Le jumelage se fait par un échange de requêtes et de réponses entre le kit et le téléphone. L'utilisateur peut suivre la procédure dans les champs texte du téléphone (liste complète des messages dans l'[Annexe E — Paquets Bluetooth et messages du téléphone](#annexe-e--paquets-bluetooth-et-messages-du-t%C3%A9l%C3%A9phone)).
 
 ##### Côté IHM
@@ -744,15 +744,15 @@ sequenceDiagram
 ```
 
 
-### 10.4 Gestion des appels entrants et redirection mains-libres
+### 9.4 Gestion des appels entrants et redirection mains-libres
 
-#### 10.4.1 Statechart associé
+#### 9.4.1 Statechart associé
 > **[Capture Rhapsody à insérer — Version finale]** : Les trois AND-lines de téléphonie :
 > 1. **`Appel Extérieur`** (`state_146`, haut-droite) ;
 > 2. **`Communication telephone`** (`state_139`, bas-droite, montrant `arret_de_communication` et les 3 sous-régions parallèles de `gestion_communication_telephone`) ;
 > 3. **`Commande kit main libre`** (`state_166`, haut-centre-droite, entre `state_87` et `state_146`).
 
-#### 10.4.2 Choix fonctionnels
+#### 9.4.2 Choix fonctionnels
 Un appel entrant sonne sur le téléphone, ou au volant lorsque le Bluetooth est connecté. L'utilisateur peut l'accepter, le refuser ou le raccrocher indifféremment depuis le téléphone ou depuis le volant.
 
 ##### Côté IHM
@@ -760,7 +760,7 @@ Un appel entrant sonne sur le téléphone, ou au volant lorsque le Bluetooth est
 * **Déclencher un appel** : bouton **Appeler**.
 * **Sur le téléphone** : les LED « Appel reçu » indiquent l'appel et la sonnerie, et les boutons **Décrocher** / **Raccrocher** permettent de répondre.
 * **Au volant** : les LED « Appel Téléphonique » indiquent l'appel et la sonnerie, avec les mêmes boutons **Décrocher** / **Raccrocher**.
-* **Son** : `sonnerie.wav` sur le téléphone, `sonnerie2.wav` sur le kit ; la radio se coupe pendant l'appel (voir [Section 11 Autoradio et arbitrage des priorités audio](#12-autoradio-et-arbitrage-des-priorit%C3%A9s-audio)).
+* **Son** : `sonnerie.wav` sur le téléphone, `sonnerie2.wav` sur le kit ; la radio se coupe pendant l'appel (voir [Section 10 Autoradio et arbitrage des priorités audio](#10-autoradio-et-arbitrage-des-priorit%C3%A9s-audio)).
 
 **Côté statechart.** Nous avons découplé la gestion des appels en trois AND-lines, qui collaborent uniquement par événements :
 
@@ -773,7 +773,7 @@ Cette AND-line simule le réseau qui appelle le téléphone. Au repos, elle atte
 
 * **Communication telephone** :
 
-Tant que le téléphone est éteint, les communications sont coupées (`arret_de_communication`). Dès que le téléphone passe dans `telephone_actif` (`EVAL[IS_IN(telephone_actif)]`), l'AND-line entre dans `gestion_communication_telephone`, un état And à trois régions parallèles : les appels sur le téléphone, les SMS ([Section 10.5 Messagerie SMS et tableau de bord connecté](#105-messagerie-sms-et-tableau-de-bord-connect%C3%A9)) et la redirection Bluetooth. Elle y reste jusqu'à l'extinction du téléphone (`EVAL[IS_IN(telephone_eteint)]`).
+Tant que le téléphone est éteint, les communications sont coupées (`arret_de_communication`). Dès que le téléphone passe dans `telephone_actif` (`EVAL[IS_IN(telephone_actif)]`), l'AND-line entre dans `gestion_communication_telephone`, un état And à trois régions parallèles : les appels sur le téléphone, les SMS ([Section 9.5 Messagerie SMS et tableau de bord connecté](#95-messagerie-sms-et-tableau-de-bord-connect%C3%A9)) et la redirection Bluetooth. Elle y reste jusqu'à l'extinction du téléphone (`EVAL[IS_IN(telephone_eteint)]`).
 
    * **Appels sur le téléphone** :
 
@@ -798,7 +798,7 @@ Tant que le téléphone est éteint, les communications sont coupées (`arret_de
 
 * **Commande kit main libre (kit)** :
 
-Côté véhicule, les commandes ne sont actives que si le téléphone est connecté : le kit passe de `telephone_deconnecte` à `controle_telephone_connecte` sur `EVAL[IS_IN(telephone_connecte)]`, et y revient dès que la connexion est perdue. `controle_telephone_connecte` fait alors tourner en parallèle les appels au volant, l'affichage de la batterie, les SMS au volant ([Section 10.5 Messagerie SMS et tableau de bord connecté](#105-messagerie-sms-et-tableau-de-bord-connect%C3%A9)) et les adaptateurs des boutons au volant. Ces adaptateurs transforment les boutons **Décrocher** / **Raccrocher** du volant (`ev_btn_kit_decrocher`, `ev_btn_kit_raccrocher`) en paquets Bluetooth `ev_kit_decrocher` et `ev_kit_raccrocher`, envoyés au téléphone.
+Côté véhicule, les commandes ne sont actives que si le téléphone est connecté : le kit passe de `telephone_deconnecte` à `controle_telephone_connecte` sur `EVAL[IS_IN(telephone_connecte)]`, et y revient dès que la connexion est perdue. `controle_telephone_connecte` fait alors tourner en parallèle les appels au volant, l'affichage de la batterie, les SMS au volant ([Section 9.5 Messagerie SMS et tableau de bord connecté](#95-messagerie-sms-et-tableau-de-bord-connect%C3%A9)) et les adaptateurs des boutons au volant. Ces adaptateurs transforment les boutons **Décrocher** / **Raccrocher** du volant (`ev_btn_kit_decrocher`, `ev_btn_kit_raccrocher`) en paquets Bluetooth `ev_kit_decrocher` et `ev_kit_raccrocher`, envoyés au téléphone.
 Pour les appels, le kit attend en `attente_redirection_appel`. À la réception de `ev_kit_appel_entrant`, il entre dans `gestion_sonnerie_kit`, où `sonnerie_lumineuse_kit` fait clignoter `VOYANT_kit_sonnerie` à chaque paquet reçu et `sonnerie_sonore_kit` joue `sonnerie2.wav` à chaque `ev_kit_sonnerie` du téléphone. La sonnerie s'arrête de deux façons :
     * sur `ev_kit_fin_sonnerie` ou `ev_kit_raccrocher`, le kit retourne en attente et coupe le son en sortie (`play_sound("stop")`) ;
     * sur `ev_kit_appel_transfere`, le kit passe en `appel_en_cours_kit`, allume `VOYANT_kit_appel` et notifie le réseau (`GEN(ev_SIM_appel_en_cours)`).
@@ -837,7 +837,7 @@ sequenceDiagram
     end
 ```
 
-#### 10.4.3 Choix de conception
+#### 9.4.3 Choix de conception
 
 * Au début, la redirection et la gestion locale des appels étaient deux états exclusifs : connecter le kit ou couper le contact en plein appel détruisait le contexte de l'appel. Nous avons donc placé la redirection dans une région parallèle, avec des transitions croisées : la région du téléphone accepte `ev_kit_decrocher` venant du volant, la redirection accepte `ev_btn_telephone_decrocher` venant du téléphone, et chacune se remet en attente sur le `ev_SIM_raccrocher` émis par l'autre. Décrocher ou raccrocher sur le téléphone ou au volant garde ainsi les deux côtés cohérents.
 Nous avons choisi de garder cette architecture parallèle plutôt que de fusionner les deux régions par souci de lisibilité : le statechart est déjà très dense, et la fusion aurait dupliqué les états, différenciés seulement par une garde vérifiant la connexion du kit.
@@ -846,12 +846,12 @@ Nous avons choisi de garder cette architecture parallèle plutôt que de fusionn
 * Il n'y a qu'une seule bande son (`PlaySound` ne lit qu'un fichier à la fois) : le téléphone et le kit ne peuvent donc pas sonner en même temps. Lorsque le téléphone est connecté au kit, c'est la sonnerie du kit (`sonnerie2.wav`) qui a la priorité : elle est relancée juste après celle du téléphone, puisqu'elle passe par un paquet Bluetooth supplémentaire (`ev_kit_sonnerie`), et remplace donc `sonnerie.wav` à chaque cycle de 3 s. L'utilisateur entend ainsi que l'appel est redirigé vers le véhicule. Sans kit connecté, c'est la sonnerie du téléphone qui est jouée.
 
 
-### 10.5 Messagerie SMS et tableau de bord connecté
+### 9.5 Messagerie SMS et tableau de bord connecté
 
-#### 10.5.1 Statechart associé
+#### 9.5.1 Statechart associé
 > **[Capture Rhapsody à insérer — Version finale]** : AND-line **`SMS Extérieur`** (`state_206`, tout en haut à droite), accompagnée des sous-régions SMS (`state_184` et `state_189` dans `Communication telephone` + `state_199` dans `Commande kit main libre`).
 
-#### 10.5.2 Choix fonctionnels
+#### 9.5.2 Choix fonctionnels
 Les SMS sont reçus en parallèle des appels : un SMS reçu en plein appel est compté sans perturber la conversation. Leur nombre et un voyant s'affichent sur le téléphone et au tableau de bord. La lecture est synchronisée entre les deux, et interdite au volant en roulant.
 
 ##### Côté IHM
@@ -919,19 +919,19 @@ sequenceDiagram
     Note over Kit: nbr_sms_kit = params->sms_telephone
 ```
 
-#### 10.5.3 Choix de conception
+#### 9.5.3 Choix de conception
 
 * Au début, nous avions deux compteurs indépendants (téléphone et kit), qui dérivaient dès qu'un SMS arrivait pendant une déconnexion. Nous n'en gardons donc qu'un seul comme référence, `nbr_sms_telephone`, que le téléphone pousse vers le kit (`ev_transfert_sms_to_kit`, `ev_nv_sms_kit`, `ev_actualisation_sms_kit`).
 * La lecture est synchronisée quel que soit l'écran : quand nous lisons un SMS sur le téléphone (`ev_btn_telephone_lire_sms`), le compteur du tableau de bord est aussi mis à jour.
 * Lorsque le té
 
 
-## 12. Autoradio et arbitrage des priorités audio
+## 10. Autoradio et arbitrage des priorités audio
 
-### 11.1 Statechart associé
+### 10.1 Statechart associé
 ![AND-line Radio](media/radio.png)
 
-### 11.2 Choix fonctionnels
+### 10.2 Choix fonctionnels
 L'autoradio lit trois pistes, s'éteint contact coupé ou batterie vide, cède la place aux sonneries et aux appels passés au volant, puis reprend la piste en cours.
 
 **Côté IHM.** Nous allumons la radio avec son interrupteur, et sa LED le confirme. **Play** lance la lecture, **Skip** passe à la piste suivante, et l'afficheur montre le titre (« Press PLAY » à l'arrêt).
@@ -995,20 +995,20 @@ flowchart LR
     class H hist
 ```
 
-### 11.3 Choix de conception
+### 10.3 Choix de conception
 
 * `PlaySound` ne gère qu'une piste à la fois : toute sonnerie coupe donc la musique. Nous avons mis en place la machine de priorités et le connecteur d'historique pour reprendre proprement la lecture.
 * Nous avons ajouté l'anti-rebond pour éviter qu'un double clic sur **Skip** saute plusieurs pistes.
 * Les deux priorités ne sont pas traitées de la même façon, et c'est voulu. Le simulateur n'a qu'une seule bande son : toute sonnerie, qu'elle vienne du téléphone ou du kit (`sonnerie_en_cours`), prend donc forcément la place de la musique. En revanche, un appel passé sur le téléphone seul n'a aucune incidence réelle sur l'autoradio du véhicule : la musique reprend dès la fin de la sonnerie. Ce n'est que lorsque le téléphone est connecté au kit que l'appel utilise la piste audio du véhicule (`IS_IN(appel_en_cours_kit)`) : la radio passe alors en `priorite_appel` et se tait jusqu'à la fin de l'appel.
 
-## 13. Régulateur de vitesse adaptatif
+## 11. Régulateur de vitesse adaptatif
 
-Le régulateur de vitesse adaptatif est une extension du régulateur de vitesse simple ([Section 8 Régulateur de vitesse simple](#9-r%C3%A9gulateur-de-vitesse-simple)) en prenant en compte un véhicule devant celui qu'on conduit.  
+Le régulateur de vitesse adaptatif est une extension du régulateur de vitesse simple ([Section 7 Régulateur de vitesse simple](#7-r%C3%A9gulateur-de-vitesse-simple)) en prenant en compte un véhicule devant celui qu'on conduit.  
 Tant que la voiture devant est plus éloignée que la distance de sécurité, le régulateur maintient la vitesse consigne comme d'habitude.  
 Dès que l'écart passe sous la distance de sécurité, on régule la vitesse toujours en controlant le throttle, mais au lieu de suivre une vitesse de consigne avec la fonction `calcul_regulateur_vitesse()`, on vise une distance entre les deux véhicules (à savoir la distance de sécurité) avec une nouvelle fonction très similaire `calcul_regulateur_distance()`.  
 Par défaut, la distance de sécurité est fixée à `30 m` dans l'attribut `distance_securite`.
 
-### 12.1 Fonctionnement depuis l'IHM
+### 11.1 Fonctionnement depuis l'IHM
 
 L'IHM contient deux sliders en input/output pour à la fois régler et visualiser la distance de sécurité (`distance_securite`) et la distance inter-véhicule (`distance_inter_voiture`).
 
@@ -1017,9 +1017,9 @@ L'interrupteur `cmd_simulation_voiture_devant` permet d'activer ou de désactive
 Une fois l'interrupteur activé, la simulation prend le relais et met à jour automatiquement la distance inter-véhicule en fonction du déplacement du véhicule devant.
 Un afficheur numérique permet de visualiser en temps réel la distance inter-véhicule meme si elle dépasse l'intervalle de 0 - 50 m du slider.
 
-### 12.2 Statechart
+### 11.2 Statechart
 
-#### 12.2.1 Simulation de la voiture qui précède
+#### 11.2.1 Simulation de la voiture qui précède
 
 Une AND-line dédiée **`Simulation voiture régulateur adaptatif`** simule le déplacement du véhicule de devant, indépendamment de notre véhicule :
 
@@ -1034,43 +1034,21 @@ Il calcule la nouvelle position de la voiture devant via `calcul_distance_voitur
 
 Couper l'interrupteur (`EVAL[cmd_simulation_voiture_devant == false]`) renvoie l'AND-line dans `reglage_voiture_devant`.
 
-#### 12.2.2 Aiguillage entre suivi de vitesse et suivi de distance
+#### 11.2.2 Aiguillage entre suivi de vitesse et suivi de distance
 
 Plutôt que d'ajouter une nouvelle AND-line qui modifierait `throttle`, nous avons directement étendu le super-état `regulateur` de l'AND-line **`Débit de l'injection d'essence`** :
 
 ![AND-line complète Débit de l'injection d'essence (pedales et regulateur ACC)](media/ANDL_injection_regulateur.png)
 
-* À chaque itération du régulateur, le super-état `regulateur` repasse par son état initial `verification_distance_securite`, qui aiguille immédiatement le calcul :
-  * si un véhicule cible est actif et plus proche que la distance de sécurité (`[distance_inter_voiture < distance_securite && IS_IN(simulation_voiture_devant)]`), il passe dans `suivi_distance_consigne` et appelle `calcul_regulateur_distance()` ;
-  * sinon (`[distance_inter_voiture > distance_securite || !IS_IN(simulation_voiture_devant)]`), il passe dans `suivi_vitesse_consigne` et appelle le régulateur classique `calcul_regulateur_vitesse()`.
+À chaque itération du régulateur, le super-état `regulateur` repasse par son état initial `verification_distance_securite`, qui aiguille immédiatement le calcul :
+* si un véhicule cible est actif et plus proche que la distance de sécurité (`[distance_inter_voiture < distance_securite && IS_IN(simulation_voiture_devant)]`), il passe dans `suivi_distance_consigne` et appelle `calcul_regulateur_distance()` ;
+* sinon (`[distance_inter_voiture > distance_securite || !IS_IN(simulation_voiture_devant)]`), il passe dans `suivi_vitesse_consigne` et appelle le régulateur classique `calcul_regulateur_vitesse()`.
 
-### 12.3 Simulation de la cible et correcteur PI de distance
+### 11.3 Simulation de la voiture devant
 
-Voici un schéma synthétique illustrant l'articulation entre la simulation de la voiture cible et les deux modes du régulateur :
+La fonction `calcul_distance_voiture_devant()` se contente de mettre à jour la position de la voiture devant en fonction de sa vitesse, sans tenir compte du reste.
 
-```mermaid
-flowchart LR
-    ENV["`**Voiture de devant (20 Hz)**<br/>calcul_distance_voiture_devant()<br/>distance_inter_voiture = d_devant - distance`"]
-    DEC{"`distance_inter_voiture < distance_securite<br/>ET simulation_voiture_devant actif ?`"}
-    DIST["`**suivi_distance_consigne**<br/>erreur = distance_inter_voiture - distance_securite<br/>Correcteur PI (calcul_regulateur_distance)`"]
-    VIT["`**suivi_vitesse_consigne**<br/>erreur = (vitesseConsigne + 0.5) - float_speed<br/>Correcteur PI (calcul_regulateur_vitesse)`"]
-    THR["`**throttle**<br/>bridé dans [throttle_repos, max]`"]
-
-    ENV --> DEC
-    DEC -->|"`Oui`"| DIST --> THR
-    DEC -->|"`Non`"| VIT --> THR
-
-    classDef env fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
-    classDef dec fill:#fef3c7,stroke:#d97706,color:#78350f
-    classDef blk fill:#f1f5f9,stroke:#475569,color:#0f172a
-    classDef out fill:#dcfce7,stroke:#16a34a,color:#14532d
-    class ENV env
-    class DEC dec
-    class DIST,VIT blk
-    class THR out
-```
-
-Voici le code de l'opération `calcul_distance_voiture_devant()`, appelée à `20 Hz` dans `loop_simulation` :
+Voici le code de l'opération `calcul_distance_voiture_devant()`, appelée à la fréquence de simulation dans `loop_simulation` :
 
 <!-- code:calcul_distance_voiture_devant() -->
 ```cpp
@@ -1083,7 +1061,11 @@ distance_voiture_devant += (vitesse_voiture_devant / CST_CONVERSION_KMH_MS) * dt
 distance_entiere_voiture_devant = (int)distance_voiture_devant;
 ```
 
-Elle intègre simplement la position de la voiture de devant sur le même pas de temps `dt` (`50 ms`) que notre propre véhicule dans `calcul_vitesse_distance()`.
+Elle intègre simplement la position de la voiture de devant sur le même `dt` (50 ms pour 20 Hz) que notre propre véhicule dans `calcul_vitesse_distance()`.
+
+### 11.4 Correcteur PI pour le suivi de distance
+
+L'opération `calcul_regulateur_distance()` est un miroir de l'opération `calcul_regulateur_vitesse()`, adaptée pour le suivi de distance plutôt que de vitesse.
 
 Voici le code de l'opération `calcul_regulateur_distance()`, appelée à `2 Hz` dans `suivi_distance_consigne` :
 
@@ -1107,15 +1089,7 @@ if (commande < throttle_repos)          commande = throttle_repos;
 throttle = commande;
 ```
 
-Cette fonction reprend exactement la même loi PI saturée et les mêmes gains `Kp_regulateur` / `Ki_regulateur` que `calcul_regulateur_vitesse()` (voir [Section 8.3 Correcteur PI pour le régulateur de vitesse](#83-correcteur-pi-pour-le-r%C3%A9gulateur-de-vitesse)), en remplaçant l'erreur de vitesse par l'erreur de distance `distance_inter_voiture - distance_securite`. Le partage de l'accumulateur intégral `steady` garantit une transition fluide, sans à-coup sur le `throttle`, lors du basculement entre suivi de vitesse et suivi de distance.
-
-### 12.4 Évolution et limites
-
-Nous voulions une extension non intrusive : en intégrant directement le choix vitesse/distance dans le super-état `regulateur` existant, l'AND-line `Débit de l'injection d'essence` reste l'unique écrivain de `throttle`, et le comportement reste homogène entre régulateur simple et régulateur adaptatif.
-
-Comme l'ACC n'agit que sur le `throttle` (plancher à `throttle_repos` et frein moteur de `-300 N` au-dessus de `10 km/h`), sa capacité de ralentissement repose uniquement sur l'inertie et les frottements du véhicule. C'est l'une des raisons pour lesquelles nous avons relevé la masse (`1500 kg`) et le coefficient de roulement (`0.05`) dans le modèle physique (voir [Section 4 Simulation du véhicule](#5-simulation-du-v%C3%A9hicule)), afin d'obtenir une décélération naturelle suffisamment efficace pour maintenir la distance de sécurité.
-
-Enfin, deux limites restent identifiées pour d'éventuelles améliorations : nous n'avons pas implémenté de freinage mécanique automatique ni d'alerte sonore en cas de freinage brutal de la cible, et les deux gardes en sortie de `verification_distance_securite` sont strictes (`<` et `>`), ce qui laisse de côté le cas exact d'égalité `distance_inter_voiture == distance_securite` jusqu'au pas suivant.
+Cette fonction reprend exactement la même loi PI saturée et les mêmes gains `Kp_regulateur` / `Ki_regulateur` que `calcul_regulateur_vitesse()` (voir [Section 7.3 Correcteur PI pour le régulateur de vitesse](#73-correcteur-pi-pour-le-r%C3%A9gulateur-de-vitesse)), en remplaçant l'erreur de vitesse par l'erreur de distance `distance_inter_voiture - distance_securite`. Le partage de l'accumulateur intégral `steady` garantit une transition  sans à-coup entre suivi de vitesse et suivi de distance.
 
 <!--
 
@@ -1123,7 +1097,7 @@ Enfin, deux limites restent identifiées pour d'éventuelles améliorations : no
 
 ### 13.1 Cartographie complète de la grille d'AND-lines (Systeme)
 
-Le statechart final de `_SysVehicule` compte 16 AND-lines actives, réparties en deux grands blocs (conduite et aides à la conduite à gauche, télécommunications et Bluetooth à droite, autoradio en bas). Quatre cellules vides complètent le quadrillage de la ligne inférieure. Nous détaillons le regroupement par bloc dans la [Section 3.1 Vue d'ensemble des AND-lines](#31-vue-densemble-des-and-lines), et chaque AND-line est capturée dans l'[Annexe B — États par AND-line](#annexe-b--%C3%A9tats-par-and-line).
+Le statechart final de `_SysVehicule` compte 16 AND-lines actives, réparties en deux grands blocs (conduite et aides à la conduite à gauche, télécommunications et Bluetooth à droite, autoradio en bas). Quatre cellules vides complètent le quadrillage de la ligne inférieure. Nous détaillons le regroupement par bloc dans la [Section 2.1 Vue d'ensemble des AND-lines](#21-vue-densemble-des-and-lines), et chaque AND-line est capturée dans l'[Annexe B — États par AND-line](#annexe-b--%C3%A9tats-par-and-line).
 
 > **[Capture Rhapsody à insérer — Vue d'ensemble]** : Capture globale du Statechart `Systeme` de `_SysVehicule` montrant la répartition complète des 16 AND-lines actives.
 
@@ -1146,17 +1120,17 @@ Voici les scénarios que nous avons testés en mode animation :
 -->
 
 
-## 14. Implémentation de la gestion sonore sous Rhapsody
+## 12. Implémentation de la gestion sonore sous Rhapsody
 
-Trois fonctionnalités produisent du son : l'alarme de dépassement du limiteur ([Section 9 Limiteur de vitesse](#10-limiteur-de-vitesse)), les sonneries d'appel sur le téléphone et le kit ([Section 10.4 Gestion des appels entrants et redirection mains-libres](#104-gestion-des-appels-entrants-et-redirection-mains-libres)), et les trois pistes de l'autoradio ([Section 11 Autoradio et arbitrage des priorités audio](#12-autoradio-et-arbitrage-des-priorit%C3%A9s-audio)). Nous les faisons toutes passer par une seule opération, `play_sound()`.
+Trois fonctionnalités produisent du son : l'alarme de dépassement du limiteur ([Section 8 Limiteur de vitesse](#8-limiteur-de-vitesse)), les sonneries d'appel sur le téléphone et le kit ([Section 9.4 Gestion des appels entrants et redirection mains-libres](#94-gestion-des-appels-entrants-et-redirection-mains-libres)), et les trois pistes de l'autoradio ([Section 10 Autoradio et arbitrage des priorités audio](#10-autoradio-et-arbitrage-des-priorit%C3%A9s-audio)). Nous les faisons toutes passer par une seule opération, `play_sound()`.
 
-### 14.1 Côté IHM
+### 12.1 Côté IHM
 
 * **Alarme du limiteur** : en forte descente sous limiteur, la LED de dépassement (**G2**) s'allume et `alarme_depassement.wav` tourne en boucle jusqu'à ce que la vitesse revienne sous la consigne ou que le limiteur soit désactivé (**G1**).
 * **Sonneries** : un appel lancé depuis **C1** fait sonner `sonnerie.wav` sur le téléphone, ou `sonnerie2.wav` au volant si le kit est connecté. Le son s'arrête au décrochage (**I6**, **K11**) ou à la fin du délai.
 * **Autoradio** : **Play** (**J5**) et **Skip** (**J4**) lancent `musique_1.wav` à `musique_3.wav` ; la musique s'interrompt pendant une sonnerie ou un appel puis reprend.
 
-### 14.2 Côté statechart
+### 12.2 Côté statechart
 
 Dans notre version, les états concernés n'appellent jamais `PlaySound` directement :
 
@@ -1179,26 +1153,26 @@ Le tableau suivant résume, pour chaque son, l'état qui le lance et la façon d
 
 | Fonctionnalité | État / opération appelante | Fichier .wav joué | Mécanisme d'arrêt |
 | :--- | :--- | :--- | :--- |
-| Alarme limiteur ([Section 9 Limiteur de vitesse](#10-limiteur-de-vitesse)) | `alerte_depassement(1)` depuis Limiteur de vitesse / `depassement` | `alarme_depassement.wav` | `alerte_depassement(0)` en exit de `depassement` et en entry de `limiteur_off` |
-| Sonnerie téléphone ([Section 10.4 Gestion des appels entrants et redirection mains-libres](#104-gestion-des-appels-entrants-et-redirection-mains-libres)) | Communication telephone / `sonnerie_sonore` | `sonnerie.wav` | `play_sound("stop")` en exit de `gestion_sonnerie` et en entry de `appel_en_cours` |
-| Sonnerie kit véhicule ([Section 10.4 Gestion des appels entrants et redirection mains-libres](#104-gestion-des-appels-entrants-et-redirection-mains-libres)) | Commande kit main libre / `sonnerie_sonore_kit` | `sonnerie2.wav` | `play_sound("stop")` en exit de `gestion_sonnerie_kit` |
-| Autoradio 3 pistes ([Section 11 Autoradio et arbitrage des priorités audio](#12-autoradio-et-arbitrage-des-priorit%C3%A9s-audio)) | Radio / `musique_1`, `musique_2`, `musique_3` | `musique_1.wav` à `musique_3.wav` | `play_sound("stop")` en entry de `radio_eteinte` et de `priorite_appel` |
+| Alarme limiteur ([Section 8 Limiteur de vitesse](#8-limiteur-de-vitesse)) | `alerte_depassement(1)` depuis Limiteur de vitesse / `depassement` | `alarme_depassement.wav` | `alerte_depassement(0)` en exit de `depassement` et en entry de `limiteur_off` |
+| Sonnerie téléphone ([Section 9.4 Gestion des appels entrants et redirection mains-libres](#94-gestion-des-appels-entrants-et-redirection-mains-libres)) | Communication telephone / `sonnerie_sonore` | `sonnerie.wav` | `play_sound("stop")` en exit de `gestion_sonnerie` et en entry de `appel_en_cours` |
+| Sonnerie kit véhicule ([Section 9.4 Gestion des appels entrants et redirection mains-libres](#94-gestion-des-appels-entrants-et-redirection-mains-libres)) | Commande kit main libre / `sonnerie_sonore_kit` | `sonnerie2.wav` | `play_sound("stop")` en exit de `gestion_sonnerie_kit` |
+| Autoradio 3 pistes ([Section 10 Autoradio et arbitrage des priorités audio](#10-autoradio-et-arbitrage-des-priorit%C3%A9s-audio)) | Radio / `musique_1`, `musique_2`, `musique_3` | `musique_1.wav` à `musique_3.wav` | `play_sound("stop")` en entry de `radio_eteinte` et de `priorite_appel` |
 
-### 14.3 Pourquoi ce fonctionnement
+### 12.3 Pourquoi ce fonctionnement
 
 * Le sujet propose de placer les `.wav` dans `CodesGeneres/ModeAnimation/`, mais ce dossier est généré et exclu par `.gitignore` : après chaque récupération du travail de l'autre binôme, les sons manquaient. Nous les avons donc rangés dans un dossier `sons/` versionné.
 * Au début, nos appels `PlaySound` étaient dispersés et utilisaient des chemins différents, et les pistes de la radio n'avaient même pas l'extension `.wav`. Nous avons donc centralisé le chemin et l'appel dans une seule opération.
 * Avec `SND_LOOP | SND_ASYNC`, un son tourne jusqu'à un arrêt explicite : sans les arrêts listés ci-dessus, les sonneries continuaient après un décrochage. Nous avons donc prévu un arrêt explicite pour chaque son.
-* `PlaySound` coupe la piste en cours à chaque nouvel appel : c'est ce qui nous a imposé la machine de priorités de l'AND-line Radio (voir [Section 11 Autoradio et arbitrage des priorités audio](#12-autoradio-et-arbitrage-des-priorit%C3%A9s-audio)).
+* `PlaySound` coupe la piste en cours à chaque nouvel appel : c'est ce qui nous a imposé la machine de priorités de l'AND-line Radio (voir [Section 10 Autoradio et arbitrage des priorités audio](#10-autoradio-et-arbitrage-des-priorit%C3%A9s-audio)).
 
 
-## 15. Outillage complémentaire : injection d'une API REST et interface graphique Web
+## 13. Outillage complémentaire : injection d'une API REST et interface graphique Web
 
-### 15.1 Motivation
+### 13.1 Motivation
 
 Le Panel Diagram de Rhapsody est très pratique pour le débogage pas à pas en mode animation, mais son ergonomie (widgets ActiveX datés, pas de mise en page adaptative, dépendance à une installation locale de Rhapsody) limite la lisibilité lors d'une démonstration complète. Nous avons donc développé un outil qui transforme le code C++ généré par Rhapsody en un logiciel autonome pilotable depuis une interface Web.
 
-### 15.2 Architecture et fonctionnement de l'outil
+### 13.2 Architecture et fonctionnement de l'outil
 
 Plutôt que de réécrire la logique du véhicule en JavaScript, nous avons choisi de garder le moteur C++ OXF généré par Rhapsody comme cœur d'exécution. Notre outil procède en trois étapes :
 
@@ -1231,7 +1205,7 @@ flowchart LR
     class WEB web
 ```
 
-### 15.3 Liens vers la démonstration et le dépôt GitHub
+### 13.3 Liens vers la démonstration et le dépôt GitHub
 
 * Démo de l'interface Web : \[lien à compléter\]
 * Dépôt GitHub de l'outil (injection API REST et interface Web) : \[lien à compléter\]
@@ -1264,7 +1238,7 @@ Nous avons abouti à un modèle Statechart complet, exécutable et validé en an
 
 -->
 
-## 16. Annexes
+## Annexes
 
 ### Annexe A — IHM détaillée
 
@@ -1334,7 +1308,7 @@ E = entrée (commande de l'utilisateur), S = sortie (affichage). Les liaisons ma
 
 ### Annexe B — États par AND-line
 
-Une capture par AND-line du statechart `Systeme`, dans l'ordre des blocs de la [Section 3.1 Vue d'ensemble des AND-lines](#31-vue-densemble-des-and-lines).
+Une capture par AND-line du statechart `Systeme`, dans l'ordre des blocs de la [Section 2.1 Vue d'ensemble des AND-lines](#21-vue-densemble-des-and-lines).
 
 ![B.1 Horloge rafraichissement](media/ANDL_EVAL.png)
 
@@ -1465,7 +1439,7 @@ Les 77 attributs de `_SysVehicule`, regroupés par domaine. Les types et valeurs
 
 #### Paquets échangés entre le téléphone et le kit
 
-Liste complète des paquets présentés en [Section 10.2 Principe : deux équipements cloisonnés qui échangent des paquets](#102-principe--deux-%C3%A9quipements-cloisonn%C3%A9s-qui-%C3%A9changent-des-paquets) :
+Liste complète des paquets présentés en [Section 9.2 Principe : deux équipements cloisonnés qui échangent des paquets](#92-principe--deux-%C3%A9quipements-cloisonn%C3%A9s-qui-%C3%A9changent-des-paquets) :
 
 | Événement | Sens | Paramètre | Rôle |
 | :--- | :---: | :--- | :--- |

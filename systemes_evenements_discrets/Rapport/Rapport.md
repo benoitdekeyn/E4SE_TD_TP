@@ -148,9 +148,7 @@ Finalement nous avons trouvé une solution parfaite : utiliser un événement gl
 
 La fréquence de déclenchement de l'événement `EVAL` est directement calculée en fonction de l'attribut `PARAM_SIMU_frequence_simulation`, ce qui rend le changement de la fréquence de simulation très simple à changer car centralisé.
 
----
-
-### 3.2 Dynamique du véhicule (Simulation du vehicule)
+### 3.2 Simulation du vehicule 
 
 #### Statechart
 
@@ -272,6 +270,7 @@ const double ZERO                  = 0.0;
 // --- LOGIQUE ---
 const double dt = DELTA_T_MS / CST_CONVERSION_MS_S; // 0.05 s
 
+// D'abord, on coupe l'accélération si le moteur est éteint
 if (ignition == false) {
     throttle = ZERO;
 }
@@ -335,7 +334,6 @@ brakePedal = 0;
 accelPedal = 0;
 float_speed = (double)speed;
 float_distance = (double)distance;
-distance_voiture_devant = distance;
 
 const double MASSE         = (double)PARAM_SIMU_masse;
 const double PUISSANCE     = (double)PARAM_SIMU_puissance_moteur;
@@ -349,20 +347,11 @@ const double forceRoulement_repos = 0.015 * MASSE * 9.81;
 
 throttle_repos = (forceAir_repos + forceRoulement_repos) / PUISSANCE;
 throttle = throttle_repos;
-
-// Calcul des paramètres du régulateur à partir des coefficients normalisés
-const double RATIO_CORRECTION_P   = PARAM_SIMU_Kp_regulateur;
-const double RATIO_LENTEUR_I      = PARAM_SIMU_Ki_regulateur;
-const double FREQ_REG             = (double)PARAM_SIMU_freq_regulateur;
-const double delta_v_par_throttle = (PUISSANCE / MASSE) * (1.0 / FREQ_REG) * 3.6;
-
-Kp_regulateur = RATIO_CORRECTION_P / delta_v_par_throttle;
-Ki_regulateur = (Kp_regulateur / RATIO_LENTEUR_I);
 ```
 
 ---
 
-### 3.3 Gestion de la pédale d'accélération
+### 3.3 Gestion des pédales d'accélération et de frein
 
 #### Statechart
 
@@ -384,42 +373,44 @@ Ki_regulateur = (Kp_regulateur / RATIO_LENTEUR_I);
 
 #### Opérations
 
-Voici le code de l'opération `accelerer()` :  
-[TBD : code de l'acceleration]
+Voici le code de l'opération `accelerer()` :
 
-Voici le code de l'opération `freiner_injection()` (anciennement `freiner()`) :  
-[TBD : code de freiner_injection]
+<!-- code:accelerer(double accelPedal) -->
+```cpp
+// --- PARAMETRES EXTERNES ---
+const double MAX_THROTTLE = PARAM_SIMU_max_throttle;
+const double CST_RALENTI  = throttle_repos;
+const double MAX_ACCEL    = (double)PARAM_SIMU_max_accel;
+
+// --- LOGIQUE ---
+// Mise à l'échelle : 0->10 sur la pédale donne throttle_repos->10.0 sur le throttle
+double plage_utile = MAX_THROTTLE - CST_RALENTI;
+throttle = CST_RALENTI + (accelPedal / MAX_ACCEL) * plage_utile;
+```
+
+La fonction fait un mapping linéaire de la position de la pédale d'accélération `accelPedal` sur la plage utile du `throttle`, allant de `throttle_repos` à `MAX_THROTTLE` :  
+Si on appuie pas du tout sur la pédale d'accélération (`accelPedal = 0`), le `throttle` reste calé sur le ralenti `throttle_repos`.
+Si on appuie à fond sur la pédale d'accélération (`accelPedal = MAX_ACCEL`), le `throttle` atteint directement son maximum `MAX_THROTTLE`.
+
+Voici le code de l'opération `freiner_injection()` (anciennement `freiner()`) :
+
+<!-- code:freiner_injection(double brakePedal) -->
+```cpp
+if (throttle > throttle_repos) {
+    throttle = throttle_repos;
+}
+```
+
+Cette opération se limite volontairement à couper l'accélération en ramenant immédiatement le `throttle` au niveau du ralenti `throttle_repos` (sans jamais le faire passer en dessous, afin de ne pas étouffer le moteur à l'arrêt). L'effort de freinage mécanique progressif proportionnel à `brakePedal` est quant à lui appliqué directement sur la vitesse dans `calcul_vitesse_distance()` (voir section 3.2), ce qui garantit que le freinage reste actif même moteur coupé.
+
+#### Évolution
 
 Dans la version originale de ces fonctions, l'injection était incrémentée/décrémentée progressivement, alors que ce comportement est typique de la vitesse du moteur (en tours/minute) qui possède en effet une certaine inertie, et non du débit de l'injection d'essence (le throttle) qui est instantané.
 Nous avons donc modifié les opérations `accelerer()` et `freiner_injection()` pour qu'elles ajustent instantanément le débit d'injection (`throttle`) en fonction de la position des pédales.
 
----
+# >>>>>>>>>>>>> TBD ↓
 
-### 3.4 Intégration du système de freinage et priorité stricte
-
-#### Choix fonctionnels
-**Côté IHM.** Le slider **H1** fixe `brakePedal` (0 à 10). Dès qu'il dépasse 0,5, le throttle (**F2**, **F3**) retombe au ralenti même si la pédale **H2** est enfoncée, et la vitesse (**F4**) diminue.
-
-**Côté statechart.** Nous avons fait agir le freinage à deux endroits complémentaires :
-
-1. **Coupure prioritaire de l'injection** dans `pedales` : l'état initial est `freinage_injection`. L'entrée dans `acceleration` exige `brakePedal < 0.5 && IS_IN(moteur_on)` (zone morte de 0,5 contre le bruit du slider). Dès que `brakePedal >= 0.5`, la transition vers `freinage_injection` coupe l'injection via `freiner_injection()`, quelle que soit la position de `accelPedal`.
-2. **Frein mécanique continu** : nous calculons l'effort de freinage à 20 Hz dans `calcul_vitesse_distance()`, y compris moteur éteint. La période de 50 ms est donc quatre fois plus courte que la borne de 200 ms demandée.
-
-```cpp
-void _SysVehicule::freiner_injection(double brakePedal) {
-    if (throttle > throttle_repos) {
-        throttle = throttle_repos;
-    }
-}
-```
-
-**Pourquoi ce fonctionnement.** À l'origine, la fonction `freiner()` fournie ne jouait que sur le `throttle` et non sur la vitesse mécanique. Dans une première version, nous avions même tenté d'y simuler un « étouffement » du moteur au freinage, qui faisait caler la voiture à chaque arrêt franc. Nous avons finalement séparé clairement les deux rôles : `freiner_injection()` coupe l'accélération en plafonnant l'injection au ralenti (sans jamais caler), tandis que `calcul_vitesse_distance()` applique directement l'effort de freinage mécanique sur la vitesse.
-
-![Super-état pedales de l'AND-line Débit de l'injection d'essence](media/ANDL_injection_base.png)
-
----
-
-### 3.5 Gestion du contact, du démarrage et de l'arrêt d'urgence (Clé du véhicule)
+### 3.5 Gestion du contact et du démarrage
 
 Le sujet demande de gérer la clé, le démarrage et l'arrêt d'urgence en roulant : coupure moteur immédiate, accélérateur désactivé, inertie conservée.
 
@@ -466,42 +457,58 @@ if (throttle > 1.5) {
 
 ![AND-line Ressources et pannes](media/ANDL_ressources_panne.png)
 
----
+# >>>>>>>>>>>>> TBD ↑
 
-## 4. Spécification et développement du régulateur de vitesse
+## 4. Régulateur de vitesse simple
 
-Le régulateur maintient une vitesse cible (`vitesseConsigne`) sur route dénivelée (α entre -20° et +20°). Nous l'avons conçu pour qu'il s'active au-dessus de 30 km/h, se règle par pas de 1 km/h et se suspende tant que le conducteur accélère.
+Le régulateur maintient une vitesse cible (`vitesseConsigne`) sur route dénivelée (α entre -20° et +20°).
 
-### Côté IHM
+### 4.1 Fonctionnement depuis l'IHM
 
-* **Activer / désactiver** : nous utilisons le bouton **Régulateur** (**G5**), qui envoie l'événement `ev_regulateur`. La LED **G6** (`voyant_regulateur`) indique que le régulateur est actif.
-* **Consigne** : à l'activation, la vitesse courante s'affiche dans **vitesse cible** (**G3**). Les boutons **+** et **−** (**G4**) la modifient de 1 km/h.
-* **Suspension** : en appuyant sur la pédale **H2**, nous reprenons la main ; au relâchement, le régulateur ramène la vitesse à la consigne.
-* **Désactivation implicite** : freiner (**H1**), descendre sous 30 km/h ou couper le moteur (**E1**) éteint **G6**.
+* **Activer / désactiver** : nous utilisons le bouton **Régulateur**, qui envoie l'événement `ev_regulateur`. La LED (`voyant_regulateur`) indique que le régulateur est actif.
+* **Consigne** : à l'activation, la vitesse courante s'affiche dans **vitesse cible**. Les boutons **+** et **−** la modifient de 1 km/h.
+* **Suspension** : en appuyant sur la pédale d'accélération, nous reprenons la main et au relâchement, le régulateur ramène la vitesse à la consigne.
+* **Désactivation implicite** : freiner, descendre sous 30 km/h ou couper le moteur éteint le voyant du régulateur.
 
-### Côté statechart
+### 4.2 Statechart
 
-Nous avons réparti le régulateur sur deux AND-lines :
+#### Décision du mode manuel vs régulateur
 
-* **Mode de pilotage** gère le mode logique (`mode_manuel` ↔ `mode_regulateur`), le voyant `voyant_regulateur`, et les sous-états `maintien` / `plus` / `moins` qui appellent `ex_vitesseConsigne(±1)` (bornée à \[0, 120\] km/h). L'entrée dans `mode_regulateur` exécute `vitesseConsigne = speed; steady = throttle;`.
-* **Débit de l'injection d'essence** bascule entre `pedales` et `regulateur` sur `EVAL [IS_IN(mode_regulateur) && accelPedal < 0.5]`, et revient sur `EVAL [IS_IN(mode_manuel) || accelPedal >= 0.5]`.
+Un premier AND-line détermine si le pilotage du throttle doit se faire par le régulateur ou par le conducteur : 
 
-La suspension n'a donc pas besoin d'état dédié : quand nous appuyons sur la pédale, `pedales` reprend la main pendant que Mode de pilotage reste en `mode_regulateur` et mémorise la consigne. Au relâchement, `regulateur` reprend tout de suite.
+![](media/ANDL_mode_pilotage.png)
 
-### Loi de commande : correcteur PI discret auto-dimensionné
+#### Commande de l'injection d'essence
 
-Nous avons remarqué que la formule fournie dans le sujet (`error = (double)(5*(vitesseConsigne - speed) / 6.0); steady = (double)(vitesseConsigne / 12.0); throttle = steady + error;`) n'était pas adaptée au fonctionnement réel de la voiture. Avec l'aide de l'IA, nous avons donc couplé notre modèle newtonien en forte pente à un correcteur PI discret avec saturation pour l'asservissement final (`calcul_regulateur_vitesse()`, cadencé à `PARAM_SIMU_freq_regulateur` = 3 Hz). Nous avons tout de même gardé la loi du sujet dans l'opération `regulateur_Prof()`.
+C'est dans le même AND-line 'Débit de l'injection d'essence' que nous déterminons la valeur du throttle en fonction du mode de pilotage et de la consigne de vitesse : 
 
-**Normalisation des gains dans le constructeur `_SysVehicule()`.** Bien que les paramètres `PARAM_SIMU_Kp_regulateur` et `PARAM_SIMU_Ki_regulateur` existent déjà dans la configuration de simulation, ils ne représentent pas directement les gains bruts appliqués à la commande : ils servent de **coefficients normalisés** (`RATIO_CORRECTION_P` et `RATIO_LENTEUR_I`). À la construction de la classe `_SysVehicule()`, ces coefficients sont lus puis mis à l'échelle à partir des caractéristiques physiques du véhicule (`PARAM_SIMU_masse`, `PARAM_SIMU_puissance_moteur`) et de la fréquence du régulateur (`PARAM_SIMU_freq_regulateur`) afin de construire les véritables gains `Kp_regulateur` et `Ki_regulateur`. De cette manière, pour une même valeur de `PARAM_SIMU_Kp_regulateur` (et `PARAM_SIMU_Ki_regulateur`), le comportement du régulateur reste cohérent même en faisant varier complètement les caractéristiques du véhicule (voiture légère, berline, camion lourd, motorisations différentes), sans avoir à recalculer les gains à la main pour chaque configuration.
+![](media/ANDL_injection_complet.png)
+
+### 4.3 Correcteur PI pour le régulateur de vitesse
+
+Nous avons remarqué que la formule fournie dans le sujet (`error = (double)(5*(vitesseConsigne - speed) / 6.0); steady = (double)(vitesseConsigne / 12.0); throttle = steady + error;`) n'était pas adaptée au fonctionnement réel de la voiture. En effet, cette formule est un simple correcteur proportionnel qui possède une erreur statique qui se voit notamment quand on change l'angle de la pente.
+
+Nous avons voulu améliorer cette fonction pour qu'il joue avec un attribut qui stocke l'erreur intégrale afin de corriger l'erreur statique. Avec l'aide de l'IA, nous avons donc écrit une fonction de correcteur PI discret pour asservir la vitesse de la voiture à la vitesse de la consigne. Cette fonction est appelée `calcul_regulateur_vitesse()`, cadencée à `PARAM_SIMU_freq_regulateur` = 3 Hz.
+
+Pour ce correcteur PI, nous avons deux attributs `Kp_regulateur` et `Ki_regulateur` qui représentent les gains appliqués à la commande.
+
+Ces variables ne sont pas des constantes à régler, mais sont calculées à partir des deux coefficients "normalisés" `PARAM_SIMU_Kp_regulateur` et `PARAM_SIMU_Ki_regulateur`.
+C'est dans le constructeur de la classe `SysVehicule` que ces coefficients normalisés sont lus et utilisés pour calculer les gains effectifs `Kp_regulateur` et `Ki_regulateur` à partir des caractéristiques physiques du véhicule et de la fréquence du régulateur.
+
+Ainsi nous pouvons changer les caractéristiques physiques du véhicule sans avoir à recalculer manuellement les gains du régulateur, ce qui rend le système plus flexible et adaptable à différents types de véhicules.
+
+À l'activation, nous initialisons `steady = throttle` pour éviter un à-coup lorsque le conducteur a accéléré entre deux activations.
+
+Comme `vitesseConsigne` est un entier, il est tronqué vers le bas, nous visons donc la consigne + 0,5, ce qui évite que l'affichage oscille autour d'une valeur entière, mais plutôt au milieu de l'intervalle entre deux entiers.
 
 Voici un schéma qui illustre ce correcteur :
 
 ```mermaid
 flowchart LR
-    ERR["`**Erreur centrée**<br/>e = (vitesseConsigne + 0.5) - float_speed`"]
-    I["`**Terme Intégral (anti-windup)**<br/>steady += Ki · e<br/>bridé dans [throttle_repos, 10]`"]
-    P["`**Terme Proportionnel**<br/>Kp · e`"]
-    SUM["`**Commande saturée**<br/>throttle = clamp(steady + Kp·e,<br/>throttle_repos, 10)`"]
+    ERR["`**Erreur** = (vitesseConsigne + 0.5) - float_speed`"]
+    I["`**Terme Intégral** steady += Ki · erreur<br/>avec bridage min/max`"]
+    P["`**Terme Proportionnel**<br/>Kp · erreur`"]
+    SUM["`**throttle** = (steady + Kp·erreur)<br/> avec bridage min/max`"]
 
     ERR --> I --> SUM
     ERR --> P --> SUM
@@ -512,6 +519,25 @@ flowchart LR
     class SUM out
 ```
 
+Voici le code de l'opération du correcteur PI `calcul_regulateur_vitesse()`:
+
+```cpp
+const double erreur = (double)vitesseConsigne+0.5 - (double)float_speed;
+
+steady += Ki_regulateur * erreur;
+
+if (steady > PARAM_SIMU_max_throttle) steady = PARAM_SIMU_max_throttle;
+if (steady < throttle_repos)          steady = throttle_repos;
+
+double commande = steady + (Kp_regulateur * erreur);
+
+if (commande > PARAM_SIMU_max_throttle) commande = PARAM_SIMU_max_throttle;
+if (commande < throttle_repos)          commande = throttle_repos;
+
+throttle = commande;
+```
+
+Voici un extrait du constructeur `_SysVehicule()` qui sert à intialiser les gains effectifs Kp et Ki à partir des coefficients normalisés et des caractéristiques du véhicule :  
 ```cpp
 // Constructeur _SysVehicule() : construction des gains effectifs Kp et Ki à partir des coefficients normalisés
 const double RATIO_CORRECTION_P   = PARAM_SIMU_Kp_regulateur;
@@ -523,16 +549,13 @@ Kp_regulateur = RATIO_CORRECTION_P / delta_v_par_throttle;
 Ki_regulateur = (Kp_regulateur / RATIO_LENTEUR_I);
 ```
 
-### Pourquoi ce fonctionnement
+### Évolution
 
-* Nous avions d'abord un interrupteur `cmd_regulateur` : le statechart désactivait le régulateur au freinage, mais l'interrupteur de l'IHM restait enclenché et le réactivait. Nous l'avons donc remplacé par un bouton poussoir qui envoie l'événement `ev_regulateur`, associé à un voyant en lecture seule : comme ça, il n'y a plus de décalage.
-* Nous avons d'abord essayé des corrections non linéaires en e·|e| puis e³, mais la version cubique saturait et oscillait sur les grands écarts. Nous avons donc préféré le PI auto-dimensionné, qui répond de façon homogène quelle que soit l'erreur ou la masse.
-* À l'activation, nous initialisons `steady = throttle` pour éviter un à-coup lorsque le conducteur a accéléré entre deux activations.
-* Comme `speed` est tronqué vers le bas, nous visons la consigne + 0,5 (50,5 au lieu de 50), ce qui évite que l'affichage oscille entre 49 et 50.
+Nous avions d'abord un interrupteur `cmd_regulateur` : le statechart désactivait le régulateur au freinage, mais l'interrupteur de l'IHM restait enclenché et le réactivait. Nous l'avons donc remplacé par un bouton poussoir qui envoie l'événement `ev_regulateur`, associé à un voyant en lecture seule : comme ça, il n'y a plus de décalage.
 
-![AND-line Mode de pilotage](media/ANDL_mode_pilotage.png)
+Entre temps nous avons aussi essayé des corrections non linéaires en ±erreur² puis ±erreur³ pour augmenter la réactivité en fonction de l'erreur, mais nous n'arrivions pas à obtenir une correction à la fois réactive et douce dans toutes les situations. C'est pourquoi nous avons finalement opté pour un correcteur PI.
 
----
+# >>>>>>>>>>>>> TBD ↓
 
 ## 5. Spécification et développement du limiteur de vitesse
 
@@ -568,7 +591,7 @@ La hiérarchie finale de `limiteur_on` est donc : `consigne_fixe` → `limiteur_
 
 ![AND-line Limiteur de vitesse](media/ANDL_limiteur_vitesse.png)
 
----
+# >>>>>>>>>>>>> TBD ↑
 
 ## 6. Contrôleur de Kit Bluetooth « mains libres » et infodivertissement
 
@@ -969,7 +992,7 @@ flowchart LR
 * Nous avons ajouté l'anti-rebond pour éviter qu'un double clic sur **Skip** saute plusieurs pistes.
 * Les deux priorités ne sont pas traitées de la même façon, et c'est voulu. Le simulateur n'a qu'une seule bande son : toute sonnerie, qu'elle vienne du téléphone ou du kit (`sonnerie_en_cours`), prend donc forcément la place de la musique. En revanche, un appel passé sur le téléphone seul n'a aucune incidence réelle sur l'autoradio du véhicule : la musique reprend dès la fin de la sonnerie. Ce n'est que lorsque le téléphone est connecté au kit que l'appel utilise la piste audio du véhicule (`IS_IN(appel_en_cours_kit)`) : la radio passe alors en `priorite_appel` et se tait jusqu'à la fin de l'appel.
 
----
+# >>>>>>>>>>>>> TBD ↓
 
 ## 7. Extension : Régulateur de vitesse adaptatif (ACC)
 
@@ -1423,3 +1446,5 @@ Les 77 attributs de `_SysVehicule`, regroupés par domaine. Les types et valeurs
 | 4 | « Appareil jumelé » | En entrée de `connexion` |
 | 5 | « Jumelage Impossible » | Après 500 ms sans réponse du kit (moteur en marche) |
 | — | « Standby » | En entrée de `telephone_eteint` et de `bluetooth_telephone_desactive` |
+
+# >>>>>>>>>>>>> TBD ↑

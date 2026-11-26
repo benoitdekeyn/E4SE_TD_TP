@@ -75,7 +75,7 @@
 
 ## 1. Vue d'ensemble de l'IHM de Rhapsody
 
-![Panel Diagram complet en cours de simulation](media/IHM.png)
+<img src="media/IHM.png" alt="Panel Diagram complet en cours de simulation" width="100%" />
 
 ## 2. Architecture globale
 
@@ -94,7 +94,7 @@ Nous avons découpé le statechart en 16 régions orthogonales (exécutées en p
 
 ### 2.2 Horloge partagée via l'événement EVAL
 
-![Région Horloge rafraichissement](media/ANDL_EVAL.png)
+<img src="media/ANDL_EVAL.png" alt="Région Horloge rafraichissement" width="40%" />
 
 Certaines transitions n'ont pas d'événement et ne dépendent que d'une garde.
 Pour chaque état qui avait une de ces transitions en sortie, nous devions mettre un `tm(X ms)` qui rebouclait sur lui-même.
@@ -111,7 +111,7 @@ La fréquence de déclenchement de l'événement `EVAL` est directement calculé
 
 ### 3.1 Statechart
 
-![Région Simulation du véhicule](media/ANDL_simulation.png)
+<img src="media/ANDL_simulation.png" alt="Région Simulation du véhicule" width="35%" />
 
 Pour simuler la vitesse et la distance du véhicule, à partir de l'injection (throttle), nous avons repris la fonction `calcul_vitesse_distance()` qui est appelée à chaque événement `EVAL` qui se déclenche à la fréquence de simulation comme détaillé dans la [Section 2.2 Horloge partagée via l'événement EVAL](#22-horloge-partag%C3%A9e-via-l%C3%A9v%C3%A9nement-eval).
 
@@ -153,6 +153,8 @@ Les attributs de la simulation initialisés dans le constructeur en fonction des
 
 Voici un schéma synthétique montrant comment `calcul_vitesse_distance()` calcule la vitesse et la distance à partir des variables d'état lues et des paramètres de simulation :
 
+<!-- paysage : zoom = 100 -->
+<!-- portrait : zoom = 85 -->
 ```mermaid
 flowchart LR
     subgraph VARS["Variables lues"]
@@ -163,7 +165,7 @@ flowchart LR
         V_VIT["float_speed"]
     end
 
-    PARAMS[("Paramètres de simulation<br/>• PARAM_SIMU_masse<br/>• PARAM_SIMU_puissance_moteur<br/>• PARAM_SIMU_puissance_frein<br/>• PARAM_SIMU_frottement_air<br/>• PARAM_SIMU_max_speed<br/>• PARAM_SIMU_max_brake<br/>• PARAM_SIMU_freq_rafraichissement<br/>• throttle_repos")]
+    PARAMS[("Paramètres de simulation<br/>PARAM_SIMU_masse<br/>PARAM_SIMU_puissance_moteur<br/>PARAM_SIMU_puissance_frein<br/>PARAM_SIMU_frottement_air<br/>PARAM_SIMU_max_speed<br/>PARAM_SIMU_max_brake<br/>PARAM_SIMU_freq_rafraichissement<br/>throttle_repos")]
 
     subgraph FORCES["Calcul des efforts"]
         direction TB
@@ -313,7 +315,7 @@ throttle = throttle_repos;
 
 ### 4.1 Statechart
 
-<img src="media/ANDL_injection_base.png" alt="Statechart du débit de l'injection d'essence" width="35%" />
+<img src="media/ANDL_injection_base.png" alt="Statechart du débit de l'injection d'essence" width="42%" />
 
 > La partie inférieure de la région qui gère le contrôle de l'injection d'essence par le régulateur est tronquée dans cette capture. Les conditions liées au limiteur apparaissent quand même mais seront expliquées plus loin.
 
@@ -374,7 +376,7 @@ Nous avons donc modifié les opérations `accelerer()` et `freiner_injection()` 
 
 ### 5.1 Statechart
 
-![Région Clé du véhicule (incluant la sous-région calcul_batterie_voiture)](media/ANDL_cle_vehicule.png)
+<img src="media/ANDL_cle_vehicule.png" alt="Région Clé du véhicule (incluant la sous-région calcul_batterie_voiture)" width="50%" />
 
 ### 5.2 Utilisation depuis l'IHM
 
@@ -414,7 +416,7 @@ Le cycle de vie de la voiture est modélisé par la gestion de ses ressources é
 
 ### 6.1 Statechart
 
-![Région Ressources et pannes](media/ANDL_ressources_panne.png)
+<img src="media/ANDL_ressources_panne.png" alt="Région Ressources et pannes" width="55%" />
 
 ### 6.2 Utilisation depuis l'IHM
 
@@ -540,13 +542,13 @@ Le régulateur maintient une vitesse cible (`vitesseConsigne`) sur route dénive
 
 Une première région détermine si le pilotage du throttle doit se faire par le régulateur ou par le conducteur : 
 
-![Région Mode de pilotage](media/ANDL_mode_pilotage.png)
+<img src="media/ANDL_mode_pilotage.png" alt="Région Mode de pilotage" width="75%" />
 
 #### 7.2.2 Commande de l'injection d'essence
 
 C'est dans la même région `Débit de l'injection d'essence` que nous déterminons la valeur du throttle en fonction du mode de pilotage et de la consigne de vitesse : 
 
-![Région Débit de l'injection d'essence](media/ANDL_injection_complet.png)
+<img src="media/ANDL_injection_complet.png" alt="Région Débit de l'injection d'essence" width="42%" />
 
 ### 7.3 Correcteur PI pour le régulateur de vitesse
 
@@ -569,6 +571,8 @@ Comme `vitesseConsigne` est un entier, il est tronqué vers le bas, nous visons 
 
 Voici un schéma qui illustre ce correcteur :
 
+<!-- paysage : zoom = 80, direction = LR -->
+<!-- portrait : zoom = 65, direction = LR -->
 ```mermaid
 flowchart LR
     ERR["`**Erreur** = (vitesseConsigne + 0.5) - float_speed`"]
@@ -639,7 +643,7 @@ Le limiteur de vitesse empêche le véhicule de dépasser une vitesse maximale p
 
 La région **`Limiteur de vitesse`** gère l'activation du limiteur, le réglage de la consigne par simple ou double appui, l'activation différée et l'alerte de dépassement :
 
-![Région Limiteur de vitesse](media/ANDL_limiteur_vitesse.png)
+<img src="media/ANDL_limiteur_vitesse.png" alt="Région Limiteur de vitesse" width="82%" />
 
 * **Exclusion mutuelle avec le régulateur** : l'événement `ev_limiteur` fait passer de `limiteur_off` à `limiteur_on` (uniquement moteur allumé, `[IS_IN(moteur_on)]`) et renvoie simultanément la région `Mode de pilotage` vers `mode_manuel`. À l'inverse, `ev_regulateur` fait immédiatement repasser le limiteur dans `limiteur_off`.
 * **Consigne initiale et double appui** : l'entrée dans `consigne_fixe` initialise `vitesseConsigne = valeur_initiale_limiteur` (`50 km/h`). Un premier appui sur **+** (`ev_vitesseConsigne_plus`) passe dans `plus` et applique tout de suite `ex_vitesseConsigne(+1)`. Si un second appui arrive avant `500 ms`, la transition de retour applique `ex_vitesseConsigne(+9)` (soit `+10 km/h` au total) ; sinon, `tm(500)` ramène dans `consigne_fixe` sans modification supplémentaire. Le bouton **−** suit exactement le même principe (`-1` puis `-9`).
@@ -748,11 +752,11 @@ Les événements du jumelage et de la déconnexion (`ev_telephone_demande_jumela
 ### 9.3 Protocole Bluetooth et jumelage par code PIN
  
 #### 9.3.1 Statechart associé
-![Région Jumelage kit main libre](media/ANDL_jumelage_kit_mains_libres.png)
+<img src="media/ANDL_jumelage_kit_mains_libres.png" alt="Région Jumelage kit main libre" width="58%" />
 
-![Région Telephone](media/ANDL_telephone.png)
+<img src="media/ANDL_telephone.png" alt="Région Telephone" width="100%" />
 
-![Région Batterie téléphone](media/ANDL_batterie_telephone.png)
+<img src="media/ANDL_batterie_telephone.png" alt="Région Batterie téléphone" width="65%" />
 
 #### 9.3.2 Choix fonctionnels
 Le Bluetooth du kit véhicule s'active à la mise du contact. Le téléphone (maître) détecte le kit, se jumelle avec le code `1234` uniquement moteur à l'arrêt, puis se reconnecte automatiquement. Le jumelage se fait par un échange de requêtes et de réponses entre le kit et le téléphone. L'utilisateur peut suivre la procédure dans les champs texte du téléphone (liste complète des messages dans le tableau en fin de sous-partie).
@@ -826,11 +830,11 @@ Cette région tourne en permanence, que le téléphone soit allumé ou non. À c
 ### 9.4 Gestion des appels entrants et redirection mains-libres
 
 #### 9.4.1 Statechart associé
-![Région Appel Extérieur](media/ANDL_appel_exterieur.png)
+<img src="media/ANDL_appel_exterieur.png" alt="Région Appel Extérieur" width="50%" />
 
-![Région Communication telephone](media/ANDL_communication_telephone.png)
+<img src="media/ANDL_communication_telephone.png" alt="Région Communication telephone" width="100%" />
 
-![Région Commande kit main libre](media/ANDL_comande_kit_mains_libres.png)
+<img src="media/ANDL_comande_kit_mains_libres.png" alt="Région Commande kit main libre" width="100%" />
 
 #### 9.4.2 Choix fonctionnels
 Un appel entrant sonne sur le téléphone, ou au volant lorsque le Bluetooth est connecté. L'utilisateur peut l'accepter, le refuser ou le raccrocher indifféremment depuis le téléphone ou depuis le volant.
@@ -913,7 +917,7 @@ Nous avons choisi de garder cette architecture parallèle plutôt que de fusionn
 ### 9.5 Messagerie SMS et tableau de bord connecté
 
 #### 9.5.1 Statechart associé
-![Région SMS Extérieur](media/ANDL_SMS_exterieur.png)
+<img src="media/ANDL_SMS_exterieur.png" alt="Région SMS Extérieur" width="32%" />
 
 *Les sous-régions SMS côté téléphone (`Communication telephone`) et côté kit (`Commande kit main libre`) sont visibles dans les captures complètes de la [Section 9.4.1 Statechart associé](#941-statechart-associ%C3%A9).*
 
@@ -975,7 +979,7 @@ Dans `controle_telephone_connecte`, deux sous-régions parallèles gèrent les S
 ## 10. Autoradio et arbitrage des priorités audio
 
 ### 10.1 Statechart associé
-![Région Radio](media/ANDL_radio.png)
+<img src="media/ANDL_radio.png" alt="Région Radio" width="75%" />
 
 ### 10.2 Choix fonctionnels
 L'autoradio lit trois pistes, s'éteint contact coupé ou batterie vide, cède la place aux sonneries et aux appels passés au volant, puis reprend la piste en cours.
@@ -1006,6 +1010,8 @@ Depuis `priorite_radio`, deux transitions sur `EVAL` interrompent la musique :
 
 Voici un schéma qui illustre cet arbitrage des priorités :
 
+<!-- paysage : zoom = 95, direction = LR -->
+<!-- portrait : zoom = 75, direction = TB -->
 ```mermaid
 flowchart TB
     OFF["`**radio_eteinte**<br/>Coupure audio, VOYANT_radio = false`"]
@@ -1069,7 +1075,7 @@ Un afficheur numérique permet de visualiser en temps réel la distance inter-v�
 
 Une région dédiée **`Simulation voiture régulateur adaptatif`** simule le déplacement du véhicule de devant, indépendamment de notre véhicule :
 
-![Région Simulation voiture régulateur adaptatif](media/ANDL_regulateur_adaptatif.png)
+<img src="media/ANDL_regulateur_adaptatif.png" alt="Région Simulation voiture régulateur adaptatif" width="62%" />
 
 L'état par défaut `reglage_voiture_devant` sert à mettre en pause la simulation. En entrant dans cet état, la distance inter-véhicule est remise à zéro pour revenir dans l'intervalle de réglage du slider.  
 
@@ -1084,7 +1090,7 @@ Couper l'interrupteur (`EVAL[cmd_simulation_voiture_devant == false]`) renvoie l
 
 Plutôt que d'ajouter une nouvelle région qui modifierait `throttle`, nous avons directement étendu le super-état `regulateur` de la région **`Débit de l'injection d'essence`** :
 
-![Région complète Débit de l'injection d'essence (pedales et regulateur ACC)](media/ANDL_injection_regulateur.png)
+<img src="media/ANDL_injection_regulateur.png" alt="Région complète Débit de l'injection d'essence (pedales et regulateur ACC)" width="48%" />
 
 À chaque itération du régulateur, le super-état `regulateur` repasse par son état initial `verification_distance_securite`, qui aiguille immédiatement le calcul :
 * si un véhicule cible est actif et plus proche que la distance de sécurité (`[distance_inter_voiture < distance_securite && IS_IN(simulation_voiture_devant)]`), il passe dans `suivi_distance_consigne` et appelle `calcul_regulateur_distance()` ;
@@ -1173,6 +1179,8 @@ Nous avons donc développé, avec beaucoup d'aide de l'IA, un outil générique 
 
 La chaîne de construction ci-dessous résume les cinq étapes pour passer du modèle Rhapsody à l'application Web exécutable :
 
+<!-- paysage : zoom = 100 -->
+<!-- portrait : zoom = 95 -->
 ```mermaid
 flowchart LR
   A["1. IBM Rhapsody<br/>Générer le code C++"] --> B["2. Configuration<br/>Indiquer le dossier du code"]
@@ -1195,6 +1203,8 @@ flowchart LR
 
 Une fois `simulateur.exe` lancé, la page Web dialogue en temps réel avec le moteur C++ Rhapsody via l'API REST intégrée :
 
+<!-- paysage : zoom = 100 -->
+<!-- portrait : zoom = 95 -->
 ```mermaid
 flowchart LR
   UI["Page Web<br/>(HTML / JS)"]
@@ -1224,11 +1234,11 @@ Avec cet outil, nous avons réalisé à avec l'aide de l'IA une fois encore, not
 
 Voici une capture de l'interface graphique Web pilotant le simulateur C++ Rhapsody (`http://127.0.0.1:8080/custom/`) :
 
-![Capture d'écran de l'interface Web](media/interface_web_demo.png)
+<img src="media/interface_web_demo.png" alt="Capture d'écran de l'interface Web" width="95%" />
 
 On peut aussi y reset la simulation ou régler des attributs constants ou variables depuis le modal de paramètres : 
 
-![Capture d'écran du modal de paramètres](media/interface_web_parametres.png)  
+<img src="media/interface_web_parametres.png" alt="Capture d'écran du modal de paramètres" width="95%" />  
 
 ### 13.1 Aucune logique côté Web
 

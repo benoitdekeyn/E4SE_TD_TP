@@ -4,8 +4,6 @@
 **Binôme** : Benoît de Keyn, Thibault Agueh  
 **Date :** 24/11/2026  
 
----
-
 ## Table des matières
 
 <!-- TOC -->
@@ -64,11 +62,11 @@
 
 <!-- /TOC -->
 
-## 1. Vue d'ensemble de l'IHM
+## 1. Vue d'ensemble de l'IHM de Rhapsody
 
 ![Panel Diagram complet en cours de simulation](media/IHM.png)
 
-## 2. Architecture globale et horloge partagée EVAL
+## 2. Architecture globale
 
 ### 2.1 Vue d'ensemble des AND-lines
 
@@ -1241,15 +1239,25 @@ flowchart LR
   style EXE fill:#f8fafc,stroke:#64748b,stroke-width:2px,stroke-dasharray:6 4,color:#1e293b
 ```
 
-Avec cet outil, nous avons réalisé notre propre interface WEB complète regroupant le tableau de bord, les pédales, les aides à la conduite, le téléphone, le kit mains-libres et l'autoradio et nous aidant encore une fois de l'IA : 
+Avec cet outil, nous avons réalisé à avec l'aide de l'IA une fois encore, notre propre interface WEB complète regroupant le tableau de bord, les pédales, les aides à la conduite, le téléphone, le kit mains-libres et l'autoradio.
 
-> **[Capture d'écran à insérer]** : Interface graphique Web pilotant le simulateur C++ Rhapsody (`http://127.0.0.1:8080/custom/`).
->
+Voici une capture de l'interface graphique Web pilotant le simulateur C++ Rhapsody (`http://127.0.0.1:8080/custom/`) :
+
+![Capture d'écran de l'interface Web](media/interface_web_demo.png)
+
+On peut aussi y reset la simulation ou régler des attributs constants ou variables depuis le modal de paramètres : 
+
+![Capture d'écran du modal de paramètres](media/interface_web_parametres.png)  
+
+#### Aucune logique coté WEB
+
+Hormis les animations visuelles et différents textes d'information, notre interface WEB n'exécute aucune logique supplémentaire : elle se contente de transmettre les actions de l'utilisateur au simulateur C++ Rhapsody et de lire la valeur des attributs en temps réel.  
+> En revanche, le mot de passe du bluetooth pour le jumelage est animé avec un pin code à taper, meme si nous avons gardé la simple lecture de l'OMString liée à la textbox `champ_mdp`.
 
 #### Tester le simulateur
 
 Pour tester directement notre simulateur, il suffit de télécharger directement [simulateur.exe](https://github.com/benoitdekeyn/rhapsody_webapp_builder/raw/main/application/simulateur.exe) (ou le dossier [application/](https://github.com/benoitdekeyn/rhapsody_webapp_builder/tree/main/application)) puis double-cliquer dessus — le cockpit véhicule s'ouvre sur `http://127.0.0.1:8080/custom/` et l'interface générique auto-générée sur `http://127.0.0.1:8080/api/`.
 
-#### Tutoriel  
+#### Tutoriel
 
 Nous avons également mis à disposition un tutoriel complet en ligne : [https://tutoriel-web-rhapsody.benoitdekeyn.com](https://tutoriel-web-rhapsody.benoitdekeyn.com) qui permet à n'importe quel utilisateur de comprendre et d'utiliser efficacement notre outil.

@@ -606,10 +606,11 @@ Le réseau extérieur joue le rôle de l'opérateur : il ne parle qu'au téléph
 ### 6.2 Protocole Bluetooth et jumelage par code PIN
  
 #### Statechart associé
-> **[Capture Rhapsody à insérer — Version finale]** : Les trois AND-lines de la zone Bluetooth/Téléphone :
-> 1. **`Jumelage kit main libre`** (`state_87`, ligne du haut, au centre) ;
-> 2. **`Telephone`** (`state_96`, juste en dessous de `state_87`) ;
-> 3. **`Batterie téléphone`** (`state_126`, à droite de `state_96`).
+![AND-line Jumelage kit main libre](media/ANDL_jumelage_kit.png)
+
+> **[Capture Rhapsody à insérer]** : AND-line **`Telephone`** (`state_96`).
+
+![AND-line Batterie téléphone](media/ANDL_batterie_telephone.png)
 
 #### Choix fonctionnels
 Le Bluetooth du kit véhicule s'active à la mise du contact. Le téléphone (maître) détecte le kit, se jumelle avec le code `1234` uniquement moteur à l'arrêt, puis se reconnecte automatiquement. Le jumelage se fait par un échange de requêtes et de réponses entre le kit et le téléphone. L'utilisateur peut suivre la procédure dans les champs texte du téléphone (liste complète des messages dans l'annexe E, Paquets Bluetooth et messages du téléphone).

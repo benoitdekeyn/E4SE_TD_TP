@@ -4,7 +4,7 @@
 **Date :** 26/11/2026  
 
 <p align="center">
-  <img src="media/logo_rhapsody.png" alt="Logo Rhapsody" width="260" />
+  <img src="media/logo_rhapsody.png" alt="Logo Rhapsody" width="260" style="background:transparent" />
 </p>
 
 ## Table des matières

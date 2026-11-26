@@ -349,8 +349,8 @@ li.task-item { list-style: none; }
 <p><b>• <a href="#rapport-de-projet---syst%C3%A8mes-%C3%A0-%C3%A9v%C3%A9nements-discrets">Rapport de Projet - Systèmes à événements discrets</a></b><br>
 <b>• <a href="#r%C3%A9gulateur-limiteur-de-vitesse-kit-mains-libres-bluetooth-autoradio-et-r%C3%A9gulateur-adaptatif">Régulateur-Limiteur de Vitesse, Kit Mains-Libres Bluetooth, Autoradio et Régulateur Adaptatif</a></b><br>
 <b>• <a href="#table-des-mati%C3%A8res">Table des matières</a></b><br>
-<b>• <a href="#1-vue-densemble-de-lihm">1. Vue d'ensemble de l'IHM</a></b><br>
-<b>• <a href="#2-architecture-globale-et-horloge-partag%C3%A9e-eval">2. Architecture globale et horloge partagée EVAL</a></b><br>
+<b>• <a href="#1-vue-densemble-de-lihm-de-rhapsody">1. Vue d'ensemble de l'IHM de Rhapsody</a></b><br>
+<b>• <a href="#2-architecture-globale">2. Architecture globale</a></b><br>
     ◦ <a href="#21-vue-densemble-des-and-lines">2.1 Vue d'ensemble des AND-lines</a><br>
     ◦ <a href="#22-horloge-partag%C3%A9e-via-l%C3%A9v%C3%A8nement-eval">2.2 Horloge partagée via l'évènement EVAL</a><br>
 <b>• <a href="#3-simulation-du-v%C3%A9hicule">3. Simulation du véhicule</a></b><br>
@@ -417,7 +417,7 @@ li.task-item { list-style: none; }
 <td style="text-align:left">Véhicule</td>
 <td style="text-align:left">Horloge rafraichissement, Simulation du vehicule, Débit de l'injection d'essence, Clé du véhicule, Ressources et pannes</td>
 <td style="text-align:left">Physique, pédales, moteur, énergie</td>
-<td style="text-align:left"><a href="#2-architecture-globale-et-horloge-partag%C3%A9e-eval">Section 2 Architecture globale et horloge partagée EVAL</a> à <a href="#6-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes">Section 6 Modélisation énergétique : carburant, batterie et pannes</a></td>
+<td style="text-align:left"><a href="#2-architecture-globale">Section 2 Architecture globale</a> à <a href="#6-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes">Section 6 Modélisation énergétique : carburant, batterie et pannes</a></td>
 </tr>
 <tr>
 <td style="text-align:left">Aides à la conduite</td>
@@ -1481,7 +1481,7 @@ sequenceDiagram
 </ul>
 <p>Voici un schéma qui illustre cet arbitrage des priorités :</p>
 <div class="mermaid-box"><pre class="mermaid">%%{init: {&quot;layout&quot;: &quot;elk&quot;}}%%
-flowchart LR
+flowchart TB
     OFF[&quot;`**radio_eteinte**&lt;br/&gt;Coupure audio, VOYANT_radio = false`&quot;]
     PRET[&quot;`**radio_prete**&lt;br/&gt;Contact mis, batterie &gt; 0`&quot;]
     subgraph ACT[&quot;contact_radio_actif — Arbitrage des priorités audio&quot;]

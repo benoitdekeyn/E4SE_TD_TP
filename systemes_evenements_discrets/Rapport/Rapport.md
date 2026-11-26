@@ -11,8 +11,8 @@
 <b>• [Rapport de Projet - Systèmes à événements discrets](#rapport-de-projet---syst%C3%A8mes-%C3%A0-%C3%A9v%C3%A9nements-discrets)</b><br>
 <b>• [Régulateur-Limiteur de Vitesse, Kit Mains-Libres Bluetooth, Autoradio et Régulateur Adaptatif](#r%C3%A9gulateur-limiteur-de-vitesse-kit-mains-libres-bluetooth-autoradio-et-r%C3%A9gulateur-adaptatif)</b><br>
 <b>• [Table des matières](#table-des-mati%C3%A8res)</b><br>
-<b>• [1. Vue d'ensemble de l'IHM](#1-vue-densemble-de-lihm)</b><br>
-<b>• [2. Architecture globale et horloge partagée EVAL](#2-architecture-globale-et-horloge-partag%C3%A9e-eval)</b><br>
+<b>• [1. Vue d'ensemble de l'IHM de Rhapsody](#1-vue-densemble-de-lihm-de-rhapsody)</b><br>
+<b>• [2. Architecture globale](#2-architecture-globale)</b><br>
 &ensp;&ensp;&ensp;&ensp;◦ [2.1 Vue d'ensemble des AND-lines](#21-vue-densemble-des-and-lines)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [2.2 Horloge partagée via l'évènement EVAL](#22-horloge-partag%C3%A9e-via-l%C3%A9v%C3%A8nement-eval)<br>
 <b>• [3. Simulation du véhicule](#3-simulation-du-v%C3%A9hicule)</b><br>
@@ -74,7 +74,7 @@ Nous avons découpé le statechart en 16 AND-lines (régions orthogonales exécu
 
 | Bloc | AND-lines | Rôle | Section |
 | :--- | :--- | :--- | :--- |
-| Véhicule | Horloge rafraichissement, Simulation du vehicule, Débit de l'injection d'essence, Clé du véhicule, Ressources et pannes | Physique, pédales, moteur, énergie | [Section 2 Architecture globale et horloge partagée EVAL](#2-architecture-globale-et-horloge-partag%C3%A9e-eval) à [Section 6 Modélisation énergétique : carburant, batterie et pannes](#6-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes) |
+| Véhicule | Horloge rafraichissement, Simulation du vehicule, Débit de l'injection d'essence, Clé du véhicule, Ressources et pannes | Physique, pédales, moteur, énergie | [Section 2 Architecture globale](#2-architecture-globale) à [Section 6 Modélisation énergétique : carburant, batterie et pannes](#6-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes) |
 | Aides à la conduite | Mode de pilotage, Limiteur de vitesse, Simulation voiture régulateur adaptatif | Régulateur, limiteur, ACC | [Section 7 Régulateur de vitesse simple](#7-r%C3%A9gulateur-de-vitesse-simple), [Section 8 Limiteur de vitesse](#8-limiteur-de-vitesse), [Section 11 Régulateur de vitesse adaptatif](#11-r%C3%A9gulateur-de-vitesse-adaptatif) |
 | Téléphone | Telephone, Batterie téléphone, Communication telephone | Bluetooth côté téléphone, appels, SMS | [Section 9 Contrôleur de Kit Bluetooth « mains libres »](#9-contr%C3%B4leur-de-kit-bluetooth--mains-libres-) |
 | Kit véhicule | Jumelage kit main libre, Commande kit main libre | Bluetooth côté véhicule, affichage au volant | [Section 9 Contrôleur de Kit Bluetooth « mains libres »](#9-contr%C3%B4leur-de-kit-bluetooth--mains-libres-) |
@@ -1008,7 +1008,7 @@ Depuis `priorite_radio`, deux transitions sur `EVAL` interrompent la musique :
 Voici un schéma qui illustre cet arbitrage des priorités :
 
 ```mermaid
-flowchart LR
+flowchart TB
     OFF["`**radio_eteinte**<br/>Coupure audio, VOYANT_radio = false`"]
     PRET["`**radio_prete**<br/>Contact mis, batterie > 0`"]
     subgraph ACT["contact_radio_actif — Arbitrage des priorités audio"]

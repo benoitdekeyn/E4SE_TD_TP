@@ -43,6 +43,7 @@
 <b>• [9. Contrôleur de Kit Bluetooth « mains libres »](#9-contr%C3%B4leur-de-kit-bluetooth--mains-libres-)</b><br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.1 Cycle de vie du téléphone et du kit](#91-cycle-de-vie-du-t%C3%A9l%C3%A9phone-et-du-kit)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.2 Principe : deux équipements cloisonnés qui échangent des paquets](#92-principe--deux-%C3%A9quipements-cloisonn%C3%A9s-qui-%C3%A9changent-des-paquets)<br>
+<b>• [Les événements du jumelage et de la déconnexion (ev\_telephone\_demande\_jumelage, ev\_telephone\_tentative\_mdp, ev\_telephone\_demande\_connexion et ev\_telephone\_bluetooth\_desactive), nommés avant l'ajout du suffixe, ne précisent pas leur destinataire : ils sont tous destinés au kit.](#les-%C3%A9v%C3%A9nements-du-jumelage-et-de-la-d%C3%A9connexion-ev_telephone_demande_jumelage-ev_telephone_tentative_mdp-ev_telephone_demande_connexion-et-ev_telephone_bluetooth_desactive-nomm%C3%A9s-avant-lajout-du-suffixe-ne-pr%C3%A9cisent-pas-leur-destinataire--ils-sont-tous-destin%C3%A9s-au-kit)</b><br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.3 Protocole Bluetooth et jumelage par code PIN](#93-protocole-bluetooth-et-jumelage-par-code-pin)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.4 Gestion des appels entrants et redirection mains-libres](#94-gestion-des-appels-entrants-et-redirection-mains-libres)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.5 Messagerie SMS et tableau de bord connecté](#95-messagerie-sms-et-tableau-de-bord-connect%C3%A9)<br>
@@ -59,38 +60,13 @@
 &ensp;&ensp;&ensp;&ensp;◦ [12.1 Côté IHM](#121-c%C3%B4t%C3%A9-ihm)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [12.2 Côté statechart](#122-c%C3%B4t%C3%A9-statechart)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [12.3 Pourquoi ce fonctionnement](#123-pourquoi-ce-fonctionnement)<br>
-<b>• [13. Outillage complémentaire : injection d'une API REST et interface graphique Web](#13-outillage-compl%C3%A9mentaire--injection-dune-api-rest-et-interface-graphique-web)</b><br>
-&ensp;&ensp;&ensp;&ensp;◦ [13.1 Motivation](#131-motivation)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [13.2 Architecture et fonctionnement de l'outil](#132-architecture-et-fonctionnement-de-loutil)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [13.3 Liens vers la démonstration et le dépôt GitHub](#133-liens-vers-la-d%C3%A9monstration-et-le-d%C3%A9p%C3%B4t-github)<br>
-<b>• [Annexes](#annexes)</b><br>
-&ensp;&ensp;&ensp;&ensp;◦ [Annexe A — IHM, attributs et opérations](#annexe-a--ihm-attributs-et-op%C3%A9rations)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [Annexe B — États par AND-line](#annexe-b--%C3%A9tats-par-and-line)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [Annexe C — Conventions de nommage](#annexe-c--conventions-de-nommage)
+<b>• [13. Interface WEB pour l'IHM](#13-interface-web-pour-lihm)</b>
 
 <!-- /TOC -->
 
 ## 1. Vue d'ensemble de l'IHM
 
 ![Panel Diagram complet en cours de simulation](media/IHM.png)
-
-<!--
-Le tableau suivant résume le rôle de chaque zone :
-
-| Zone | Nom | Ce qu'elle permet | Détail |
-| :---: | :--- | :--- | :--- |
-| **A** | Environnement | Régler la pente de la route (-20° à +20°) | [Section 3 Simulation du véhicule](#3-simulation-du-v%C3%A9hicule) |
-| **B** | Voiture de devant | Activer un véhicule cible, régler sa distance initiale et sa vitesse | [Section 11 Régulateur de vitesse adaptatif](#11-r%C3%A9gulateur-de-vitesse-adaptatif) |
-| **C** | Réseau extérieur | Simuler un appel entrant ou l'envoi d'un SMS vers le téléphone | [Section 9.4 Gestion des appels entrants et redirection mains-libres](#94-gestion-des-appels-entrants-et-redirection-mains-libres), [Section 9.5 Messagerie SMS et tableau de bord connecté](#95-messagerie-sms-et-tableau-de-bord-connect%C3%A9) |
-| **D** | Ressources | Suivre batterie et carburant, faire le plein, dépanner la batterie | [Section 6 Modélisation énergétique : carburant, batterie et pannes](#6-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes) |
-| **E** | Clé | Mettre le contact, démarrer le moteur, voir l'état moteur | [Section 5 Gestion du contact et du démarrage](#5-gestion-du-contact-et-du-d%C3%A9marrage) |
-| **F** | Tableau de bord | Lire la distance parcourue, le throttle et la vitesse | [Section 3 Simulation du véhicule](#3-simulation-du-v%C3%A9hicule) |
-| **G** | Commandes au volant | Activer le limiteur ou le régulateur, régler la vitesse cible | [Section 7 Régulateur de vitesse simple](#7-r%C3%A9gulateur-de-vitesse-simple), [Section 8 Limiteur de vitesse](#8-limiteur-de-vitesse) |
-| **H** | Pédales | Freiner et accélérer | [Section 4 Gestion des pédales d'accélération et de frein](#4-gestion-des-p%C3%A9dales-dacc%C3%A9l%C3%A9ration-et-de-frein) |
-| **I** | Kit mains libres | Voir la connexion du téléphone, décrocher, lire les SMS au volant, brancher le téléphone | [Section 9 Contrôleur de Kit Bluetooth « mains libres »](#9-contr%C3%B4leur-de-kit-bluetooth--mains-libres-) |
-| **J** | Autoradio | Allumer la radio, lancer et changer de piste | [Section 10 Autoradio et arbitrage des priorités audio](#10-autoradio-et-arbitrage-des-priorit%C3%A9s-audio) |
-| **K** | Téléphone | Allumer le téléphone, activer le Bluetooth, jumeler, gérer appels et SMS | [Section 9 Contrôleur de Kit Bluetooth « mains libres »](#9-contr%C3%B4leur-de-kit-bluetooth--mains-libres-) |
--->
 
 ## 2. Architecture globale et horloge partagée EVAL
 
@@ -1162,36 +1138,7 @@ if (commande < throttle_repos)          commande = throttle_repos;
 throttle = commande;
 ```
 
-Cette fonction reprend exactement la même loi PI saturée et les mêmes gains `Kp_regulateur` / `Ki_regulateur` que `calcul_regulateur_vitesse()` (voir [Section 7.3 Correcteur PI pour le régulateur de vitesse](#73-correcteur-pi-pour-le-r%C3%A9gulateur-de-vitesse)), en remplaçant l'erreur de vitesse par l'erreur de distance `distance_inter_voiture - distance_securite`. Le partage de l'accumulateur intégral `steady` garantit une transition  sans à-coup entre suivi de vitesse et suivi de distance.
-
-<!--
-
-## 13. Synthèse, cartographie des AND-lines et tests d'intégration
-
-### 13.1 Cartographie complète de la grille d'AND-lines (Systeme)
-
-Le statechart final de `_SysVehicule` compte 16 AND-lines actives, réparties en deux grands blocs (conduite et aides à la conduite à gauche, télécommunications et Bluetooth à droite, autoradio en bas). Quatre cellules vides complètent le quadrillage de la ligne inférieure. Nous détaillons le regroupement par bloc dans la [Section 2.1 Vue d'ensemble des AND-lines](#21-vue-densemble-des-and-lines), et chaque AND-line est capturée dans l'[Annexe B — États par AND-line](#annexe-b--%C3%A9tats-par-and-line).
-
-> **[Capture Rhapsody à insérer — Vue d'ensemble]** : Capture globale du Statechart `Systeme` de `_SysVehicule` montrant la répartition complète des 16 AND-lines actives.
-
-### 13.2 Scénarios testés
-
-Voici les scénarios que nous avons testés en mode animation :
-
-| # | Scénario testé | AND-lines impliquées | Comportement vérifié en animation | Statut |
-| :---: | :--- | :--- | :--- | :---: |
-| 1 | Coupure du contact à 90 km/h sous régulateur, radio active | Clé du véhicule, Débit de l'injection d'essence, Mode de pilotage, Simulation du vehicule, Radio, Jumelage kit main libre | Passage en `moteur_off`, arrêt du régulateur, de la radio et du Bluetooth, `throttle = 0`, décélération par inertie, frein mécanique actif | ✓ |
-| 2 | Panne batterie puis dépannage et redémarrage | Ressources et pannes, Clé du véhicule, Simulation du vehicule | Coupure moteur sous 40 %, dépannage bloqué tant que `speed > 0` ou contact mis, recharge à 55 %, redémarrage réussi (chute à 45 %, au-dessus du seuil) | ✓ |
-| 3 | Bascule régulateur vers limiteur à 80 km/h (consigne initiale 50) | Mode de pilotage, Limiteur de vitesse, Débit de l'injection d'essence | Exclusion mutuelle immédiate, entrée en `limiteur_inhibe` (`limiteur_attente = true`, pas d'alarme), passage en `limiteur_effectif` dès `speed <= 50` | ✓ |
-| 4 | Double appui + en moins de 500 ms, puis kick-down | Limiteur de vitesse, Débit de l'injection d'essence | Saut exact de +10 km/h (+1 puis +9), puis désactivation dès `(vitesseConsigne - speed) < 10 && accelPedal > 7` | ✓ |
-| 5 | Jumelage PIN moteur allumé puis moteur éteint, puis reconnexion | Clé du véhicule, Jumelage kit main libre, Telephone | Timeout de 500 ms moteur allumé ; validation de `1234` moteur éteint ; reconnexion automatique après coupure et remise du contact | ✓ |
-| 6 | Appel entrant pendant `musique_2`, décroché au volant puis raccroché | Appel Extérieur, Communication telephone, Commande kit main libre, Radio | Interruption de `musique_2`, `sonnerie2.wav`, son coupé pendant l'appel, reprise exacte sur `musique_2` via H, réseau revenu en `telephone_SIM` | ✓ |
-| 7 | Réception et lecture de SMS au volant en roulant, puis à l'arrêt | SMS Extérieur, Communication telephone, Commande kit main libre, Simulation du vehicule | Compteur incrémenté sans couper un appel, lecture au volant bloquée si `speed > 0`, autorisée à l'arrêt avec décrémentation synchronisée | ✓ |
-| 8 | Rattrapage d'un véhicule lent sous ACC puis dégagement | Simulation voiture régulateur adaptatif, Débit de l'injection d'essence, Mode de pilotage, Simulation du vehicule | Bascule `suivi_vitesse_consigne` → `suivi_distance_consigne` sous 30 m, stabilisation, puis réaccélération jusqu'à `vitesseConsigne` une fois la voie libre | ✓ |
-
-
--->
-
+Cette fonction reprend exactement la même formule de PI bridé et les mêmes gains `Kp_regulateur` / `Ki_regulateur` que `calcul_regulateur_vitesse()` (voir [Section 7.3 Correcteur PI pour le régulateur de vitesse](#73-correcteur-pi-pour-le-r%C3%A9gulateur-de-vitesse)), en remplaçant l'erreur de vitesse par l'erreur de distance `distance_inter_voiture - distance_securite`. Le fait que l'attribut `steady` soit partagé garantit une transition sans à-coup entre suivi de vitesse et suivi de distance.
 
 ## 12. Implémentation de la gestion sonore sous Rhapsody
 
@@ -1239,304 +1186,70 @@ Le tableau suivant résume, pour chaque son, l'état qui le lance et la façon d
 * `PlaySound` coupe la piste en cours à chaque nouvel appel : c'est ce qui nous a imposé la machine de priorités de l'AND-line Radio (voir [Section 10 Autoradio et arbitrage des priorités audio](#10-autoradio-et-arbitrage-des-priorit%C3%A9s-audio)).
 
 
-## 13. Outillage complémentaire : injection d'une API REST et interface graphique Web
+## 13. Interface WEB pour l'IHM
 
-### 13.1 Motivation
+L'IHM de Rhapsody est pratique pour déboguer nos animation et ne pas dépendre d'outils extérieurs, mais nous avons dès le début cherché à avoir une belle interface moderne en passant par du WEB.
 
-Le Panel Diagram de Rhapsody est très pratique pour le débogage pas à pas en mode animation, mais son ergonomie (widgets ActiveX datés, pas de mise en page adaptative, dépendance à une installation locale de Rhapsody) limite la lisibilité lors d'une démonstration complète. Nous avons donc développé un outil qui transforme le code C++ généré par Rhapsody en un logiciel autonome pilotable depuis une interface Web.
+Nous avons donc développé avec beaucoup d'aide de l'IA, un outil générique (**`rhapsody_webapp_builder`**) qui prend en entrée le code C++ généré par Rhapsody, y injecte automatiquement un serveur HTTP/REST relié aux attributs et événements du statechart, et compile le tout en un exécutable Windows autonome (`simulateur.exe`) qui sert une interface web en local accessible depuis n'importe quel navigateur.
 
-### 13.2 Architecture et fonctionnement de l'outil
-
-Plutôt que de réécrire la logique du véhicule en JavaScript, nous avons choisi de garder le moteur C++ OXF généré par Rhapsody comme cœur d'exécution. Notre outil procède en trois étapes :
-
-1. **Analyse du code C++ généré** : `_SysVehicule`, ses attributs, getters/setters et événements OXF.
-2. **Injection d'un serveur HTTP embarqué** : l'outil relie les attributs (lecture de l'état : vitesse, distance, voyants, messages, jauges ; écriture des commandes : pédales, pente, interrupteurs) et les événements (`GEN(ev_*)` sur les boutons) à une API REST.
-3. **Interface graphique Web** : l'exécutable enrichi est couplé à une interface (tableau de bord, commandes au volant, smartphone virtuel, autoradio) qui dialogue en temps réel avec le statechart via des requêtes REST.
-
-Voici un schéma qui illustre cette chaîne :
+La chaîne de construction ci-dessous résume les cinq étapes pour passer du modèle Rhapsody à l'application Web exécutable :
 
 ```mermaid
 flowchart LR
-    RPY["`**Modèle Rhapsody**<br/>Statechart Systeme<br/>(.rpyx / .sbsx)`"]
-    CPP["`**Code C++ généré**<br/>_SysVehicule + OXF<br/>(attributs & événements)`"]
-    TOOL["`**Outil d'injection & build**<br/>Injection serveur HTTP<br/>Binding attributs / GEN(ev_*)`"]
-    SRV["`**Logiciel C++ autonome**<br/>Exécution Statechart<br/>+ Serveur API REST`"]
-    WEB["`**Interface Graphique Web**<br/>Tableau de bord, ADAS,<br/>Téléphone, Kit BT & Radio`"]
+  A["1. IBM Rhapsody<br/>Générer le code C++"] --> B["2. Configuration<br/>Indiquer le dossier du code"]
+  B --> C["3. Construction<br/>npm run build"]
+  C --> D["4. Exécution<br/>simulateur.exe"]
+  D --> E["5. Navigateur Web<br/>Piloter le modèle"]
 
-    RPY -->|"`Génération C++`"| CPP
-    CPP -->|"`Entrée outil`"| TOOL
-    TOOL -->|"`Compilation`"| SRV
-    WEB <-->|"`Requêtes HTTP / REST API<br/>(état attributs ↔ événements)`"| SRV
+  classDef rhapsody fill:#2563eb,stroke:#1d4ed8,color:#fff
+  classDef config fill:#7c3aed,stroke:#6d28d9,color:#fff
+  classDef build fill:#d97706,stroke:#b45309,color:#fff
+  classDef run fill:#059669,stroke:#047857,color:#fff
+  classDef web fill:#0d9488,stroke:#0f766e,color:#fff
 
-    classDef rpy fill:#f1f5f9,stroke:#64748b,color:#0f172a
-    classDef tool fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
-    classDef run fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
-    classDef web fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
-    class RPY,CPP rpy
-    class TOOL tool
-    class SRV run
-    class WEB web
+  class A rhapsody
+  class B config
+  class C build
+  class D run
+  class E web
 ```
 
-### 13.3 Liens vers la démonstration et le dépôt GitHub
+Une fois `simulateur.exe` lancé, la page Web dialogue en temps réel avec le moteur C++ Rhapsody via l'API REST intégrée :
 
-* Démo de l'interface Web : \[lien à compléter\]
-* Dépôt GitHub de l'outil (injection API REST et interface Web) : \[lien à compléter\]
+```mermaid
+flowchart LR
+  UI["Page Web<br/>(HTML / JS)"]
 
-> **[Capture d'écran à insérer — Optionnel]** : Vue de l'interface graphique Web pilotant le code C++ Rhapsody via l'API REST.
+  subgraph EXE["simulateur.exe (un seul exécutable Windows)"]
+    direction LR
+    API["API intégrée<br/>(REST + Temps réel)"]
+    MOD["Modèle Rhapsody<br/>(Attributs & Événements)"]
+  end
 
-<!--
+  UI -->|"1. Action<br/>(événement / attribut)"| API
+  API -->|"2. Transmet<br/>l'action"| MOD
+  MOD -->|"3. Nouvelles<br/>valeurs"| API
+  API -->|"4. Mise à jour<br/>en direct"| UI
 
-## 16. Conclusion générale
+  classDef web fill:#0d9488,stroke:#0f766e,color:#fff
+  classDef api fill:#d97706,stroke:#b45309,color:#fff
+  classDef mod fill:#2563eb,stroke:#1d4ed8,color:#fff
 
-### 16.1 Bilan du projet
+  class UI web
+  class API api
+  class MOD mod
+  style EXE fill:#f8fafc,stroke:#64748b,stroke-width:2px,stroke-dasharray:6 4,color:#1e293b
+```
 
-Nous avons abouti à un modèle Statechart complet, exécutable et validé en animation. Il couvre tous les sous-systèmes demandés (dynamique véhicule, commandes, modélisation énergétique, régulateur PI, limiteur, kit Bluetooth avec PIN, appels et SMS, autoradio à priorités, extension ACC), complétés par une couche audio centralisée et un outil d'exposition REST/Web du code C++ généré.
+Avec cet outil, nous avons réalisé notre propre interface WEB complète regroupant le tableau de bord, les pédales, les aides à la conduite, le téléphone, le kit mains-libres et l'autoradio et nous aidant encore une fois de l'IA : 
 
-### 16.2 Enseignements majeurs tirés des difficultés rencontrées
+> **[Capture d'écran à insérer]** : Interface graphique Web pilotant le simulateur C++ Rhapsody (`http://127.0.0.1:8080/custom/`).
+>
 
-1. **Synchronisation centralisée (`GEN(EVAL)`)** : en remplaçant les boucles locales `tm() -> History` par une horloge unique à 20 Hz, nous avons fait le changement d'architecture le plus bénéfique pour le déterminisme et la lisibilité.
-2. **Juste usage de l'orthogonalité (And vs OR)** :
-   * l'orthogonalité nous a servis pour la redirection Bluetooth (en parallèle des appels locaux, pour ne jamais perdre une conversation) et pour la séparation appels / SMS ;
-   * à l'inverse, une orthogonalité superflue dans `limiteur_on` créait des alarmes en phase d'inhibition ; nous avons résolu le problème avec une hiérarchie séquentielle (`limiteur_inhibe` → `limiteur_effectif` → `depassement`).
-3. **Source de vérité unique et événements paramétrés** : pour le code PIN (`ev_tentative_mdp(champ_mdp)`) comme pour les SMS (`nbr_sms_telephone` poussé vers `nbr_sms_kit`), nous avons supprimé les désynchronisations en évitant les données dupliquées.
-4. **Rigueur sur l'IHM et le travail collaboratif** : nous avons préféré les boutons poussoirs événementiels (`ev_regulateur`, `ev_limiteur`, `ev_demarrer`) aux interrupteurs, centralisé l'audio (`play_sound()` et dossier `sons/`), surveillé les fautes de frappe dans les noms d'événements et fusionné avec discipline les fichiers XML `.sbsx`.
+#### Tester le simulateur
 
-### 16.3 Perspectives d'évolution
+Pour tester directement notre simulateur, il suffit de télécharger directement [simulateur.exe](https://github.com/benoitdekeyn/rhapsody_webapp_builder/raw/main/application/simulateur.exe) (ou le dossier [application/](https://github.com/benoitdekeyn/rhapsody_webapp_builder/tree/main/application)) puis double-cliquer dessus — le cockpit véhicule s'ouvre sur `http://127.0.0.1:8080/custom/` et l'interface générique auto-générée sur `http://127.0.0.1:8080/api/`.
 
-1. **Correction des trois détails identifiés** : inverser la garde de sortie `depassement -> limite_tenue` (`speed <= vitesseConsigne`), passer l'une des gardes de `verif_distance_secu` en inégalité large (`>=`), et aligner `CST_COEFF_ROULEMENT` (0,05) dans le constructeur `_SysVehicule()`.
-2. **Freinage d'urgence autonome (AEB) et distance de sécurité dynamique** : commande bornée du frein mécanique par l'ACC, alerte visuelle et sonore en cas de freinage brutal de la cible, et distance de sécurité selon la règle des 2 secondes (d = 2 · v).
-3. **Arbitrage audio incluant la sécurité** : intégrer les alarmes limiteur et ACC comme priorité la plus haute de l'AND-line Radio (Sécurité > Appel > Sonnerie > Radio), pour qu'une alarme coupe puis restitue la musique via le connecteur H.
-4. **Scénarios routiers automatisés et multi-téléphones** : profils de pente préprogrammés et liste de plusieurs téléphones jumelés.
+#### Tutoriel  
 
--->
-
-## Annexes
-
-### Annexe A — IHM, attributs et opérations
-
-> **\[Image à insérer\]** Capture du Panel Diagram en grand format (ou zone par zone).
-
-Les 78 attributs de `_SysVehicule` et les événements envoyés par l'IHM, regroupés par domaine. La colonne IHM indique l'élément du Panel Diagram rattaché, s'il y en a un. Les liaisons sont celles du Panel Diagram du modèle.
-
-| Domaine | Attribut / événement | Rôle | IHM |
-| :--- | :--- | :--- | :--- |
-| Véhicule | `alpha` | Pente de la route (°) | Slider « Pente (°) » \[-20 ; 20\] et afficheur de la pente |
-| Véhicule | `accelPedal` | Position de la pédale d'accélération \[0 ; 10\] | Slider « pédale d'accélération » |
-| Véhicule | `brakePedal` | Position de la pédale de frein \[0 ; 10\] | Slider « pédale de frein » |
-| Véhicule | `throttle` | Commande d'injection, écrite par Débit de l'injection d'essence | Afficheur numérique et jauge du throttle \[0 ; 10\] |
-| Véhicule | `throttle_repos` | Throttle de ralenti, calculé dans le constructeur `_SysVehicule()` |  |
-| Véhicule | `float_speed` / `speed` | Vitesse réelle (km/h) et sa valeur entière affichée | Afficheur numérique et compteur de vitesse \[0 ; 120\], liés à `speed` |
-| Véhicule | `float_distance` / `distance` | Distance parcourue et sa valeur entière affichée | Compteur kilométrique, lié à `distance` |
-| Véhicule | `cmd_contact` | Position de la clé de contact | Interrupteur « contact » et LED jaune du contact |
-| Véhicule | `ev_demarrer` | Démarre le moteur | Bouton « Démarrer » |
-| Véhicule | `ignition` | Moteur en marche | LED « moteur » |
-| Véhicule | `_simu` | Non utilisé par les statecharts |  |
-| Paramètres | `PARAM_SIMU_max_throttle`, `PARAM_SIMU_max_speed`, `PARAM_SIMU_max_accel`, `PARAM_SIMU_max_brake` | Bornes du throttle, de la vitesse et des pédales |  |
-| Paramètres | `PARAM_SIMU_masse`, `PARAM_SIMU_frottement_air`, `PARAM_SIMU_puissance_moteur`, `PARAM_SIMU_puissance_frein`, `PARAM_SIMU_vitesse_repos` | Paramètres physiques du modèle newtonien |  |
-| Paramètres | `PARAM_SIMU_freq_rafraichissement`, `PARAM_SIMU_freq_regulateur` | Fréquences de l'horloge `EVAL` (20 Hz) et du régulateur (3 Hz) |  |
-| Paramètres | `PARAM_SIMU_periode_pedales` | Période de prise en compte des pédales (200 ms) |  |
-| Paramètres | `PARAM_SIMU_Kp_regulateur`, `PARAM_SIMU_Ki_regulateur` | Coefficients normalisés du régulateur PI, lus dans `_SysVehicule()` pour calculer les gains effectifs selon les caractéristiques du véhicule |  |
-| Ressources | `reservoir_carburant` | Niveau de carburant (L) | Jauge carburant |
-| Ressources | `ev_remplir_carburant` | Fait le plein | Bouton « remplir carburant » |
-| Ressources | `niveau_batterie` | Charge de la batterie (%) | Jauge batterie |
-| Ressources | `ev_depanner_batterie` | Remet la batterie à `SEUIL_batterie + 15` | Bouton « recharge d'urgence batterie » |
-| Ressources | `SEUIL_carburant`, `SEUIL_batterie` | Seuils de panne (5 L, 40 %) |  |
-| Ressources | `carburant_faible`, `batterie_faible` | Indicateurs de panne | Deux LED placées hors de la zone visible du panel |
-| Régulateur / limiteur | `vitesseConsigne` | Vitesse cible commune au régulateur et au limiteur | Afficheur « vitesse cible » |
-| Régulateur / limiteur | `ev_vitesseConsigne_moins`, `ev_vitesseConsigne_plus` | Modifient la consigne | Boutons « − » / « + » |
-| Régulateur / limiteur | `ev_limiteur`, `ev_regulateur` | Activent ou désactivent le limiteur et le régulateur | Boutons « Limiteur » et « Régulateur » |
-| Régulateur / limiteur | `Kp_regulateur`, `Ki_regulateur` | Gains PI effectifs calculés dans le constructeur `_SysVehicule()` à partir des coefficients normalisés et de la physique du véhicule |  |
-| Régulateur / limiteur | `steady` | Terme intégral du PI |  |
-| Régulateur / limiteur | `voyant_regulateur`, `voyant_limiteur` | Voyants d'activation | LED du régulateur ; première des 3 LED sous « Limiteur » |
-| Régulateur / limiteur | `limiteur_attente`, `limiteur_depasse` | Voyants d'attente et de dépassement | Deux autres LED sous « Limiteur » |
-| Régulateur / limiteur | `valeur_initiale_limiteur` | Consigne à l'activation du limiteur (50 km/h) |  |
-| Régulateur adaptatif | `vitesse_voiture_devant` | Vitesse de la voiture de devant | Slider « vitesse\_voiture\_devant » \[0 ; 130\] |
-| Régulateur adaptatif | `distance_voiture_devant`, `distance_entiere_voiture_devant` | Position de la voiture de devant |  |
-| Régulateur adaptatif | `distance_inter_voiture` | Distance entre les deux véhicules | Slider de distance initiale \[0 ; 50\] et afficheur « distance\_inter\_voiture » |
-| Régulateur adaptatif | `distance_securite` | Distance à maintenir (30 m) |  |
-| Régulateur adaptatif | `cmd_simulation_voiture_devant` | Activation de la voiture de devant | Bouton « Activation voiture devant » |
-| Réseau extérieur | `ev_btn_SIM_appel` | Lance un appel entrant (Appel Extérieur) | Bouton « Appeler » |
-| Réseau extérieur | `ev_btn_SIM_sms` | Envoie un SMS au téléphone (SMS Extérieur) | Bouton « Envoyer SMS » |
-| Kit véhicule | `mot_de_passe` | Code PIN attendu (`1234`) |  |
-| Kit véhicule | `VOYANT_bluetooth_vehicule` | Bluetooth du kit actif | LED en haut à droite du kit |
-| Kit véhicule | `VOYANT_telephone_appairage`, `VOYANT_telephone_connecte` | Téléphone connecté au kit (`VOYANT_telephone_appairage` n'est écrit par aucun état) | 2 LED « Téléphone connecté » |
-| Kit véhicule | `VOYANT_kit_appel`, `VOYANT_kit_sonnerie` | Appel en cours et sonnerie au volant | 2 LED « Appel Téléphonique » |
-| Kit véhicule | `ev_btn_kit_decrocher`, `ev_btn_kit_raccrocher` | Décrocher ou raccrocher au volant | Boutons « Décrocher » / « Raccrocher » du kit |
-| Kit véhicule | `VOYANT_kit_sms` | SMS non lus au volant | LED « SMS non lus » |
-| Kit véhicule | `niveau_batterie_kit` | Batterie du téléphone vue par le kit | Jauge « Batterie téléphone » |
-| Kit véhicule | `nbr_sms_kit` | SMS non lus vus par le kit | Compteur de SMS du kit |
-| Kit véhicule | `ev_btn_kit_lire_sms` | Lit un SMS au volant (véhicule à l'arrêt) | Bouton « lire message » |
-| Kit véhicule | `cmd_charge_vehicule_telephone` | Téléphone branché sur le véhicule | Interrupteur « Brancher Téléphone » |
-| Téléphone | `telephone_allume`, `cmd_bluetooth_telephone_actif` | Alimentation et Bluetooth du téléphone | Interrupteur d'allumage et interrupteur « Bluetooth » |
-| Téléphone | `niveau_batterie_telephone` | Batterie du téléphone | Jauge de batterie du téléphone |
-| Téléphone | `kit_jumele` | Mémoire du jumelage, côté téléphone uniquement |  |
-| Téléphone | `liste_appareils_detectes`, `affichage_liste_appareils` | Appareils détectés | Champ « affichage\_liste\_appareils » |
-| Téléphone | `ev_btn_ok` | Demande le jumelage (le téléphone émet `ev_telephone_demande_jumelage`) | Bouton « OK » |
-| Téléphone | `messages_appairage`, `affichage_appairage` | Messages du jumelage (voir la section 6.2) | Champ « affichage\_appairage » |
-| Téléphone | `champ_mdp` | Code PIN saisi | Champ « champ\_mdp » |
-| Téléphone | `ev_btn_telephone_appairage` | Envoie `ev_telephone_tentative_mdp(champ_mdp)` au kit | Bouton « Appairer » |
-| Téléphone | `VOYANT_kit_connecte` | Kit connecté, vu par le téléphone | LED « Appareil connecté » |
-| Téléphone | `VOYANT_telephone_appel`, `VOYANT_telephone_sonnerie` | Appel en cours et sonnerie sur le téléphone | 2 LED « Appel reçu » |
-| Téléphone | `ev_btn_telephone_decrocher`, `ev_btn_telephone_raccrocher` | Décrocher ou raccrocher sur le téléphone | Boutons « Décrocher » / « Raccrocher » du téléphone |
-| Téléphone | `VOYANT_telephone_sms` | SMS non lus sur le téléphone | LED « SMS » |
-| Téléphone | `appel_en_cours_telephone`, `sonnerie_en_cours` | État de l'appel, lu par la radio pour ses priorités |  |
-| Téléphone | `nbr_sms_telephone`, `nbr_sauvegarde_sms_telephone` | SMS non lus et leur sauvegarde à l'extinction | Compteur de SMS du téléphone, lié à `nbr_sms_telephone` |
-| Téléphone | `ev_btn_telephone_lire_sms` | Lit un SMS sur le téléphone | Bouton « lire sms » |
-| Radio et son | `cmd_radio`, `VOYANT_radio` | Alimentation et voyant de la radio | Interrupteur de la radio et LED de la radio |
-| Radio et son | `affichage_titre_musique` | Titre affiché | Afficheur du titre |
-| Radio et son | `ev_btn_radio_skip` | Piste suivante (anti-rebond de 500 ms) | Bouton « Skip » |
-| Radio et son | `ev_btn_start_radio` | Lance la lecture | Bouton « Play » |
-| Radio et son | `chemin_sons` | Chemin relatif du dossier `sons/` |  |
-
-**Opérations citées dans le rapport** (liste à compléter avec l'export du modèle) :
-
-| Domaine | Opération | Rôle |
-| :--- | :--- | :--- |
-| Véhicule | `_SysVehicule()` (constructeur) | Initialise la simulation dès l'instanciation (remplace `init()`), calcule `throttle_repos`, les gains PI et les messages Bluetooth |
-| Véhicule | `calcul_vitesse_distance()` | Intègre le modèle newtonien à 20 Hz |
-| Véhicule | `accelerer(accelPedal)` | Convertit la pédale en throttle |
-| Véhicule | `freiner_injection(brakePedal)` | Ramène le throttle au ralenti au freinage |
-| Véhicule | `ex_demarrer()`, `arreter()` | Démarrent et arrêtent le moteur |
-| Ressources | `calcul_carburant()`, `calcul_batterie()` | Consommation de carburant, charge et décharge de la batterie |
-| Ressources | `ex_depanner_batterie()` | Remet la batterie à `SEUIL_batterie + 15` |
-| Régulateur / limiteur | `ex_vitesseConsigne(delta)` | Modifie la consigne dans \[0 ; 120\] |
-| Régulateur / limiteur | `calcul_regulateur_vitesse()` | Correcteur PI sur l'erreur de vitesse |
-| Régulateur / limiteur | `regulateur_Prof()` | Loi de commande du sujet, conservée pour référence |
-| Régulateur / limiteur | `alerte_depassement(on)` | Allume ou éteint l'alarme du limiteur |
-| Régulateur adaptatif | `calcul_distance_voiture_devant()` | Avance la voiture de devant à 20 Hz |
-| Régulateur adaptatif | `calcul_regulateur_distance()` | Correcteur PI sur l'erreur de distance |
-| Bluetooth | `verifier_mdp(mdp)` | Vérifie le PIN reçu et vide `champ_mdp` |
-| Bluetooth | `envoi_batterie_kit(pourcentage)` | Met à jour `niveau_batterie_kit` |
-| Bluetooth | `ex_actualisation_sms_telephone(delta)` | Met à jour le compteur de SMS du téléphone |
-| Bluetooth | `VOYANT_kit(etat)` | Remet à zéro les voyants et compteurs du kit à la déconnexion |
-| Son | `play_sound(fichier)` | Point d'entrée unique de la lecture audio |
-
-### Annexe B — États par AND-line
-
-Une capture par AND-line du statechart `Systeme`, dans l'ordre des blocs de la [Section 2.1 Vue d'ensemble des AND-lines](#21-vue-densemble-des-and-lines).
-
-![B.1 Horloge rafraichissement](media/ANDL_EVAL.png)
-
-![B.2 Simulation du vehicule](media/ANDL_simulation.png)
-
-![B.3 Débit de l'injection d'essence](media/ANDL_injection_complet.png)
-
-![B.4 Clé du véhicule](media/ANDL_cle_vehicule.png)
-
-![B.5 Ressources et pannes](media/ANDL_ressources_panne.png)
-
-![B.6 Mode de pilotage](media/ANDL_mode_pilotage.png)
-
-![B.7 Limiteur de vitesse](media/ANDL_limiteur_vitesse.png)
-
-![B.8 Simulation voiture régulateur adaptatif](media/ANDL_regulateur_adaptatif.png)
-
-> **\[Image à insérer\]** B.9 Telephone
-
-![B.10 Batterie téléphone](media/ANDL_batterie_telephone.png)
-
-> **\[Image à insérer\]** B.11 Communication telephone
-
-![B.12 Jumelage kit main libre](media/ANDL_jumelage_kit.png)
-
-> **\[Image à insérer\]** B.13 Commande kit main libre
-
-> **\[Image à insérer\]** B.14 Appel Extérieur
-
-> **\[Image à insérer\]** B.15 SMS Extérieur
-
-![B.16 Radio](media/radio.png)
-
-### Annexe C — Attributs et opérations
-
-Les 77 attributs de `_SysVehicule`, regroupés par domaine. Les types et valeurs initiales restent à compléter depuis le modèle.
-
-| Domaine | Attribut | Rôle | IHM |
-| :--- | :--- | :--- | :---: |
-| Véhicule | `accelPedal` | Position de la pédale d'accélération \[0 ; 10\] | H2 |
-| Véhicule | `brakePedal` | Position de la pédale de frein \[0 ; 10\] | H1 |
-| Véhicule | `alpha` | Pente de la route (°) | A1, A2 |
-| Véhicule | `throttle` | Commande d'injection, écrite par Débit de l'injection d'essence | F2, F3 |
-| Véhicule | `throttle_repos` | Throttle de ralenti, calculé dans le constructeur `_SysVehicule()` |  |
-| Véhicule | `float_speed` / `speed` | Vitesse réelle (km/h) et sa valeur entière affichée | F4, F5 |
-| Véhicule | `float_distance` / `distance` | Distance parcourue et sa valeur entière affichée | F1 |
-| Véhicule | `ignition` | Moteur en marche | E4 |
-| Véhicule | `cmd_contact` | Position de la clé de contact | E1 |
-| Véhicule | `_simu` | à compléter |  |
-| Paramètres | `PARAM_SIMU_max_throttle`, `PARAM_SIMU_max_speed`, `PARAM_SIMU_max_accel`, `PARAM_SIMU_max_brake` | Bornes du throttle, de la vitesse et des pédales |  |
-| Paramètres | `PARAM_SIMU_masse`, `PARAM_SIMU_frottement_air`, `PARAM_SIMU_puissance_moteur`, `PARAM_SIMU_puissance_frein`, `PARAM_SIMU_vitesse_repos` | Paramètres physiques du modèle newtonien |  |
-| Paramètres | `PARAM_SIMU_freq_rafraichissement`, `PARAM_SIMU_freq_regulateur` | Fréquences de l'horloge `EVAL` (20 Hz) et du régulateur (3 Hz) |  |
-| Paramètres | `PARAM_SIMU_Kp_regulateur`, `PARAM_SIMU_Ki_regulateur` | Coefficients normalisés du régulateur PI, lus dans `_SysVehicule()` pour calculer les gains effectifs selon les caractéristiques du véhicule |  |
-| Ressources | `reservoir_carburant` | Niveau de carburant (L) | D2 |
-| Ressources | `niveau_batterie` | Charge de la batterie (%) | D1 |
-| Ressources | `SEUIL_carburant`, `SEUIL_batterie` | Seuils de panne (5 L, 40 %) |  |
-| Ressources | `carburant_faible`, `batterie_faible` | Indicateurs de panne |  |
-| Régulateur / limiteur | `vitesseConsigne` | Vitesse cible commune au régulateur et au limiteur | G3 |
-| Régulateur / limiteur | `Kp_regulateur`, `Ki_regulateur` | Gains PI effectifs calculés dans le constructeur `_SysVehicule()` à partir des coefficients normalisés et de la physique du véhicule |  |
-| Régulateur / limiteur | `steady` | Terme intégral du PI |  |
-| Régulateur / limiteur | `voyant_regulateur`, `voyant_limiteur` | Voyants d'activation | G6, G2 |
-| Régulateur / limiteur | `limiteur_attente`, `limiteur_depasse` | Voyants d'attente et de dépassement | G2 |
-| Régulateur / limiteur | `valeur_initiale_limiteur` | Consigne à l'activation du limiteur (50 km/h) |  |
-| ACC | `vitesse_voiture_devant` | Vitesse de la voiture de devant | B2 |
-| ACC | `distance_voiture_devant`, `distance_entiere_voiture_devant` | Position de la voiture de devant |  |
-| ACC | `distance_inter_voiture` | Distance entre les deux véhicules | B1, B4 |
-| ACC | `distance_securite` | Distance à maintenir (30 m) |  |
-| ACC | `SWITCH_simulation_voiture_devant` | Activation de la voiture de devant | B3 |
-| Kit véhicule | `kit_jumele` | Mémoire du jumelage |  |
-| Kit véhicule | `mot_de_passe` | Code PIN attendu (`1234`) |  |
-| Kit véhicule | `VOYANT_bluetooth_vehicule`, `VOYANT_vehicule_connecte` | Voyants Bluetooth et connexion | I1, I2 |
-| Kit véhicule | `VOYANT_vehicule_appel`, `VOYANT_vehicule_sonnerie`, `VOYANT_vehicule_sms` | Voyants d'appel, de sonnerie et de SMS | I5, I7 |
-| Kit véhicule | `niveau_batterie_kit` | Batterie du téléphone vue par le kit | I3 |
-| Kit véhicule | `nbr_sms_kit` | SMS non lus vus par le kit | I8 |
-| Kit véhicule | `charge_vehicule_telephone` | Téléphone branché sur le véhicule | I4 |
-| Téléphone | `telephone_allume`, `bluetooth_telephone_actif` | Alimentation et Bluetooth du téléphone | K1, K3 |
-| Téléphone | `niveau_batterie_telephone` | Batterie du téléphone | K2 |
-| Téléphone | `liste_appareils_detectes`, `affichage_liste_appareils` | Appareils détectés | K4 |
-| Téléphone | `messages_appairage`, `affichage_appairage` | Messages du jumelage | K6 |
-| Téléphone | `champ_mdp` | Code PIN saisi | K7 |
-| Téléphone | `VOYANT_telephone_appairage`, `VOYANT_telephone_connecte` | Voyants de jumelage et de connexion | K9 |
-| Téléphone | `VOYANT_telephone_appel`, `VOYANT_telephone_sonnerie`, `VOYANT_telephone_sms` | Voyants d'appel, de sonnerie et de SMS | K10, K12 |
-| Téléphone | `appel_en_cours_telephone`, `sonnerie_en_cours` | État de l'appel, lu par la radio pour ses priorités |  |
-| Téléphone | `nbr_sms_telephone`, `nbr_sauvegarde_sms_telephone` | SMS non lus et leur sauvegarde à l'extinction | K13 |
-| Radio et son | `radio_on`, `VOYANT_radio` | Alimentation et voyant de la radio | J2, J1 |
-| Radio et son | `affichage_titre_musique` | Titre affiché | J3 |
-| Radio et son | `chemin_sons` | Chemin relatif du dossier `sons/` |  |
-
-**Opérations citées dans le rapport** (liste à compléter avec l'export du modèle) :
-
-| Domaine | Opération | Rôle |
-| :--- | :--- | :--- |
-| Véhicule | `_SysVehicule()` (constructeur) | Initialise la simulation dès l'instanciation (remplace `init()`), calcule `throttle_repos`, les gains PI et les messages Bluetooth |
-| Véhicule | `calcul_vitesse_distance()` | Intègre le modèle newtonien à 20 Hz |
-| Véhicule | `accelerer(accelPedal)` | Convertit la pédale en throttle |
-| Véhicule | `freiner_injection(brakePedal)` | Ramène le throttle au ralenti au freinage |
-| Véhicule | `ex_demarrer()`, `arreter()` | Démarrent et arrêtent le moteur |
-| Ressources | `calcul_carburant()`, `calcul_batterie()` | Consommation de carburant, charge et décharge de la batterie |
-| Ressources | `ex_depanner_batterie()` | Remet la batterie à `SEUIL_batterie + 15` |
-| Régulateur / limiteur | `ex_vitesseConsigne(delta)` | Modifie la consigne dans \[0 ; 120\] |
-| Régulateur / limiteur | `calcul_regulateur_vitesse()` | Correcteur PI sur l'erreur de vitesse |
-| Régulateur / limiteur | `regulateur_Prof()` | Loi de commande du sujet, conservée pour référence |
-| Régulateur / limiteur | `alerte_depassement(on)` | Allume ou éteint l'alarme du limiteur |
-| ACC | `calcul_distance_voiture_devant()` | Avance la voiture de devant à 20 Hz |
-| ACC | `calcul_regulateur_distance()` | Correcteur PI sur l'erreur de distance |
-| Bluetooth | `verifier_mdp(mdp)` | Vérifie le PIN reçu et vide `champ_mdp` |
-| Bluetooth | `envoi_batterie_kit(pourcentage)` | Met à jour `niveau_batterie_kit` |
-| Bluetooth | `actualisation_sms_telephone(delta)` | Met à jour le compteur de SMS du téléphone |
-| Bluetooth | `VOYANT_kit(etat)` | Remet à zéro les voyants et compteurs du kit à la déconnexion |
-| Son | `play_sound(fichier)` | Point d'entrée unique de la lecture audio |
-
-### Annexe D — Conventions de nommage
-
-| Préfixe / forme | Usage | Exemple |
-| :--- | :--- | :--- |
-| `ev_` | Événement | `ev_demarrer`, `ev_tentative_mdp` |
-| `ev_btn_` | Événement envoyé par un bouton de l'IHM | `ev_btn_radio_skip` |
-| `ex_` | Opération exécutée sur une transition ou une entrée d'état | `ex_demarrer()`, `ex_vitesseConsigne()` |
-| `calcul_` | Opération de calcul périodique | `calcul_batterie()` |
-| `PARAM_SIMU_` | Paramètre de simulation réglable | `PARAM_SIMU_masse` |
-| `SEUIL_` | Seuil de déclenchement | `SEUIL_batterie` |
-| `VOYANT_` / `voyant_` | Voyant affiché sur l'IHM | `VOYANT_radio`, `voyant_regulateur` |
-| `cmd_`, `SWITCH_` | Commande maintenue de l'IHM | `cmd_contact`, `SWITCH_simulation_voiture_devant` |
-| `float_` | Valeur continue dont l'entier correspondant est affiché | `float_speed` |
-| `_kit` / `_telephone` | Côté de la liaison Bluetooth auquel appartient la donnée | `nbr_sms_kit`, `nbr_sms_telephone` |
+Nous avons également mis à disposition un tutoriel complet en ligne : [https://tutoriel-web-rhapsody.benoitdekeyn.com](https://tutoriel-web-rhapsody.benoitdekeyn.com) qui permet à n'importe quel utilisateur de comprendre et d'utiliser efficacement notre outil.

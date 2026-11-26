@@ -1256,7 +1256,10 @@ Hormis les animations visuelles et différents textes d'information, notre inter
 
 #### Tester le simulateur
 
-Pour tester directement notre simulateur, il suffit de télécharger directement [simulateur.exe](https://github.com/benoitdekeyn/rhapsody_webapp_builder/raw/main/application/simulateur.exe) (ou le dossier [application/](https://github.com/benoitdekeyn/rhapsody_webapp_builder/tree/main/application)) puis double-cliquer dessus — le cockpit véhicule s'ouvre sur `http://127.0.0.1:8080/custom/` et l'interface générique auto-générée sur `http://127.0.0.1:8080/api/`.
+Pour tester directement notre simulateur (sans rien installer, avec le son fonctionnel) :
+
+1. Télécharger et décompresser l'archive prête à l'emploi **[`zip-demo-webapp-rhapsody.zip`](https://github.com/benoitdekeyn/rhapsody_webapp_builder/raw/main/application/zip-demo-webapp-rhapsody.zip)** : elle contient `simulateur.exe` (avec les interfaces Web embarquées) ainsi que le dossier `sons/` nécessaire aux bruitages et à l'autoradio. *(Tout le livrable est également disponible dans le dossier [application/](https://github.com/benoitdekeyn/rhapsody_webapp_builder/tree/main/application) du dépôt GitHub.)*
+2. Double-cliquer sur **`simulateur.exe`** : le navigateur s'ouvre automatiquement sur le cockpit véhicule (`http://127.0.0.1:8080/custom/`), et l'interface générique auto-générée est accessible sur `http://127.0.0.1:8080/api/`.
 
 #### Tutoriel
 

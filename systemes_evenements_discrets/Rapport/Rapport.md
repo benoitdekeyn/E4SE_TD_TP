@@ -27,7 +27,17 @@
 &ensp;&ensp;&ensp;&ensp;◦ [4.4 Implémentation des opérations](#44-impl%C3%A9mentation-des-op%C3%A9rations)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [4.5 Évolution](#45-%C3%A9volution)<br>
 <b>• [5. Gestion du contact et du démarrage](#5-gestion-du-contact-et-du-d%C3%A9marrage)</b><br>
-<b>• [6. Modélisation énergétique : carburant, batterie et pannes](#6-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [5.1 Statechart](#51-statechart)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [5.2 Utilisation depuis l'IHM](#52-utilisation-depuis-lihm)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [5.3 Fonctionnement](#53-fonctionnement)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [5.4 Implémentation des opérations](#54-impl%C3%A9mentation-des-op%C3%A9rations)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [5.5 Évolution](#55-%C3%A9volution)<br>
+<b>• [6. Batterie de la Voiture, carburant et pannes](#6-batterie-de-la-voiture-carburant-et-pannes)</b><br>
+&ensp;&ensp;&ensp;&ensp;◦ [6.1 Statechart](#61-statechart)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [6.2 Utilisation depuis l'IHM](#62-utilisation-depuis-lihm)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [6.3 Fonctionnement](#63-fonctionnement)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [6.4 Implémentation des opérations](#64-impl%C3%A9mentation-des-op%C3%A9rations)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [6.5 Choix fonctionnels](#65-choix-fonctionnels)<br>
 <b>• [7. Régulateur de vitesse simple](#7-r%C3%A9gulateur-de-vitesse-simple)</b><br>
 &ensp;&ensp;&ensp;&ensp;◦ [7.1 Fonctionnement depuis l'IHM](#71-fonctionnement-depuis-lihm)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [7.2 Statechart](#72-statechart)<br>
@@ -41,7 +51,6 @@
 <b>• [9. Contrôleur de Kit Bluetooth « mains libres »](#9-contr%C3%B4leur-de-kit-bluetooth--mains-libres-)</b><br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.1 Cycle de vie du téléphone et du kit](#91-cycle-de-vie-du-t%C3%A9l%C3%A9phone-et-du-kit)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.2 Principe : deux équipements cloisonnés qui échangent des paquets](#92-principe--deux-%C3%A9quipements-cloisonn%C3%A9s-qui-%C3%A9changent-des-paquets)<br>
-<b>• [Les événements du jumelage et de la déconnexion (ev\_telephone\_demande\_jumelage, ev\_telephone\_tentative\_mdp, ev\_telephone\_demande\_connexion et ev\_telephone\_bluetooth\_desactive), nommés avant l'ajout du suffixe, ne précisent pas leur destinataire : ils sont tous destinés au kit.](#les-%C3%A9v%C3%A9nements-du-jumelage-et-de-la-d%C3%A9connexion-ev_telephone_demande_jumelage-ev_telephone_tentative_mdp-ev_telephone_demande_connexion-et-ev_telephone_bluetooth_desactive-nomm%C3%A9s-avant-lajout-du-suffixe-ne-pr%C3%A9cisent-pas-leur-destinataire--ils-sont-tous-destin%C3%A9s-au-kit)</b><br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.3 Protocole Bluetooth et jumelage par code PIN](#93-protocole-bluetooth-et-jumelage-par-code-pin)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.4 Gestion des appels entrants et redirection mains-libres](#94-gestion-des-appels-entrants-et-redirection-mains-libres)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [9.5 Messagerie SMS et tableau de bord connecté](#95-messagerie-sms-et-tableau-de-bord-connect%C3%A9)<br>
@@ -55,9 +64,8 @@
 &ensp;&ensp;&ensp;&ensp;◦ [11.3 Simulation de la voiture devant](#113-simulation-de-la-voiture-devant)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [11.4 Correcteur PI pour le suivi de distance](#114-correcteur-pi-pour-le-suivi-de-distance)<br>
 <b>• [12. Implémentation de la gestion sonore sous Rhapsody](#12-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody)</b><br>
-&ensp;&ensp;&ensp;&ensp;◦ [12.1 Côté IHM](#121-c%C3%B4t%C3%A9-ihm)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [12.2 Côté statechart](#122-c%C3%B4t%C3%A9-statechart)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [12.3 Pourquoi ce fonctionnement](#123-pourquoi-ce-fonctionnement)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [12.1 Fonctionnement de PlaySound](#121-fonctionnement-de-playsound)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [12.3 Choix de conception](#123-choix-de-conception)<br>
 <b>• [13. Interface WEB pour l'IHM](#13-interface-web-pour-lihm)</b>
 
 <!-- /TOC -->
@@ -74,7 +82,7 @@ Nous avons découpé le statechart en 16 AND-lines (régions orthogonales exécu
 
 | Bloc | AND-lines | Rôle | Section |
 | :--- | :--- | :--- | :--- |
-| Véhicule | Horloge rafraichissement, Simulation du vehicule, Débit de l'injection d'essence, Clé du véhicule, Ressources et pannes | Physique, pédales, moteur, énergie | [Section 2 Architecture globale](#2-architecture-globale) à [Section 6 Modélisation énergétique : carburant, batterie et pannes](#6-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes) |
+| Véhicule | Horloge rafraichissement, Simulation du vehicule, Débit de l'injection d'essence, Clé du véhicule, Ressources et pannes | Physique, pédales, moteur, énergie | [Section 2 Architecture globale](#2-architecture-globale) à [Section 6 Batterie de la Voiture, carburant et pannes](#6-batterie-de-la-voiture-carburant-et-pannes) |
 | Aides à la conduite | Mode de pilotage, Limiteur de vitesse, Simulation voiture régulateur adaptatif | Régulateur, limiteur, ACC | [Section 7 Régulateur de vitesse simple](#7-r%C3%A9gulateur-de-vitesse-simple), [Section 8 Limiteur de vitesse](#8-limiteur-de-vitesse), [Section 11 Régulateur de vitesse adaptatif](#11-r%C3%A9gulateur-de-vitesse-adaptatif) |
 | Téléphone | Telephone, Batterie téléphone, Communication telephone | Bluetooth côté téléphone, appels, SMS | [Section 9 Contrôleur de Kit Bluetooth « mains libres »](#9-contr%C3%B4leur-de-kit-bluetooth--mains-libres-) |
 | Kit véhicule | Jumelage kit main libre, Commande kit main libre | Bluetooth côté véhicule, affichage au volant | [Section 9 Contrôleur de Kit Bluetooth « mains libres »](#9-contr%C3%B4leur-de-kit-bluetooth--mains-libres-) |
@@ -373,9 +381,9 @@ Nous avons donc modifié les opérations `accelerer()` et `freiner_injection()` 
 
 Tout le cycle de vie de la clé et du moteur se trouve dans l'AND-line Clé du véhicule. Le super-état `contact_on` manipule l'état du moteur:
 
-* **Contact** : l'AND-line passe de `contact_off` à `contact_on` sur `EVAL[cmd_contact == true]`, et revient sur `EVAL[cmd_contact == false]`. lorsque que la clé est insérée, le moteur est à l'arrêt (par défaut) et execute `arreter()`, qui passe `ignition` à `false`. (voir [Section 6 Modélisation énergétique : carburant, batterie et pannes](#6-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes)) .L'état`moteur_on` n'est atteint que sur `ev_demarrer`, et seulement si le véhicule n'est pas en panne (`[IS_IN(fonctionelle)]`). La transition exécute `ex_demarrer()`.
+* **Contact** : l'AND-line passe de `contact_off` à `contact_on` sur `EVAL[cmd_contact == true]`, et revient sur `EVAL[cmd_contact == false]`. lorsque que la clé est insérée, le moteur est à l'arrêt (par défaut) et execute `arreter()`, qui passe `ignition` à `false`. (voir [Section 6 Batterie de la Voiture, carburant et pannes](#6-batterie-de-la-voiture-carburant-et-pannes)) .L'état`moteur_on` n'est atteint que sur `ev_demarrer`, et seulement si le véhicule n'est pas en panne (`[IS_IN(fonctionelle)]`). La transition exécute `ex_demarrer()`.
 
-* **Moteur tournant** : `moteur_on` appelle `calcul_carburant()` et, dans une région parallèle, `calcul_batterie()`, au rythme de rafraîchissement (voir [Section 6 Modélisation énergétique : carburant, batterie et pannes](#6-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes)). le moteur s'arrête dès que le véhicule tombe en panne ou que le contact est coupé (`EVAL[!IS_IN(fonctionelle) || cmd_contact == false]`).
+* **Moteur tournant** : `moteur_on` appelle `calcul_carburant()` et, dans une région parallèle, `calcul_batterie()`, au rythme de rafraîchissement (voir [Section 6 Batterie de la Voiture, carburant et pannes](#6-batterie-de-la-voiture-carburant-et-pannes)). le moteur s'arrête dès que le véhicule tombe en panne ou que le contact est coupé (`EVAL[!IS_IN(fonctionelle) || cmd_contact == false]`).
 * **Arrêt d'urgence en roulant** : quand nous coupons le contact en roulant, l'AND-line sort de `moteur_on` et `arreter()` passe `ignition` à `false`. L'AND-line Débit de l'injection d'essence bascule alors en `freinage_injection`, et `calcul_vitesse_distance()` annule le `throttle` tout en conservant `float_speed` : le véhicule continue sur son inertie.
 
 ### 5.4 Implémentation des opérations
@@ -391,7 +399,7 @@ throttle = throttle_repos;
 niveau_batterie -= 10;
 ```
 
-L'opération allume le moteur, place directement le `throttle` au ralenti `throttle_repos` (voir [Section 3.3 Initialisation et vitesse de repos](#33-initialisation-et-vitesse-de-repos)) et retire 10 % de batterie pour le démarrage (voir [Section 6 Modélisation énergétique : carburant, batterie et pannes](#6-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes)).
+L'opération allume le moteur, place directement le `throttle` au ralenti `throttle_repos` (voir [Section 3.3 Initialisation et vitesse de repos](#33-initialisation-et-vitesse-de-repos)) et retire 10 % de batterie pour le démarrage (voir [Section 6 Batterie de la Voiture, carburant et pannes](#6-batterie-de-la-voiture-carburant-et-pannes)).
 
 ### 5.5 Évolution
 
@@ -483,7 +491,7 @@ L'opération modélise l'alternateur. Au-delà de `SEUIL_THROTTLE_MIN` (1,5), il
 
 * voici le code de l'opération `ex_depanner_batterie()` :
 
-```ccp
+```cpp
 if (niveau_batterie < SEUIL_batterie) {
 	niveau_batterie = SEUIL_batterie+15;
 }
@@ -737,9 +745,9 @@ Les événements du jumelage et de la déconnexion (`ev_telephone_demande_jumela
 ### 9.3 Protocole Bluetooth et jumelage par code PIN
  
 #### 9.3.1 Statechart associé
-![AND-line Jumelage kit main libre](media/ANDL_jumelage_kit.png)
+![AND-line Jumelage kit main libre](media/ANDL_jumelage_kit_mains_libres.png)
 
-> **[Capture Rhapsody à insérer]** : AND-line **`Telephone`** (`state_96`).
+![AND-line Telephone](media/ANDL_telephone.png)
 
 ![AND-line Batterie téléphone](media/ANDL_batterie_telephone.png)
 
@@ -817,10 +825,11 @@ Cette AND-line tourne en permanence, que le téléphone soit allumé ou non. À 
 ### 9.4 Gestion des appels entrants et redirection mains-libres
 
 #### 9.4.1 Statechart associé
-> **[Capture Rhapsody à insérer — Version finale]** : Les trois AND-lines de téléphonie :
-> 1. **`Appel Extérieur`** (`state_146`, haut-droite) ;
-> 2. **`Communication telephone`** (`state_139`, bas-droite, montrant `arret_de_communication` et les 3 sous-régions parallèles de `gestion_communication_telephone`) ;
-> 3. **`Commande kit main libre`** (`state_166`, haut-centre-droite, entre `state_87` et `state_146`).
+![AND-line Appel Extérieur](media/ANDL_appel_exterieur.png)
+
+![AND-line Communication telephone](media/ANDL_communication_telephone.png)
+
+![AND-line Commande kit main libre](media/ANDL_comande_kit_mains_libres.png)
 
 #### 9.4.2 Choix fonctionnels
 Un appel entrant sonne sur le téléphone, ou au volant lorsque le Bluetooth est connecté. L'utilisateur peut l'accepter, le refuser ou le raccrocher indifféremment depuis le téléphone ou depuis le volant.
@@ -905,7 +914,9 @@ Nous avons choisi de garder cette architecture parallèle plutôt que de fusionn
 ### 9.5 Messagerie SMS et tableau de bord connecté
 
 #### 9.5.1 Statechart associé
-> **[Capture Rhapsody à insérer — Version finale]** : AND-line **`SMS Extérieur`** (`state_206`, tout en haut à droite), accompagnée des sous-régions SMS (`state_184` et `state_189` dans `Communication telephone` + `state_199` dans `Commande kit main libre`).
+![AND-line SMS Extérieur](media/ANDL_SMS_exterieur.png)
+
+*Les sous-régions SMS côté téléphone (`Communication telephone`) et côté kit (`Commande kit main libre`) sont visibles dans les captures complètes de la [Section 9.4.1 Statechart associé](#941-statechart-associ%C3%A9).*
 
 #### 9.5.2 Choix fonctionnels
 Les SMS sont reçus en parallèle des appels : un SMS reçu en plein appel est compté sans perturber la conversation. Leur nombre et un voyant s'affichent sur le téléphone et au tableau de bord. La lecture est synchronisée entre les deux, et interdite au volant en roulant.
@@ -969,7 +980,7 @@ Comme pour les appels, le téléphone est représenté par ses deux régions SMS
 ## 10. Autoradio et arbitrage des priorités audio
 
 ### 10.1 Statechart associé
-![AND-line Radio](media/radio.png)
+![AND-line Radio](media/ANDL_radio.png)
 
 ### 10.2 Choix fonctionnels
 L'autoradio lit trois pistes, s'éteint contact coupé ou batterie vide, cède la place aux sonneries et aux appels passés au volant, puis reprend la piste en cours.

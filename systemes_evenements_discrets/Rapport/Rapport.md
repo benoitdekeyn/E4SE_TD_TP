@@ -36,11 +36,12 @@
 &ensp;&ensp;&ensp;&ensp;◦ [Côté statechart](#c%C3%B4t%C3%A9-statechart-1)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [Pourquoi ce fonctionnement](#pourquoi-ce-fonctionnement-1)<br>
 <b>• [6. Contrôleur de Kit Bluetooth « mains libres » et infodivertissement](#6-contr%C3%B4leur-de-kit-bluetooth--mains-libres--et-infodivertissement)</b><br>
-&ensp;&ensp;&ensp;&ensp;◦ [Principe : deux équipements cloisonnés qui échangent des paquets](#principe--deux-%C3%A9quipements-cloisonn%C3%A9s-qui-%C3%A9changent-des-paquets)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [6.1 Protocole Bluetooth, jumelage par code PIN et cycle de vie du téléphone](#61-protocole-bluetooth-jumelage-par-code-pin-et-cycle-de-vie-du-t%C3%A9l%C3%A9phone)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [6.2 Gestion des appels entrants et redirection mains-libres](#62-gestion-des-appels-entrants-et-redirection-mains-libres)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [6.3 Messagerie SMS et tableau de bord connecté](#63-messagerie-sms-et-tableau-de-bord-connect%C3%A9)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [6.4 Autoradio et arbitrage des priorités audio](#64-autoradio-et-arbitrage-des-priorit%C3%A9s-audio)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Cycle de vie du téléphone et du kit](#cycle-de-vie-du-t%C3%A9l%C3%A9phone-et-du-kit)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [6.1 Principe : deux équipements cloisonnés qui échangent des paquets](#61-principe--deux-%C3%A9quipements-cloisonn%C3%A9s-qui-%C3%A9changent-des-paquets)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [6.2 Protocole Bluetooth et jumelage par code PIN](#62-protocole-bluetooth-et-jumelage-par-code-pin)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [6.3 Gestion des appels entrants et redirection mains-libres](#63-gestion-des-appels-entrants-et-redirection-mains-libres)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [6.4 Messagerie SMS et tableau de bord connecté](#64-messagerie-sms-et-tableau-de-bord-connect%C3%A9)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [6.5 Autoradio et arbitrage des priorités audio](#65-autoradio-et-arbitrage-des-priorit%C3%A9s-audio)<br>
 <b>• [7. Extension : Régulateur de vitesse adaptatif (ACC)](#7-extension--r%C3%A9gulateur-de-vitesse-adaptatif-acc)</b><br>
 &ensp;&ensp;&ensp;&ensp;◦ [Côté IHM](#c%C3%B4t%C3%A9-ihm-2)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [Côté statechart](#c%C3%B4t%C3%A9-statechart-2)<br>
@@ -64,7 +65,8 @@
 &ensp;&ensp;&ensp;&ensp;◦ [Annexe A — IHM détaillée](#annexe-a--ihm-d%C3%A9taill%C3%A9e)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [Annexe B — États par AND-line](#annexe-b--%C3%A9tats-par-and-line)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [Annexe C — Attributs et opérations](#annexe-c--attributs-et-op%C3%A9rations)<br>
-&ensp;&ensp;&ensp;&ensp;◦ [Annexe D — Conventions de nommage](#annexe-d--conventions-de-nommage)
+&ensp;&ensp;&ensp;&ensp;◦ [Annexe D — Conventions de nommage](#annexe-d--conventions-de-nommage)<br>
+&ensp;&ensp;&ensp;&ensp;◦ [Annexe E — Paquets Bluetooth et messages du téléphone](#annexe-e--paquets-bluetooth-et-messages-du-t%C3%A9l%C3%A9phone)
 
 <!-- /TOC -->
 ---
@@ -106,14 +108,14 @@ Le tableau suivant résume le rôle de chaque zone :
 | :---: | :--- | :--- | :---: |
 | **A** | Environnement | Régler la pente de la route (-20° à +20°) | § 3.2 |
 | **B** | Voiture de devant | Activer un véhicule cible, régler sa distance initiale et sa vitesse | § 7 |
-| **C** | Réseau extérieur | Simuler un appel entrant ou l'envoi d'un SMS vers le téléphone | § 6.2, 6.3 |
+| **C** | Réseau extérieur | Simuler un appel entrant ou l'envoi d'un SMS vers le téléphone | § 6.3, 6.4 |
 | **D** | Ressources | Suivre batterie et carburant, faire le plein, dépanner la batterie | § 3.6 |
 | **E** | Clé | Mettre le contact, démarrer le moteur, voir l'état moteur | § 3.5 |
 | **F** | Tableau de bord | Lire la distance parcourue, le throttle et la vitesse | § 3.2 |
 | **G** | Commandes au volant | Activer le limiteur ou le régulateur, régler la vitesse cible | § 4, 5 |
 | **H** | Pédales | Freiner et accélérer | § 3.3, 3.4 |
 | **I** | Kit mains libres | Voir la connexion du téléphone, décrocher, lire les SMS au volant, brancher le téléphone | § 6 |
-| **J** | Autoradio | Allumer la radio, lancer et changer de piste | § 6.4 |
+| **J** | Autoradio | Allumer la radio, lancer et changer de piste | § 6.5 |
 | **K** | Téléphone | Allumer le téléphone, activer le Bluetooth, jumeler, gérer appels et SMS | § 6 |
 
 ## 3. Modélisation et simulation du véhicule
@@ -128,8 +130,8 @@ Nous avons découpé le statechart en 16 AND-lines (régions orthogonales exécu
 | Aides à la conduite | Mode de pilotage, Limiteur de vitesse, Simulation voiture régulateur adaptatif | Régulateur, limiteur, ACC | § 4, 5, 7 |
 | Téléphone | Telephone, Batterie téléphone, Communication telephone | Bluetooth côté téléphone, appels, SMS | § 6 |
 | Kit véhicule | Jumelage kit main libre, Commande kit main libre | Bluetooth côté véhicule, affichage au volant | § 6 |
-| Réseau extérieur | Appel Extérieur, SMS Extérieur | Simulation des appels et SMS entrants | § 6.2, 6.3 |
-| Infodivertissement | Radio | Lecture musicale et priorités audio | § 6.4 |
+| Réseau extérieur | Appel Extérieur, SMS Extérieur | Simulation des appels et SMS entrants | § 6.3, 6.4 |
+| Infodivertissement | Radio | Lecture musicale et priorités audio | § 6.5 |
 
 ### 3.2 Horloge partagée via l'évènement EVAL
 
@@ -570,47 +572,85 @@ La hiérarchie finale de `limiteur_on` est donc : `consigne_fixe` → `limiteur_
 
 ## 6. Contrôleur de Kit Bluetooth « mains libres » et infodivertissement
 
-Nous présentons cet ensemble en quatre parties : protocole Bluetooth et jumelage, appels, SMS, et autoradio.
+### Cycle de vie du téléphone et du kit
 
-### Principe : deux équipements cloisonnés qui échangent des paquets
+> **[Capture Rhapsody à insérer — IHM téléphone et kit]** : 
 
-Toutes les AND-lines cohabitent dans `_SysVehicule` pour les besoins de la simulation, mais nous avons conçu le système comme deux équipements physiques indépendants, auxquels s'ajoute le réseau extérieur :
+Le kit Bluetooth du véhicule permet de connecter un téléphone pour passer des appels et lire les SMS. Le téléphone et le kit mains libres ont chacun leur propre cycle de vie, qui conditionne tout le reste de cette section.
+
+* **Le téléphone** : toute manipulation du téléphone se réalise dans le super-état `telephone_actif`. Nous n'y entrons que si le téléphone est allumé et que sa batterie n'est pas vide (`EVAL[niveau_batterie_telephone > 0 && telephone_allume]`), et nous en sortons dès que l'une de ces deux conditions tombe. Dans `telephone_actif`, le Bluetooth a lui aussi son propre interrupteur : `bluetooth_telephone_desactive` ↔ `bluetooth_telephone_active` selon `cmd_bluetooth_telephone_actif`. Tant que le téléphone est dans `telephone_actif`, sa batterie se décharge de 1 %/s. Branché au véhicule, elle se recharge de 5 % toutes les 1,5 s.
+* **Le kit** : toute communication Bluetooth du kit se réalise dans le super-état `bluetooth_active`, et les commandes au volant ne sont actives que lorsqu'un téléphone y est connecté. Il est alimenté par le véhicule et ne fonctionne donc que contact mis (`EVAL[IS_IN(contact_on)]`). À la coupure du contact (`EVAL[IS_IN(contact_off)]`), il retourne en `bluetooth_desactive` et éteint son voyant Bluetooth (`VOYANT_bluetooth_vehicule`).
+
+En sortant de leur super-état respectif, le téléphone et le kit se mettent en veille et ne peuvent plus communiquer. Ils préviennent alors l'autre appareil : le téléphone émet `GEN(ev_bluetooth_telephone_desactive)` en entrée de `telephone_eteint` et de `bluetooth_telephone_desactive`, et le kit émet `GEN(ev_kit_bluetooth_desactive)` en entrée de `bluetooth_desactive`. Côté téléphone, les écrans sont aussi vidés et affichent « Standby ».
+
+### 6.1 Principe : deux équipements cloisonnés qui échangent des paquets
+
+#### Statechart associé
+> **[Capture Rhapsody à insérer — 3 zones]** :
+
+#### Choix fonctionnels
+
+Dans la réalité, le téléphone et le kit mains libres sont deux appareils distincts qui ne communiquent que par Bluetooth. Ils ne partagent donc aucune mémoire commune : aucun état (`IS_IN`), attribut ni opération ne peut être partagé entre le téléphone et le véhicule. Le partage de données se fait uniquement par génération d'événements Bluetooth, qui peuvent transporter des paramètres.
+L'émetteur les envoie avec `GEN(ev_nom(valeur))`, et le récepteur les lit via `params->nom_du_parametre`. La liste complète de ces paquets, dans les deux sens, est donnée dans l'annexe E, Paquets Bluetooth et messages du téléphone.
+
+Nous avons également choisi de diviser les tâches de chaque appareil en plusieurs AND-lines, par souci de lisibilité et de place. Au lieu d'avoir une seule AND-line dédiée au téléphone ou au kit, plusieurs AND-lines sont regroupées en trois ensembles distincts :
 
 * **le téléphone** : AND-lines Telephone, Batterie téléphone et Communication telephone ;
-* **le kit véhicule** : AND-lines Jumelage kit main libre, Commande kit main libre et Radio ;
+* **le kit véhicule** : AND-lines Jumelage kit main libre et Commande kit main libre (l'AND-line Radio, également côté véhicule, forme le bloc infodivertissement et est traitée en section 6.5) ;
 * **le réseau extérieur**, simulé par les AND-lines Appel Extérieur et SMS Extérieur.
 
-**Aucune mémoire partagée.** Nous ne partageons aucun état (`IS_IN`), attribut ni opération entre le téléphone et le véhicule. Seul l'accès au périphérique audio (`play_sound()`, voir la section 9, Implémentation de la gestion sonore sous Rhapsody) est commun, parce que les deux systèmes tournent sur le même poste.
-
-**Des événements paramétrés comme paquets Bluetooth.** Nous encapsulons dans un événement toute donnée qui franchit la frontière. L'émetteur l'envoie avec `GEN(ev_nom(valeur))`, et le récepteur la lit via `params->nom_du_parametre`, sans jamais lire un attribut de l'autre système. Le tableau suivant résume ces paquets :
-
-| Fonctionnalité | Événement (paquet Bluetooth) | Émission côté téléphone | Réception côté kit (`params->`) |
-| :--- | :--- | :--- | :--- |
-| Code PIN (§ 6.1) | `ev_tentative_mdp(OMString mdp)` | `GEN(ev_tentative_mdp(champ_mdp))` | `[verifier_mdp(params->mdp)]` |
-| Batterie (§ 6.1) | `ev_actualisation_batterie_telephone_vehicule(int pourcentage)` | `GEN(ev_actualisation_batterie_telephone_vehicule(niveau_batterie_telephone))` | `envoi_batterie_kit(params->pourcentage)` |
-| Synchro SMS initiale (§ 6.3) | `ev_transfert_sms_to_kit(int historique)` | `GEN(ev_transfert_sms_to_kit(nbr_sms_telephone))` | `nbr_sms_kit = params->historique` |
-| Réception SMS (§ 6.3) | `ev_nv_sms_kit(int sms_telephone)` | `GEN(ev_nv_sms_kit(nbr_sms_telephone))` | `nbr_sms_kit = params->sms_telephone` |
-| Lecture SMS (§ 6.3) | `ev_actualisation_sms_kit(int sms_tel)` | `GEN(ev_actualisation_sms_kit(nbr_sms_telephone))` | `nbr_sms_kit = params->sms_tel` |
+Le réseau extérieur joue le rôle de l'opérateur : il ne parle qu'au téléphone (`ev_SIM_appel`, `ev_SIM_envoi_sms`), et c'est le téléphone qui relaie ensuite vers le kit.
 
 ---
 
-### 6.1 Protocole Bluetooth, jumelage par code PIN et cycle de vie du téléphone
+### 6.2 Protocole Bluetooth et jumelage par code PIN
+ 
+#### Statechart associé
+> **[Capture Rhapsody à insérer — Version finale]** : Les trois AND-lines de la zone Bluetooth/Téléphone :
+> 1. **`Jumelage kit main libre`** (`state_87`, ligne du haut, au centre) ;
+> 2. **`Telephone`** (`state_96`, juste en dessous de `state_87`) ;
+> 3. **`Batterie téléphone`** (`state_126`, à droite de `state_96`).
 
-Le kit véhicule (esclave) est actif contact mis. Le téléphone (maître) détecte le kit, se jumelle avec le code `1234` uniquement moteur à l'arrêt, puis se reconnecte automatiquement.
+#### Choix fonctionnels
+Le Bluetooth du kit véhicule s'active à la mise du contact. Le téléphone (maître) détecte le kit, se jumelle avec le code `1234` uniquement moteur à l'arrêt, puis se reconnecte automatiquement. Le jumelage se fait par un échange de requêtes et de réponses entre le kit et le téléphone. L'utilisateur peut suivre la procédure dans les champs texte du téléphone (liste complète des messages dans l'annexe E, Paquets Bluetooth et messages du téléphone).
 
 **Côté IHM.**
 
-* **Téléphone** : allumage avec **K1**, Bluetooth avec **K3**, batterie en **K2**.
-* **Détection** : « Kit Bluetooth Vehicule » apparaît dans **K4** ; **OK** (**K5**) demande le jumelage.
-* **Code PIN** : saisi dans **K7** et envoyé avec **Appairer** (**K8**). Les messages du jumelage s'affichent en **K6**.
-* **Connexion** : LED **K9** côté téléphone et LED **I1** / **I2** côté kit.
-* **Batterie au tableau de bord** : la jauge **I3** recopie le niveau du téléphone ; l'interrupteur **I4** branche le téléphone pour le recharger.
+* **Téléphone** : nous allumons le téléphone puis son Bluetooth avec leurs interrupteurs, et sa jauge affiche son niveau de batterie.
+* **Détection** : « Kit Bluetooth Vehicule » apparaît dans la liste des appareils, et le bouton **OK** demande le jumelage.
+* **Code PIN** : nous le saisissons dans le champ du mot de passe et l'envoyons avec **Appairer**.
+* **Connexion** : la LED « Appareil connecté » s'allume côté téléphone, et les LED de connexion du kit s'allument côté véhicule.
+* **Batterie au tableau de bord** : la jauge **Batterie téléphone** du kit recopie le niveau du téléphone, et l'interrupteur **Brancher Téléphone** permet de le recharger.
 
 **Côté statechart.** Nous avons fait collaborer trois AND-lines uniquement par événements :
 
-* **Jumelage kit main libre** (kit) : démarre après `tm(325)` quand `IS_IN(contact_on)`. En `recherche_telephone`, il annonce sa présence par `GEN(ev_kit_vehicule_pret)` toutes les 500 ms. Il n'accepte `ev_demande_jumelage` que sous `[IS_IN(moteur_off)]`, demande le PIN (`GEN(ev_demande_mdp)`) et vérifie `verifier_mdp(params->mdp)` à la réception de `ev_tentative_mdp`.
-* **Telephone** (téléphone) : le Bluetooth vit dans `telephone_actif` (qui exige `telephone_allume && niveau_batterie_telephone > 0`). À la détection du kit, il va directement en `connexion` si `kit_jumele == true`, sinon en `jumelage` (`attente_jumelage` → `attente_reponse` → `jumelage_effectif`).
-* **Batterie téléphone** (téléphone) : décharge de 1 %/s quand `IS_IN(telephone_actif)`, recharge de 5 % toutes les 1,5 s si `charge_vehicule_telephone == true`, et envoie le niveau au kit.
+* **Jumelage kit main libre (kit)** :
+
+À la mise du contact, le kit passe par `demarrage_bluetooth`, une légère pause (`tm(325)`) qui simule le temps de démarrage du module, puis entre dans `bluetooth_active` et allume son voyant Bluetooth. Il commence directement la recherche du téléphone : en état `recherche_telephone`, il annonce sa présence par `GEN(ev_kit_vehicule_pret)` toutes les 500 ms et affiche une batterie téléphone à 0 (`envoi_batterie_kit(0)`). Il attend alors l'une des deux requêtes du téléphone :
+    * une demande de jumelage (`ev_demande_jumelage`), acceptée uniquement moteur à l'arrêt (`[IS_IN(moteur_off)]`). Le kit passe en `jumelage_kit` et demande le mot de passe (`GEN(ev_demande_mdp)`), puis vérifie le PIN reçu (`ev_tentative_mdp[verifier_mdp(params->mdp)]`) :
+        * si le code est correct, le kit envoie un paquet de confirmation `GEN(ev_mdp_correct)` et passe en `attente_connexion`. À la première demande de connexion du téléphone (`ev_demande_connexion`), il entre dans `telephone_connecte` : il allume ses voyants (`VOYANT_telephone_connecte`) et notifie le téléphone (`GEN(ev_connexion_acceptee)`) ;
+        * sinon, il retourne un paquet d'erreur `GEN(ev_mdp_incorrect)`, redemande le mot de passe et attend une nouvelle tentative.
+    * une demande de connexion (`ev_demande_connexion`), envoyée par un téléphone déjà jumelé : le kit passe directement en `telephone_connecte`, sans repasser par le code PIN.
+
+Durant toute cette manœuvre, le kit peut être déconnecté par la coupure du contact (retour en `bluetooth_desactive`) ou par la désactivation du Bluetooth côté téléphone (`ev_bluetooth_telephone_desactive`). Dans ce second cas, il reprend à `recherche_telephone` : directement depuis `telephone_connecte`, ou via `interruption_bluetooth_telephone` si le jumelage ou la connexion étaient en cours (`jumelage_kit`, `attente_connexion`).
+
+* **Telephone (téléphone)** :
+
+Dans `bluetooth_telephone_active`, l'état initial `recherche_bluetooth` se lance à l'activation du Bluetooth du téléphone, qui commence alors sa recherche et affiche « Aucun appareil détecté ». Il détecte le kit à la réception de `ev_kit_vehicule_pret` et passe en `kit_detecte` : sur l'IHM, le nom du kit apparaît dans le champ `affichage_liste_appareils`. `kit_detecte` est un état de décision :
+    * si le kit est déjà jumelé (`[kit_jumele]`), le téléphone passe directement en `connexion` ;
+    * sinon, il entre dans le super-état `jumelage`, en `attente_jumelage`.
+
+À la pression du bouton **OK** (`ev_btn_ok`), le téléphone envoie une requête de jumelage `GEN(ev_demande_jumelage)` et attend en `attente_reponse` la demande d'authentification `ev_demande_mdp`. Si le kit ne répond pas sous 500 ms (moteur en marche), la demande est considérée comme refusée : le téléphone affiche « Jumelage Impossible » et retourne en `attente_jumelage`. Sinon, le jumelage est accepté (`jumelage_effectif`) et l'utilisateur peut saisir le code PIN. En pressant le bouton **Appairer** (`ev_jumeler`), le téléphone envoie le contenu du champ au kit (`GEN(ev_tentative_mdp(champ_mdp))`), qui vérifie la correspondance. Si le paquet reçu annonce un échec (`ev_mdp_incorrect`), le téléphone affiche « Mot de passe incorrect » et vide le champ du mot de passe. Sinon, à la réception de `ev_mdp_correct`, le téléphone passe en `connexion`.
+
+En `connexion`, le téléphone affiche « Appareil jumelé » et envoie `GEN(ev_demande_connexion)` toutes les 100 ms (`tm(100)`), jusqu'à la confirmation finale du kit (`ev_connexion_acceptee`). Il passe alors en `kit_connecte` et allume son voyant (`VOYANT_kit_connecte`).
+
+De même que pour le kit, le téléphone peut être déconnecté par la coupure du contact, qui désactive le Bluetooth côté kit (`ev_kit_bluetooth_desactive`) : il repasse alors en `recherche_bluetooth`, directement depuis `kit_connecte` ou via `interruption_bluetooth_kit` depuis le jumelage ou la connexion.
+
+* **Reconnexion automatique** : à la première connexion, le téléphone passe le booléen `kit_jumele` à `true` en entrée de `kit_connecte`. Le téléphone se reconnecte ensuite automatiquement au kit à chaque mise sous tension du téléphone ou du kit, sans passer par les étapes de jumelage. Seul le jumelage est soumis à la garde moteur : la reconnexion d'un téléphone déjà jumelé est acceptée même moteur en marche. La mémoire du jumelage est uniquement côté téléphone : le kit ne vérifie pas `kit_jumele` et accepte toute demande de connexion, ce qui suffit pour une simulation à un seul téléphone.
+
+* **Batterie téléphone** :
+
+Cette AND-line tourne en permanence, que le téléphone soit allumé ou non. À chaque entrée dans `batterie_telephone`, elle envoie le niveau au kit (`GEN(ev_actualisation_batterie_telephone_vehicule(niveau_batterie_telephone))`) et décharge la batterie de 1 % (`decharge_telephone()`). Si le téléphone est actif (`EVAL[IS_IN(telephone_actif)]`), elle passe par `verifiaction_telephone_allume` pendant 1 s avant de revenir en `batterie_telephone` : d'où la décharge de 1 %/s. Si le téléphone est branché (`[cmd_charge_vehicule_telephone == true]`), elle passe en `charge_batterie_telephone`, qui recharge de 5 % toutes les 1,5 s (`charge_telephone()`, plafonné à 100 %) et envoie le niveau au kit à chaque recharge. Côté kit, la région `affichage_batterie` de Commande kit main libre lit ce paquet et met à jour la jauge (`envoi_batterie_kit(params->pourcentage)`).
 
 ##### Échange 1 — Découverte et jumelage par code PIN
 
@@ -626,16 +666,21 @@ sequenceDiagram
 
     alt Moteur en marche (moteur_on)
         Note over Kit: Garde [IS_IN(moteur_off)] fausse → paquet ignoré
-        Note over Tel: Timeout tm(500 ms) → jumelage refusé
+        Note over Tel: Timeout tm(500 ms) → "Jumelage Impossible"
     else Moteur à l'arrêt (moteur_off)
         Kit->>Tel: ev_demande_mdp ("Entrez un mot de passe")
-        Tel->>Kit: ev_tentative_mdp(champ_mdp)
+        Tel->>Kit: ev_tentative_mdp(champ_mdp) (clic Appairer)
         Note over Kit: Lecture via params->mdp dans verifier_mdp(params->mdp)
         alt Code PIN incorrect
             Kit->>Tel: ev_mdp_incorrect (champ_mdp vidé)
+            Kit->>Tel: ev_demande_mdp (nouvelle tentative)
         else Code PIN valide ("1234")
             Kit->>Tel: ev_mdp_correct
-            Note over Tel,Kit: Transition vers la séquence de connexion
+            Note over Kit: attente_connexion
+            Note over Tel: connexion ("Appareil jumelé")
+            Tel->>Kit: ev_demande_connexion (toutes les 100 ms)
+            Kit->>Tel: ev_connexion_acceptee (entrée de telephone_connecte)
+            Note over Tel,Kit: Liaison active, kit_jumele = true
         end
     end
 ```
@@ -650,11 +695,11 @@ sequenceDiagram
     Kit->>Tel: ev_kit_vehicule_pret
     Note over Tel: kit_jumele == true → saut direct en connexion
     Tel->>Kit: ev_demande_connexion (toutes les 100 ms)
-    Kit->>Tel: connexion_acceptee
+    Kit->>Tel: ev_connexion_acceptee
     Note over Tel,Kit: Liaison active (kit_connecte / telephone_connecte)
 
     alt Coupure côté véhicule (contact_off)
-        Kit->>Tel: ev_bluetooth_kit_desactive
+        Kit->>Tel: ev_kit_bluetooth_desactive
         Note over Tel: Retour en recherche_bluetooth
     else Coupure côté téléphone (BT OFF ou extinction)
         Tel->>Kit: ev_bluetooth_telephone_desactive
@@ -662,53 +707,70 @@ sequenceDiagram
     end
 ```
 
-##### Échange 3 — Transmission du niveau de batterie téléphone vers le kit
-
-```mermaid
-sequenceDiagram
-    participant Bat as Batterie Tél. (state_126)
-    participant Kit as Kit Véhicule (state_166)
-
-    Note over Bat: Décharge (1 s si actif) ou Charge (1,5 s si branché)
-    Bat->>Kit: ev_actualisation_batterie_telephone_vehicule(niveau_batterie_telephone)
-    Note over Kit: envoi_batterie_kit(params->pourcentage)<br/>→ mise à jour niveau_batterie_kit
-```
-
-**Pourquoi ce fonctionnement.**
-
-* Au début, le téléphone vérifiait lui-même le PIN, et le jumelage réussissait moteur allumé. Nous avons donc déplacé la vérification dans le kit, sous `[IS_IN(moteur_off)]`, avec un timeout de 500 ms côté téléphone pour signaler le refus.
-* Nous faisons voyager le PIN en paramètre (`params->mdp`), et `verifier_mdp()` vide `champ_mdp` à chaque essai : comme ça, l'ancien code erroné ne reste plus affiché.
-* Nous émettons les événements avec `GEN(...)` en entrée d'état : la désactivation du Bluetooth s'écrit `entry / VOYANT_bluetooth_vehicule = false; GEN(ev_bluetooth_kit_desactive);`. Sans `GEN`, l'événement n'était jamais émis.
-
-![AND-line Jumelage kit main libre](media/ANDL_jumelage_kit.png)
-
-![AND-line Batterie téléphone](media/ANDL_batterie_telephone.png)
-
-> **[Capture Rhapsody à insérer — Version finale]** : AND-line **`Telephone`** (`state_96`).
-
 ---
 
-### 6.2 Gestion des appels entrants et redirection mains-libres
+### 6.3 Gestion des appels entrants et redirection mains-libres
 
-Un appel entrant sonne sur le téléphone seul, ou sur le téléphone et au volant lorsque le Bluetooth est connecté. Il peut être accepté, refusé ou raccroché depuis l'un ou l'autre.
+#### Statechart associé
+> **[Capture Rhapsody à insérer — Version finale]** : Les trois AND-lines de téléphonie :
+> 1. **`Appel Extérieur`** (`state_146`, haut-droite) ;
+> 2. **`Communication telephone`** (`state_139`, bas-droite, montrant `arret_de_communication` et les 3 sous-régions parallèles de `gestion_communication_telephone`) ;
+> 3. **`Commande kit main libre`** (`state_166`, haut-centre-droite, entre `state_87` et `state_146`).
+
+#### Choix fonctionnels
+Un appel entrant sonne sur le téléphone, ou au volant lorsque le Bluetooth est connecté. L'utilisateur peut l'accepter, le refuser ou le raccrocher indifféremment depuis le téléphone ou depuis le volant.
 
 **Côté IHM.**
 
-* **Déclencher un appel** : bouton **Appeler** (**C1**).
-* **Sur le téléphone** : les LED **K10** indiquent l'appel et la sonnerie ; **Décrocher** / **Raccrocher** (**K11**).
-* **Au volant** : les LED **I5** indiquent l'appel et la sonnerie ; **Décrocher** / **Raccrocher** (**I6**).
-* **Son** : `sonnerie.wav` sur le téléphone, `sonnerie2.wav` sur le kit ; la radio se coupe pendant l'appel (section 6.4, Autoradio et arbitrage des priorités audio).
+* **Déclencher un appel** : bouton **Appeler**.
+* **Sur le téléphone** : les LED « Appel reçu » indiquent l'appel et la sonnerie, et les boutons **Décrocher** / **Raccrocher** permettent de répondre.
+* **Au volant** : les LED « Appel Téléphonique » indiquent l'appel et la sonnerie, avec les mêmes boutons **Décrocher** / **Raccrocher**.
+* **Son** : `sonnerie.wav` sur le téléphone, `sonnerie2.wav` sur le kit ; la radio se coupe pendant l'appel (section 6.5, Autoradio et arbitrage des priorités audio).
 
-**Côté statechart.** Nous avons découplé la gestion des appels en trois AND-lines :
+**Côté statechart.** Nous avons découplé la gestion des appels en trois AND-lines, qui collaborent uniquement par événements :
 
-1. **Appel Extérieur** simule le réseau appelant : `telephone_SIM` → `tentative_appel`, qui émet `GEN(ev_SIM_appel)` toutes les 100 ms pendant 5 s au plus, → `discussion_telephonique` sur `ev_appel_en_cours`, puis retour sur `ev_SIM_raccrocher`.
-2. **Communication telephone** bascule entre `arret_de_communication` (téléphone éteint) et `gestion_communication_telephone`, un état And à trois régions parallèles :
-   * **appels sur le téléphone** : `attente_appel_tel`, `gestion_sonnerie` (clignotement du voyant et `sonnerie.wav` en parallèle), `appel_en_cours` ;
-   * **SMS sur le téléphone** (section 6.3, Messagerie SMS et tableau de bord connecté) ;
-   * **redirection Bluetooth** : `redirection_off` ↔ `redirection_kit_bluetooth_communication` selon `IS_IN(kit_connecte)`, qui relaie sonnerie, décrochage et raccrochage vers le kit.
-3. **Commande kit main libre**, actif seulement si `IS_IN(telephone_connecte)`, fait tourner en parallèle : les appels au volant (`attente_redirection_appel`, `gestion_sonnerie_kit`, `appel_en_cours_kit`), l'affichage de la batterie, les SMS au volant et les adaptateurs des boutons au volant.
+* **Appel Extérieur (réseau)** :
 
-##### Échange 4 — Appel entrant redirigé vers le kit mains-libres
+Cette AND-line simule le réseau qui appelle le téléphone. Au repos, elle attend dans `telephone_SIM` la pression du bouton **Appeler** (`ev_btn_SIM_appel`) pour lancer une tentative d'appel (`tentative_appel`), limitée à 5 s (`tm(5000)`). Elle émet alors `GEN(ev_SIM_appel)` toutes les 100 ms (`tm(100)`) : c'est ce flux d'événements qui fait sonner le téléphone et le kit. La tentative se termine de trois façons :
+    * l'appel est décroché (`ev_SIM_appel_en_cours`) : le réseau passe en `discussion_telephonique` et y reste jusqu'au raccrochage (`ev_SIM_raccrocher`) ;
+    * l'appel est refusé (`ev_SIM_raccrocher`) : retour direct en `telephone_SIM` ;
+    * personne ne répond pendant 5 s : le timeout ramène le réseau en `telephone_SIM`.
+
+* **Communication telephone** :
+
+Tant que le téléphone est éteint, les communications sont coupées (`arret_de_communication`). Dès que le téléphone passe dans `telephone_actif` (`EVAL[IS_IN(telephone_actif)]`), l'AND-line entre dans `gestion_communication_telephone`, un état And à trois régions parallèles : les appels sur le téléphone, les SMS (section 6.4, Messagerie SMS et tableau de bord connecté) et la redirection Bluetooth. Elle y reste jusqu'à l'extinction du téléphone (`EVAL[IS_IN(telephone_eteint)]`).
+
+   * **Appels sur le téléphone** :
+
+   La région démarre dans `init_appel_telephone`, un état de décision : si un appel est déjà en cours (`[appel_en_cours_telephone]`), l'appel est directement repris (on passe en `appel_en_cours`), sinon le téléphone attend la requête de la carte SIM en `attente_appel_tel`. À la réception de l'appel extérieur (`ev_SIM_appel`), le téléphone entre dans `gestion_sonnerie`, qui fait tourner deux régions en parallèle : `sonnerie_lumineuse` fait clignoter le voyant (`VOYANT_telephone_sonnerie`) au rythme de `ev_SIM_appel`, et `sonnerie_sonore` joue la sonnerie du téléphone (`sonnerie.wav`) toutes les 3 s (`tm(3000)`). Si plus aucune requête de la carte SIM n'arrive pendant 1 s (`tm(1000)`), la région lumineuse passe en `sonnerie_finie` et le téléphone retourne en attente (`EVAL[IS_IN(sonnerie_finie)]`). Pendant la sonnerie, l'utilisateur peut :
+      * décrocher, sur le téléphone (`ev_btn_telephone_decrocher`) ou au volant (`ev_kit_decrocher`) si le kit est connecté : le téléphone passe en `appel_en_cours`, coupe la sonnerie, allume son voyant d'appel et notifie le réseau (`GEN(ev_SIM_appel_en_cours)`) ;
+      * refuser avec **Raccrocher** (`ev_btn_telephone_raccrocher`) : le téléphone envoie `GEN(ev_SIM_raccrocher)` et retourne en attente.
+
+   L'appel se termine par **Raccrocher** sur le téléphone, qui remet `appel_en_cours_telephone` à `false`, ou par `ev_SIM_raccrocher` lorsque l'appel est raccroché au volant. Dans les deux cas, l'action de sortie de `appel_en_cours` éteint le voyant d'appel et prévient le réseau.
+
+   * **Redirection Bluetooth** :
+
+   Cette région ne fait que transférer des paquets au kit Bluetooth, qui s'occupe de réaliser les actions côté véhicule.
+   Elle reste inactive (`redirection_off`) tant que le kit n'est pas connecté. Dès que le kit se connecte (`EVAL[IS_IN(kit_connecte)]`), elle éteint le voyant de sonnerie du téléphone et entre dans `redirection_kit_bluetooth_communication`, jusqu'à la déconnexion du kit. La région des appels sur le téléphone reste active en parallèle : le téléphone continue de sonner et de gérer ses propres boutons, et la redirection relaie en plus chaque étape de l'appel vers le volant.
+   Son fonctionnement est similaire à celui du téléphone : la redirection démarre par un état de décision, `init_appel_kit`. Si un appel est déjà en cours, elle va directement en `transfer_appel` pour le basculer sur le kit, sinon elle attend en `attente_appel_kit`. À la réception de `ev_SIM_appel`, elle entre dans `sonnerie_transfert`, qui notifie le kit de la présence d'un appel à chaque salve du réseau (`ev_kit_appel_entrant`) et du besoin de sonner toutes les 3 s (`ev_kit_sonnerie`). Si plus aucune requête n'arrive pendant 1 s, la région passe en `sonnerie_finie_kit` et la redirection envoie `GEN(ev_kit_fin_sonnerie)` pour arrêter la sonnerie au volant.
+   Depuis `sonnerie_transfert`, deux cas sont possibles :
+      * l'appel est décroché au volant (`ev_kit_decrocher`) ou sur le téléphone (`ev_btn_telephone_decrocher`) : la redirection passe en `transfer_appel` et transfère l'appel au kit (`GEN(ev_kit_appel_transfere)`) ;
+      * l'appel est raccroché au volant (`ev_kit_raccrocher`) : la redirection refuse l'appel auprès du réseau (`GEN(ev_SIM_raccrocher)`).
+
+   En `transfer_appel`, raccrocher au volant passe par `fin_appel_kit`, qui remet `appel_en_cours_telephone` à `false` et notifie la fin de l'appel au réseau et au kit (`GEN(ev_SIM_raccrocher)` puis `GEN(ev_kit_appel_termine)`) avant de revenir en attente. Un raccrochage depuis le téléphone (`ev_SIM_raccrocher`) ramène lui aussi la région en `attente_appel_kit`, en prévenant le kit de la fin de l'appel (`GEN(ev_kit_appel_termine)`).
+
+   Nous obtenons donc un fonctionnement symétrique entre le téléphone et la redirection Bluetooth : décrocher ou raccrocher sur l'un ou l'autre garde les deux côtés cohérents. Ce choix de conception est expliqué plus bas.
+
+* **Commande kit main libre (kit)** :
+
+Côté véhicule, les commandes ne sont actives que si le téléphone est connecté : le kit passe de `telephone_deconnecte` à `controle_telephone_connecte` sur `EVAL[IS_IN(telephone_connecte)]`, et y revient dès que la connexion est perdue. `controle_telephone_connecte` fait alors tourner en parallèle les appels au volant, l'affichage de la batterie, les SMS au volant (section 6.4, Messagerie SMS et tableau de bord connecté) et les adaptateurs des boutons au volant. Ces adaptateurs transforment les boutons **Décrocher** / **Raccrocher** du volant (`ev_btn_kit_decrocher`, `ev_btn_kit_raccrocher`) en paquets Bluetooth `ev_kit_decrocher` et `ev_kit_raccrocher`, envoyés au téléphone.
+Pour les appels, le kit attend en `attente_redirection_appel`. À la réception de `ev_kit_appel_entrant`, il entre dans `gestion_sonnerie_kit`, où `sonnerie_lumineuse_kit` fait clignoter `VOYANT_kit_sonnerie` à chaque paquet reçu et `sonnerie_sonore_kit` joue `sonnerie2.wav` à chaque `ev_kit_sonnerie` du téléphone. La sonnerie s'arrête de deux façons :
+    * sur `ev_kit_fin_sonnerie` ou `ev_kit_raccrocher`, le kit retourne en attente et coupe le son en sortie (`play_sound("stop")`) ;
+    * sur `ev_kit_appel_transfere`, le kit passe en `appel_en_cours_kit`, allume `VOYANT_kit_appel` et notifie le réseau (`GEN(ev_SIM_appel_en_cours)`).
+
+L'appel au volant se termine sur `ev_kit_appel_termine`, qui éteint le voyant d'appel et ramène le kit en `attente_redirection_appel`.
+
+##### Échange 3 — Appel entrant redirigé vers le kit mains-libres
 
 ```mermaid
 sequenceDiagram
@@ -717,58 +779,83 @@ sequenceDiagram
     participant Kit as Kit Véhicule (state_166)
 
     SIM->>Tel: ev_SIM_appel (salve toutes les 100 ms, 5 s max)
-    Tel->>Kit: ev_appel_entrant_kit + ev_sonnerie_kit
-    Note over Kit: Clignotement voyant + sonnerie2.wav
+    Tel->>Kit: ev_kit_appel_entrant (à chaque salve) + ev_kit_sonnerie (toutes les 3 s)
+    Note over Kit: gestion_sonnerie_kit : clignotement VOYANT_kit_sonnerie + sonnerie2.wav
 
     alt Appel décroché au volant
-        Kit->>Tel: ev_decrocher_kit
-        Tel->>Kit: ev_appel_transfere_kit
-        Tel->>SIM: ev_appel_en_cours
-        Note over SIM,Kit: Conversation active (VOYANT_vehicule_appel = true)
-        Kit->>Tel: ev_raccrocher_kit
-        Tel->>Kit: ev_appel_termine_kit
-        Tel->>SIM: ev_SIM_raccrocher (action exit)
+        Kit->>Tel: ev_kit_decrocher
+        Note over Tel: gestion_sonnerie → appel_en_cours<br/>sonnerie_transfert → transfer_appel
+        Tel->>SIM: ev_SIM_appel_en_cours
+        Tel->>Kit: ev_kit_appel_transfere
+        Note over SIM,Kit: Conversation active (VOYANT_kit_appel = true)
+        Kit->>Tel: ev_kit_raccrocher
+        Note over Tel: transfer_appel → fin_appel_kit (appel_en_cours_telephone = false)
+        Tel->>SIM: ev_SIM_raccrocher
+        Tel->>Kit: ev_kit_appel_termine
     else Appel refusé au volant
-        Kit->>Tel: ev_raccrocher_kit
-        Tel->>SIM: ev_refuser_appel
-        Tel->>Kit: ev_refuser_appel (arrêt sonnerie)
+        Kit->>Tel: ev_kit_raccrocher
+        Tel->>SIM: ev_SIM_raccrocher
+        Note over Kit: gestion_sonnerie_kit → attente_redirection_appel
     else Non répondu (timeout)
         Note over Tel: sonnerie_finie_kit après tm(1000) sans ev_SIM_appel
-        Tel->>Kit: ev_fin_sonnerie (arrêt sonnerie)
+        Tel->>Kit: ev_kit_fin_sonnerie (arrêt sonnerie)
     end
 ```
 
-**Pourquoi ce fonctionnement.**
+**Choix de conception**
 
-* Au début, la redirection et la gestion locale des appels étaient deux états exclusifs : connecter le kit ou couper le contact en plein appel détruisait le contexte de l'appel. Nous avons donc placé la redirection dans une région parallèle, avec des transitions croisées (`ev_decrocher_telephone`, `ev_raccrocher_telephone`) : décrocher sur le téléphone ou au volant garde ainsi les deux côtés cohérents.
-* Nous émettons `GEN(ev_SIM_raccrocher)` en action `exit` de `appel_en_cours` et `transfer_appel` : comme ça, le réseau simulé ne reste plus bloqué en communication quand l'appel se termine par extinction du téléphone ou perte de liaison.
-
-> **[Capture Rhapsody à insérer — Version finale]** : Les trois AND-lines de téléphonie :
-> 1. **`Appel Extérieur`** (`state_146`, haut-droite) ;
-> 2. **`Communication telephone`** (`state_139`, bas-droite, montrant `arret_de_communication` et les 3 sous-régions parallèles de `gestion_communication_telephone`) ;
-> 3. **`Commande kit main libre`** (`state_166`, haut-centre-droite, entre `state_87` et `state_146`).
+* Au début, la redirection et la gestion locale des appels étaient deux états exclusifs : connecter le kit ou couper le contact en plein appel détruisait le contexte de l'appel. Nous avons donc placé la redirection dans une région parallèle, avec des transitions croisées : la région du téléphone accepte `ev_kit_decrocher` venant du volant, la redirection accepte `ev_btn_telephone_decrocher` venant du téléphone, et chacune se remet en attente sur le `ev_SIM_raccrocher` émis par l'autre. Décrocher ou raccrocher sur le téléphone ou au volant garde ainsi les deux côtés cohérents.
+Nous avons choisi de garder cette architecture parallèle plutôt que de fusionner les deux régions par souci de lisibilité : le statechart est déjà très dense, et la fusion aurait dupliqué les états, différenciés seulement par une garde vérifiant la connexion du kit.
+* Nous émettons `GEN(ev_SIM_raccrocher)` en action `exit` de `appel_en_cours` : comme ça, quelle que soit la façon dont l'appel se termine (bouton **Raccrocher**, raccrochage au volant ou extinction du téléphone en pleine conversation), le réseau simulé ne reste jamais bloqué en communication. Au volant, `fin_appel_kit` émet le même paquet en entrée.
+* En entrée, `arret_de_communication` éteint le téléphone (`eteindre_telephone()`, qui remet à zéro les voyants, `appel_en_cours_telephone` et le compteur de SMS). Cette action aurait pu être placée sur sa transition d'entrée, mais nous avons préféré la garder dans l'état pour plus de lisibilité.
+* Il n'y a qu'une seule bande son (`PlaySound` ne lit qu'un fichier à la fois) : le téléphone et le kit ne peuvent donc pas sonner en même temps. Lorsque le téléphone est connecté au kit, c'est la sonnerie du kit (`sonnerie2.wav`) qui a la priorité : elle est relancée juste après celle du téléphone, puisqu'elle passe par un paquet Bluetooth supplémentaire (`ev_kit_sonnerie`), et remplace donc `sonnerie.wav` à chaque cycle de 3 s. L'utilisateur entend ainsi que l'appel est redirigé vers le véhicule. Sans kit connecté, c'est la sonnerie du téléphone qui est jouée.
 
 ---
 
-### 6.3 Messagerie SMS et tableau de bord connecté
+### 6.4 Messagerie SMS et tableau de bord connecté
 
-Les SMS sont reçus en parallèle des appels. Leur nombre et un voyant s'affichent sur le téléphone et au tableau de bord ; la lecture est synchronisée entre les deux, et interdite au volant en roulant.
+#### Statechart associé
+> **[Capture Rhapsody à insérer — Version finale]** : AND-line **`SMS Extérieur`** (`state_206`, tout en haut à droite), accompagnée des sous-régions SMS (`state_184` et `state_189` dans `Communication telephone` + `state_199` dans `Commande kit main libre`).
+
+#### Choix fonctionnels
+Les SMS sont reçus en parallèle des appels : un SMS reçu en plein appel est compté sans perturber la conversation. Leur nombre et un voyant s'affichent sur le téléphone et au tableau de bord. La lecture est synchronisée entre les deux, et interdite au volant en roulant.
 
 **Côté IHM.**
 
-* **Envoyer un SMS** : bouton **Envoyer SMS** (**C2**).
-* **Sur le téléphone** : LED **K12**, compteur **K13**, bouton **lire sms** (**K14**).
-* **Au volant** : LED **I7**, compteur **I8**, bouton **lire message** (**I9**), sans effet si le véhicule roule.
+* **Envoyer un SMS** : bouton **Envoyer SMS**.
+* **Sur le téléphone** : une LED, un compteur de SMS et le bouton **lire sms**.
+* **Au volant** : la LED « SMS non lus », un compteur et le bouton **lire message**, sans effet si le véhicule roule.
 
-**Côté statechart.**
+**Côté statechart.** Comme pour les appels, la messagerie est répartie sur trois AND-lines, et seul le téléphone modifie le nombre de SMS : le kit ne fait qu'afficher la valeur qu'il reçoit.
 
-* **Générateur externe** : l'AND-line SMS Extérieur transforme `ev_sms` en `GEN(ev_envoi_sms)`.
-* **Parallélisme** : trois régions SMS indépendantes (téléphone, redirection Bluetooth, kit) ; un SMS reçu en plein appel est compté sans perturber la conversation.
-* **Une seule source de vérité** : seul le téléphone modifie `nbr_sms_telephone` et pousse la valeur vers le kit (`ev_transfert_sms_to_kit`, `ev_nv_sms_kit`, `ev_actualisation_sms_kit`). Les voyants sont calculés : `VOYANT_vehicule_sms = (nbr_sms_kit > 0)` et `VOYANT_telephone_sms = (nbr_sms_telephone > 0)`.
-* **Sécurité routière** : côté kit, `messagerie_kit → lire_message_kit` est gardée par `[speed <= 0]`.
-* **Persistance** : à l'extinction du téléphone, `nbr_sauvegarde_sms_telephone = nbr_sms_telephone` conserve les SMS non lus, restaurés au rallumage. À la déconnexion Bluetooth, `VOYANT_kit(false)` remet `nbr_sms_kit` à 0 et éteint les voyants du tableau de bord.
+* **SMS Extérieur (réseau)** :
 
-##### Échange 5 — Synchronisation et lecture de SMS
+Cette AND-line simule l'envoi d'un SMS par le réseau. Elle n'a qu'un seul état, `sms_exterrieur` : à chaque pression du bouton **Envoyer SMS** (`ev_btn_SIM_sms`), elle émet `GEN(ev_SIM_envoi_sms)` vers le téléphone.
+
+* **Communication telephone** :
+
+Dans `gestion_communication_telephone`, deux des trois régions parallèles gèrent les SMS :
+
+   * **SMS sur le téléphone** :
+
+   La région attend en `reception_sms`, qui calcule en entrée le voyant du téléphone (`VOYANT_telephone_sms = (nbr_sms_telephone > 0)`). À chaque SMS reçu (`ev_SIM_envoi_sms`), le compteur augmente de 1 (`actualisation_sms_telephone(1)`). À la pression du bouton **lire sms** (`ev_btn_telephone_lire_sms`), la région passe en `lire_sms`, qui retire un SMS (`actualisation_sms_telephone(-1)`, plancher à 0), puis revient en `reception_sms` après `tm(1)`.
+
+   * **Redirection Bluetooth des SMS** :
+
+   Dans `redirection_kit_bluetooth_communication`, une seconde région synchronise le kit. À la connexion du kit, elle envoie tout l'historique (`GEN(ev_transfert_sms_to_kit(nbr_sms_telephone))`), puis attend en `reception_sms_kit`, qui renvoie le compteur à jour au kit en entrée (`GEN(ev_nv_sms_kit(nbr_sms_telephone))`). Elle réagit à trois événements :
+      * un nouveau SMS (`ev_SIM_envoi_sms`) : elle rentre de nouveau dans `reception_sms_kit`, qui transmet le nouveau compteur au kit ;
+      * une lecture sur le téléphone (`ev_btn_telephone_lire_sms`) : elle envoie `GEN(ev_actualisation_sms_kit(nbr_sms_telephone))`, puis le compteur à jour en entrée de `reception_sms_kit` ;
+      * une lecture au volant (`ev_kit_lire_sms`) : elle passe en `lire_sms_kit`, qui retire un SMS côté téléphone (`actualisation_sms_telephone(-1)`), puis renvoie le compteur au kit en sortie (`GEN(ev_actualisation_sms_kit(nbr_sms_telephone))`) après `tm(1)`.
+
+* **Commande kit main libre (kit)** :
+
+Dans `controle_telephone_connecte`, deux régions parallèles gèrent les SMS au volant :
+    * l'adaptateur du bouton **lire message** (`gestion_btn_lire_sms_kit`) transforme `ev_btn_kit_lire_sms` en `GEN(ev_tentative_lire_sms_kit)` ;
+    * la messagerie du kit démarre en `init_redirection_sms_kit` et attend l'historique du téléphone (`ev_transfert_sms_to_kit`, `nbr_sms_kit = params->historique`). Elle passe ensuite en `messagerie_kit`, qui calcule le voyant en entrée (`VOYANT_kit_sms = (nbr_sms_kit > 0)`) et recopie chaque nouveau compteur (`ev_nv_sms_kit`, `nbr_sms_kit = params->sms_telephone`). Une demande de lecture n'est acceptée que véhicule à l'arrêt (`[speed<=0]`) : le kit passe en `lire_message_kit`, envoie `GEN(ev_kit_lire_sms)` au téléphone et attend le compteur à jour pour revenir en `messagerie_kit`.
+
+* **Persistance** : à l'extinction du téléphone, `arret_de_communication` sauvegarde le compteur (`nbr_sauvegarde_sms_telephone = nbr_sms_telephone`) avant de le remettre à 0. Les SMS non lus sont restaurés au rallumage, en sortie de `arret_de_communication`. Seuls les SMS déjà reçus sont conservés : un SMS envoyé pendant que le téléphone est éteint n'est reçu par aucune région et il est perdu. À la déconnexion Bluetooth, `VOYANT_kit(false)` éteint les voyants du tableau de bord et `nbr_sms_kit` est remis à 0.
+
+##### Échange 4 — Synchronisation et lecture de SMS
 
 ```mermaid
 sequenceDiagram
@@ -781,61 +868,86 @@ sequenceDiagram
     Note over Kit: nbr_sms_kit = params->historique
 
     Note over Ext,Kit: 2. Réception d'un nouveau SMS
-    Ext->>Tel: ev_envoi_sms (actualisation_sms_telephone(+1))
+    Ext->>Tel: ev_SIM_envoi_sms (actualisation_sms_telephone(1))
     Tel->>Kit: ev_nv_sms_kit(nbr_sms_telephone)
-    Note over Kit: nbr_sms_kit = params->sms_telephone<br/>VOYANT_vehicule_sms = (nbr_sms_kit > 0)
+    Note over Kit: nbr_sms_kit = params->sms_telephone<br/>VOYANT_kit_sms = (nbr_sms_kit > 0)
 
     Note over Tel,Kit: 3. Consultation depuis le kit (uniquement si speed <= 0)
-    Kit->>Tel: ev_lire_sms_kit (garde [speed <= 0] côté kit)
-    Note over Tel: actualisation_sms_telephone(-1)
+    Note over Kit: ev_btn_kit_lire_sms → ev_tentative_lire_sms_kit [speed<=0]
+    Kit->>Tel: ev_kit_lire_sms
+    Note over Tel: lire_sms_kit : actualisation_sms_telephone(-1)
     Tel->>Kit: ev_actualisation_sms_kit(nbr_sms_telephone)
     Note over Kit: nbr_sms_kit = params->sms_tel
+
+    Note over Tel,Kit: 4. Consultation depuis le téléphone
+    Note over Tel: lire_sms : actualisation_sms_telephone(-1)
+    Tel->>Kit: ev_nv_sms_kit(nbr_sms_telephone)
+    Note over Kit: nbr_sms_kit = params->sms_telephone
 ```
 
-**Pourquoi ce fonctionnement.**
+**Choix de conception**
 
-* Au début, nous avions deux compteurs indépendants (téléphone et kit), qui dérivaient dès qu'un SMS arrivait pendant une déconnexion. Nous n'en gardons donc qu'un seul comme référence.
-* Avec la garde `[nbr_sms_telephone == 0]`, la machine restait bloquée dans `lire_sms` dès qu'il restait au moins un SMS. Nous en sortons donc par `tm(10)` après lecture.
-* La lecture est synchronisée quel que soit l'écran : quand nous lisons un SMS sur le téléphone (`ev_btn_telephone_sms`), le compteur du tableau de bord est aussi mis à jour.
-
-> **[Capture Rhapsody à insérer — Version finale]** : AND-line **`SMS Extérieur`** (`state_206`, tout en haut à droite), accompagnée des sous-régions SMS (`state_184` et `state_189` dans `Communication telephone` + `state_199` dans `Commande kit main libre`).
+* Au début, nous avions deux compteurs indépendants (téléphone et kit), qui dérivaient dès qu'un SMS arrivait pendant une déconnexion. Nous n'en gardons donc qu'un seul comme référence, `nbr_sms_telephone`, que le téléphone pousse vers le kit (`ev_transfert_sms_to_kit`, `ev_nv_sms_kit`, `ev_actualisation_sms_kit`).
+* La lecture est synchronisée quel que soit l'écran : quand nous lisons un SMS sur le téléphone (`ev_btn_telephone_lire_sms`), le compteur du tableau de bord est aussi mis à jour.
+* Lorsque le té
 
 ---
 
-### 6.4 Autoradio et arbitrage des priorités audio
+### 6.5 Autoradio et arbitrage des priorités audio
 
-L'autoradio lit trois pistes, s'éteint contact coupé ou batterie vide, cède la place aux sonneries et aux appels, puis reprend la piste en cours.
+#### Statechart associé
+![AND-line Radio](media/radio.png)
 
-**Côté IHM.** Nous allumons la radio avec l'interrupteur **J2**, et la LED **J1** le confirme. **Play** (**J5**) lance la lecture, **Skip** (**J4**) passe à la piste suivante, et l'afficheur **J3** montre le titre (« Press PLAY » à l'arrêt).
+#### Choix fonctionnels
+L'autoradio lit trois pistes, s'éteint contact coupé ou batterie vide, cède la place aux sonneries et aux appels passés au volant, puis reprend la piste en cours.
 
-**Côté statechart.** Nous avons construit l'AND-line Radio comme une machine à deux niveaux :
+**Côté IHM.** Nous allumons la radio avec son interrupteur, et sa LED le confirme. **Play** lance la lecture, **Skip** passe à la piste suivante, et l'afficheur montre le titre (« Press PLAY » à l'arrêt).
 
-* **Alimentation** : `contact_radio_eteint` ↔ `contact_radio_actif` selon `EVAL [IS_IN(contact_on) && niveau_batterie > 0]`.
-* **Priorités** (Radio < Sonnerie < Appel) dans `contact_radio_actif` :
-  * `priorite_radio` (état And) gère le lecteur (`radio_desactive` → `lancement_radio` → `radio_active`, qui boucle entre `musique_1`, `musique_2`, `musique_3` sur `ev_skip_musique`) et un anti-rebond de 500 ms sur le bouton Skip ;
-  * une sonnerie (`sonnerie_en_cours == true`) fait passer en `priorite_sonnerie` ;
-  * un appel décroché au volant (`IS_IN(appel_en_cours_kit)`) fait passer en `priorite_appel`, qui coupe le son.
-* **Reprise** : en fin de sonnerie ou d'appel, les transitions visent un connecteur d'historique (H) dans `priorite_radio`. La radio reprend exactement la piste (ou l'état éteint) d'avant l'interruption.
+**Côté statechart.** Nous avons construit l'AND-line Radio comme une machine à deux niveaux : une alimentation, puis un arbitrage des priorités audio (Radio < Sonnerie < Appel).
+
+* **Alimentation** :
+
+Au démarrage, la radio est en `radio_eteinte`. En entrée, cet état coupe le son (`play_sound("stop")`), éteint le voyant (`VOYANT_radio = false`), vide l'afficheur et remet l'interrupteur à `false` (`cmd_radio = false`). Dès que le véhicule peut l'alimenter (`EVAL[IS_IN(contact_on) && niveau_batterie > 0]`), la radio passe en `radio_prete` et attend son interrupteur (`EVAL[cmd_radio == true]`) pour entrer dans `contact_radio_actif`. Elle retourne en `radio_eteinte` si le contact est coupé ou la batterie vide (`EVAL[IS_IN(contact_off) || niveau_batterie <= 0]`), ou si nous l'éteignons (`EVAL[cmd_radio == false]`).
+
+* **Lecteur (`priorite_radio`)** :
+
+`contact_radio_actif` démarre dans `priorite_radio`, un état And à deux régions parallèles :
+   * **le lecteur** : en `lancement_radio`, le voyant s'allume et l'afficheur indique « Press PLAY ». À la pression de **Play** (`ev_btn_start_radio`), la radio entre dans `radio_active` et lit `musique_1`. Chaque piste affiche son titre et lance son fichier en entrée (`play_sound("musique_1.wav")`…), et `ev_skip_musique` fait tourner la lecture en boucle : `musique_1` → `musique_2` → `musique_3` → `musique_1` ;
+   * **l'anti-rebond du bouton Skip** : en `attente_btn_radio`, un appui sur **Skip** (`ev_btn_radio_skip`) fait passer en `appui_btn_radio`, qui n'envoie `GEN(ev_skip_musique)` qu'après 500 ms (`tm(500)`). Les appuis reçus pendant ce délai sont ignorés.
+
+* **Priorités** :
+
+Depuis `priorite_radio`, deux transitions sur `EVAL` interrompent la musique :
+   * une sonnerie, sur le téléphone ou au volant (`[sonnerie_en_cours]`), fait passer en `priorite_sonnerie` : la radio laisse le canal audio à `sonnerie.wav` ou `sonnerie2.wav` ;
+   * un appel décroché au volant (`[IS_IN(appel_en_cours_kit)]`) fait passer en `priorite_appel`, qui coupe le son en entrée (`play_sound("stop")`).
+
+   Depuis `priorite_sonnerie`, un appel décroché au volant fait aussi passer en `priorite_appel`.
+
+* **Reprise** : en fin de sonnerie (`[!sonnerie_en_cours]`) ou d'appel (`[!IS_IN(appel_en_cours_kit)]`), les transitions visent un connecteur d'historique (H) dans `priorite_radio`. La radio revient exactement dans l'état d'avant l'interruption : en `lancement_radio` si nous n'avions pas lancé la lecture, ou sur la même piste, qui est relancée par son action d'entrée.
 
 Voici un schéma qui illustre cet arbitrage des priorités :
 
 ```mermaid
 flowchart LR
-    OFF["`**contact_radio_eteint**<br/>Contact OFF ou batterie <= 0<br/>Coupure audio`"]
+    OFF["`**radio_eteinte**<br/>Coupure audio, VOYANT_radio = false`"]
+    PRET["`**radio_prete**<br/>Contact mis, batterie > 0`"]
     subgraph ACT["contact_radio_actif — Arbitrage des priorités audio"]
-        P1["`**Priorité 3 (basse) : priorite_radio**<br/>radio_desactive / lancement_radio / musique_1..3<br/>+ anti-rebond Skip (500 ms)`"]
+        P1["`**Priorité 3 (basse) : priorite_radio**<br/>lancement_radio / musique_1..3<br/>+ anti-rebond Skip (500 ms)`"]
         P2["`**Priorité 2 : priorite_sonnerie**<br/>Canal cédé à sonnerie.wav / sonnerie2.wav`"]
         P3["`**Priorité 1 (haute) : priorite_appel**<br/>Silence audio durant l'appel`"]
         H(("`**H**<br/>History`"))
 
         P1 -->|"`sonnerie_en_cours`"| P2
+        P1 -->|"`IS_IN(appel_en_cours_kit)`"| P3
         P2 -->|"`IS_IN(appel_en_cours_kit)`"| P3
         P2 -->|"`!sonnerie_en_cours`"| H
         P3 -->|"`!IS_IN(appel_en_cours_kit)`"| H
         H -.->|"`Reprise piste exacte`"| P1
     end
 
-    OFF <-->|"`contact_on && niveau_batterie > 0`"| ACT
+    OFF -->|"`IS_IN(contact_on) && niveau_batterie > 0`"| PRET
+    PRET -->|"`cmd_radio == true`"| ACT
+    ACT -->|"`IS_IN(contact_off) || niveau_batterie <= 0`<br/>`cmd_radio == false`"| OFF
 
     classDef off fill:#f1f5f9,stroke:#64748b,color:#334155
     classDef p1 fill:#dcfce7,stroke:#16a34a,color:#14532d
@@ -843,15 +955,18 @@ flowchart LR
     classDef p3 fill:#ffe4e6,stroke:#e11d48,color:#881337
     classDef hist fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#312e81
     class OFF off
+    class PRET off
     class P1 p1
     class P2 p2
     class P3 p3
     class H hist
 ```
 
-**Pourquoi ce fonctionnement.** `PlaySound` ne gère qu'une piste à la fois : toute sonnerie coupe donc la musique. Nous avons mis en place la machine de priorités et le connecteur d'historique pour reprendre proprement la lecture, ainsi qu'un anti-rebond pour éviter qu'un double clic sur Skip saute plusieurs pistes.
+**Choix de conception**
 
-![AND-line Radio](media/radio.png)
+* `PlaySound` ne gère qu'une piste à la fois : toute sonnerie coupe donc la musique. Nous avons mis en place la machine de priorités et le connecteur d'historique pour reprendre proprement la lecture.
+* Nous avons ajouté l'anti-rebond pour éviter qu'un double clic sur **Skip** saute plusieurs pistes.
+* Les deux priorités ne sont pas traitées de la même façon, et c'est voulu. Le simulateur n'a qu'une seule bande son : toute sonnerie, qu'elle vienne du téléphone ou du kit (`sonnerie_en_cours`), prend donc forcément la place de la musique. En revanche, un appel passé sur le téléphone seul n'a aucune incidence réelle sur l'autoradio du véhicule : la musique reprend dès la fin de la sonnerie. Ce n'est que lorsque le téléphone est connecté au kit que l'appel utilise la piste audio du véhicule (`IS_IN(appel_en_cours_kit)`) : la radio passe alors en `priorite_appel` et se tait jusqu'à la fin de l'appel.
 
 ---
 
@@ -944,7 +1059,7 @@ Voici les scénarios que nous avons testés en mode animation :
 
 ## 9. Implémentation de la gestion sonore sous Rhapsody
 
-Trois fonctionnalités produisent du son : l'alarme de dépassement du limiteur (section 5, Spécification et développement du limiteur de vitesse), les sonneries d'appel sur le téléphone et le kit (section 6.2, Gestion des appels entrants et redirection mains-libres), et les trois pistes de l'autoradio (section 6.4, Autoradio et arbitrage des priorités audio). Nous les faisons toutes passer par une seule opération, `play_sound()`.
+Trois fonctionnalités produisent du son : l'alarme de dépassement du limiteur (section 5, Spécification et développement du limiteur de vitesse), les sonneries d'appel sur le téléphone et le kit (section 6.3, Gestion des appels entrants et redirection mains-libres), et les trois pistes de l'autoradio (section 6.5, Autoradio et arbitrage des priorités audio). Nous les faisons toutes passer par une seule opération, `play_sound()`.
 
 ### Côté IHM
 
@@ -976,16 +1091,16 @@ Le tableau suivant résume, pour chaque son, l'état qui le lance et la façon d
 | Fonctionnalité | État / opération appelante | Fichier .wav joué | Mécanisme d'arrêt |
 | :--- | :--- | :--- | :--- |
 | Alarme limiteur (§ 5) | `alerte_depassement(1)` depuis Limiteur de vitesse / `depassement` | `alarme_depassement.wav` | `alerte_depassement(0)` en exit de `depassement` et en entry de `limiteur_off` |
-| Sonnerie téléphone (§ 6.2) | Communication telephone / `sonnerie_sonore` | `sonnerie.wav` | `play_sound("stop")` en entry de `appel_en_cours` et `sonnerie_finie` |
-| Sonnerie kit véhicule (§ 6.2) | Commande kit main libre / `sonnerie_sonore_kit` | `sonnerie2.wav` | `PlaySound(NULL, 0, 0)` en exit de `gestion_sonnerie_kit` |
-| Autoradio 3 pistes (§ 6.4) | Radio / `musique_1`, `musique_2`, `musique_3` | `musique_1.wav` à `musique_3.wav` | `PlaySound(NULL, 0, 0)` en entry de `radio_desactive`, `contact_radio_eteint` et `priorite_appel` |
+| Sonnerie téléphone (§ 6.3) | Communication telephone / `sonnerie_sonore` | `sonnerie.wav` | `play_sound("stop")` en exit de `gestion_sonnerie` et en entry de `appel_en_cours` |
+| Sonnerie kit véhicule (§ 6.3) | Commande kit main libre / `sonnerie_sonore_kit` | `sonnerie2.wav` | `play_sound("stop")` en exit de `gestion_sonnerie_kit` |
+| Autoradio 3 pistes (§ 6.5) | Radio / `musique_1`, `musique_2`, `musique_3` | `musique_1.wav` à `musique_3.wav` | `play_sound("stop")` en entry de `radio_eteinte` et de `priorite_appel` |
 
 ### Pourquoi ce fonctionnement
 
 * Le sujet propose de placer les `.wav` dans `CodesGeneres/ModeAnimation/`, mais ce dossier est généré et exclu par `.gitignore` : après chaque récupération du travail de l'autre binôme, les sons manquaient. Nous les avons donc rangés dans un dossier `sons/` versionné.
 * Au début, nos appels `PlaySound` étaient dispersés et utilisaient des chemins différents, et les pistes de la radio n'avaient même pas l'extension `.wav`. Nous avons donc centralisé le chemin et l'appel dans une seule opération.
 * Avec `SND_LOOP | SND_ASYNC`, un son tourne jusqu'à un arrêt explicite : sans les arrêts listés ci-dessus, les sonneries continuaient après un décrochage. Nous avons donc prévu un arrêt explicite pour chaque son.
-* `PlaySound` coupe la piste en cours à chaque nouvel appel : c'est ce qui nous a imposé la machine de priorités de l'AND-line Radio (section 6.4, Autoradio et arbitrage des priorités audio).
+* `PlaySound` coupe la piste en cours à chaque nouvel appel : c'est ce qui nous a imposé la machine de priorités de l'AND-line Radio (section 6.5, Autoradio et arbitrage des priorités audio).
 
 ---
 
@@ -1257,3 +1372,53 @@ Les 77 attributs de `_SysVehicule`, regroupés par domaine. Les types et valeurs
 | `cmd_`, `SWITCH_` | Commande maintenue de l'IHM | `cmd_contact`, `SWITCH_simulation_voiture_devant` |
 | `float_` | Valeur continue dont l'entier correspondant est affiché | `float_speed` |
 | `_kit` / `_telephone` | Côté de la liaison Bluetooth auquel appartient la donnée | `nbr_sms_kit`, `nbr_sms_telephone` |
+
+### Annexe E — Paquets Bluetooth et messages du téléphone
+
+**Paquets échangés entre le téléphone et le kit** (section 6.1, Principe : deux équipements cloisonnés qui échangent des paquets) :
+
+| Événement | Sens | Paramètre | Rôle |
+| :--- | :---: | :--- | :--- |
+| `ev_kit_vehicule_pret` | Kit → Téléphone | — | Annonce du kit toutes les 500 ms en `recherche_telephone` |
+| `ev_demande_jumelage` | Téléphone → Kit | — | Demande de jumelage (bouton **OK**) |
+| `ev_demande_mdp` | Kit → Téléphone | — | Demande du code PIN |
+| `ev_tentative_mdp` | Téléphone → Kit | `mdp` (`OMString`) | Code PIN saisi (bouton **Appairer**) |
+| `ev_mdp_correct` | Kit → Téléphone | — | Code PIN accepté |
+| `ev_mdp_incorrect` | Kit → Téléphone | — | Code PIN refusé |
+| `ev_demande_connexion` | Téléphone → Kit | — | Demande de connexion, toutes les 100 ms en `connexion` |
+| `ev_connexion_acceptee` | Kit → Téléphone | — | Connexion établie |
+| `ev_bluetooth_telephone_desactive` | Téléphone → Kit | — | Bluetooth du téléphone coupé ou téléphone éteint |
+| `ev_kit_bluetooth_desactive` | Kit → Téléphone | — | Bluetooth du kit coupé (contact coupé) |
+| `ev_actualisation_batterie_telephone_vehicule` | Téléphone → Kit | `pourcentage` (`int`) | Niveau de batterie du téléphone |
+| `ev_kit_appel_entrant` | Téléphone → Kit | — | Appel entrant, à chaque salve du réseau |
+| `ev_kit_sonnerie` | Téléphone → Kit | — | Relance de `sonnerie2.wav`, toutes les 3 s |
+| `ev_kit_fin_sonnerie` | Téléphone → Kit | — | Fin de sonnerie sans réponse |
+| `ev_kit_appel_transfere` | Téléphone → Kit | — | Appel décroché, basculé sur le kit |
+| `ev_kit_appel_termine` | Téléphone → Kit | — | Fin de l'appel au volant |
+| `ev_kit_decrocher` | Kit → Téléphone | — | Bouton **Décrocher** au volant |
+| `ev_kit_raccrocher` | Kit → Téléphone | — | Bouton **Raccrocher** au volant |
+| `ev_transfert_sms_to_kit` | Téléphone → Kit | `historique` (`int`) | Compteur de SMS envoyé à la connexion |
+| `ev_nv_sms_kit` | Téléphone → Kit | `sms_telephone` (`int`) | Compteur de SMS à jour |
+| `ev_actualisation_sms_kit` | Téléphone → Kit | `sms_tel` (`int`) | Compteur après une lecture |
+| `ev_kit_lire_sms` | Kit → Téléphone | — | Lecture d'un SMS au volant (véhicule à l'arrêt) |
+
+**Événements entre le réseau extérieur et le téléphone** :
+
+| Événement | Sens | Rôle |
+| :--- | :---: | :--- |
+| `ev_SIM_appel` | Réseau → Téléphone | Appel entrant, toutes les 100 ms pendant 5 s au plus |
+| `ev_SIM_appel_en_cours` | Téléphone / Kit → Réseau | Appel décroché |
+| `ev_SIM_raccrocher` | Téléphone → Réseau | Appel refusé ou terminé |
+| `ev_SIM_envoi_sms` | Réseau → Téléphone | Réception d'un SMS |
+
+**Messages affichés par le téléphone** (`affichage_appairage`, tableau `messages_appairage`) :
+
+| Indice | Message | Affiché |
+| :---: | :--- | :--- |
+| 0 | « Aucun appareil détecté » | En entrée de `recherche_bluetooth` |
+| 1 | « Sélectioner un appareil » | En entrée de `kit_detecte` (« Kit Bluetooth Vehicule » apparaît dans `affichage_liste_appareils`) |
+| 2 | « Entrez un mot de passe » | À la réception de `ev_demande_mdp` |
+| 3 | « Mot de passe incorrect » | À la réception de `ev_mdp_incorrect` |
+| 4 | « Appareil jumelé » | En entrée de `connexion` |
+| 5 | « Jumelage Impossible » | Après 500 ms sans réponse du kit (moteur en marche) |
+| — | « Standby » | En entrée de `telephone_eteint` et de `bluetooth_telephone_desactive` |

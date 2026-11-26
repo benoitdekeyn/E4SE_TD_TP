@@ -50,7 +50,7 @@
 &ensp;&ensp;&ensp;&ensp;◦ [11.1 Statechart associé](#111-statechart-associ%C3%A9)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [11.2 Choix fonctionnels](#112-choix-fonctionnels)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [11.3 Choix de conception](#113-choix-de-conception)<br>
-<b>• [13. Régulateur de vitesse adaptatif (ACC)](#13-r%C3%A9gulateur-de-vitesse-adaptatif-acc)</b><br>
+<b>• [13. Régulateur de vitesse adaptatif](#13-r%C3%A9gulateur-de-vitesse-adaptatif)</b><br>
 &ensp;&ensp;&ensp;&ensp;◦ [12.1 Fonctionnement depuis l'IHM](#121-fonctionnement-depuis-lihm)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [12.2 Statechart](#122-statechart)<br>
 &ensp;&ensp;&ensp;&ensp;◦ [12.3 Simulation de la cible et correcteur PI de distance](#123-simulation-de-la-cible-et-correcteur-pi-de-distance)<br>
@@ -103,7 +103,7 @@ Nous avons découpé le statechart en 16 AND-lines (régions orthogonales exécu
 | Bloc | AND-lines | Rôle | Section |
 | :--- | :--- | :--- | :--- |
 | Véhicule | Horloge rafraichissement, Simulation du vehicule, Débit de l'injection d'essence, Clé du véhicule, Ressources et pannes | Physique, pédales, moteur, énergie | [Section 3 Architecture globale et horloge partagée EVAL](#4-architecture-globale-et-horloge-partag%C3%A9e-eval) à [Section 7 Modélisation énergétique : carburant, batterie et pannes](#8-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes) |
-| Aides à la conduite | Mode de pilotage, Limiteur de vitesse, Simulation voiture régulateur adaptatif | Régulateur, limiteur, ACC | [Section 8 Régulateur de vitesse simple](#9-r%C3%A9gulateur-de-vitesse-simple), [Section 9 Limiteur de vitesse](#10-limiteur-de-vitesse), [Section 12 Régulateur de vitesse adaptatif (ACC)](#13-r%C3%A9gulateur-de-vitesse-adaptatif-acc) |
+| Aides à la conduite | Mode de pilotage, Limiteur de vitesse, Simulation voiture régulateur adaptatif | Régulateur, limiteur, ACC | [Section 8 Régulateur de vitesse simple](#9-r%C3%A9gulateur-de-vitesse-simple), [Section 9 Limiteur de vitesse](#10-limiteur-de-vitesse), [Section 12 Régulateur de vitesse adaptatif (ACC)](#13-r%C3%A9gulateur-de-vitesse-adaptatif) |
 | Téléphone | Telephone, Batterie téléphone, Communication telephone | Bluetooth côté téléphone, appels, SMS | [Section 10 Contrôleur de Kit Bluetooth « mains libres »](#11-contr%C3%B4leur-de-kit-bluetooth--mains-libres-) |
 | Kit véhicule | Jumelage kit main libre, Commande kit main libre | Bluetooth côté véhicule, affichage au volant | [Section 10 Contrôleur de Kit Bluetooth « mains libres »](#11-contr%C3%B4leur-de-kit-bluetooth--mains-libres-) |
 | Réseau extérieur | Appel Extérieur, SMS Extérieur | Simulation des appels et SMS entrants | [Section 10.4 Gestion des appels entrants et redirection mains-libres](#104-gestion-des-appels-entrants-et-redirection-mains-libres), [Section 10.5 Messagerie SMS et tableau de bord connecté](#105-messagerie-sms-et-tableau-de-bord-connect%C3%A9) |
@@ -464,7 +464,9 @@ C'est dans le même AND-line 'Débit de l'injection d'essence' que nous détermi
 
 Nous avons remarqué que la formule fournie dans le sujet (`error = (double)(5*(vitesseConsigne - speed) / 6.0); steady = (double)(vitesseConsigne / 12.0); throttle = steady + error;`) n'était pas adaptée au fonctionnement réel de la voiture. En effet, cette formule est un simple correcteur proportionnel qui possède une erreur statique qui se voit notamment quand on change l'angle de la pente.
 
-Nous avons voulu améliorer cette fonction pour qu'il joue avec un attribut qui stocke l'erreur intégrale afin de corriger l'erreur statique. Avec l'aide de l'IA, nous avons donc écrit une fonction de correcteur PI discret pour asservir la vitesse de la voiture à la vitesse de la consigne. Cette fonction est appelée `calcul_regulateur_vitesse()`, cadencée à `PARAM_SIMU_freq_regulateur` = 3 Hz.
+En effet, avec cette formule, on calcule uniquement un débit d'injection théorique en fonction de la vitesse de consigne (sur un sol supposé plat), puis on modifie  l'injection pour qu'il converge vers ce steady en fonction de l'erreur mesurée. Donc il n'y a auncune prise en compte du rapport dynamique entre injection et vitesse (en fonction de la pente par exemple).
+
+Nous avons voulu améliorer cette fonction pour qu'il utilise un attribut qui stocke l'erreur intégrale afin de corriger l'erreur statique. Avec l'aide de l'IA, nous avons donc écrit une fonction de correcteur PI discret pour asservir la vitesse de la voiture à la vitesse de la consigne. Cette fonction est appelée `calcul_regulateur_vitesse()`, cadencée à `PARAM_SIMU_freq_regulateur` = 2 Hz.
 
 Pour ce correcteur PI, nous avons deux attributs `Kp_regulateur` et `Ki_regulateur` qui représentent les gains appliqués à la commande.
 
@@ -555,11 +557,11 @@ L'AND-line **`Limiteur de vitesse`** gère l'activation du limiteur, le réglage
 * **Consigne initiale et double appui** : l'entrée dans `consigne_fixe` initialise `vitesseConsigne = valeur_initiale_limiteur` (`50 km/h`). Un premier appui sur **+** (`ev_vitesseConsigne_plus`) passe dans `plus` et applique tout de suite `ex_vitesseConsigne(+1)`. Si un second appui arrive avant `500 ms`, la transition de retour applique `ex_vitesseConsigne(+9)` (soit `+10 km/h` au total) ; sinon, `tm(500)` ramène dans `consigne_fixe` sans modification supplémentaire. Le bouton **−** suit exactement le même principe (`-1` puis `-9`).
 * **Activation différée** : à l'entrée dans `consigne_fixe`, le limiteur démarre dans `limiteur_inhibe` (`limiteur_attente = true`) : tant que le véhicule roule au-dessus de la consigne, il ne bride pas l'injection et ne déclenche aucune alarme. Dès que la vitesse repasse sous la consigne (`EVAL[speed <= vitesseConsigne]`), il bascule dans `limiteur_effectif` (`limiteur_attente = false`).
 * **Alarme de dépassement** : dans `limiteur_effectif`, si la vitesse dépasse la consigne de plus de `2 km/h` (`EVAL[speed > vitesseConsigne + 2]`, typiquement en forte descente), l'entrée dans `depassement` appelle `alerte_depassement(1)`, ce qui allume le voyant `limiteur_depasse` et lance l'alarme sonore en boucle (voir [Section 14 Implémentation de la gestion sonore sous Rhapsody](#14-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody)). Dès que la vitesse redescend sous la consigne (`EVAL[vitesseConsigne >= speed]`), l'action de sortie `alerte_depassement(0)` coupe l'alarme et éteint le voyant.
-* **Désactivation automatique et kick-down** : le limiteur repasse dans `limiteur_off` dès que le moteur s'arrête ou que le conducteur enfonce fortement l'accélérateur près de la limite (`EVAL[IS_IN(moteur_off) || ((vitesseConsigne - speed) < 10 && accelPedal > 7)]`).
+* **Désactivation automatique** : le limiteur repasse dans `limiteur_off` dès que le moteur s'arrête ou que le conducteur appuie beaucoup sur l'accélérateur près de la limite (`EVAL[IS_IN(moteur_off) || ((vitesseConsigne - speed) < 10 && accelPedal > 7)]`).
 
 #### 9.2.2 Bridage de l'injection d'essence
 
-Le bridage effectif du `throttle` est centralisé dans l'AND-line **`Débit de l'injection d'essence`** (présentée en [Section 5 Gestion des pédales d'accélération et de frein](#6-gestion-des-p%C3%A9dales-dacc%C3%A9l%C3%A9ration-et-de-frein) et [Section 8.2 Statechart](#82-statechart)), afin de conserver un seul écrivain sur `throttle`. Dans le super-état `pedales`, dès que `IS_IN(limiteur_effectif) && float_speed >= vitesseConsigne + 0.5`, la transition vers `freinage_injection` coupe l'accélération et ramène le `throttle` au ralenti, quelle que soit la position de la pédale d'accélération. Comme pour le régulateur, le seuil à `vitesseConsigne + 0.5` sur `float_speed` évite les oscillations autour de l'entier tronqué `speed`.
+Le bridage effectif du `throttle` pour empecher le dépassement de la vitesse consigne, est géré dans l'AND-line **`Débit de l'injection d'essence`** (présentée en [Section 5 Gestion des pédales d'accélération et de frein](#6-gestion-des-p%C3%A9dales-dacc%C3%A9l%C3%A9ration-et-de-frein) et [Section 8.2 Statechart](#82-statechart)), afin de conserver un seul AND-line qui contrôle le `throttle`. Dans le super-état `pedales`, dès que `IS_IN(limiteur_effectif) && float_speed >= vitesseConsigne + 0.5`, la transition vers `freinage_injection` coupe l'accélération et ramène le `throttle` à son minimum, quelle que soit la position de la pédale d'accélération. Comme pour le régulateur, le seuil à `vitesseConsigne + 0.5` sur `float_speed` évite les oscillations autour de l'entier `speed`.
 
 ### 9.3 Opérations
 
@@ -577,14 +579,14 @@ if (vitesseConsigne < 0) {
 }
 ```
 
-Cette opération applique l'incrément `delta` (`±1` ou `±9`) puis borne `vitesseConsigne` entre `0` et `PARAM_SIMU_max_speed` (`120 km/h`) afin d'empêcher toute consigne incohérente.
+Cette opération applique le "delta" (`±1` ou `±9`) puis borne `vitesseConsigne` entre `0` et `PARAM_SIMU_max_speed` (`120 km/h`).
 
 Voici le code de l'opération `alerte_depassement()` :
 
 <!-- code:alerte_depassement(int actif) -->
 ```cpp
 if (actif == 0) {
-    PlaySound(NULL, NULL, 0);
+    play_sound("stop");
     limiteur_depasse = false;
 } else {
     play_sound("alarme_depassement.wav");
@@ -592,7 +594,9 @@ if (actif == 0) {
 }
 ```
 
-Appelée en entrée (`actif = 1`) et en sortie (`actif = 0`) de l'état `depassement`, ainsi qu'à l'entrée de `limiteur_off` par sécurité, elle synchronise l'allumage du voyant `limiteur_depasse` avec la lecture ou l'arrêt de l'alarme sonore `alarme_depassement.wav` (voir [Section 14 Implémentation de la gestion sonore sous Rhapsody](#14-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody)).
+> Pour la fonciton play_sound(), voir la section [14 Implémentation de la gestion sonore sous Rhapsody](#14-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody)
+
+Cette opération synchronise l'allumage du voyant `limiteur_depasse` avec la lecture ou l'arrêt de l'alarme sonore `alarme_depassement.wav` (voir [Section 14 Implémentation de la gestion sonore sous Rhapsody](#14-impl%C3%A9mentation-de-la-gestion-sonore-sous-rhapsody)).
 
 ### 9.4 Évolution
 
@@ -976,7 +980,7 @@ flowchart LR
 
     OFF -->|"`IS_IN(contact_on) && niveau_batterie > 0`"| PRET
     PRET -->|"`cmd_radio == true`"| ACT
-    ACT -->|"`IS_IN(contact_off) || niveau_batterie <= 0`<br/>`cmd_radio == false`"| OFF
+    ACT -->|"`IS_IN(contact_off) || niveau_batterie <= 0<br/>cmd_radio == false`"| OFF
 
     classDef off fill:#f1f5f9,stroke:#64748b,color:#334155
     classDef p1 fill:#dcfce7,stroke:#16a34a,color:#14532d
@@ -997,35 +1001,46 @@ flowchart LR
 * Nous avons ajouté l'anti-rebond pour éviter qu'un double clic sur **Skip** saute plusieurs pistes.
 * Les deux priorités ne sont pas traitées de la même façon, et c'est voulu. Le simulateur n'a qu'une seule bande son : toute sonnerie, qu'elle vienne du téléphone ou du kit (`sonnerie_en_cours`), prend donc forcément la place de la musique. En revanche, un appel passé sur le téléphone seul n'a aucune incidence réelle sur l'autoradio du véhicule : la musique reprend dès la fin de la sonnerie. Ce n'est que lorsque le téléphone est connecté au kit que l'appel utilise la piste audio du véhicule (`IS_IN(appel_en_cours_kit)`) : la radio passe alors en `priorite_appel` et se tait jusqu'à la fin de l'appel.
 
-## 13. Régulateur de vitesse adaptatif (ACC)
+## 13. Régulateur de vitesse adaptatif
 
-Le régulateur de vitesse adaptatif (ACC) prolonge le régulateur de vitesse simple ([Section 8 Régulateur de vitesse simple](#9-r%C3%A9gulateur-de-vitesse-simple)) en prenant en compte un véhicule plus lent qui nous précède. Tant que la voie est libre, la voiture maintient sa vitesse de consigne ; dès que l'écart passe sous la distance de sécurité (`distance_securite`, `30 m` par défaut), elle adapte son injection pour suivre la cible à distance constante, puis réaccélère jusqu'à la vitesse cible quand la voie se libère.
+Le régulateur de vitesse adaptatif est une extension du régulateur de vitesse simple ([Section 8 Régulateur de vitesse simple](#9-r%C3%A9gulateur-de-vitesse-simple)) en prenant en compte un véhicule devant celui qu'on conduit.  
+Tant que la voiture devant est plus éloignée que la distance de sécurité, le régulateur maintient la vitesse consigne comme d'habitude.  
+Dès que l'écart passe sous la distance de sécurité, on régule la vitesse toujours en controlant le throttle, mais au lieu de suivre une vitesse de consigne avec la fonction `calcul_regulateur_vitesse()`, on vise une distance entre les deux véhicules (à savoir la distance de sécurité) avec une nouvelle fonction très similaire `calcul_regulateur_distance()`.  
+Par défaut, la distance de sécurité est fixée à `30 m` dans l'attribut `distance_securite`.
 
 ### 12.1 Fonctionnement depuis l'IHM
 
-* **Paramétrage du véhicule cible** : nous réglons la distance initiale qui nous sépare de la voiture de devant (`distance_inter_voiture`) ainsi que sa vitesse (`vitesse_voiture_devant`).
-* **Activation de la simulation** : l'interrupteur `cmd_simulation_voiture_devant` active le déplacement de la voiture cible ; la distance qui nous sépare d'elle se met à jour en temps réel sur l'IHM.
-* **Pilotage sous ACC** : aucune commande supplémentaire n'est nécessaire au volant, nous activons simplement le bouton **Régulateur** (voir [Section 8.1 Fonctionnement depuis l'IHM](#81-fonctionnement-depuis-lihm)). Si la distance passe sous `30 m`, le véhicule ralentit automatiquement pour la maintenir ; si la voiture de devant accélère ou est désactivée, le régulateur revient de lui-même à la **vitesse cible**.
+L'IHM contient deux sliders en input/output pour à la fois régler et visualiser la distance de sécurité (`distance_securite`) et la distance inter-véhicule (`distance_inter_voiture`).
+
+L'interrupteur `cmd_simulation_voiture_devant` permet d'activer ou de désactiver la simulation du véhicule devant. L'avantage est que tant que l'interrupteur est désactivé, la distance inter-véhicule peut être réglée manuellement sans que la valeur ne soit écrasée par la simulation.
+
+Une fois l'interrupteur activé, la simulation prend le relais et met à jour automatiquement la distance inter-véhicule en fonction du déplacement du véhicule devant.
+Un afficheur numérique permet de visualiser en temps réel la distance inter-véhicule meme si elle dépasse l'intervalle de 0 - 50 m du slider.
 
 ### 12.2 Statechart
 
 #### 12.2.1 Simulation de la voiture qui précède
 
-Une AND-line dédiée **`Simulation voiture régulateur adaptatif`** simule le déplacement du véhicule cible indépendamment de notre véhicule :
+Une AND-line dédiée **`Simulation voiture régulateur adaptatif`** simule le déplacement du véhicule de devant, indépendamment de notre véhicule :
 
 ![AND-line Simulation voiture régulateur adaptatif](media/ANDL_regulateur_adaptatif.png)
 
-* Dans l'état initial `reglage_voiture_devant`, la distance inter-véhicule est remise à zéro tant que la simulation n'est pas lancée, ce qui permet de régler librement les conditions initiales.
-* Dès que `EVAL[cmd_simulation_voiture_devant == true]`, l'entrée dans `simulation_voiture_devant` place la voiture cible devant nous (`distance_voiture_devant = distance + distance_inter_voiture;`).
-* Le sous-état `loop_simulation` reboucle à chaque événement `EVAL` (`20 Hz`) tant que l'interrupteur reste enclenché : il avance la cible via `calcul_distance_voiture_devant()` et actualise l'écart `distance_inter_voiture = distance_voiture_devant - distance`. Couper l'interrupteur (`EVAL[cmd_simulation_voiture_devant == false]`) renvoie l'AND-line dans `reglage_voiture_devant`.
+L'état par défaut `reglage_voiture_devant` sert à mettre en pause la simulation. En entrant dans cet état, la distance inter-véhicule est remise à zéro pour revenir dans l'intervalle de réglage du slider.  
+
+Dès que `EVAL[cmd_simulation_voiture_devant == true]`, l'entrée dans `simulation_voiture_devant` place la voiture devant nous (`distance_voiture_devant = distance + distance_inter_voiture;`) et démarre sa simulation.
+
+Le sous-état `loop_simulation` reboucle à chaque événement `EVAL` (déclenché à la fréquence de simulation) tant que l'interrupteur reste enclenché :  
+Il calcule la nouvelle position de la voiture devant via `calcul_distance_voiture_devant()` et actualise l'écart `distance_inter_voiture = distance_voiture_devant - distance`, en continu.  
+
+Couper l'interrupteur (`EVAL[cmd_simulation_voiture_devant == false]`) renvoie l'AND-line dans `reglage_voiture_devant`.
 
 #### 12.2.2 Aiguillage entre suivi de vitesse et suivi de distance
 
 Plutôt que d'ajouter une nouvelle AND-line qui modifierait `throttle`, nous avons directement étendu le super-état `regulateur` de l'AND-line **`Débit de l'injection d'essence`** :
 
-![AND-line complète Débit de l'injection d'essence (pedales et regulateur ACC)](media/ANDL_injection_complet.png)
+![AND-line complète Débit de l'injection d'essence (pedales et regulateur ACC)](media/ANDL_injection_regulateur.png)
 
-* À chaque pas du régulateur (`tm(1000/PARAM_SIMU_freq_regulateur)`, soit `3 Hz`), le super-état `regulateur` repasse par son état initial `verification_distance_securite`, qui aiguille immédiatement le calcul :
+* À chaque itération du régulateur, le super-état `regulateur` repasse par son état initial `verification_distance_securite`, qui aiguille immédiatement le calcul :
   * si un véhicule cible est actif et plus proche que la distance de sécurité (`[distance_inter_voiture < distance_securite && IS_IN(simulation_voiture_devant)]`), il passe dans `suivi_distance_consigne` et appelle `calcul_regulateur_distance()` ;
   * sinon (`[distance_inter_voiture > distance_securite || !IS_IN(simulation_voiture_devant)]`), il passe dans `suivi_vitesse_consigne` et appelle le régulateur classique `calcul_regulateur_vitesse()`.
 
@@ -1070,7 +1085,7 @@ distance_entiere_voiture_devant = (int)distance_voiture_devant;
 
 Elle intègre simplement la position de la voiture de devant sur le même pas de temps `dt` (`50 ms`) que notre propre véhicule dans `calcul_vitesse_distance()`.
 
-Voici le code de l'opération `calcul_regulateur_distance()`, appelée à `3 Hz` dans `suivi_distance_consigne` :
+Voici le code de l'opération `calcul_regulateur_distance()`, appelée à `2 Hz` dans `suivi_distance_consigne` :
 
 <!-- code:calcul_regulateur_distance() -->
 ```cpp
@@ -1248,8 +1263,6 @@ Nous avons abouti à un modèle Statechart complet, exécutable et validé en an
 4. **Scénarios routiers automatisés et multi-téléphones** : profils de pente préprogrammés et liste de plusieurs téléphones jumelés.
 
 -->
-
-<!-- 
 
 ## 16. Annexes
 
@@ -1499,5 +1512,3 @@ Liste complète des paquets présentés en [Section 10.2 Principe : deux équipe
 | 4 | « Appareil jumelé » | En entrée de `connexion` |
 | 5 | « Jumelage Impossible » | Après 500 ms sans réponse du kit (moteur en marche) |
 | — | « Standby » | En entrée de `telephone_eteint` et de `bluetooth_telephone_desactive` |
-
--->

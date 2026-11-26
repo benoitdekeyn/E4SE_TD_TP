@@ -361,52 +361,155 @@ Nous avons donc modifié les opérations `accelerer()` et `freiner_injection()` 
 
 ## 5. Gestion du contact et du démarrage
 
-Le sujet demande de gérer la clé, le démarrage et l'arrêt d'urgence en roulant : coupure moteur immédiate, accélérateur désactivé, inertie conservée.
-
-**Côté IHM.** Nous mettons ou coupons le contact avec l'interrupteur **contact** (`cmd_contact`), et la LED jaune placée dessous le confirme. Le bouton **Démarrer** envoie `ev_demarrer`, et la LED **moteur** indique que le moteur tourne (`ignition`).
-
-**Côté statechart.** Dans l'AND-line Clé du véhicule, nous avons organisé le cycle de vie de façon hiérarchique :
-
-* `contact_off` ↔ `contact_on` sur `EVAL [cmd_contact == true / false]`.
-* Dans `contact_on`, l'état initial `moteur_off` exécute `arreter()` (`ignition = false;`).
-* `moteur_on` n'est atteint que sur `ev_demarrer` sous la garde `[IS_IN(fonctionelle)]` (aucune panne), en exécutant `ex_demarrer()` : `ignition = true; throttle = throttle_repos; niveau_batterie -= 10;`. L'état appelle `calcul_carburant()` et, dans une région parallèle, `calcul_batterie()` au rythme de rafraîchissement.
-* La coupure moteur intervient sur `EVAL [!IS_IN(fonctionelle) || cmd_contact == false]`.
-
-**Arrêt d'urgence.** Quand nous coupons le contact en roulant, l'AND-line sort de `moteur_on`. `arreter()` passe `ignition` à `false`, l'AND-line Débit de l'injection d'essence bascule en `freinage_injection`, et `calcul_vitesse_distance()` annule `throttle` tout en conservant `float_speed`. La pédale de frein reste active, et le régulateur, le limiteur, le Bluetooth et l'autoradio se coupent en même temps.
-
-**Pourquoi ce fonctionnement.** Nous avons placé `arreter()` en entrée de `moteur_off` et non de `contact_off` : sinon, une panne sèche, qui coupe le moteur sans couper le contact, laissait `ignition` à `true`. De la même façon, nous avons mis `calcul_carburant()` dans `moteur_on` pour qu'aucune consommation n'ait lieu moteur coupé.
+### 5.1 Statechart
 
 ![AND-line Clé du véhicule (incluant la région calcul_batterie_voiture)](media/ANDL_cle_vehicule.png)
 
+### 5.2 Utilisation depuis l'IHM
 
-## 6. Modélisation énergétique : carburant, batterie et pannes
+ Nous mettons ou coupons le contact avec l'interrupteur **contact** (`cmd_contact`), et la LED jaune placée dessous le confirme. Le bouton **Démarrer** envoie `ev_demarrer`, et la LED **moteur** indique que le moteur tourne (`ignition`).
 
-Nous avons entièrement implémenté cette partie optionnelle du sujet : consommation, charge et décharge de la batterie, détection des pannes, plein et dépannage.
+### 5.3 Fonctionnement
 
-**Côté IHM.** Les jauges **% Batterie** et **Carburant** (L) affichent les niveaux. Le bouton **remplir carburant** ajoute 5 L, et le bouton **recharge d'urgence batterie** remet la batterie à 55 %. Ces deux boutons ne fonctionnent que véhicule à l'arrêt et contact coupé.
+Tout le cycle de vie de la clé et du moteur se trouve dans l'AND-line Clé du véhicule. Le super-état `contact_on` manipule l'état du moteur:
 
-**Côté statechart.** L'AND-line Ressources et pannes s'appuie sur `calcul_carburant()` et `calcul_batterie()` :
+* **Contact** : l'AND-line passe de `contact_off` à `contact_on` sur `EVAL[cmd_contact == true]`, et revient sur `EVAL[cmd_contact == false]`. lorsque que la clé est insérée, le moteur est à l'arrêt (par défaut) et execute `arreter()`, qui passe `ignition` à `false`. (voir [Section 6 Modélisation énergétique : carburant, batterie et pannes](#6-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes)) .L'état`moteur_on` n'est atteint que sur `ev_demarrer`, et seulement si le véhicule n'est pas en panne (`[IS_IN(fonctionelle)]`). La transition exécute `ex_demarrer()`.
 
-* **Carburant** : consommation de `throttle * 0.005` par pas (réservoir initial 40 L, maximum 50 L). Sous `SEUIL_carburant` = 5 L, passage en `panne_carburant` (`carburant_faible = true`).
-* **Batterie** : -10 % au démarrage. Si `throttle > 1.5`, l'alternateur recharge jusqu'à +2,5 %/s ; sinon la batterie se décharge de 0,25 %/s (initiale 80 %). Sous `SEUIL_batterie` = 40 %, passage en `panne_batterie` (`batterie_faible = true`).
-* **Sécurité de maintenance** : les transitions vers `remplir_carburant` et `depanner_batterie` portent la garde `[speed == 0 && IS_IN(contact_off)]`.
+* **Moteur tournant** : `moteur_on` appelle `calcul_carburant()` et, dans une région parallèle, `calcul_batterie()`, au rythme de rafraîchissement (voir [Section 6 Modélisation énergétique : carburant, batterie et pannes](#6-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes)). le moteur s'arrête dès que le véhicule tombe en panne ou que le contact est coupé (`EVAL[!IS_IN(fonctionelle) || cmd_contact == false]`).
+* **Arrêt d'urgence en roulant** : quand nous coupons le contact en roulant, l'AND-line sort de `moteur_on` et `arreter()` passe `ignition` à `false`. L'AND-line Débit de l'injection d'essence bascule alors en `freinage_injection`, et `calcul_vitesse_distance()` annule le `throttle` tout en conservant `float_speed` : le véhicule continue sur son inertie.
 
+### 5.4 Implémentation des opérations
+
+#### 5.4.1 Opération `ex_demarrer()`
+
+Voici le code de l'opération `ex_demarrer()` :
+
+<!-- code:ex_demarrer() -->
 ```cpp
-// Extrait de calcul_batterie() : modèle alternateur / décharge en %/s
-if (throttle > 1.5) {
-    const double taux_charge = (throttle < 5.0) ? (0.5 * throttle) : 2.5;
-    new_niveau_batterie += taux_charge * dt;
-} else {
-    new_niveau_batterie -= 0.25 * dt;
-}
+ignition = true;
+throttle = throttle_repos;
+niveau_batterie -= 10;
 ```
 
-**Pourquoi ce fonctionnement.** Au début, le dépannage remettait la batterie au seuil exact : à 40 %, le premier démarrage (-10 %) rouvrait immédiatement une panne et le véhicule ne redémarrait jamais. Nous remettons donc la batterie à `SEUIL_batterie + 15` (55 %). De même, nous avions d'abord découpé la maintenance en sous-états `garee` / `non_garee`, mais ce découpage bloquait toute réparation une fois en panne. Nous portons donc la garde de maintenance directement sur chaque transition.
+L'opération allume le moteur, place directement le `throttle` au ralenti `throttle_repos` (voir [Section 3.3 Initialisation et vitesse de repos](#33-initialisation-et-vitesse-de-repos)) et retire 10 % de batterie pour le démarrage (voir [Section 6 Modélisation énergétique : carburant, batterie et pannes](#6-mod%C3%A9lisation-%C3%A9nerg%C3%A9tique--carburant-batterie-et-pannes)).
+
+### 5.5 Évolution
+
+Nous avons placé `arreter()` en entrée de `moteur_off` et non de `contact_off`. Sinon, une panne sèche, qui coupe le moteur sans couper le contact, laissait `ignition` à `true`. De la même façon, nous avons mis `calcul_carburant()` dans `moteur_on` pour qu'aucune consommation n'ait lieu moteur coupé.
+
+## 6. Batterie de la Voiture, carburant et pannes
+
+Le cycle de vie de la voiture est modélisé par la gestion de ses ressources énergétiques : la batterie et le carburant. Lorsqu'une de ces ressources tombe en dessous d'un seuil critique, une panne est déclenchée.
+
+### 6.1 Statechart
 
 ![AND-line Ressources et pannes](media/ANDL_ressources_panne.png)
 
-<!-- >>>>>>>>>>>>> TBD ↑ -->
+### 6.2 Utilisation depuis l'IHM
 
+**Côté IHM.** Les jauges **% Batterie** et **Carburant** (L) affichent les niveaux. Le bouton **remplir carburant** ajoute 5 L, et le bouton **recharge d'urgence batterie** remet la batterie à 55 %. Ces deux boutons ne fonctionnent que véhicule à l'arrêt et contact coupé.
+
+### 6.3 Fonctionnement
+
+ La région Ressources et pannes surveille les niveaux calculés par `calcul_carburant()` et `calcul_batterie()`, appelées par le moteur (voir [Section 5.3 Fonctionnement](#53-fonctionnement)) :
+
+* **Carburant** : le réservoir démarre à 40 L (50 L au maximum) et perd une valeure de `throttle * 0.005` L à chaque pas. Sous `SEUIL_carburant` (5 L), l'AND-line passe en `panne_carburant` (`carburant_faible = true`), activant la LED rouge **panne** et empêchant le démarrage du moteur. Le plein est possible à l'arrêt et contact coupé (`[speed == 0 && IS_IN(contact_off)]`).
+* **Batterie** : elle démarre à 80 % et perd 10 % à chaque démarrage. Lorsque le moteur tourne, l'alternateur la recharge dès que `throttle > 1.5` ; sinon, elle se décharge à une vitesse 0,25 %/s. Sous `SEUIL_batterie` (40 %), l'AND-line passe en `panne_batterie` (`batterie_faible = true`), activant la LED rouge **panne** et empêchant le démarrage du moteur. Le dépannage est possible à l'arrêt et contact coupé (`[speed == 0 && IS_IN(contact_off)]`).
+* **Dépannage** : En cas de panne de carburant ou de batterie, le véhicule ne peut pas démarrer. Le dépannage est possible à l'arrêt et contact coupé (`[speed == 0 && IS_IN(contact_off)]`), à l'appui des boutons **remplir carburant** ou **recharge d'urgence batterie**. Ces deux opérations réinitialisent les pannes et éteignent la LED rouge **panne**.
+
+### 6.4 Implémentation des opérations
+
+#### 6.4.1 Opération `calcul_carburant()`
+
+<!-- code:calcul_carburant() -->
+```cpp
+const double COEF_CONSO = 0.005;
+
+double new_reservoir_carburant = reservoir_carburant;
+
+new_reservoir_carburant -= throttle*COEF_CONSO;
+
+if (new_reservoir_carburant < 0.0) {
+	new_reservoir_carburant = 0;
+} 
+
+reservoir_carburant = new_reservoir_carburant;
+```
+
+À chaque pas, l'opération retire du réservoir une quantité proportionnelle au `throttle`, sans jamais descendre sous 0 L.
+
+#### 6.4.2 Opération `calcul_batterie()`
+
+<!-- code:calcul_batterie() -->
+```cpp
+// --- PARAMETRES ET CONSTANTES ---
+const int deltaTms                    = 1000 / PARAM_SIMU_freq_rafraichissement; // Division entière en ms
+const double dt                       = (double)deltaTms / 1000.0;               // En secondes pour la physique
+
+// Seuils d'injection
+const double SEUIL_THROTTLE_MIN       = 1.5;
+const double SEUIL_THROTTLE_MAX       = 5.0;
+
+// Taux de charge et décharge physiques (% par seconde)
+const double TAUX_CHARGE_PAR_THROTTLE = 0.5;
+const double TAUX_CHARGE_MAX_SEC      = TAUX_CHARGE_PAR_THROTTLE * SEUIL_THROTTLE_MAX;
+const double TAUX_DECHARGE_SEC        = 0.25;
+
+// --- LOGIQUE ---
+double new_niveau_batterie = niveau_batterie;
+
+if (throttle > SEUIL_THROTTLE_MIN) {
+    const double taux_charge = (throttle < SEUIL_THROTTLE_MAX)
+                               ? (TAUX_CHARGE_PAR_THROTTLE * throttle)
+                               : TAUX_CHARGE_MAX_SEC;
+
+    new_niveau_batterie += taux_charge * dt;
+    if (new_niveau_batterie > 100.0) {
+        new_niveau_batterie = 100.0;
+    }
+} else {
+    new_niveau_batterie -= TAUX_DECHARGE_SEC * dt;
+    if (new_niveau_batterie < 0.0) {
+        new_niveau_batterie = 0.0;
+    }
+}
+
+niveau_batterie = new_niveau_batterie;
+```
+
+L'opération modélise l'alternateur. Au-delà de `SEUIL_THROTTLE_MIN` (1,5), il recharge la batterie proportionnellement au `throttle` (0,5 %/s par unité), avec un plafond de 2,5 %/s atteint à `SEUIL_THROTTLE_MAX` (5). En dessous, la batterie se décharge de 0,25 %/s. Le niveau reste borné entre 0 et 100 %.
+
+#### 6.4.3 Opération `ex_depanner_batterie()` et `remplir_carburant()`
+
+* voici le code de l'opération `ex_depanner_batterie()` :
+
+```ccp
+if (niveau_batterie < SEUIL_batterie) {
+	niveau_batterie = SEUIL_batterie+15;
+}
+if (niveau_batterie > 100) {
+	niveau_batterie = 100;
+}
+```
+
+* voici le code de l'opération `remplir_carburant()` :
+
+```cpp
+double new_reservoir_carburant = reservoir_carburant;
+
+new_reservoir_carburant += 5;
+
+if (new_reservoir_carburant > 50.0) {
+	new_reservoir_carburant = 50;
+} 
+
+reservoir_carburant = new_reservoir_carburant;
+```
+
+### 6.5 Choix fonctionnels 
+* **Éviter les pannes sèches** : nous avons choisi de ne pas permettre de démarrer le moteur si la batterie ou le carburant sont en dessous du seuil critique, afin d'éviter une panne sèche qui immobiliserait le véhicule.
+* **Dépannage réaliste** : nous avons choisi de ne pas remettre la batterie à 100 % lors d'une recharge d'urgence, mais plutôt à 55 % pour simuler un dépannage réaliste.
+---
 ## 7. Régulateur de vitesse simple
 
 Le régulateur maintient une vitesse cible (`vitesseConsigne`) sur route dénivelée (α entre -20° et +20°).

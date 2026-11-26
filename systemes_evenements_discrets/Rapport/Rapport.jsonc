@@ -61,12 +61,12 @@
   // "separator" = texte placé après chaque indice (".", " ", "-"…). "cumulative" : true => "2.1." (indices des parents inclus).
   "numbering": {
     "levels": {
-      "1": { "style": "ignore" },
-      "2": { "style": "ignore" },
-      "3": { "style": "ignore" },
-      "4": { "style": "ignore" },
-      "5": { "style": "ignore" },
-      "6": { "style": "ignore" }
+      "1": { "style": "ignore", "separator": ".", "cumulative": false },
+      "2": { "style": "decimal", "separator": ".", "cumulative": false },
+      "3": { "style": "ignore", "separator": ".", "cumulative": false },
+      "4": { "style": "ignore", "separator": ".", "cumulative": false },
+      "5": { "style": "ignore", "separator": ".", "cumulative": false },
+      "6": { "style": "ignore", "separator": ".", "cumulative": false }
     }
   },
 
